@@ -2,7 +2,7 @@ import type { Config } from "@netlify/functions";
 import { id, json, safeName, store } from "../lib/shared.mts";
 
 function pinOK(code: unknown) {
-  const expected = process.env.BOARD_CODE || "";
+  const expected = Netlify.env.get("BOARD_CODE") || "";
   return !!expected && String(code || "") === expected;
 }
 
