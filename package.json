@@ -2,6 +2,9 @@
   "name": "hosen-hinuch-herum",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "node -e \"console.log('Static site build complete')\""
+  },
   "dependencies": {
     "@netlify/blobs": "latest",
     "@netlify/functions": "latest"
