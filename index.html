@@ -951,19 +951,619 @@ section{padding:58px 0!important}
   section{padding:46px 0!important}
 }
 </style>
+<style id="separate-pages-v38">
+/* Separate-page navigation */
+.exact-site-banner{
+  height:clamp(92px,9vw,132px)!important;
+  overflow:hidden!important;
+  background:#eef5f8!important;
+}
+.exact-site-banner img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+.mofet-icer-strip{
+  height:68px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border-top:0!important;
+  border-bottom:1px solid rgba(44,69,82,.10)!important;
+}
+.mofet-icer-strip img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+.site-tabs-shell{position:sticky!important;top:0!important}
+.site-tabs{
+  justify-content:flex-start!important;
+  gap:7px!important;
+  padding:8px 18px!important;
+  overflow-x:auto!important;
+  white-space:nowrap!important;
+}
+.site-tab{
+  text-decoration:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:42px!important;
+  padding:8px 15px!important;
+  border:1px solid rgba(64,96,111,.14)!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#31566b!important;
+  flex:0 0 auto!important;
+  box-shadow:none!important;
+}
+.site-tab::after{display:none!important}
+.site-tab:hover{background:#f5f8f9!important;transform:none!important}
+.site-tab.active{
+  background:#eef5f7!important;
+  border-color:rgba(64,104,124,.24)!important;
+  color:#244b61!important;
+}
+#now,#match,#gallery,#people,#resources{display:none!important}
+html[data-page="now"] #now,
+html[data-page="match"] #match,
+html[data-page="gallery"] #gallery,
+html[data-page="people"] #people,
+html[data-page="calls"] #resources,
+html[data-page="articles"] #resources,
+html[data-page="conferences"] #resources,
+html[data-page="grants"] #resources,
+html[data-page="lectures"] #resources,
+html[data-page="research-tools"] #resources,
+html[data-page="policy"] #resources,
+html[data-page="professional"] #resources,
+html[data-page="library"] #resources{display:block!important}
+html[data-resource-page="1"] #resources .topics{display:none!important}
+html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
+html[data-resource-page="1"] #resources .resource-area{
+  display:block!important;
+  margin-top:0!important;
+  border-top:0!important;
+  padding-top:0!important;
+}
+html:not([data-page="calls"]) #resources .call-note{display:none!important}
+html[data-page="library"] #libraryModal{
+  display:block!important;
+  position:static!important;
+  inset:auto!important;
+  background:transparent!important;
+  padding:0!important;
+  backdrop-filter:none!important;
+}
+html[data-page="library"] #libraryModal .library-card{
+  max-width:none!important;
+  width:100%!important;
+  margin:22px 0 0!important;
+  box-shadow:none!important;
+  border:1px solid rgba(55,86,102,.11)!important;
+}
+html[data-page="library"] #libraryModal .close{display:none!important}
+html[data-page="library"] #resourceArea{margin-bottom:18px!important}
+@media(max-width:700px){
+  .exact-site-banner{height:88px!important}
+  .mofet-icer-strip{height:54px!important}
+  .site-tabs{padding:7px 10px!important}
+  .site-tab{font-size:12px!important;min-height:38px!important;padding:7px 12px!important}
+}
+</style>
+<style id="banner-stack-v39">
+.exact-site-banner,
+.mofet-icer-strip{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  line-height:0!important;
+  background:#fff!important;
+}
+.exact-site-banner img,
+.mofet-icer-strip img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.mofet-icer-strip{
+  border-top:0!important;
+  border-bottom:1px solid rgba(44,69,82,.10)!important;
+}
+@media(max-width:700px){
+  .exact-site-banner,.mofet-icer-strip{width:100%!important}
+}
+</style>
+<style id="screen-reorg-v40">
+/* Compact academic page layout */
+body{background:#fbfcfc!important}
+.exact-site-banner,
+.mofet-icer-strip,
+.site-tabs-shell{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+}
+.exact-site-banner{
+  height:clamp(126px,12vw,178px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  line-height:0!important;
+  background:#fff!important;
+}
+.exact-site-banner img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  display:block!important;
+}
+.mofet-icer-strip{
+  height:58px!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  line-height:0!important;
+  background:#fff!important;
+  border-top:0!important;
+  border-bottom:1px solid rgba(47,76,92,.09)!important;
+}
+.mofet-icer-strip img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 50%!important;
+}
+.site-tabs-shell{
+  position:static!important;
+  top:auto!important;
+  background:#fff!important;
+  border-bottom:1px solid rgba(47,76,92,.09)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+.site-tabs{
+  max-width:1260px!important;
+  margin:0 auto!important;
+  padding:7px 14px 8px!important;
+  gap:4px!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  align-items:center!important;
+  overflow:visible!important;
+  white-space:normal!important;
+}
+.site-tab{
+  min-height:29px!important;
+  padding:4px 9px 5px!important;
+  border:1px solid rgba(54,86,102,.11)!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  color:#3f6173!important;
+  font-size:11.5px!important;
+  line-height:1.25!important;
+  font-weight:560!important;
+  box-shadow:none!important;
+  text-decoration:none!important;
+  letter-spacing:0!important;
+}
+.site-tab:hover{
+  background:#f5f8f9!important;
+  border-color:rgba(54,86,102,.18)!important;
+  color:#294f63!important;
+  transform:none!important;
+}
+.site-tab.active{
+  background:#edf4f6!important;
+  border-color:rgba(54,86,102,.20)!important;
+  color:#244c61!important;
+  font-weight:650!important;
+}
+main{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+  background:#fbfcfc!important;
+}
+section{
+  padding:30px 0 42px!important;
+}
+section>.wrap{
+  max-width:1160px!important;
+  padding-left:24px!important;
+  padding-right:24px!important;
+}
+.section-head{
+  margin-bottom:17px!important;
+  padding-bottom:10px!important;
+  border-bottom:1px solid rgba(55,86,102,.08)!important;
+}
+.section-head h2{
+  font-size:25px!important;
+  font-weight:610!important;
+  letter-spacing:-.015em!important;
+  color:#2c4c5d!important;
+}
+.top-dynamic-zone{
+  padding:28px 0 38px!important;
+  background:linear-gradient(180deg,#f7fafb 0%,#fbfcfc 100%)!important;
+}
+.top-dynamic-grid{
+  grid-template-columns:minmax(240px,280px) minmax(0,1fr)!important;
+  gap:20px!important;
+  align-items:start!important;
+}
+.community-board{
+  border-radius:10px!important;
+  padding:15px!important;
+  box-shadow:0 5px 18px rgba(37,66,82,.04)!important;
+}
+.top-now-content .grid{
+  gap:12px!important;
+}
+.top-now-content .card{
+  min-height:128px!important;
+  padding:17px 18px!important;
+  border-radius:9px!important;
+  box-shadow:0 4px 15px rgba(37,66,82,.035)!important;
+}
+.match .grid,
+.gallery-grid,
+.people{
+  gap:12px!important;
+}
+.match .card,.person,.resource-card,.gallery-card{
+  border-radius:9px!important;
+  box-shadow:0 4px 15px rgba(37,66,82,.035)!important;
+}
+#resources .wrap,
+#people .wrap,
+#gallery .wrap,
+#match .wrap{
+  max-width:1120px!important;
+}
+.search{
+  margin-bottom:18px!important;
+  padding:10px 15px!important;
+  box-shadow:none!important;
+}
+.resource-area{
+  margin-top:0!important;
+}
+.editor-entry-wrap{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+}
+@media(max-width:850px){
+  .top-dynamic-grid{grid-template-columns:1fr!important}
+  .site-tabs{justify-content:flex-start!important;flex-wrap:nowrap!important;overflow-x:auto!important}
+}
+@media(max-width:700px){
+  .exact-site-banner{height:104px!important}
+  .mofet-icer-strip{height:45px!important}
+  .site-tabs{padding:6px 9px!important}
+  .site-tab{font-size:11px!important;min-height:27px!important;padding:4px 8px!important}
+  section{padding:24px 0 34px!important}
+  section>.wrap{padding-left:16px!important;padding-right:16px!important}
+  .section-head h2{font-size:22px!important}
+}
+</style>
+<style id="screen-refine-v41">
+.site-tabs{
+  padding:5px 12px 6px!important;
+  gap:3px!important;
+}
+.site-tab{
+  min-height:25px!important;
+  padding:3px 8px 4px!important;
+  font-size:10.8px!important;
+  border-radius:6px!important;
+  border-color:rgba(54,86,102,.095)!important;
+}
+.site-tab.active{
+  background:#f0f5f6!important;
+  border-color:rgba(54,86,102,.16)!important;
+}
+section{
+  padding:22px 0 32px!important;
+}
+.section-head{
+  margin-bottom:14px!important;
+  padding-bottom:7px!important;
+}
+.section-head h2{
+  font-size:23px!important;
+}
+.top-dynamic-zone{
+  padding:22px 0 30px!important;
+}
+.top-dynamic-grid{
+  gap:16px!important;
+}
+.community-board{
+  padding:13px!important;
+}
+.top-now-content .card{
+  min-height:116px!important;
+  padding:15px 16px!important;
+}
+@media(max-width:700px){
+  .site-tab{font-size:10.5px!important;min-height:24px!important;padding:3px 7px!important}
+  section{padding:20px 0 28px!important}
+}
+</style>
+<style id="premium-banners-v42">
+/* Two equal, high-resolution banner components */
+.hero-banner-v42,.icer-banner-v42{
+  width:min(100%,1600px);
+  height:220px;
+  margin:0 auto;
+  box-sizing:border-box;
+  position:relative;
+  overflow:hidden;
+}
+.hero-banner-v42{
+  display:grid;
+  grid-template-columns:21% 19% 20% 19% 21%;
+  background:#f7fbfd;
+  border-bottom:1px solid rgba(38,84,108,.10);
+}
+.hero-photo{
+  background-size:cover;
+  background-position:center;
+  min-width:0;
+  filter:saturate(.9) contrast(.98);
+}
+.hero-photo-l1{
+  grid-column:1;
+  background-image:linear-gradient(90deg,rgba(237,247,250,.08),rgba(255,255,255,.18)),url("https://images.unsplash.com/photo-1622707402142-17e743e6c489?auto=format&fit=crop&q=88&w=1600");
+}
+.hero-photo-l2{
+  grid-column:2;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.86)),url("https://images.unsplash.com/photo-1512373931221-c21ecc13a305?auto=format&fit=crop&q=88&w=1600");
+}
+.hero-photo-r1{
+  grid-column:4;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.88),rgba(255,255,255,.04)),url("https://images.unsplash.com/photo-1698061641258-a2a955eb96c7?auto=format&fit=crop&q=88&w=1600");
+}
+.hero-photo-r2{
+  grid-column:5;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.18),rgba(237,247,250,.04)),url("https://images.unsplash.com/photo-1760710003079-03415284552a?auto=format&fit=crop&q=88&w=1600");
+}
+.hero-center-v42{
+  position:absolute;
+  z-index:4;
+  width:36%;
+  min-width:440px;
+  height:100%;
+  left:50%;top:0;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,rgba(255,255,255,0),#fff 12%,#fff 88%,rgba(255,255,255,0));
+  direction:rtl;
+}
+.hero-logo-v42{width:138px;height:78px;margin-bottom:-1px}
+.hero-title-v42{
+  color:#153f68;
+  font-size:clamp(30px,2.6vw,44px);
+  font-weight:750;
+  line-height:1;
+  letter-spacing:-1.3px;
+  white-space:nowrap;
+}
+.hero-title-v42 span{color:#78aac5;font-weight:400;margin:0 5px}
+.hero-subtitle-v42{
+  margin-top:8px;
+  color:#496e84;
+  font-size:14px;
+  font-weight:550;
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+.hero-wave-v42{
+  position:absolute;z-index:5;left:-5%;right:-5%;bottom:-45px;height:82px;
+  background:rgba(166,207,229,.30);
+  border-radius:50% 50% 0 0/55% 55% 0 0;
+  transform:rotate(.5deg);
+  pointer-events:none;
+}
+.hero-wave-v42:after{
+  content:"";position:absolute;left:18%;right:-5%;top:13px;height:75px;
+  background:rgba(100,174,215,.17);
+  border-radius:50% 50% 0 0/55% 55% 0 0;
+  transform:rotate(-1.2deg);
+}
+
+.icer-banner-v42{
+  display:grid;
+  grid-template-columns:26% 1fr 25%;
+  align-items:center;
+  text-decoration:none;
+  color:#173f67;
+  direction:ltr;
+  background:
+    radial-gradient(circle at 63% 25%,rgba(175,151,225,.20),transparent 26%),
+    linear-gradient(105deg,#fbfdff 0%,#eaf7fb 33%,#f4f1fc 66%,#eaf6fb 100%);
+  border-top:1px solid rgba(54,119,166,.18);
+  border-bottom:1px solid rgba(54,119,166,.18);
+  box-shadow:inset 0 3px 0 rgba(77,169,206,.42),inset 0 -3px 0 rgba(139,105,198,.32);
+}
+.icer-network-v42{
+  position:absolute;inset:0;opacity:.45;pointer-events:none;
+  background-image:
+    radial-gradient(circle at 12% 30%,#69b5d2 0 2px,transparent 3px),
+    radial-gradient(circle at 20% 68%,#8a75c5 0 2px,transparent 3px),
+    radial-gradient(circle at 78% 27%,#6cb6d3 0 2px,transparent 3px),
+    radial-gradient(circle at 88% 70%,#8d79c7 0 2px,transparent 3px);
+}
+.icer-mofet-v42{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  height:100%;padding:28px 28px;
+  box-sizing:border-box;
+}
+.icer-mofet-v42 img{
+  display:block;max-width:215px;max-height:92px;width:auto;height:auto;object-fit:contain;
+}
+.icer-main-v42{
+  position:relative;z-index:2;
+  height:100%;display:flex;align-items:center;justify-content:center;gap:24px;
+  border-left:1px solid rgba(74,118,153,.10);
+  border-right:1px solid rgba(74,118,153,.10);
+}
+.icer-number-v42{
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;font-weight:700;
+  font-size:118px;line-height:.8;
+  color:transparent;
+  background:linear-gradient(160deg,#8974c9,#d4c7f3 72%);
+  -webkit-background-clip:text;background-clip:text;
+  text-shadow:0 2px 12px rgba(110,86,175,.12);
+}
+.icer-copy-v42{
+  direction:rtl;text-align:right;display:flex;flex-direction:column;gap:8px;
+}
+.icer-copy-v42 strong{
+  font-size:27px;line-height:1.14;font-weight:720;color:#173f67;white-space:nowrap;
+}
+.icer-copy-v42 span{font-size:18px;color:#596e84;font-weight:600}
+.icer-details-v42{
+  position:relative;z-index:2;
+  direction:rtl;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;
+}
+.icer-details-v42 strong{font-size:22px;color:#173f67;letter-spacing:.02em}
+.icer-more-v42{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:92px;height:32px;padding:0 18px;
+  border:1px solid rgba(49,105,139,.28);border-radius:999px;
+  color:#245f82;background:rgba(255,255,255,.78);
+  font-size:12px;font-weight:700;
+}
+.icer-banner-v42:hover .icer-more-v42{background:#fff;border-color:rgba(49,105,139,.44)}
+/* deactivate old image-banner rules */
+.exact-site-banner,.mofet-icer-strip{display:none!important}
+@media(max-width:900px){
+  .hero-banner-v42,.icer-banner-v42{height:170px}
+  .hero-center-v42{min-width:330px;width:48%}
+  .hero-logo-v42{width:104px;height:61px}
+  .hero-title-v42{font-size:29px}
+  .hero-subtitle-v42{font-size:11px}
+  .icer-banner-v42{grid-template-columns:23% 1fr 22%}
+  .icer-mofet-v42{padding:18px 12px}
+  .icer-mofet-v42 img{max-width:150px;max-height:70px}
+  .icer-number-v42{font-size:82px}
+  .icer-copy-v42 strong{font-size:20px}
+  .icer-copy-v42 span{font-size:14px}
+  .icer-details-v42 strong{font-size:16px}
+}
+@media(max-width:620px){
+  .hero-banner-v42,.icer-banner-v42{height:136px}
+  .hero-banner-v42{grid-template-columns:25% 15% 20% 15% 25%}
+  .hero-center-v42{min-width:250px;width:56%}
+  .hero-logo-v42{width:76px;height:44px}
+  .hero-title-v42{font-size:22px;letter-spacing:-.7px}
+  .hero-title-v42 span{margin:0 2px}
+  .hero-subtitle-v42{font-size:9px;margin-top:5px}
+  .icer-banner-v42{grid-template-columns:24% 52% 24%}
+  .icer-mofet-v42{padding:10px 6px}
+  .icer-mofet-v42 img{max-width:100%;max-height:50px}
+  .icer-main-v42{gap:6px}
+  .icer-number-v42{font-size:54px}
+  .icer-copy-v42 strong{font-size:13px;white-space:normal}
+  .icer-copy-v42 span{font-size:10px}
+  .icer-details-v42{gap:8px}
+  .icer-details-v42 strong{font-size:11px}
+  .icer-more-v42{min-width:58px;height:25px;padding:0 8px;font-size:9px}
+}
+</style>
+<style id="icer-uploaded-v43">
+.icer-uploaded-banner-v43{
+  display:block!important;
+  width:min(100%,1600px)!important;
+  margin:0 auto!important;
+  padding:0!important;
+  line-height:0!important;
+  background:#fff!important;
+  border:0!important;
+  text-decoration:none!important;
+  overflow:hidden!important;
+}
+.icer-uploaded-banner-v43 img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+}
+.site-tabs-shell{
+  margin-top:0!important;
+  border-top:0!important;
+}
+</style>
+<style id="exact-banner-stack-v44">
+.banner-stack-v44{
+  width:min(100%,1600px);
+  margin:0 auto;
+  padding:0;
+  background:#fff;
+}
+.banner-image-v44{
+  display:block;
+  width:100%;
+  margin:0;
+  padding:0;
+  line-height:0;
+  background:#fff;
+  overflow:hidden;
+}
+.banner-image-v44 img{
+  display:block;
+  width:100%;
+  height:auto;
+  margin:0;
+  padding:0;
+}
+.banner-icer-v44{
+  text-decoration:none;
+}
+.site-tabs-shell{
+  margin-top:0!important;
+  border-top:0!important;
+}
+@media(max-width:700px){
+  .banner-stack-v44{width:100%}
+}
+</style>
 </head>
 <body>
-<header class="exact-site-banner" role="banner"><img src="https://6ab6542b046c98247e2baaeb--hosen-hinuch-herum.netlify.app/assets/banner.png" alt="חוסן חינוך חרום — באנר האתר"></header>
-<a class="mofet-icer-strip" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027">
-  <img src="/assets/mofet-icer-2027.webp" alt="">
-</a>
+<div class="banner-stack-v44">
+  <div class="banner-image-v44 banner-top-v44" role="banner" aria-label="חוסן חינוך חרום">
+    <img src="/assets/hosen-top-exact.webp" alt="חוסן חינוך חרום">
+  </div>
+  <a class="banner-image-v44 banner-icer-v44" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027 — לפרטים">
+    <img src="/assets/icer-bottom-exact.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027">
+  </a>
+</div>
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
-    <button type="button" class="site-tab active" data-target="now" aria-current="page">מה שקורה עכשיו</button>
-    <button type="button" class="site-tab" data-target="match">מקום בגן עדן</button>
-    <button type="button" class="site-tab" data-target="gallery">גלריה</button>
-    <button type="button" class="site-tab" data-target="people">הנבחרת</button>
-    <button type="button" class="site-tab" data-target="resources">ועוד...</button>
+    <a class="site-tab" data-route="now" href="/now">מה שקורה עכשיו</a>
+    <a class="site-tab" data-route="match" href="/match">מקום בגן עדן</a>
+    <a class="site-tab" data-route="gallery" href="/gallery">גלריה</a>
+    <a class="site-tab" data-route="people" href="/people">הנבחרת</a>
+    <a class="site-tab" data-route="calls" href="/calls">קולות קוראים</a>
+    <a class="site-tab" data-route="articles" href="/articles">מאמרים חדשים</a>
+    <a class="site-tab" data-route="conferences" href="/conferences">כנסים</a>
+    <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
+    <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
+    <a class="site-tab" data-route="research-tools" href="/research-tools">כלי מחקר</a>
+    <a class="site-tab" data-route="policy" href="/policy">מסמכי מדיניות</a>
+    <a class="site-tab" data-route="professional" href="/professional">משאבים מקצועיים</a>
+    <a class="site-tab" data-route="library" href="/library">ספריה</a>
   </div>
 </nav>
 <main>
@@ -1117,7 +1717,7 @@ section{padding:58px 0!important}
    <input type="hidden" id="resId">
    <div class="admin-grid">
     <label>כותרת*<input id="resTitle"></label>
-    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="articles">מאמרים חדשים</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option></select></label>
+    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="articles">מאמרים חדשים</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option><option value="library">ספריה</option></select></label>
     <label>סוג משאב<select id="resType"><option value="text">טקסט</option><option value="link">קישור</option><option value="file">קובץ</option><option value="presentation">מצגת</option></select></label>
     <label>קישור<input id="resUrl" placeholder="https://..."></label>
     <label>תאריך תחילת הצגה<input id="resStart" type="date"></label>
@@ -1263,7 +1863,7 @@ async function prepareFeedback(e){
 <script id="v31-backend-js">
 let editorToken=sessionStorage.getItem('hosen_editor_token')||'';
 let adminResourcesCache=[]; let libraryCache=[]; let currentCategory='';
-const catLabels={calls:'קולות קוראים',articles:'מאמרים חדשים',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים'};
+const catLabels={calls:'קולות קוראים',articles:'מאמרים חדשים',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים',library:'ספריה'};
 function apiHeaders(){return editorToken?{'Authorization':'Bearer '+editorToken,'Content-Type':'application/json'}:{'Content-Type':'application/json'}}
 function openEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='flex';m.setAttribute('aria-hidden','false');editorCode.value='';editorCodeStatus.textContent='';setTimeout(()=>editorCode.focus(),30)}
 function closeEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='none';m.setAttribute('aria-hidden','true')}
@@ -1411,5 +2011,65 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('.reveal-on-scroll').forEach(el=>el.classList.add('is-visible'));
   }
 });
+</script>
+<script id="separate-pages-v38-js">
+(function(){
+  const labels={
+    calls:'קולות קוראים',
+    articles:'מאמרים חדשים',
+    conferences:'כנסים',
+    grants:'מענקי מחקר',
+    lectures:'הרצאות',
+    'research-tools':'כלי מחקר',
+    policy:'מסמכי מדיניות',
+    professional:'משאבים מקצועיים',
+    library:'ספריה'
+  };
+  const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
+  const page=path||'now';
+  const simplePages=new Set(['now','match','gallery','people']);
+  const resourcePages=new Set(Object.keys(labels));
+  const resolved=simplePages.has(page)||resourcePages.has(page)?page:'now';
+  document.documentElement.dataset.page=resolved;
+  if(resourcePages.has(resolved)) document.documentElement.dataset.resourcePage='1';
+
+  document.addEventListener('DOMContentLoaded',async()=>{
+    document.querySelectorAll('.site-tab[data-route]').forEach(a=>{
+      const active=a.dataset.route===resolved;
+      a.classList.toggle('active',active);
+      if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+    });
+
+    if(resourcePages.has(resolved)){
+      const h=document.querySelector('#resources .section-head h2');
+      if(h)h.textContent=labels[resolved];
+
+      const topics=document.querySelector('#resources .topics');
+      if(topics)topics.style.display='none';
+
+      const area=document.getElementById('resourceArea');
+      const cards=document.getElementById('resourceCards');
+      if(area)area.hidden=false;
+
+      try{
+        const r=await fetch('/api/resources?category='+encodeURIComponent(resolved));
+        const rows=await r.json();
+        if(typeof renderResourceCards==='function') renderResourceCards(rows);
+      }catch(e){
+        if(cards)cards.innerHTML='<p class="muted">אין כרגע פריטים להצגה.</p>';
+      }
+
+      if(resolved==='library'){
+        const modal=document.getElementById('libraryModal');
+        const wrap=document.querySelector('#resources > .wrap');
+        if(modal&&wrap){
+          wrap.appendChild(modal);
+          modal.setAttribute('aria-hidden','false');
+        }
+        try{ if(typeof loadLibrary==='function') await loadLibrary(false); }catch(e){}
+      }
+    }
+  });
+})();
 </script>
 </body></html>
