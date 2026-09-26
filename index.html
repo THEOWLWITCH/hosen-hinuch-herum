@@ -951,19 +951,129 @@ section{padding:58px 0!important}
   section{padding:46px 0!important}
 }
 </style>
+<style id="separate-pages-v38">
+/* Separate-page navigation */
+.exact-site-banner{
+  height:clamp(92px,9vw,132px)!important;
+  overflow:hidden!important;
+  background:#eef5f8!important;
+}
+.exact-site-banner img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+.mofet-icer-strip{
+  height:68px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border-top:0!important;
+  border-bottom:1px solid rgba(44,69,82,.10)!important;
+}
+.mofet-icer-strip img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+.site-tabs-shell{position:sticky!important;top:0!important}
+.site-tabs{
+  justify-content:flex-start!important;
+  gap:7px!important;
+  padding:8px 18px!important;
+  overflow-x:auto!important;
+  white-space:nowrap!important;
+}
+.site-tab{
+  text-decoration:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:42px!important;
+  padding:8px 15px!important;
+  border:1px solid rgba(64,96,111,.14)!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#31566b!important;
+  flex:0 0 auto!important;
+  box-shadow:none!important;
+}
+.site-tab::after{display:none!important}
+.site-tab:hover{background:#f5f8f9!important;transform:none!important}
+.site-tab.active{
+  background:#eef5f7!important;
+  border-color:rgba(64,104,124,.24)!important;
+  color:#244b61!important;
+}
+#now,#match,#gallery,#people,#resources{display:none!important}
+html[data-page="now"] #now,
+html[data-page="match"] #match,
+html[data-page="gallery"] #gallery,
+html[data-page="people"] #people,
+html[data-page="calls"] #resources,
+html[data-page="articles"] #resources,
+html[data-page="conferences"] #resources,
+html[data-page="grants"] #resources,
+html[data-page="lectures"] #resources,
+html[data-page="research-tools"] #resources,
+html[data-page="policy"] #resources,
+html[data-page="professional"] #resources,
+html[data-page="library"] #resources{display:block!important}
+html[data-resource-page="1"] #resources .topics{display:none!important}
+html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
+html[data-resource-page="1"] #resources .resource-area{
+  display:block!important;
+  margin-top:0!important;
+  border-top:0!important;
+  padding-top:0!important;
+}
+html:not([data-page="calls"]) #resources .call-note{display:none!important}
+html[data-page="library"] #libraryModal{
+  display:block!important;
+  position:static!important;
+  inset:auto!important;
+  background:transparent!important;
+  padding:0!important;
+  backdrop-filter:none!important;
+}
+html[data-page="library"] #libraryModal .library-card{
+  max-width:none!important;
+  width:100%!important;
+  margin:22px 0 0!important;
+  box-shadow:none!important;
+  border:1px solid rgba(55,86,102,.11)!important;
+}
+html[data-page="library"] #libraryModal .close{display:none!important}
+html[data-page="library"] #resourceArea{margin-bottom:18px!important}
+@media(max-width:700px){
+  .exact-site-banner{height:88px!important}
+  .mofet-icer-strip{height:54px!important}
+  .site-tabs{padding:7px 10px!important}
+  .site-tab{font-size:12px!important;min-height:38px!important;padding:7px 12px!important}
+}
+</style>
 </head>
 <body>
 <header class="exact-site-banner" role="banner"><img src="https://6ab6542b046c98247e2baaeb--hosen-hinuch-herum.netlify.app/assets/banner.png" alt="חוסן חינוך חרום — באנר האתר"></header>
 <a class="mofet-icer-strip" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027">
-  <img src="/assets/mofet-icer-2027.webp" alt="">
+  <img src="https://mofet.macam.ac.il/wp-content/uploads/2026/07/start-section-logo-7-scaled.png" alt="">
 </a>
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
-    <button type="button" class="site-tab active" data-target="now" aria-current="page">מה שקורה עכשיו</button>
-    <button type="button" class="site-tab" data-target="match">מקום בגן עדן</button>
-    <button type="button" class="site-tab" data-target="gallery">גלריה</button>
-    <button type="button" class="site-tab" data-target="people">הנבחרת</button>
-    <button type="button" class="site-tab" data-target="resources">ועוד...</button>
+    <a class="site-tab" data-route="now" href="/now">מה שקורה עכשיו</a>
+    <a class="site-tab" data-route="match" href="/match">מקום בגן עדן</a>
+    <a class="site-tab" data-route="gallery" href="/gallery">גלריה</a>
+    <a class="site-tab" data-route="people" href="/people">הנבחרת</a>
+    <a class="site-tab" data-route="calls" href="/calls">קולות קוראים</a>
+    <a class="site-tab" data-route="articles" href="/articles">מאמרים חדשים</a>
+    <a class="site-tab" data-route="conferences" href="/conferences">כנסים</a>
+    <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
+    <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
+    <a class="site-tab" data-route="research-tools" href="/research-tools">כלי מחקר</a>
+    <a class="site-tab" data-route="policy" href="/policy">מסמכי מדיניות</a>
+    <a class="site-tab" data-route="professional" href="/professional">משאבים מקצועיים</a>
+    <a class="site-tab" data-route="library" href="/library">ספריה</a>
   </div>
 </nav>
 <main>
@@ -1117,7 +1227,7 @@ section{padding:58px 0!important}
    <input type="hidden" id="resId">
    <div class="admin-grid">
     <label>כותרת*<input id="resTitle"></label>
-    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="articles">מאמרים חדשים</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option></select></label>
+    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="articles">מאמרים חדשים</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option><option value="library">ספריה</option></select></label>
     <label>סוג משאב<select id="resType"><option value="text">טקסט</option><option value="link">קישור</option><option value="file">קובץ</option><option value="presentation">מצגת</option></select></label>
     <label>קישור<input id="resUrl" placeholder="https://..."></label>
     <label>תאריך תחילת הצגה<input id="resStart" type="date"></label>
@@ -1263,7 +1373,7 @@ async function prepareFeedback(e){
 <script id="v31-backend-js">
 let editorToken=sessionStorage.getItem('hosen_editor_token')||'';
 let adminResourcesCache=[]; let libraryCache=[]; let currentCategory='';
-const catLabels={calls:'קולות קוראים',articles:'מאמרים חדשים',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים'};
+const catLabels={calls:'קולות קוראים',articles:'מאמרים חדשים',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים',library:'ספריה'};
 function apiHeaders(){return editorToken?{'Authorization':'Bearer '+editorToken,'Content-Type':'application/json'}:{'Content-Type':'application/json'}}
 function openEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='flex';m.setAttribute('aria-hidden','false');editorCode.value='';editorCodeStatus.textContent='';setTimeout(()=>editorCode.focus(),30)}
 function closeEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='none';m.setAttribute('aria-hidden','true')}
@@ -1411,5 +1521,65 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('.reveal-on-scroll').forEach(el=>el.classList.add('is-visible'));
   }
 });
+</script>
+<script id="separate-pages-v38-js">
+(function(){
+  const labels={
+    calls:'קולות קוראים',
+    articles:'מאמרים חדשים',
+    conferences:'כנסים',
+    grants:'מענקי מחקר',
+    lectures:'הרצאות',
+    'research-tools':'כלי מחקר',
+    policy:'מסמכי מדיניות',
+    professional:'משאבים מקצועיים',
+    library:'ספריה'
+  };
+  const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
+  const page=path||'now';
+  const simplePages=new Set(['now','match','gallery','people']);
+  const resourcePages=new Set(Object.keys(labels));
+  const resolved=simplePages.has(page)||resourcePages.has(page)?page:'now';
+  document.documentElement.dataset.page=resolved;
+  if(resourcePages.has(resolved)) document.documentElement.dataset.resourcePage='1';
+
+  document.addEventListener('DOMContentLoaded',async()=>{
+    document.querySelectorAll('.site-tab[data-route]').forEach(a=>{
+      const active=a.dataset.route===resolved;
+      a.classList.toggle('active',active);
+      if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+    });
+
+    if(resourcePages.has(resolved)){
+      const h=document.querySelector('#resources .section-head h2');
+      if(h)h.textContent=labels[resolved];
+
+      const topics=document.querySelector('#resources .topics');
+      if(topics)topics.style.display='none';
+
+      const area=document.getElementById('resourceArea');
+      const cards=document.getElementById('resourceCards');
+      if(area)area.hidden=false;
+
+      try{
+        const r=await fetch('/api/resources?category='+encodeURIComponent(resolved));
+        const rows=await r.json();
+        if(typeof renderResourceCards==='function') renderResourceCards(rows);
+      }catch(e){
+        if(cards)cards.innerHTML='<p class="muted">אין כרגע פריטים להצגה.</p>';
+      }
+
+      if(resolved==='library'){
+        const modal=document.getElementById('libraryModal');
+        const wrap=document.querySelector('#resources > .wrap');
+        if(modal&&wrap){
+          wrap.appendChild(modal);
+          modal.setAttribute('aria-hidden','false');
+        }
+        try{ if(typeof loadLibrary==='function') await loadLibrary(false); }catch(e){}
+      }
+    }
+  });
+})();
 </script>
 </body></html>
