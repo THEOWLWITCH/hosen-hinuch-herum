@@ -1081,10 +1081,183 @@ html[data-page="library"] #resourceArea{margin-bottom:18px!important}
   .exact-site-banner,.mofet-icer-strip{width:100%!important}
 }
 </style>
+<style id="screen-reorg-v40">
+/* Compact academic page layout */
+body{background:#fbfcfc!important}
+.exact-site-banner,
+.mofet-icer-strip,
+.site-tabs-shell{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+}
+.exact-site-banner{
+  height:clamp(126px,12vw,178px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  line-height:0!important;
+  background:#fff!important;
+}
+.exact-site-banner img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  display:block!important;
+}
+.mofet-icer-strip{
+  height:58px!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  line-height:0!important;
+  background:#fff!important;
+  border-top:0!important;
+  border-bottom:1px solid rgba(47,76,92,.09)!important;
+}
+.mofet-icer-strip img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 50%!important;
+}
+.site-tabs-shell{
+  position:static!important;
+  top:auto!important;
+  background:#fff!important;
+  border-bottom:1px solid rgba(47,76,92,.09)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+.site-tabs{
+  max-width:1260px!important;
+  margin:0 auto!important;
+  padding:7px 14px 8px!important;
+  gap:4px!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  align-items:center!important;
+  overflow:visible!important;
+  white-space:normal!important;
+}
+.site-tab{
+  min-height:29px!important;
+  padding:4px 9px 5px!important;
+  border:1px solid rgba(54,86,102,.11)!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  color:#3f6173!important;
+  font-size:11.5px!important;
+  line-height:1.25!important;
+  font-weight:560!important;
+  box-shadow:none!important;
+  text-decoration:none!important;
+  letter-spacing:0!important;
+}
+.site-tab:hover{
+  background:#f5f8f9!important;
+  border-color:rgba(54,86,102,.18)!important;
+  color:#294f63!important;
+  transform:none!important;
+}
+.site-tab.active{
+  background:#edf4f6!important;
+  border-color:rgba(54,86,102,.20)!important;
+  color:#244c61!important;
+  font-weight:650!important;
+}
+main{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+  background:#fbfcfc!important;
+}
+section{
+  padding:30px 0 42px!important;
+}
+section>.wrap{
+  max-width:1160px!important;
+  padding-left:24px!important;
+  padding-right:24px!important;
+}
+.section-head{
+  margin-bottom:17px!important;
+  padding-bottom:10px!important;
+  border-bottom:1px solid rgba(55,86,102,.08)!important;
+}
+.section-head h2{
+  font-size:25px!important;
+  font-weight:610!important;
+  letter-spacing:-.015em!important;
+  color:#2c4c5d!important;
+}
+.top-dynamic-zone{
+  padding:28px 0 38px!important;
+  background:linear-gradient(180deg,#f7fafb 0%,#fbfcfc 100%)!important;
+}
+.top-dynamic-grid{
+  grid-template-columns:minmax(240px,280px) minmax(0,1fr)!important;
+  gap:20px!important;
+  align-items:start!important;
+}
+.community-board{
+  border-radius:10px!important;
+  padding:15px!important;
+  box-shadow:0 5px 18px rgba(37,66,82,.04)!important;
+}
+.top-now-content .grid{
+  gap:12px!important;
+}
+.top-now-content .card{
+  min-height:128px!important;
+  padding:17px 18px!important;
+  border-radius:9px!important;
+  box-shadow:0 4px 15px rgba(37,66,82,.035)!important;
+}
+.match .grid,
+.gallery-grid,
+.people{
+  gap:12px!important;
+}
+.match .card,.person,.resource-card,.gallery-card{
+  border-radius:9px!important;
+  box-shadow:0 4px 15px rgba(37,66,82,.035)!important;
+}
+#resources .wrap,
+#people .wrap,
+#gallery .wrap,
+#match .wrap{
+  max-width:1120px!important;
+}
+.search{
+  margin-bottom:18px!important;
+  padding:10px 15px!important;
+  box-shadow:none!important;
+}
+.resource-area{
+  margin-top:0!important;
+}
+.editor-entry-wrap{
+  width:min(100%,1400px)!important;
+  margin:0 auto!important;
+}
+@media(max-width:850px){
+  .top-dynamic-grid{grid-template-columns:1fr!important}
+  .site-tabs{justify-content:flex-start!important;flex-wrap:nowrap!important;overflow-x:auto!important}
+}
+@media(max-width:700px){
+  .exact-site-banner{height:104px!important}
+  .mofet-icer-strip{height:45px!important}
+  .site-tabs{padding:6px 9px!important}
+  .site-tab{font-size:11px!important;min-height:27px!important;padding:4px 8px!important}
+  section{padding:24px 0 34px!important}
+  section>.wrap{padding-left:16px!important;padding-right:16px!important}
+  .section-head h2{font-size:22px!important}
+}
+</style>
 </head>
 <body>
-<header class="exact-site-banner" role="banner"><img src="https://media.canva.com/v2/image-resize/format:JPG/height:199/quality:90/uri:ifs%3A%2F%2FM%2F4fe023c3-3dce-4be7-98c1-f40f918220c7/watermark:F/width:1200?csig=AAAAAAAAAAAAAAAAAAAAAJNo32lddoz3DeKEWarSM_xOsBETrdNf8N7WioR165X_&exp=1790442158&osig=AAAAAAAAAAAAAAAAAAAAADfdMfD4MN8QmPrxjw9IkNnbg7vBE8iab4ONIhjVk3ui&signer=media-rpc" alt="חוסן חינוך חרום — באנר האתר"></header>
-<a class="mofet-icer-strip" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027"><img src="https://media.canva.com/v2/image-resize/format:JPG/height:65/quality:90/uri:ifs%3A%2F%2FM%2F41fd962a-941e-455d-86b6-08072a964f3b/watermark:F/width:1200?csig=AAAAAAAAAAAAAAAAAAAAAPPrRfbKaZXDkjy2pgwvOwnoZ5kyrBv2z8ipRBSUou_r&exp=1790444739&osig=AAAAAAAAAAAAAAAAAAAAAFXwEI_4qASmsAfeidSQsrOvV7ekWnUHX6zibc2Sk_AE&signer=media-rpc" alt=""></a>
+<header class="exact-site-banner" role="banner"><img src="/assets/hosen-banner-approved.webp" alt="חוסן חינוך חרום — באנר האתר"></header>
+<a class="mofet-icer-strip" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027"><img src="/assets/mofet-icer-2027.webp" alt=""></a>
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
     <a class="site-tab" data-route="now" href="/now">מה שקורה עכשיו</a>
