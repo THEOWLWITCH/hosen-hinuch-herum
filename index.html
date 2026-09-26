@@ -760,16 +760,210 @@ section>.wrap{position:relative;z-index:1}
   .reveal-on-scroll{opacity:1!important;transform:none!important}
 }
 </style>
+<style id="academic-refinement-v37">
+/* Restrained academic refinement — visual changes only, no content changes */
+:root{
+  --atelier-ink:#263d4d;
+  --atelier-deep:#284b5f;
+  --atelier-blue:#6e9caf;
+  --atelier-blue-soft:#edf5f7;
+  --atelier-mist:#f7fafb;
+  --atelier-line:rgba(46,78,95,.12);
+  --atelier-shadow:0 7px 22px rgba(37,66,82,.045);
+  --atelier-shadow-hover:0 11px 28px rgba(37,66,82,.075);
+}
+body{
+  background:#fbfcfc!important;
+  color:#2b414e!important;
+}
+main::before,main::after,.match::before{display:none!important}
+.mofet-icer-strip{
+  display:block;
+  width:100%;
+  margin:0;
+  padding:0;
+  line-height:0;
+  background:#f4f5f4;
+  border-top:1px solid rgba(44,69,82,.08);
+  border-bottom:1px solid rgba(44,69,82,.10);
+}
+.mofet-icer-strip img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:188px;
+  object-fit:cover;
+  object-position:center;
+}
+.site-tabs-shell{
+  background:rgba(252,253,253,.94)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  box-shadow:none!important;
+  border-bottom:1px solid rgba(46,78,95,.10)!important;
+}
+.site-tabs{gap:1px!important}
+.site-tab{
+  color:#607580!important;
+  font-size:12.5px!important;
+  font-weight:550!important;
+  padding:9px 16px 10px!important;
+  border-radius:6px!important;
+}
+.site-tab::after{
+  height:1.5px!important;
+  background:#7b9fad!important;
+  right:15px!important;
+  left:15px!important;
+}
+.site-tab:hover{
+  color:#2d5367!important;
+  background:#f2f7f8!important;
+  transform:none!important;
+}
+.site-tab.active{
+  color:#294e62!important;
+  background:#f4f8f9!important;
+}
+section{padding:58px 0!important}
+.section-head h2{
+  padding-right:0!important;
+  font-size:clamp(25px,2.7vw,34px)!important;
+  font-weight:620!important;
+  color:#29495b!important;
+}
+.section-head h2::before{display:none!important}
+.card,.person,.resource-card,.gallery-card,.community-board{
+  border:1px solid rgba(55,86,102,.11)!important;
+  border-radius:11px!important;
+  box-shadow:var(--atelier-shadow)!important;
+  background:#fff!important;
+}
+.card:hover,.person:hover,.resource-card:hover,.gallery-card:hover{
+  transform:translateY(-2px)!important;
+  box-shadow:var(--atelier-shadow-hover)!important;
+  border-color:rgba(67,107,127,.18)!important;
+}
+.top-dynamic-zone{
+  background:linear-gradient(180deg,#f5f9fa 0%,#fbfcfc 100%)!important;
+}
+.community-board{
+  background:#fff!important;
+  box-shadow:0 8px 24px rgba(37,66,82,.055)!important;
+  padding:17px!important;
+}
+.board-message-card{
+  background:#fbfcfc!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+.top-now-content .card{
+  min-height:145px!important;
+  padding:20px 21px!important;
+}
+.top-now-content .card::after{display:none!important}
+.match{
+  background:#f7f9f9!important;
+  border-top:1px solid rgba(55,86,102,.06)!important;
+  border-bottom:1px solid rgba(55,86,102,.06)!important;
+}
+.match .card{
+  padding:21px 22px!important;
+  background:#fff!important;
+}
+.match .card::before{
+  width:2px!important;
+  background:#8baab7!important;
+  opacity:.65!important;
+}
+.match .card>b{
+  color:#587280!important;
+  background:#f2f6f7!important;
+  border:1px solid rgba(74,104,119,.08)!important;
+}
+.gallery-section{
+  background:#fff!important;
+}
+.gallery-card{
+  border-radius:9px!important;
+  box-shadow:0 5px 18px rgba(37,66,82,.04)!important;
+}
+.gallery-card:hover .gallery-card-cover img{
+  transform:scale(1.018)!important;
+  filter:none!important;
+}
+.gallery-image-meta{
+  background:#f7f9fa!important;
+  border:1px solid rgba(55,86,102,.11)!important;
+  border-radius:7px!important;
+}
+.gallery-image-meta h3{
+  color:#2c4b5c!important;
+  font-size:14px!important;
+}
+.gallery-image-meta div{
+  color:#687b86!important;
+  font-size:11.5px!important;
+}
+#people{
+  background:#f7fafb!important;
+}
+.person{
+  min-height:82px!important;
+  padding:14px 15px!important;
+}
+.person::after{
+  height:1px!important;
+  background:#8baab7!important;
+}
+#resources{
+  background:#fbfcfc!important;
+}
+.topic,.library-topic{
+  border-radius:7px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  color:#3d6477!important;
+}
+.topic:hover,.library-topic:hover{
+  background:#f2f7f8!important;
+  transform:none!important;
+  box-shadow:none!important;
+}
+.call-note{
+  border-radius:9px!important;
+  background:#fff!important;
+  border:1px solid rgba(55,86,102,.12)!important;
+  box-shadow:0 5px 18px rgba(37,66,82,.04)!important;
+}
+.modal-card,.modalbox,.admin-card{
+  border-radius:12px!important;
+}
+.reveal-on-scroll{
+  transform:translateY(8px)!important;
+  transition-duration:.42s!important;
+}
+@media(max-width:700px){
+  .mofet-icer-strip img{
+    max-height:none;
+    object-fit:contain;
+  }
+  section{padding:46px 0!important}
+}
+</style>
 </head>
 <body>
 <header class="exact-site-banner" role="banner"><img src="https://6ab6542b046c98247e2baaeb--hosen-hinuch-herum.netlify.app/assets/banner.png" alt="חוסן חינוך חרום — באנר האתר"></header>
+<a class="mofet-icer-strip" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027">
+  <img src="/assets/mofet-icer-2027.webp" alt="">
+</a>
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
-    <button type="button" class="site-tab active" data-target="now" aria-current="page">עכשיו בקהילה</button>
-    <button type="button" class="site-tab" data-target="match">שיתופי פעולה</button>
+    <button type="button" class="site-tab active" data-target="now" aria-current="page">מה שקורה עכשיו</button>
+    <button type="button" class="site-tab" data-target="match">מקום בגן עדן</button>
     <button type="button" class="site-tab" data-target="gallery">גלריה</button>
     <button type="button" class="site-tab" data-target="people">הנבחרת</button>
-    <button type="button" class="site-tab" data-target="resources">משאבים</button>
+    <button type="button" class="site-tab" data-target="resources">ועוד...</button>
   </div>
 </nav>
 <main>
