@@ -15,7 +15,7 @@ export function json(data: unknown, status = 200) {
 }
 
 function secret() {
-  return Netlify.env.get("EDITOR_SECRET") || "";
+  return process.env.EDITOR_SECRET || "";
 }
 
 function hex(buf: ArrayBuffer) {
@@ -32,14 +32,7 @@ async function hmac(payload: string) {
     false,
     ["sign"],
   );
-
-  return hex(
-    await crypto.subtle.sign(
-      "HMAC",
-      key,
-      new TextEncoder().encode(payload),
-    ),
-  );
+  return hex(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload)));
 }
 
 export async function issueToken() {
@@ -51,10 +44,8 @@ export async function issueToken() {
 export async function validToken(req: Request) {
   const h = req.headers.get("authorization") || "";
   if (!h.startsWith("Bearer ")) return false;
-
   const [payload, sig] = h.slice(7).split(".");
   if (!payload || !sig || Number(payload) < Date.now()) return false;
-
   return sig === (await hmac(payload));
 }
 
