@@ -11,7 +11,7 @@ function dataStore(){ return store("hosen-data"); }
 function fileStore(){ return store("hosen-files"); }
 
 function pinOK(code: unknown) {
-  const expected = process.env.BOARD_CODE || "";
+  const expected = Netlify.env.get("BOARD_CODE") || "";
   return !!expected && String(code || "") === expected;
 }
 
