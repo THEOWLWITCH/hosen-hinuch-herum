@@ -16,3 +16,5 @@ Repository ייעודי לאתר קהילת חוסן–חינוך–חירום.
 <!-- redeploy after verified production env vars -->
 
 <!-- deploy academic refinement v37 -->
+
+<!-- preview-academic-v37 -->
