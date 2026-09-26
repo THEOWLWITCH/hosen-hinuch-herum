@@ -12,3 +12,5 @@ Repository ייעודי לאתר קהילת חוסן–חינוך–חירום.
 זהו מקור הקוד היחיד של אתר hosen-hinuch-herum.
 
 <!-- redeploy: restore BOARD_CODE and EDITOR_CODE env vars -->
+
+<!-- redeploy after verified production env vars -->
