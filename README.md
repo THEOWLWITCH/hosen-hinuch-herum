@@ -1,2 +1,12 @@
 # hosen-hinuch-herum
-חוסן חינוך חירום — אתר קהילה
+
+Repository ייעודי לאתר קהילת חוסן–חינוך–חירום.
+
+- Netlify site: hosen-hinuch-herum
+- Production branch: main
+- הפרויקט הזה נפרד לחלוטין מ-SBE ומ-HILA.
+- אין להעתיק לכאן קוד, נכסים או הגדרות של THEOWLWITCH/SBE או THEOWLWITCH/hila-greenbook.
+- Netlify Functions נמצאות תחת netlify/functions.
+- הגדרות הפריסה נמצאות ב-netlify.toml.
+
+זהו מקור הקוד היחיד של אתר hosen-hinuch-herum.
