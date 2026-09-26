@@ -15,7 +15,7 @@ export function json(data: unknown, status = 200) {
 }
 
 function secret() {
-  return process.env.EDITOR_SECRET || "";
+  return Netlify.env.get("EDITOR_SECRET") || "";
 }
 
 function hex(buf: ArrayBuffer) {
