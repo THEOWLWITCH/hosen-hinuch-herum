@@ -10,3 +10,5 @@ Repository ייעודי לאתר קהילת חוסן–חינוך–חירום.
 - הגדרות הפריסה נמצאות ב-netlify.toml.
 
 זהו מקור הקוד היחיד של אתר hosen-hinuch-herum.
+
+<!-- redeploy: restore BOARD_CODE and EDITOR_CODE env vars -->
