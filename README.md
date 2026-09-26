@@ -14,3 +14,5 @@ Repository ייעודי לאתר קהילת חוסן–חינוך–חירום.
 <!-- redeploy: restore BOARD_CODE and EDITOR_CODE env vars -->
 
 <!-- redeploy after verified production env vars -->
+
+<!-- deploy academic refinement v37 -->
