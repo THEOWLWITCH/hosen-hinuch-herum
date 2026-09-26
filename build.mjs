@@ -5,6 +5,13 @@ await mkdir("dist", { recursive: true });
 
 await copyFile("index.html", "dist/index.html");
 
+try {
+  await access("_redirects");
+  await copyFile("_redirects", "dist/_redirects");
+} catch {
+  // Optional Netlify clean-route rewrites.
+}
+
 for (const dir of ["assets", "public"]) {
   try {
     await access(dir);
