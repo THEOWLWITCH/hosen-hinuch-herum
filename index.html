@@ -2511,8 +2511,11 @@ function openCommunityMail(){
   if(status){
     status.textContent='פותח טיוטה ל-'+emails.length+' כתובות ב-BCC'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.';
   }
-  const href='mailto:?bcc='+encodeURIComponent(emails.join(','))+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  window.location.href=href;
+  const href='https://mail.google.com/mail/?view=cm&fs=1&bcc='+encodeURIComponent(emails.join(','))+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  const w=window.open(href,'_blank','noopener');
+  if(!w){
+    window.location.href=href;
+  }
 }
 </script>
 </body></html>
