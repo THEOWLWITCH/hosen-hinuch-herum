@@ -1811,9 +1811,9 @@ body:has(.feedback-modal.open){
     <label>תאריך תחילת הצגה
       <div class="resource-date-parts" dir="ltr" aria-label="תאריך תחילת הצגה">
         <input id="resStartDay" inputmode="numeric" maxlength="2" placeholder="יום" aria-label="יום">
-        <span>/</span>
+        <span>.</span>
         <input id="resStartMonth" inputmode="numeric" maxlength="2" placeholder="חודש" aria-label="חודש">
-        <span>/</span>
+        <span>.</span>
         <input id="resStartYear" inputmode="numeric" maxlength="4" placeholder="שנה" aria-label="שנה">
       </div>
       <input id="resStart" type="hidden">
@@ -1821,9 +1821,9 @@ body:has(.feedback-modal.open){
     <label>תאריך סיום הצגה
       <div class="resource-date-parts" dir="ltr" aria-label="תאריך סיום הצגה">
         <input id="resEndDay" inputmode="numeric" maxlength="2" placeholder="יום" aria-label="יום">
-        <span>/</span>
+        <span>.</span>
         <input id="resEndMonth" inputmode="numeric" maxlength="2" placeholder="חודש" aria-label="חודש">
-        <span>/</span>
+        <span>.</span>
         <input id="resEndYear" inputmode="numeric" maxlength="4" placeholder="שנה" aria-label="שנה">
       </div>
       <input id="resEnd" type="hidden">
@@ -1980,6 +1980,7 @@ function setResourceDateParts(prefix,iso){
   if(!m){day.value='';month.value='';year.value='';return}
   year.value=m[1];month.value=m[2];day.value=m[3];
 }
+function formatResourceDate(iso){const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}.${m[2]}.${m[1]}`:String(iso||'')}
 function collectResourceDate(prefix){
   const day=(document.getElementById(prefix+'Day')?.value||'').trim(),month=(document.getElementById(prefix+'Month')?.value||'').trim(),year=(document.getElementById(prefix+'Year')?.value||'').trim();
   if(!day&&!month&&!year)return '';
@@ -2004,12 +2005,12 @@ function showAdminTab(tab){adminResources.hidden=tab!=='resources';adminLibrary.
 async function uploadInput(input){const f=input.files&&input.files[0];if(!f)return null;const fd=new FormData();fd.append('file',f);const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+editorToken},body:fd});const j=await r.json();if(!r.ok)throw new Error(j.message||'העלאה נכשלה');return j}
 async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');const savedCategory=body.category;clearResourceForm();await loadAdminResources();currentCategory=savedCategory;await showCategory(savedCategory,catLabels[savedCategory]||'משאבים')}catch(e){alert(e.message||'שמירה נכשלה')}}
 function clearResourceForm(){resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value=''}
-async function loadAdminResources(){const r=await fetch('/api/resources?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminResourcesCache=await r.json();adminResourceList.innerHTML=adminResourcesCache.length?adminResourcesCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${esc(catLabels[x.category]||x.category)} · ${esc(x.type||'')} ${x.endDate?'· עד '+esc(x.endDate):''} ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editResource('${x.id}')">עריכה</button><button class="danger" onclick="deleteResource('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין משאבים עדיין.</p>'}
+async function loadAdminResources(){const r=await fetch('/api/resources?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminResourcesCache=await r.json();adminResourceList.innerHTML=adminResourcesCache.length?adminResourcesCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${esc(catLabels[x.category]||x.category)} · ${esc(x.type||'')} ${x.endDate?'· עד '+esc(formatResourceDate(x.endDate)):''} ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editResource('${x.id}')">עריכה</button><button class="danger" onclick="deleteResource('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין משאבים עדיין.</p>'}
 function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;resId.value=x.id;resTitle.value=x.title||'';resDescription.value=x.description||'';resCategory.value=x.category||'calls';resType.value=x.type||'text';resUrl.value=x.url||'';setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
 async function deleteResource(id){if(!confirm('למחוק את המשאב?'))return;await fetch('/api/resources',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminResources();await refreshPublicResources()}
 async function showCategory(cat,label){currentCategory=cat;resourceArea.hidden=false;resourceAreaTitle.textContent=label;const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();renderResourceCards(rows);resourceArea.scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeCategory(){resourceArea.hidden=true;currentCategory=''}
-function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4>${esc(x.title)}</h4>${x.description?`<p>${esc(x.description)}</p>`:''}${x.endDate?`<p><b>עד ${esc(x.endDate)}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
+function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4>${esc(x.title)}</h4>${x.description?`<p>${esc(x.description)}</p>`:''}${x.endDate?`<p><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
 function resourceLink(x){const href=x.url||x.fileUrl||'';return href?`<a href="${escAttr(href)}" target="_blank" rel="noopener">לפרטים</a>`:''}
 async function refreshPublicResources(){if(currentCategory)showCategory(currentCategory,catLabels[currentCategory]||'משאבים')}
 function openLibrary(){document.getElementById('libraryModal').style.display='flex';document.getElementById('libraryModal').setAttribute('aria-hidden','false');loadLibrary(false)}
