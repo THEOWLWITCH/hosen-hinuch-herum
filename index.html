@@ -1734,6 +1734,26 @@ body:has(.feedback-modal.open){
   }
 }
 </style>
+<style id="community-mail-v53">
+.admin-head-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.admin-community-mail{
+  font:inherit;
+  font-size:12px;
+  color:#355b72;
+  background:#fff;
+  border:1px solid #ccd8de;
+  border-radius:4px;
+  padding:6px 11px;
+  cursor:pointer;
+}
+.admin-community-mail:hover{background:#f6f8f9}
+.community-mail-status{
+  min-height:18px;
+  margin:3px 0 7px;
+  font-size:11px;
+  color:#667b8a;
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -1911,7 +1931,7 @@ body:has(.feedback-modal.open){
 <div id="adminModal" class="modal" aria-hidden="true">
  <div class="modal-card admin-card" dir="rtl">
   <button type="button" class="close" onclick="closeAdmin()">×</button>
-  <div class="admin-head"><h2>ניהול האתר</h2><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה מעריכה</button></div>
+  <div class="admin-head"><h2>ניהול האתר</h2><div class="admin-head-actions"><button type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה מעריכה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
   <div class="admin-tabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">משאבים</button><button id="tabLib" onclick="showAdminTab('library')">ספריה</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button></div>
   <section id="adminResources">
    <h3>הוספה / עריכת משאב</h3>
@@ -2358,5 +2378,38 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(btn&&btn.textContent.trim()==='עריכה') acknowledgeEdit(btn);
   },true);
 })();
+</script>
+<script id="community-mail-v53-js">
+function collectCommunityEmails(){
+  const cards=[...document.querySelectorAll('#people .person')];
+  const re=/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig;
+  const found=[];
+  const missing=[];
+  cards.forEach(card=>{
+    const text=[card.dataset.detail||'',card.dataset.search||''].join(' ');
+    const matches=text.match(re)||[];
+    if(matches.length){
+      matches.forEach(x=>found.push(x.toLowerCase()));
+    }else{
+      missing.push(card.dataset.name||card.querySelector('h3')?.textContent?.trim()||'חבר/ת קהילה');
+    }
+  });
+  return {emails:[...new Set(found)],missing};
+}
+function openCommunityMail(){
+  const {emails,missing}=collectCommunityEmails();
+  const status=document.getElementById('communityMailStatus');
+  if(!emails.length){
+    if(status) status.textContent='לא נמצאו כתובות מייל בכרטיסי חברי הקהילה.';
+    return;
+  }
+  const subject='משהו חדש באתר חוסן חינוך חירום';
+  const body='היכנסו לאתר — משהו שם התחדש\n\nhttps://hosen-hinuch-herum.netlify.app/';
+  if(status){
+    status.textContent='פותח טיוטה ל-'+emails.length+' כתובות ב-BCC'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.';
+  }
+  const href='mailto:?bcc='+encodeURIComponent(emails.join(','))+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  window.location.href=href;
+}
 </script>
 </body></html>
