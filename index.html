@@ -1682,6 +1682,58 @@ body:has(.feedback-modal.open){
   }
 }
 </style>
+<style id="compact-resource-cards-v52">
+.resource-cards{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(250px,280px))!important;
+  gap:14px!important;
+  justify-content:start!important;
+  align-items:start!important;
+  direction:rtl;
+}
+.resource-card{
+  width:100%!important;
+  max-width:280px!important;
+  box-sizing:border-box!important;
+  padding:9px!important;
+  align-self:start!important;
+}
+.resource-card img{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  aspect-ratio:16 / 9!important;
+  object-fit:cover!important;
+  border-radius:7px!important;
+  margin:0 0 9px 0!important;
+}
+.resource-card h4,
+.resource-card p,
+.resource-card a{
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+.resource-card h4{
+  margin:0 0 5px!important;
+  font-size:14px!important;
+  line-height:1.38!important;
+}
+.resource-card p{
+  margin:5px 0!important;
+  line-height:1.5!important;
+}
+@media(max-width:560px){
+  .resource-cards{
+    grid-template-columns:1fr!important;
+  }
+  .resource-card{
+    max-width:100%!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2071,7 +2123,7 @@ function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)r
 async function deleteResource(id){if(!confirm('למחוק את המשאב?'))return;await fetch('/api/resources',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminResources();await refreshPublicResources()}
 async function showCategory(cat,label){currentCategory=cat;resourceArea.hidden=false;resourceAreaTitle.textContent=label;const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();renderResourceCards(rows);resourceArea.scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeCategory(){resourceArea.hidden=true;currentCategory=''}
-function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4>${esc(x.title)}</h4>${x.description?`<p>${esc(x.description)}</p>`:''}${x.endDate?`<p><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
+function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4 dir="auto" class="auto-dir">${esc(x.title)}</h4>${x.description?`<p dir="auto" class="auto-dir">${esc(x.description)}</p>`:''}${x.endDate?`<p><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
 function resourceLink(x){const href=x.url||x.fileUrl||'';return href?`<a href="${escAttr(href)}" target="_blank" rel="noopener">לפרטים</a>`:''}
 async function refreshPublicResources(){if(currentCategory)showCategory(currentCategory,catLabels[currentCategory]||'משאבים')}
 function openLibrary(){document.getElementById('libraryModal').style.display='flex';document.getElementById('libraryModal').setAttribute('aria-hidden','false');loadLibrary(false)}
