@@ -1593,6 +1593,28 @@ body:has(.feedback-modal.open){
   object-fit:cover;
 }
 </style>
+<style id="resource-publish-date-v47">
+.resource-date-parts{
+  display:grid;
+  grid-template-columns:minmax(54px,.7fr) auto minmax(62px,.8fr) auto minmax(82px,1fr);
+  align-items:center;
+  gap:7px;
+  width:100%;
+}
+.resource-date-parts input{
+  min-width:0!important;
+  text-align:center!important;
+  direction:ltr!important;
+}
+.resource-date-parts span{
+  color:#8b9aa3;
+  font-size:18px;
+}
+.resource-publish-btn{
+  font-weight:700!important;
+  padding-inline:18px!important;
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -1778,14 +1800,32 @@ body:has(.feedback-modal.open){
     <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="articles">מאמרים חדשים</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option><option value="library">ספריה</option></select></label>
     <label>סוג משאב<select id="resType"><option value="text">טקסט</option><option value="link">קישור</option><option value="file">קובץ</option><option value="presentation">מצגת</option></select></label>
     <label>קישור<input id="resUrl" placeholder="https://..."></label>
-    <label>תאריך תחילת הצגה<input id="resStart" type="date"></label>
-    <label>תאריך סיום הצגה<input id="resEnd" type="date"></label>
+    <label>תאריך תחילת הצגה
+      <div class="resource-date-parts" dir="ltr" aria-label="תאריך תחילת הצגה">
+        <input id="resStartDay" inputmode="numeric" maxlength="2" placeholder="יום" aria-label="יום">
+        <span>/</span>
+        <input id="resStartMonth" inputmode="numeric" maxlength="2" placeholder="חודש" aria-label="חודש">
+        <span>/</span>
+        <input id="resStartYear" inputmode="numeric" maxlength="4" placeholder="שנה" aria-label="שנה">
+      </div>
+      <input id="resStart" type="hidden">
+    </label>
+    <label>תאריך סיום הצגה
+      <div class="resource-date-parts" dir="ltr" aria-label="תאריך סיום הצגה">
+        <input id="resEndDay" inputmode="numeric" maxlength="2" placeholder="יום" aria-label="יום">
+        <span>/</span>
+        <input id="resEndMonth" inputmode="numeric" maxlength="2" placeholder="חודש" aria-label="חודש">
+        <span>/</span>
+        <input id="resEndYear" inputmode="numeric" maxlength="4" placeholder="שנה" aria-label="שנה">
+      </div>
+      <input id="resEnd" type="hidden">
+    </label>
     <label class="wide">תיאור<textarea id="resDescription" rows="3"></textarea></label>
     <label>קובץ / מצגת<input id="resFile" type="file"></label>
     <label>תמונה ממוזערת<input id="resThumb" type="file" accept="image/*"></label>
     <label class="check"><input id="resActive" type="checkbox" checked> פעיל</label>
    </div>
-   <div class="admin-actions"><button onclick="saveResource()">שמירה</button><button class="secondary" onclick="clearResourceForm()">ניקוי</button></div>
+   <div class="admin-actions"><button class="resource-publish-btn" onclick="saveResource()">העלאה ופרסום</button><button class="secondary" onclick="clearResourceForm()">ניקוי</button></div>
    <p class="admin-note">העלאה ישירה מוגבלת לכ־4MB בגלל מגבלת Netlify Functions. לקבצים גדולים יותר ניתן לשמור קישור לקובץ.</p>
    <div id="adminResourceList" class="admin-list"></div>
   </section>
@@ -1923,6 +1963,28 @@ let editorToken=sessionStorage.getItem('hosen_editor_token')||'';
 let adminResourcesCache=[]; let libraryCache=[]; let currentCategory='';
 const catLabels={calls:'קולות קוראים',articles:'מאמרים חדשים',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים',library:'ספריה'};
 function todayLocalISO(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function setResourceDateParts(prefix,iso){
+  const day=document.getElementById(prefix+'Day'),month=document.getElementById(prefix+'Month'),year=document.getElementById(prefix+'Year'),hidden=document.getElementById(prefix);
+  if(!day||!month||!year||!hidden)return;
+  hidden.value=iso||'';
+  if(!iso){day.value='';month.value='';year.value='';return}
+  const m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m){day.value='';month.value='';year.value='';return}
+  year.value=m[1];month.value=m[2];day.value=m[3];
+}
+function collectResourceDate(prefix){
+  const day=(document.getElementById(prefix+'Day')?.value||'').trim(),month=(document.getElementById(prefix+'Month')?.value||'').trim(),year=(document.getElementById(prefix+'Year')?.value||'').trim();
+  if(!day&&!month&&!year)return '';
+  const d=Number(day),m=Number(month),y=Number(year);
+  if(!Number.isInteger(d)||!Number.isInteger(m)||!Number.isInteger(y)||y<1000||m<1||m>12||d<1||d>31)throw new Error('יש להזין תאריך תקין בפורמט יום / חודש / שנה');
+  const dt=new Date(y,m-1,d);
+  if(dt.getFullYear()!==y||dt.getMonth()!==m-1||dt.getDate()!==d)throw new Error('יש להזין תאריך תקין בפורמט יום / חודש / שנה');
+  return String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+}
+function syncResourceDates(){
+  resStart.value=collectResourceDate('resStart');
+  resEnd.value=collectResourceDate('resEnd');
+}
 function apiHeaders(){return editorToken?{'Authorization':'Bearer '+editorToken,'Content-Type':'application/json'}:{'Content-Type':'application/json'}}
 function openEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='flex';m.setAttribute('aria-hidden','false');editorCode.value='';editorCodeStatus.textContent='';setTimeout(()=>editorCode.focus(),30)}
 function closeEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='none';m.setAttribute('aria-hidden','true')}
@@ -1932,10 +1994,10 @@ function openAdmin(){if(!editorToken)return openEditorAccess();document.getEleme
 function closeAdmin(){document.getElementById('adminModal').style.display='none';document.getElementById('adminModal').setAttribute('aria-hidden','true')}
 function showAdminTab(tab){adminResources.hidden=tab!=='resources';adminLibrary.hidden=tab!=='library';tabRes.classList.toggle('active',tab==='resources');tabLib.classList.toggle('active',tab==='library');if(tab==='resources')loadAdminResources();else loadLibrary(true)}
 async function uploadInput(input){const f=input.files&&input.files[0];if(!f)return null;const fd=new FormData();fd.append('file',f);const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+editorToken},body:fd});const j=await r.json();if(!r.ok)throw new Error(j.message||'העלאה נכשלה');return j}
-async function saveResource(){try{let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');clearResourceForm();await loadAdminResources();await refreshPublicResources()}catch(e){alert(e.message||'שמירה נכשלה')}}
-function clearResourceForm(){resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';resStart.value=todayLocalISO();resEnd.value='';resActive.checked=true;resFile.value='';resThumb.value=''}
+async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');const savedCategory=body.category;clearResourceForm();await loadAdminResources();currentCategory=savedCategory;await showCategory(savedCategory,catLabels[savedCategory]||'משאבים')}catch(e){alert(e.message||'שמירה נכשלה')}}
+function clearResourceForm(){resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value=''}
 async function loadAdminResources(){const r=await fetch('/api/resources?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminResourcesCache=await r.json();adminResourceList.innerHTML=adminResourcesCache.length?adminResourcesCache.map(x=>`<div class="admin-row"><div><h4>${esc(x.title)}</h4><small>${esc(catLabels[x.category]||x.category)} · ${esc(x.type||'')} ${x.endDate?'· עד '+esc(x.endDate):''} ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editResource('${x.id}')">עריכה</button><button class="danger" onclick="deleteResource('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין משאבים עדיין.</p>'}
-function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;resId.value=x.id;resTitle.value=x.title||'';resDescription.value=x.description||'';resCategory.value=x.category||'calls';resType.value=x.type||'text';resUrl.value=x.url||'';resStart.value=x.startDate||'';resEnd.value=x.endDate||'';resActive.checked=x.active!==false;document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
+function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;resId.value=x.id;resTitle.value=x.title||'';resDescription.value=x.description||'';resCategory.value=x.category||'calls';resType.value=x.type||'text';resUrl.value=x.url||'';setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
 async function deleteResource(id){if(!confirm('למחוק את המשאב?'))return;await fetch('/api/resources',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminResources();await refreshPublicResources()}
 async function showCategory(cat,label){currentCategory=cat;resourceArea.hidden=false;resourceAreaTitle.textContent=label;const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();renderResourceCards(rows);resourceArea.scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeCategory(){resourceArea.hidden=true;currentCategory=''}
@@ -1954,7 +2016,7 @@ function renderAdminLibrary(){const q=(adminLibSearch.value||'').toLowerCase();c
 function editSource(id){const x=libraryCache.find(a=>a.id===id);if(!x)return;sourceId.value=x.id;sourceTitle.value=x.title||'';sourceAuthors.value=x.authors||'';sourceYear.value=x.year||'';sourceJournal.value=x.journal||'';sourceDoi.value=x.doi||'';sourceType.value=x.type||'מאמר';sourceApa.value=x.apa||'';sourceAbstract.value=x.abstract||''}
 async function deleteSource(id){if(!confirm('למחוק את המקור?'))return;await fetch('/api/library',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadLibrary(true)}
 function esc(s){return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c))}function escAttr(s){return esc(s)}
-document.addEventListener('DOMContentLoaded',()=>{if(window.resStart&&!resStart.value)resStart.value=todayLocalISO();const input=document.getElementById('editorCode');if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')checkEditorCode()})});
+document.addEventListener('DOMContentLoaded',()=>{if(window.resStart&&!resStart.value)setResourceDateParts('resStart',todayLocalISO());const input=document.getElementById('editorCode');if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')checkEditorCode()})});
 </script>
 <script id="v33-dynamic-js">
 let boardMessages=[];let boardIndex=0;let boardTimer=null;let boardPendingFiles=[];let galleryCache=[];let galleryCurrent=null;let galleryMediaIndex=0;let adminGalleryCache=[];let adminMessagesCache=[];let galleryEditMedia=[];let galleryPendingFiles=[];
@@ -2100,6 +2162,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
 
     if(resourcePages.has(resolved)){
+      if(typeof currentCategory!=='undefined') currentCategory=resolved;
       const h=document.querySelector('#resources .section-head h2');
       if(h)h.textContent=labels[resolved];
 
