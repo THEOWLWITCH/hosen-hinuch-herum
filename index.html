@@ -2499,7 +2499,43 @@ function collectCommunityEmails(){
   });
   return {emails:[...new Set(found)],missing};
 }
-function openCommunityMail(){
+async function copyCommunityRichMessage(){
+  const siteUrl='https://hosen-hinuch-herum.netlify.app/';
+  const logoUrl=siteUrl+'assets/hosen-banner-approved.webp';
+  const text='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - '+siteUrl+' - משהו שם התחדש.';
+  const html='<div dir="rtl" style="font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.65;font-weight:600;color:#1f638a;text-align:right;">מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - <a href="'+siteUrl+'" style="color:#1f638a;text-decoration:underline;">'+siteUrl+'</a> - משהו שם התחדש.</div><div dir="rtl" style="margin-top:24px;text-align:right;"><img src="'+logoUrl+'" alt="חוסן חינוך חרום" style="display:block;max-width:360px;width:100%;height:auto;border:0;"></div>';
+  try{
+    if(navigator.clipboard && window.ClipboardItem){
+      const item=new ClipboardItem({
+        'text/html':new Blob([html],{type:'text/html'}),
+        'text/plain':new Blob([text],{type:'text/plain'})
+      });
+      await navigator.clipboard.write([item]);
+      return true;
+    }
+  }catch(e){}
+  try{
+    const holder=document.createElement('div');
+    holder.setAttribute('contenteditable','true');
+    holder.style.position='fixed';
+    holder.style.left='-10000px';
+    holder.style.top='0';
+    holder.innerHTML=html;
+    document.body.appendChild(holder);
+    const range=document.createRange();
+    range.selectNodeContents(holder);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    const ok=document.execCommand('copy');
+    sel.removeAllRanges();
+    holder.remove();
+    return !!ok;
+  }catch(e){
+    return false;
+  }
+}
+async function openCommunityMail(){
   const {emails,missing}=collectCommunityEmails();
   const status=document.getElementById('communityMailStatus');
   if(!emails.length){
@@ -2507,14 +2543,22 @@ function openCommunityMail(){
     return;
   }
   const subject='משהו חדש באתר חוסן חינוך חירום';
-  const body='היכנסו לאתר — משהו שם התחדש\n\nhttps://hosen-hinuch-herum.netlify.app/';
+  let w=null;
+  try{w=window.open('about:blank','_blank');if(w)w.opener=null}catch(e){}
   if(status){
-    status.textContent='פותח טיוטה ל-'+emails.length+' כתובות ב-BCC'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.';
+    status.textContent='מכין הודעה מעוצבת ל-'+emails.length+' כתובות ב-BCC...';
   }
-  const href='https://mail.google.com/mail/?view=cm&fs=1&bcc='+encodeURIComponent(emails.join(','))+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  const w=window.open(href,'_blank','noopener');
-  if(!w){
+  const copied=await copyCommunityRichMessage();
+  const href='https://mail.google.com/mail/?view=cm&fs=1&bcc='+encodeURIComponent(emails.join(','))+'&su='+encodeURIComponent(subject);
+  if(w){
+    w.location.href=href;
+  }else{
     window.location.href=href;
+  }
+  if(status){
+    status.textContent=copied
+      ? 'ההודעה המעוצבת הועתקה. ב-Gmail יש ללחוץ Ctrl+V בגוף ההודעה ואז לשלוח'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.'
+      : 'Gmail נפתח. ההעתקה האוטומטית נחסמה; יש להעתיק את נוסח ההודעה ידנית.';
   }
 }
 </script>
