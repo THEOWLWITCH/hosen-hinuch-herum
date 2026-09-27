@@ -2501,9 +2501,9 @@ function collectCommunityEmails(){
 }
 async function copyCommunityRichMessage(){
   const siteUrl='https://hosen-hinuch-herum.netlify.app/';
-  const logoUrl=siteUrl+'assets/hosen-banner-approved.webp';
+  const logoUrl=siteUrl+'.netlify/images?url=/assets/hosen-top-exact.webp&fit=cover&w=600&h=377&position=center&fm=png';
   const text='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - '+siteUrl+' - משהו שם התחדש.';
-  const html='<div dir="rtl" style="font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.65;font-weight:600;color:#1f638a;text-align:right;">מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - <a href="'+siteUrl+'" style="color:#1f638a;text-decoration:underline;">'+siteUrl+'</a> - משהו שם התחדש.</div><div dir="rtl" style="margin-top:24px;text-align:right;"><img src="'+logoUrl+'" alt="חוסן חינוך חרום" style="display:block;max-width:360px;width:100%;height:auto;border:0;"></div>';
+  const html='<div dir="rtl" style="font-family:Arial,Helvetica,sans-serif;font-size:30px;line-height:1.65;font-weight:600;color:#1f638a;text-align:right;">מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - <a href="'+siteUrl+'" style="color:#1f638a;text-decoration:underline;">'+siteUrl+'</a> - משהו שם התחדש.</div><div dir="rtl" style="margin-top:24px;text-align:right;"><img src="'+logoUrl+'" alt="חוסן חינוך חרום" style="display:block;max-width:320px;width:100%;height:auto;border:0;"></div>';
   try{
     if(navigator.clipboard && window.ClipboardItem){
       const item=new ClipboardItem({
