@@ -2499,16 +2499,14 @@ function collectCommunityEmails(){
   });
   return {emails:[...new Set(found)],missing};
 }
-async function copyCommunityRichMessage(){
-  const siteUrl='https://hosen-hinuch-herum.netlify.app/';
-  const logoUrl=siteUrl+'.netlify/images?url=/assets/hosen-top-exact.webp&fit=cover&w=600&h=377&position=center&fm=png';
-  const text='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - '+siteUrl+' - משהו שם התחדש.';
-  const html='<div dir="rtl" style="font-family:Arial,Helvetica,sans-serif;font-size:30px;line-height:1.65;font-weight:600;color:#1f638a;text-align:right;">מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - <a href="'+siteUrl+'" style="color:#1f638a;text-decoration:underline;">'+siteUrl+'</a> - משהו שם התחדש.</div><div dir="rtl" style="margin-top:24px;text-align:right;"><img src="'+logoUrl+'" alt="חוסן חינוך חרום" style="display:block;max-width:320px;width:100%;height:auto;border:0;"></div>';
+async function copyCommunityEmailLogo(){
+  const logoUrl='https://hosen-hinuch-herum.netlify.app/assets/community-logo-email.jpg';
+  const html='<div style="margin-top:16px;"><img src="'+logoUrl+'" alt="חוסן חינוך חרום" width="190" style="display:block;width:190px;max-width:190px;height:auto;border:0;"></div>';
   try{
     if(navigator.clipboard && window.ClipboardItem){
       const item=new ClipboardItem({
         'text/html':new Blob([html],{type:'text/html'}),
-        'text/plain':new Blob([text],{type:'text/plain'})
+        'text/plain':new Blob([''],{type:'text/plain'})
       });
       await navigator.clipboard.write([item]);
       return true;
@@ -2543,13 +2541,19 @@ async function openCommunityMail(){
     return;
   }
   const subject='משהו התחדש באתר חוסן . חינוך . חירום';
-  const body='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - https://hosen-hinuch-herum.netlify.app/ - משהו שם התחדש.';
+  const body='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - https://hosen-hinuch-herum.netlify.app/ - משהו שם התחדש.\n\n';
+  let w=null;
+  try{w=window.open('about:blank','_blank');if(w)w.opener=null}catch(e){}
+  const logoCopied=await copyCommunityEmailLogo();
   if(status){
-    status.textContent='פותח Gmail עם '+emails.length+' כתובות ב-BCC והודעה מוכנה'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.';
+    status.textContent=logoCopied
+      ? 'Gmail נפתח עם ההודעה. הלוגו הועתק — יש להציב את הסמן בתחתית וללחוץ Ctrl+V'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.'
+      : 'Gmail נפתח עם ההודעה. לא ניתן היה להעתיק את הלוגו אוטומטית.';
   }
   const href='https://mail.google.com/mail/?view=cm&fs=1&bcc='+encodeURIComponent(emails.join(','))+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  const w=window.open(href,'_blank','noopener');
-  if(!w){
+  if(w){
+    w.location.href=href;
+  }else{
     window.location.href=href;
   }
 }
