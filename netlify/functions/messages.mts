@@ -3,7 +3,7 @@ import { id, json, store, validToken } from "../lib/shared.mts";
 
 type Attachment = { key:string; name:string; type?:string; size?:number };
 type Message = {
-  id:string; degree:string; name:string; institution:string; message:string;
+  id:string; title?:string; degree:string; name:string; institution:string; message:string;
   createdAt:string; expiresAt:string; attachments:Attachment[]; coverAttachment?:Attachment | null;
 };
 
@@ -78,6 +78,7 @@ export default async (req: Request) => {
     const expires = new Date(body.expiresAt || "");
     const missing: string[] = [];
 
+    if (!body.title) missing.push("כותרת");
     if (!body.degree) missing.push("תואר אקדמי");
     if (!body.name) missing.push("שם מלא");
     if (!body.institution) missing.push("מוסד אקדמי");
@@ -99,6 +100,7 @@ export default async (req: Request) => {
 
     const x: Message = {
       id:id(),
+      title:String(body.title).slice(0,220),
       degree:String(body.degree).slice(0,40),
       name:String(body.name).slice(0,120),
       institution:String(body.institution).slice(0,180),
@@ -125,6 +127,7 @@ export default async (req: Request) => {
 
     const expires = new Date(body.expiresAt || "");
     const missing: string[] = [];
+    if (!body.title) missing.push("כותרת");
     if (!body.degree) missing.push("תואר אקדמי");
     if (!body.name) missing.push("שם מלא");
     if (!body.institution) missing.push("מוסד אקדמי");
@@ -146,6 +149,7 @@ export default async (req: Request) => {
 
     const x: Message = {
       ...old,
+      title:String(body.title).slice(0,220),
       degree:String(body.degree).slice(0,40),
       name:String(body.name).slice(0,120),
       institution:String(body.institution).slice(0,180),
