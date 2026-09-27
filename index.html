@@ -1629,6 +1629,41 @@ body:has(.feedback-modal.open){
 .board-existing-cover-card button{font-size:11px;padding:5px 8px}
 .selected-file-chip.existing{background:#f2f6f7}
 </style>
+<style id="edit-click-feedback-v50">
+.board-message-title{
+  margin:4px 0 7px;
+  font-size:17px;
+  line-height:1.3;
+  font-weight:700;
+  color:#274f64;
+  unicode-bidi:plaintext;
+  text-align:start;
+}
+#editClickFeedback{
+  position:fixed;
+  z-index:30000;
+  left:50%;
+  bottom:28px;
+  transform:translate(-50%,16px);
+  opacity:0;
+  pointer-events:none;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(35,72,91,.94);
+  color:#fff;
+  font-size:12px;
+  font-weight:650;
+  box-shadow:0 6px 20px rgba(28,54,68,.18);
+  transition:opacity .16s ease,transform .16s ease;
+}
+#editClickFeedback.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+.admin-row-actions button.edit-ack{
+  opacity:.72;
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -1748,7 +1783,8 @@ body:has(.feedback-modal.open){
       <label>תואר אקדמי*<input id="boardDegree" placeholder="ד״ר / פרופ׳ / MA..."></label>
       <label>שם מלא*<input id="boardName"></label>
       <label>מוסד אקדמי*<input id="boardInstitution"></label>
-      <label class="wide">הודעה*<textarea id="boardMessage" rows="6" placeholder="אפשר לכתוב טקסט ולהדביק קישורים מלאים (https://...)"></textarea></label>
+      <label class="wide">כותרת*<input id="boardTitle" dir="auto" placeholder="כותרת ההודעה"></label>
+      <label class="wide">הודעה*<textarea id="boardMessage" rows="6" dir="auto" placeholder="אפשר לכתוב טקסט ולהדביק קישורים מלאים (https://...)"></textarea></label>
       <label>הצגה עד*<input id="boardExpires" type="datetime-local"></label>
       <label>תמונה פתוחה בראש ההודעה
         <input id="boardCover" type="file" accept="image/*">
@@ -2041,7 +2077,7 @@ function heDate(v){try{return new Intl.DateTimeFormat('he-IL',{dateStyle:'medium
 function linkifyText(text){const safe=esc(text||'');return safe.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
 function attachmentIcon(a){const t=(a.type||'').toLowerCase(),n=(a.name||'').toLowerCase();if(t.startsWith('image/')||/\.(jpg|jpeg|png|webp|gif)$/.test(n))return '🖼️';if(t.startsWith('video/')||/\.(mp4|mov)$/.test(n))return '🎬';if(/\.pdf$/.test(n))return '📕';if(/\.(ppt|pptx)$/.test(n))return '📊';if(/\.(doc|docx)$/.test(n))return '📄';return '📎'}
 async function loadBoardMessages(){try{const r=await fetch('/api/messages');boardMessages=await r.json();if(!Array.isArray(boardMessages))boardMessages=[];boardIndex=Math.min(boardIndex,Math.max(0,boardMessages.length-1));renderBoardMessage();if(boardTimer)clearInterval(boardTimer);if(boardMessages.length>1)boardTimer=setInterval(()=>boardNext(),8000)}catch(e){boardFeed.innerHTML='<p class="muted">לא ניתן לטעון הודעות כרגע.</p>'}}
-function renderBoardMessage(){const feed=document.getElementById('boardFeed'),counter=document.getElementById('boardCounter');if(!boardMessages.length){feed.innerHTML='<p class="muted">אין כרגע הודעות פעילות.</p>';counter.textContent='';return}const x=boardMessages[boardIndex];const at=(x.attachments||[]).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';feed.innerHTML=`<article class="board-message-card">${cover}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${at?`<div class="board-attachments">${at}</div>`:''}</article>`;counter.textContent=`${boardIndex+1} / ${boardMessages.length}`}
+function renderBoardMessage(){const feed=document.getElementById('boardFeed'),counter=document.getElementById('boardCounter');if(!boardMessages.length){feed.innerHTML='<p class="muted">אין כרגע הודעות פעילות.</p>';counter.textContent='';return}const x=boardMessages[boardIndex];const at=(x.attachments||[]).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${at?`<div class="board-attachments">${at}</div>`:''}</article>`;counter.textContent=`${boardIndex+1} / ${boardMessages.length}`}
 function boardNext(){if(!boardMessages.length)return;boardIndex=(boardIndex+1)%boardMessages.length;renderBoardMessage()}
 function boardPrev(){if(!boardMessages.length)return;boardIndex=(boardIndex-1+boardMessages.length)%boardMessages.length;renderBoardMessage()}
 function setBoardStatus(text,type='info'){const el=document.getElementById('boardSubmitStatus');el.textContent=text||'';el.className='feedback-status '+type}
@@ -2053,11 +2089,11 @@ function removeBoardExistingFile(i){boardExistingAttachments.splice(i,1);renderB
 function renderBoardExistingCover(){const box=document.getElementById('boardExistingCover');if(!box)return;if(!boardExistingCover?.url){box.innerHTML='';return}box.innerHTML=`<div class="board-existing-cover-card"><img src="${escAttr(boardExistingCover.url)}" alt=""><button type="button" onclick="removeBoardExistingCover()">הסרת התמונה הקיימת</button></div>`}
 function removeBoardExistingCover(){boardExistingCover=null;renderBoardExistingCover()}
 function toLocalDateTimeInput(v){const d=new Date(v);if(!Number.isFinite(d.getTime()))return '';const z=new Date(d.getTime()-d.getTimezoneOffset()*60000);return z.toISOString().slice(0,16)}
-function resetBoardEditor(){boardEditingId='';boardExistingAttachments=[];boardExistingCover=null;boardPendingFiles=[];boardCode.value='';boardDegree.value='';boardName.value='';boardInstitution.value='';boardMessage.value='';boardCover.value='';boardFiles.value='';boardExpires.value='';renderBoardSelectedFiles();renderBoardExistingCover();if(window.boardCodeLabel)boardCodeLabel.style.display='';if(window.boardSubmitTitle)boardSubmitTitle.textContent='פרסום הודעה לקהילה';if(window.boardSubmitAction)boardSubmitAction.textContent='פרסום'}
+function resetBoardEditor(){boardEditingId='';boardExistingAttachments=[];boardExistingCover=null;boardPendingFiles=[];boardCode.value='';boardDegree.value='';boardName.value='';boardInstitution.value='';boardTitle.value='';boardMessage.value='';boardCover.value='';boardFiles.value='';boardExpires.value='';renderBoardSelectedFiles();renderBoardExistingCover();if(window.boardCodeLabel)boardCodeLabel.style.display='';if(window.boardSubmitTitle)boardSubmitTitle.textContent='פרסום הודעה לקהילה';if(window.boardSubmitAction)boardSubmitAction.textContent='פרסום'}
 function openBoardSubmit(){resetBoardEditor();boardSubmitModal.style.display='flex';boardSubmitModal.style.zIndex='22050';boardSubmitModal.setAttribute('aria-hidden','false');setBoardStatus('');const d=new Date(Date.now()+7*86400000);boardExpires.value=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
 function closeBoardSubmit(){boardSubmitModal.style.display='none';boardSubmitModal.setAttribute('aria-hidden','true');boardSubmitModal.style.zIndex='';resetBoardEditor()}
 async function boardUploadFile(f,code,asEditor=false){const fd=new FormData();if(code)fd.append('code',code);fd.append('file',f);const opts={method:'POST',body:fd};if(asEditor&&editorToken)opts.headers={Authorization:'Bearer '+editorToken};const r=await fetch('/api/board-upload',opts);let j={};try{j=await r.json()}catch{}if(!r.ok){if(r.status===413||j.error==='file_too_large')throw new Error(`הקובץ "${f.name}" גדול מדי (${formatBytes(f.size)}). המקסימום הוא 4MB.`);if(r.status===415||j.error==='file_type')throw new Error(`סוג הקובץ "${f.name}" אינו נתמך.`);if(r.status===401||j.error==='invalid_code')throw new Error(asEditor?'אין הרשאת עריכה.':'קוד הפרסום שגוי.');throw new Error(j.message||`העלאת הקובץ "${f.name}" נכשלה.`)}return j}
-async function submitBoardMessage(){const editing=!!boardEditingId,code=boardCode.value.trim(),degree=boardDegree.value.trim(),name=boardName.value.trim(),institution=boardInstitution.value.trim(),message=boardMessage.value.trim(),expiresAt=boardExpires.value,coverFile=boardCover.files?.[0]||null;const missing=[];if(!editing&&!code)missing.push('קוד פרסום');if(!degree)missing.push('תואר אקדמי');if(!name)missing.push('שם מלא');if(!institution)missing.push('מוסד אקדמי');if(!message)missing.push('הודעה');if(!expiresAt)missing.push('מועד סיום הצגה');if(missing.length){setBoardStatus('חסרים שדות חובה: '+missing.join(', ')+'.','error');return}const exp=new Date(expiresAt);if(!Number.isFinite(exp.getTime())||exp.getTime()<=Date.now()){setBoardStatus('מועד סיום ההצגה חייב להיות בעתיד.','error');return}if(coverFile){if(!coverFile.type.startsWith('image/')){setBoardStatus('התמונה הפתוחה חייבת להיות קובץ תמונה.','error');return}if(coverFile.size>4_000_000){setBoardStatus(`התמונה הפתוחה גדולה מדי (${formatBytes(coverFile.size)}). המקסימום הוא 4MB.`,'error');return}}for(const f of boardPendingFiles){if(!boardAllowedFile(f)){setBoardStatus(`סוג הקובץ "${f.name}" אינו נתמך.`,'error');return}if(f.size>4_000_000){setBoardStatus(`הקובץ "${f.name}" גדול מדי (${formatBytes(f.size)}). המקסימום הוא 4MB לקובץ.`,'error');return}}const totalUploads=boardPendingFiles.length+(coverFile?1:0);setBoardStatus(totalUploads?`מעלה ${totalUploads} קבצים ושומר את ההודעה...`:'שומר את ההודעה...','info');try{let coverAttachment=editing?boardExistingCover:null;if(coverFile){setBoardStatus('מעלה את התמונה הפתוחה...','info');coverAttachment=await boardUploadFile(coverFile,code,editing)}const attachments=editing?[...boardExistingAttachments]:[];for(let i=0;i<boardPendingFiles.length;i++){setBoardStatus(`מעלה קובץ ${i+1} מתוך ${boardPendingFiles.length}: ${boardPendingFiles[i].name}`,'info');attachments.push(await boardUploadFile(boardPendingFiles[i],code,editing))}const payload={id:editing?boardEditingId:undefined,code,degree,name,institution,message,expiresAt,coverAttachment,attachments};const r=await fetch('/api/messages',{method:editing?'PUT':'POST',headers:editing?apiHeaders():{'Content-Type':'application/json'},body:JSON.stringify(payload)});let j={};try{j=await r.json()}catch{}if(!r.ok){if(j.error==='invalid_code'||r.status===401)throw new Error(editing?'אין הרשאת עריכה.':'קוד הפרסום שגוי.');if(j.error==='missing_fields')throw new Error(j.message||'אחד משדות החובה חסר או שמועד הסיום אינו תקין.');throw new Error(j.message||`שמירת ההודעה נכשלה (שגיאה ${r.status}).`)}setBoardStatus(editing?'השינויים נשמרו בהצלחה.':'ההודעה פורסמה בהצלחה.','success');await loadBoardMessages();if(editing)await loadAdminMessages();setTimeout(closeBoardSubmit,700)}catch(e){setBoardStatus(e.message||'השמירה נכשלה. נסו שוב.','error')}}
+async function submitBoardMessage(){const editing=!!boardEditingId,code=boardCode.value.trim(),degree=boardDegree.value.trim(),name=boardName.value.trim(),institution=boardInstitution.value.trim(),title=boardTitle.value.trim(),message=boardMessage.value.trim(),expiresAt=boardExpires.value,coverFile=boardCover.files?.[0]||null;const missing=[];if(!editing&&!code)missing.push('קוד פרסום');if(!degree)missing.push('תואר אקדמי');if(!name)missing.push('שם מלא');if(!institution)missing.push('מוסד אקדמי');if(!title)missing.push('כותרת');if(!message)missing.push('הודעה');if(!expiresAt)missing.push('מועד סיום הצגה');if(missing.length){setBoardStatus('חסרים שדות חובה: '+missing.join(', ')+'.','error');return}const exp=new Date(expiresAt);if(!Number.isFinite(exp.getTime())||exp.getTime()<=Date.now()){setBoardStatus('מועד סיום ההצגה חייב להיות בעתיד.','error');return}if(coverFile){if(!coverFile.type.startsWith('image/')){setBoardStatus('התמונה הפתוחה חייבת להיות קובץ תמונה.','error');return}if(coverFile.size>4_000_000){setBoardStatus(`התמונה הפתוחה גדולה מדי (${formatBytes(coverFile.size)}). המקסימום הוא 4MB.`,'error');return}}for(const f of boardPendingFiles){if(!boardAllowedFile(f)){setBoardStatus(`סוג הקובץ "${f.name}" אינו נתמך.`,'error');return}if(f.size>4_000_000){setBoardStatus(`הקובץ "${f.name}" גדול מדי (${formatBytes(f.size)}). המקסימום הוא 4MB לקובץ.`,'error');return}}const totalUploads=boardPendingFiles.length+(coverFile?1:0);setBoardStatus(totalUploads?`מעלה ${totalUploads} קבצים ושומר את ההודעה...`:'שומר את ההודעה...','info');try{let coverAttachment=editing?boardExistingCover:null;if(coverFile){setBoardStatus('מעלה את התמונה הפתוחה...','info');coverAttachment=await boardUploadFile(coverFile,code,editing)}const attachments=editing?[...boardExistingAttachments]:[];for(let i=0;i<boardPendingFiles.length;i++){setBoardStatus(`מעלה קובץ ${i+1} מתוך ${boardPendingFiles.length}: ${boardPendingFiles[i].name}`,'info');attachments.push(await boardUploadFile(boardPendingFiles[i],code,editing))}const payload={id:editing?boardEditingId:undefined,code,degree,name,institution,title,message,expiresAt,coverAttachment,attachments};const r=await fetch('/api/messages',{method:editing?'PUT':'POST',headers:editing?apiHeaders():{'Content-Type':'application/json'},body:JSON.stringify(payload)});let j={};try{j=await r.json()}catch{}if(!r.ok){if(j.error==='invalid_code'||r.status===401)throw new Error(editing?'אין הרשאת עריכה.':'קוד הפרסום שגוי.');if(j.error==='missing_fields')throw new Error(j.message||'אחד משדות החובה חסר או שמועד הסיום אינו תקין.');throw new Error(j.message||`שמירת ההודעה נכשלה (שגיאה ${r.status}).`)}setBoardStatus(editing?'השינויים נשמרו בהצלחה.':'ההודעה פורסמה בהצלחה.','success');await loadBoardMessages();if(editing)await loadAdminMessages();setTimeout(closeBoardSubmit,700)}catch(e){setBoardStatus(e.message||'השמירה נכשלה. נסו שוב.','error')}}
 
 async function loadGallery(){try{const r=await fetch('/api/gallery');galleryCache=await r.json();renderGallery()}catch(e){galleryGrid.innerHTML='<p class="muted">לא ניתן לטעון את הגלריה כרגע.</p>'}}
 function renderGallery(){const g=document.getElementById('galleryGrid');if(!galleryCache.length){g.innerHTML='<p class="muted">הגלריה תתעדכן בקרוב.</p>';return}g.innerHTML=galleryCache.map(x=>{const cover=x.media&&x.media[0];return `<article class="gallery-card" onclick="openGalleryViewer('${x.id}')"><div class="gallery-card-cover">${cover?`<img src="${escAttr(cover.url)}" alt="${escAttr(x.title)}">`:''}${x.media?.length>1?`<span class="gallery-album-badge">📷 ${x.media.length}</span>`:''}</div><div class="gallery-card-body"><div class="gallery-date">${heDate(x.date)}</div><h3>${esc(x.title)}</h3></div></article>`}).join('')}
@@ -2088,8 +2124,8 @@ async function loadAdminGallery(){const r=await fetch('/api/gallery?admin=1',{he
 function editGalleryItem(id){const x=adminGalleryCache.find(a=>a.id===id);if(!x)return;galleryId.value=x.id;galleryTitle.value=x.title||'';galleryDate.value=x.date||'';galleryDescription.value=x.description||'';galleryActive.checked=x.active!==false;galleryEditMedia=(x.media||[]).map(m=>({...m,title:m.title||galleryDefaultTitle(m.name),credit:m.credit||'',date:m.date||x.date||''}));for(const p of galleryPendingFiles){if(p.preview)URL.revokeObjectURL(p.preview)}galleryPendingFiles=[];renderGalleryExistingMedia();renderGalleryPendingMedia();galleryStatus('');document.querySelector('#adminGallery').scrollIntoView({behavior:'smooth'})}
 async function deleteGalleryItem(id){if(!confirm('למחוק את פריט הגלריה ואת התמונות שלו?'))return;await fetch('/api/gallery',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminGallery();await loadGallery()}
 
-async function loadAdminMessages(){const r=await fetch('/api/messages?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminMessagesCache=await r.json();adminMessageList.innerHTML=adminMessagesCache.length?adminMessagesCache.map(x=>`<div class="admin-row"><div><h4>${esc(x.degree)} ${esc(x.name)} — ${esc(x.institution)}</h4><small>${heDateTime(x.createdAt)} · מוצג עד ${heDateTime(x.expiresAt)}</small><div style="font-size:12px;margin-top:4px">${esc((x.message||'').slice(0,180))}</div></div><div class="admin-row-actions"><button onclick="editAdminMessage('${x.id}')">עריכה</button><button class="danger" onclick="deleteAdminMessage('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין הודעות.</p>'}
-function editAdminMessage(id){const x=adminMessagesCache.find(a=>a.id===id);if(!x)return;boardEditingId=x.id;boardPendingFiles=[];boardExistingAttachments=(x.attachments||[]).map(a=>({...a}));boardExistingCover=x.coverAttachment?{...x.coverAttachment}:null;boardCode.value='';boardDegree.value=x.degree||'';boardName.value=x.name||'';boardInstitution.value=x.institution||'';boardMessage.value=x.message||'';boardExpires.value=toLocalDateTimeInput(x.expiresAt);boardCover.value='';boardFiles.value='';if(window.boardCodeLabel)boardCodeLabel.style.display='none';if(window.boardSubmitTitle)boardSubmitTitle.textContent='עריכת הודעת קהילה';if(window.boardSubmitAction)boardSubmitAction.textContent='שמירת שינויים';renderBoardSelectedFiles();renderBoardExistingCover();setBoardStatus('');boardSubmitModal.style.display='flex';boardSubmitModal.style.zIndex='22050';boardSubmitModal.setAttribute('aria-hidden','false')}
+async function loadAdminMessages(){const r=await fetch('/api/messages?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminMessagesCache=await r.json();adminMessageList.innerHTML=adminMessagesCache.length?adminMessagesCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title||'ללא כותרת')}</h4><small>${esc(x.degree)} ${esc(x.name)} — ${esc(x.institution)} · ${heDateTime(x.createdAt)} · מוצג עד ${heDateTime(x.expiresAt)}</small><div style="font-size:12px;margin-top:4px">${esc((x.message||'').slice(0,180))}</div></div><div class="admin-row-actions"><button onclick="editAdminMessage('${x.id}')">עריכה</button><button class="danger" onclick="deleteAdminMessage('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין הודעות.</p>'}
+function editAdminMessage(id){const x=adminMessagesCache.find(a=>a.id===id);if(!x)return;boardEditingId=x.id;boardPendingFiles=[];boardExistingAttachments=(x.attachments||[]).map(a=>({...a}));boardExistingCover=x.coverAttachment?{...x.coverAttachment}:null;boardCode.value='';boardDegree.value=x.degree||'';boardName.value=x.name||'';boardInstitution.value=x.institution||'';boardTitle.value=x.title||'';boardMessage.value=x.message||'';boardExpires.value=toLocalDateTimeInput(x.expiresAt);boardCover.value='';boardFiles.value='';if(window.boardCodeLabel)boardCodeLabel.style.display='none';if(window.boardSubmitTitle)boardSubmitTitle.textContent='עריכת הודעת קהילה';if(window.boardSubmitAction)boardSubmitAction.textContent='שמירת שינויים';renderBoardSelectedFiles();renderBoardExistingCover();setBoardStatus('');boardSubmitModal.style.display='flex';boardSubmitModal.style.zIndex='22050';boardSubmitModal.setAttribute('aria-hidden','false')}
 async function deleteAdminMessage(id){if(!confirm('למחוק את ההודעה?'))return;await fetch('/api/messages',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminMessages();await loadBoardMessages()}
 
 // Extend existing admin navigation.
@@ -2214,6 +2250,43 @@ document.addEventListener('DOMContentLoaded',()=>{
       }
     }
   });
+})();
+</script>
+<script id="edit-click-feedback-v50-js">
+(function(){
+  function acknowledgeEdit(btn){
+    if(!btn)return;
+    const original=btn.dataset.editOriginal||btn.textContent.trim()||'עריכה';
+    btn.dataset.editOriginal=original;
+    btn.textContent='פותח…';
+    btn.classList.add('edit-ack');
+    btn.setAttribute('aria-busy','true');
+
+    let toast=document.getElementById('editClickFeedback');
+    if(!toast){
+      toast=document.createElement('div');
+      toast.id='editClickFeedback';
+      toast.setAttribute('role','status');
+      toast.setAttribute('aria-live','polite');
+      document.body.appendChild(toast);
+    }
+    toast.textContent='הפקודה התקבלה — פותח עריכה';
+    toast.classList.add('show');
+    clearTimeout(window.__editAckTimer);
+    window.__editAckTimer=setTimeout(()=>{
+      toast.classList.remove('show');
+      if(btn.isConnected){
+        btn.textContent=original;
+        btn.classList.remove('edit-ack');
+        btn.removeAttribute('aria-busy');
+      }
+    },900);
+  }
+
+  document.addEventListener('click',e=>{
+    const btn=e.target.closest('button');
+    if(btn&&btn.textContent.trim()==='עריכה') acknowledgeEdit(btn);
+  },true);
 })();
 </script>
 </body></html>
