@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { id, json, safeName, store } from "../lib/shared.mts";
+import { id, json, safeName, store, validToken } from "../lib/shared.mts";
 
 function pinOK(code: unknown) {
   const expected = Netlify.env.get("BOARD_CODE") || "";
@@ -19,7 +19,8 @@ export default async (req: Request) => {
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
   const form = await req.formData();
-  if (!pinOK(form.get("code"))) return json({ error: "invalid_code" }, 401);
+  const adminOK = await validToken(req);
+  if (!pinOK(form.get("code")) && !adminOK) return json({ error: "invalid_code" }, 401);
 
   const f = form.get("file");
   if (!(f instanceof File)) return json({ error: "missing_file" }, 400);
