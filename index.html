@@ -2542,23 +2542,15 @@ async function openCommunityMail(){
     if(status) status.textContent='לא נמצאו כתובות מייל בכרטיסי חברי הקהילה.';
     return;
   }
-  const subject='משהו חדש באתר חוסן חינוך חירום';
-  let w=null;
-  try{w=window.open('about:blank','_blank');if(w)w.opener=null}catch(e){}
+  const subject='משהו התחדש באתר חוסן . חינוך . חירום';
+  const body='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - https://hosen-hinuch-herum.netlify.app/ - משהו שם התחדש.';
   if(status){
-    status.textContent='מכין הודעה מעוצבת ל-'+emails.length+' כתובות ב-BCC...';
+    status.textContent='פותח Gmail עם '+emails.length+' כתובות ב-BCC והודעה מוכנה'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.';
   }
-  const copied=await copyCommunityRichMessage();
-  const href='https://mail.google.com/mail/?view=cm&fs=1&bcc='+encodeURIComponent(emails.join(','))+'&su='+encodeURIComponent(subject);
-  if(w){
-    w.location.href=href;
-  }else{
+  const href='https://mail.google.com/mail/?view=cm&fs=1&bcc='+encodeURIComponent(emails.join(','))+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  const w=window.open(href,'_blank','noopener');
+  if(!w){
     window.location.href=href;
-  }
-  if(status){
-    status.textContent=copied
-      ? 'ההודעה המעוצבת הועתקה. ב-Gmail יש ללחוץ Ctrl+V בגוף ההודעה ואז לשלוח'+(missing.length?' · '+missing.length+' חברים ללא כתובת מייל באתר':'')+'.'
-      : 'Gmail נפתח. ההעתקה האוטומטית נחסמה; יש להעתיק את נוסח ההודעה ידנית.';
   }
 }
 </script>
