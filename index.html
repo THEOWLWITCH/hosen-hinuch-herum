@@ -1932,7 +1932,7 @@ body:has(.feedback-modal.open){
  <div class="modal-card admin-card" dir="rtl">
   <button type="button" class="close" onclick="closeAdmin()">×</button>
   <div class="admin-head"><h2>ניהול האתר</h2><div class="admin-head-actions"><button type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה מעריכה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
-  <div class="admin-tabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">משאבים</button><button id="tabLib" onclick="showAdminTab('library')">ספריה</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button></div>
+  <div class="admin-tabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">משאבים</button><button id="tabLib" onclick="showAdminTab('library')">ספריה</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
   <section id="adminResources">
    <h3>הוספה / עריכת משאב</h3>
    <input type="hidden" id="resId">
@@ -2018,6 +2018,20 @@ body:has(.feedback-modal.open){
       <span>הכפתור נשאר זמין גם כאשר האלבום כולל תמונות רבות.</span>
     </div>
     <div id="adminGalleryList" class="admin-list"></div>
+  </section>
+  <section id="adminPeople" hidden>
+    <h3>הוספה / עריכת חבר/ת הנבחרת</h3>
+    <input type="hidden" id="personId">
+    <div class="admin-grid">
+      <label>שם מלא*<input id="personName" dir="auto"></label>
+      <label>מוסד / שיוך<input id="personInstitution" dir="auto"></label>
+      <label>מייל<input id="personEmail" type="email" dir="ltr"></label>
+      <label>טלפון<input id="personPhone" type="tel" dir="ltr"></label>
+      <label class="wide">תיאור ותחומי עיסוק<textarea id="personDescription" rows="6" dir="auto"></textarea></label>
+    </div>
+    <div class="admin-actions"><button type="button" onclick="savePerson()">שמירה</button><button type="button" class="secondary" onclick="clearPersonForm()">ניקוי</button></div>
+    <div id="peopleSaveStatus" class="inline-status" role="status" aria-live="polite"></div>
+    <div id="adminPeopleList" class="admin-list"></div>
   </section>
   <section id="adminMessages" hidden>
     <h3>הודעות קהילה</h3>
@@ -2218,16 +2232,105 @@ async function loadAdminMessages(){const r=await fetch('/api/messages?admin=1',{
 function editAdminMessage(id){const x=adminMessagesCache.find(a=>a.id===id);if(!x)return;boardEditingId=x.id;boardPendingFiles=[];boardExistingAttachments=(x.attachments||[]).map(a=>({...a}));boardExistingCover=x.coverAttachment?{...x.coverAttachment}:null;boardCode.value='';boardDegree.value=x.degree||'';boardName.value=x.name||'';boardInstitution.value=x.institution||'';boardTitle.value=x.title||'';boardMessage.value=x.message||'';boardExpires.value=toLocalDateTimeInput(x.expiresAt);boardCover.value='';boardFiles.value='';if(window.boardCodeLabel)boardCodeLabel.style.display='none';if(window.boardSubmitTitle)boardSubmitTitle.textContent='עריכת הודעת קהילה';if(window.boardSubmitAction)boardSubmitAction.textContent='שמירת שינויים';renderBoardSelectedFiles();renderBoardExistingCover();setBoardStatus('');boardSubmitModal.style.display='flex';boardSubmitModal.style.zIndex='22050';boardSubmitModal.setAttribute('aria-hidden','false')}
 async function deleteAdminMessage(id){if(!confirm('למחוק את ההודעה?'))return;await fetch('/api/messages',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminMessages();await loadBoardMessages()}
 
+let adminPeopleCache=[];
+
+function personDetailText(x){
+  return [x.description||'',x.email?'מייל: '+x.email:'',x.phone?'טלפון: '+x.phone:''].filter(Boolean).join('\n');
+}
+function personSearchText(x){
+  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||''].filter(Boolean).join(' ');
+}
+function renderPeople(rows){
+  const grid=document.getElementById('peopleGrid');
+  if(!grid)return;
+  if(!Array.isArray(rows)||!rows.length){
+    grid.innerHTML='<p class="muted">אין כרגע חברים להצגה.</p>';
+    return;
+  }
+  grid.innerHTML=rows.map(x=>{
+    const detail=personDetailText(x);
+    const searchText=personSearchText(x);
+    return `<div class="person" data-search="${escAttr(searchText)}" data-name="${escAttr(x.name||'')}" data-inst="${escAttr(x.institution||'')}" data-detail="${escAttr(detail)}" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>${esc(x.name||'')}</h3><div class="muted">${esc(x.institution||'')}</div></div>`;
+  }).join('');
+}
+async function loadPeople(){
+  try{
+    const r=await fetch('/api/people');
+    if(!r.ok)throw new Error('load');
+    const rows=await r.json();
+    renderPeople(rows);
+  }catch(e){
+    // Keep the hard-coded cards already on the page as a safe fallback.
+  }
+}
+async function loadAdminPeople(){
+  const box=document.getElementById('adminPeopleList');
+  if(box)box.innerHTML='<p class="muted">טוען...</p>';
+  const r=await fetch('/api/people?admin=1',{headers:{Authorization:'Bearer '+editorToken}});
+  if(r.status===401){logoutEditor();return}
+  adminPeopleCache=await r.json();
+  if(!box)return;
+  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>${esc(x.institution||'')}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small></div><div class="admin-row-actions"><button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
+}
+function clearPersonForm(){
+  document.getElementById('personId').value='';
+  document.getElementById('personName').value='';
+  document.getElementById('personInstitution').value='';
+  document.getElementById('personEmail').value='';
+  document.getElementById('personPhone').value='';
+  document.getElementById('personDescription').value='';
+  const st=document.getElementById('peopleSaveStatus');if(st)st.textContent='';
+}
+function editPerson(id){
+  const x=adminPeopleCache.find(a=>a.id===id);if(!x)return;
+  document.getElementById('personId').value=x.id||'';
+  document.getElementById('personName').value=x.name||'';
+  document.getElementById('personInstitution').value=x.institution||'';
+  document.getElementById('personEmail').value=x.email||'';
+  document.getElementById('personPhone').value=x.phone||'';
+  document.getElementById('personDescription').value=x.description||'';
+  document.getElementById('adminPeople').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function savePerson(){
+  const st=document.getElementById('peopleSaveStatus');
+  const body={
+    id:document.getElementById('personId').value||undefined,
+    name:document.getElementById('personName').value.trim(),
+    institution:document.getElementById('personInstitution').value.trim(),
+    email:document.getElementById('personEmail').value.trim(),
+    phone:document.getElementById('personPhone').value.trim(),
+    description:document.getElementById('personDescription').value.trim()
+  };
+  if(!body.name){if(st)st.textContent='יש להזין שם מלא.';return}
+  if(st)st.textContent='שומר...';
+  try{
+    const r=await fetch('/api/people',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});
+    if(r.status===401){logoutEditor();return}
+    if(!r.ok)throw new Error('שמירה נכשלה');
+    clearPersonForm();
+    if(st)st.textContent='נשמר בהצלחה.';
+    await loadAdminPeople();
+    await loadPeople();
+  }catch(e){if(st)st.textContent=e.message||'שמירה נכשלה.'}
+}
+async function deletePerson(id){
+  if(!confirm('למחוק את החבר/ה מהנבחרת?'))return;
+  const r=await fetch('/api/people',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});
+  if(r.status===401){logoutEditor();return}
+  await loadAdminPeople();
+  await loadPeople();
+}
+
 // Extend existing admin navigation.
 showAdminTab=function(tab){
- const sections={resources:document.getElementById('adminResources'),library:document.getElementById('adminLibrary'),gallery:document.getElementById('adminGallery'),messages:document.getElementById('adminMessages')};
+ const sections={resources:document.getElementById('adminResources'),library:document.getElementById('adminLibrary'),gallery:document.getElementById('adminGallery'),messages:document.getElementById('adminMessages'),people:document.getElementById('adminPeople')};
  Object.entries(sections).forEach(([k,v])=>{if(v)v.hidden=k!==tab});
- const tabs={resources:document.getElementById('tabRes'),library:document.getElementById('tabLib'),gallery:document.getElementById('tabGal'),messages:document.getElementById('tabMsg')};
+ const tabs={resources:document.getElementById('tabRes'),library:document.getElementById('tabLib'),gallery:document.getElementById('tabGal'),messages:document.getElementById('tabMsg'),people:document.getElementById('tabPeople')};
  Object.entries(tabs).forEach(([k,v])=>{if(v)v.classList.toggle('active',k===tab)});
- if(tab==='resources')loadAdminResources();else if(tab==='library')loadLibrary(true);else if(tab==='gallery')loadAdminGallery();else if(tab==='messages')loadAdminMessages();
+ if(tab==='resources')loadAdminResources();else if(tab==='library')loadLibrary(true);else if(tab==='gallery')loadAdminGallery();else if(tab==='messages')loadAdminMessages();else if(tab==='people')loadAdminPeople();
 };
 
-document.addEventListener('DOMContentLoaded',()=>{loadBoardMessages();loadGallery()});
+document.addEventListener('DOMContentLoaded',()=>{loadBoardMessages();loadGallery();loadPeople()});
 
 // v34 upload pickers
 document.addEventListener('DOMContentLoaded',()=>{
