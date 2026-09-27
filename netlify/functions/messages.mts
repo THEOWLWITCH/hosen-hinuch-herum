@@ -7,6 +7,20 @@ type Message = {
   createdAt:string; expiresAt:string; attachments:Attachment[]; coverAttachment?:Attachment | null;
 };
 
+function cleanAttachment(a: any): Attachment | null {
+  if (!a || !a.key || !a.name) return null;
+  return {
+    key:String(a.key),
+    name:String(a.name).slice(0,240),
+    type:a.type ? String(a.type).slice(0,120) : undefined,
+    size:Number.isFinite(Number(a.size)) ? Number(a.size) : undefined
+  };
+}
+
+function cleanAttachments(v: any): Attachment[] {
+  return Array.isArray(v) ? v.map(cleanAttachment).filter(Boolean) as Attachment[] : [];
+}
+
 function dataStore(){ return store("hosen-data"); }
 function fileStore(){ return store("hosen-files"); }
 
@@ -91,12 +105,59 @@ export default async (req: Request) => {
       message:String(body.message).slice(0,5000),
       createdAt:now.toISOString(),
       expiresAt:expires.toISOString(),
-      attachments:Array.isArray(body.attachments) ? body.attachments : [],
-      coverAttachment: body.coverAttachment && typeof body.coverAttachment === "object" ? body.coverAttachment : null
+      attachments:cleanAttachments(body.attachments),
+      coverAttachment:cleanAttachment(body.coverAttachment)
     };
 
     await st.setJSON(`messages/${x.id}.json`, x);
     return json(decorate(x), 201);
+  }
+
+  if (req.method === "PUT") {
+    if (!(await validToken(req))) return json({ error:"unauthorized" }, 401);
+
+    const body = await req.json();
+    if (!body.id) return json({ error:"missing_id" }, 400);
+
+    const key = `messages/${body.id}.json`;
+    const old = await st.get(key, { type:"json" }) as Message | null;
+    if (!old) return json({ error:"not_found" }, 404);
+
+    const expires = new Date(body.expiresAt || "");
+    const missing: string[] = [];
+    if (!body.degree) missing.push("תואר אקדמי");
+    if (!body.name) missing.push("שם מלא");
+    if (!body.institution) missing.push("מוסד אקדמי");
+    if (!body.message) missing.push("הודעה");
+    if (missing.length) return json({ error:"missing_fields", message:`חסרים שדות חובה: ${missing.join(", ")}.` }, 400);
+    if (!Number.isFinite(expires.getTime()) || expires.getTime() <= Date.now()) {
+      return json({ error:"missing_fields", message:"מועד סיום ההצגה חייב להיות בעתיד." }, 400);
+    }
+
+    const attachments = cleanAttachments(body.attachments);
+    const coverAttachment = cleanAttachment(body.coverAttachment);
+    const keepKeys = new Set(attachments.map(a => a.key));
+    for (const a of old.attachments || []) {
+      if (a.key && !keepKeys.has(a.key)) await fileStore().delete(a.key);
+    }
+    if (old.coverAttachment?.key && old.coverAttachment.key !== coverAttachment?.key) {
+      await fileStore().delete(old.coverAttachment.key);
+    }
+
+    const x: Message = {
+      ...old,
+      degree:String(body.degree).slice(0,40),
+      name:String(body.name).slice(0,120),
+      institution:String(body.institution).slice(0,180),
+      message:String(body.message).slice(0,5000),
+      expiresAt:expires.toISOString(),
+      attachments,
+      coverAttachment
+    };
+    (x as any).updatedAt = new Date().toISOString();
+
+    await st.setJSON(key, x);
+    return json(decorate(x));
   }
 
   if (req.method === "DELETE") {
