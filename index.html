@@ -1539,6 +1539,45 @@ section{
   .banner-stack-v44{width:100%}
 }
 </style>
+<style id="modal-layer-fix-v45">
+/* Keep every dialog above all page content and prevent visual overlap. */
+.modal{
+  z-index:20000!important;
+  isolation:isolate!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+}
+.modal.open{
+  display:flex!important;
+}
+.modal>.modal-card,
+.modal>.modalbox{
+  position:relative!important;
+  z-index:2!important;
+  max-height:calc(100dvh - 40px)!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+}
+.feedback-modal{
+  z-index:21000!important;
+  isolation:isolate!important;
+}
+body:has(.modal.open),
+body:has(.feedback-modal.open){
+  overflow:hidden!important;
+}
+.site-tabs-shell{
+  z-index:70!important;
+}
+@media(max-width:700px){
+  .modal{padding:10px!important;align-items:flex-start!important}
+  .modal>.modal-card,
+  .modal>.modalbox{
+    max-height:calc(100dvh - 20px)!important;
+    width:100%!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
