@@ -4,7 +4,7 @@ import { id, json, store, validToken } from "../lib/shared.mts";
 type Attachment = { key:string; name:string; type?:string; size?:number };
 type Message = {
   id:string; degree:string; name:string; institution:string; message:string;
-  createdAt:string; expiresAt:string; attachments:Attachment[];
+  createdAt:string; expiresAt:string; attachments:Attachment[]; coverAttachment?:Attachment | null;
 };
 
 function dataStore(){ return store("hosen-data"); }
@@ -32,7 +32,11 @@ function decorate(x: Message) {
     attachments: (x.attachments || []).map(a => ({
       ...a,
       url: `/api/file?key=${encodeURIComponent(a.key)}`
-    }))
+    })),
+    coverAttachment: x.coverAttachment ? {
+      ...x.coverAttachment,
+      url: `/api/file?key=${encodeURIComponent(x.coverAttachment.key)}`
+    } : null
   };
 }
 
@@ -87,7 +91,8 @@ export default async (req: Request) => {
       message:String(body.message).slice(0,5000),
       createdAt:now.toISOString(),
       expiresAt:expires.toISOString(),
-      attachments:Array.isArray(body.attachments) ? body.attachments : []
+      attachments:Array.isArray(body.attachments) ? body.attachments : [],
+      coverAttachment: body.coverAttachment && typeof body.coverAttachment === "object" ? body.coverAttachment : null
     };
 
     await st.setJSON(`messages/${x.id}.json`, x);
@@ -106,6 +111,7 @@ export default async (req: Request) => {
     for (const a of old?.attachments || []) {
       if (a.key) await fileStore().delete(a.key);
     }
+    if (old?.coverAttachment?.key) await fileStore().delete(old.coverAttachment.key);
 
     await st.delete(key);
     return json({ ok:true });
