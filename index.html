@@ -1832,14 +1832,20 @@ body:has(.feedback-modal.open){
   margin-top:4px;
 }
 .board-image-gallery-controls button{
-  border:0;
-  background:transparent;
-  color:#4f7288;
+  border:1px solid #d6e2e8;
+  background:#fff;
+  color:#315c78;
   font-size:20px;
   line-height:1;
-  padding:2px 7px;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  padding:0;
   cursor:pointer;
+  box-shadow:0 2px 7px rgba(30,70,95,.08);
 }
+.board-image-gallery-controls button:hover{background:#eef5f8}
+.board-image-gallery-controls{direction:ltr}
 .board-image-gallery-controls span{
   font-size:10px;
   color:#7d8e98;
@@ -2415,37 +2421,17 @@ function boardImageMove(event,key,step){
   window.__boardImageIndex=window.__boardImageIndex||{};
   const now=Number(window.__boardImageIndex[key]||0);
   const next=(now+step+images.length)%images.length;
-  const cur=images[next];if(!cur?.url)return;
-  const img=gallery.querySelector('.board-image-gallery-frame img');
-  const count=gallery.querySelector('.board-image-gallery-controls span');
-  if(!img)return;
+  window.__boardImageIndex[key]=next;
 
   const lockedX=window.scrollX;
   const lockedY=window.scrollY;
-  const frame=gallery.querySelector('.board-image-gallery-frame');
-  const frameHeight=frame?.getBoundingClientRect().height||0;
-  if(frameHeight>0)frame.style.height=frameHeight+'px';
-
+  gallery.outerHTML=boardAttachmentGallery(x);
   boardRestartTimer();
 
-  const apply=()=>{
-    window.__boardImageIndex[key]=next;
-    img.src=cur.url;
-    img.alt=cur.name||'תמונה מצורפת';
-    if(count)count.textContent=(next+1)+' / '+images.length;
-    requestAnimationFrame(()=>{
-      window.scrollTo(lockedX,lockedY);
-      requestAnimationFrame(()=>{
-        window.scrollTo(lockedX,lockedY);
-        if(frame)frame.style.height='';
-      });
-    });
-  };
-
-  const pre=new Image();
-  pre.onload=apply;
-  pre.onerror=apply;
-  pre.src=cur.url;
+  requestAnimationFrame(()=>{
+    window.scrollTo(lockedX,lockedY);
+    requestAnimationFrame(()=>window.scrollTo(lockedX,lockedY));
+  });
 }function boardImageNext(event,key){boardImageMove(event,key,1)}
 function boardImagePrev(event,key){boardImageMove(event,key,-1)}
 function ensureBoardImageLightbox(){
@@ -2563,7 +2549,8 @@ function personLinksMarkup(x){
   if(x.websiteUrl)links.push(`<a href="${escAttr(x.websiteUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">אתר אישי</a>`);
   if(x.facebookUrl)links.push(`<a href="${escAttr(x.facebookUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Facebook</a>`);
   if(x.instagramUrl)links.push(`<a href="${escAttr(x.instagramUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Instagram</a>`);
-  if(x.linkedinUrl)links.push(`<a href="${escAttr(x.linkedinUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">LinkedIn</a>`);
+  const linkedInUrl=String(x.linkedinUrl||'').trim()||(`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(x.name||'')}`);
+  if(linkedInUrl)links.push(`<a class="linkedin-link" href="${escAttr(linkedInUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">LinkedIn</a>`);
   return links.length?`<div class="person-links">${links.join('')}</div>`:'';
 }
 function personPhotoMarkup(x){
