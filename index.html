@@ -1846,6 +1846,25 @@ body:has(.feedback-modal.open){
   direction:ltr;
 }
 </style>
+<style id="people-profile-links-v56">
+.person-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px 7px;
+  margin-top:5px;
+}
+.person-links a{
+  font-size:10.5px;
+  line-height:1.25;
+  color:#3f6d88;
+  text-decoration:none;
+  border-bottom:1px solid rgba(63,109,136,.28);
+}
+.person-links a:hover{
+  color:#234f69;
+  border-bottom-color:#234f69;
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2126,6 +2145,9 @@ body:has(.feedback-modal.open){
       </label>
       <div id="personPhotoPreview" class="person-photo-editor-preview wide"></div>
       <label class="wide">תיאור ותחומי עיסוק<textarea id="personDescription" rows="6" dir="auto"></textarea></label>
+      <label class="wide">אתר אישי / דף אישי באתר המוסד<input id="personWebsiteUrl" type="url" dir="ltr" placeholder="https://..."></label>
+      <label>Facebook<input id="personFacebookUrl" type="url" dir="ltr" placeholder="https://facebook.com/..."></label>
+      <label>Instagram<input id="personInstagramUrl" type="url" dir="ltr" placeholder="https://instagram.com/..."></label>
       <label class="wide">מוטו<input id="personMotto" dir="auto" maxlength="600" placeholder="משפט קצר"></label>
     </div>
     <div class="admin-actions"><button type="button" onclick="savePerson()">שמירה</button><button type="button" class="secondary" onclick="clearPersonForm()">ניקוי</button></div>
@@ -2362,7 +2384,14 @@ function personDetailText(x){
   return [x.description||'',x.email?'מייל: '+x.email:'',x.phone?'טלפון: '+x.phone:''].filter(Boolean).join('\n');
 }
 function personSearchText(x){
-  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||'',x.motto||''].filter(Boolean).join(' ');
+  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||'',x.websiteUrl||'',x.facebookUrl||'',x.instagramUrl||'',x.motto||''].filter(Boolean).join(' ');
+}
+function personLinksMarkup(x){
+  const links=[];
+  if(x.websiteUrl)links.push(`<a href="${escAttr(x.websiteUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">אתר אישי</a>`);
+  if(x.facebookUrl)links.push(`<a href="${escAttr(x.facebookUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Facebook</a>`);
+  if(x.instagramUrl)links.push(`<a href="${escAttr(x.instagramUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Instagram</a>`);
+  return links.length?`<div class="person-links">${links.join('')}</div>`:'';
 }
 function personPhotoMarkup(x){
   return x.photoUrl
@@ -2404,7 +2433,7 @@ function renderPeople(rows){
   grid.innerHTML=rows.map(x=>{
     const detail=personDetailText(x);
     const searchText=personSearchText(x);
-    return `<div class="person" data-search="${escAttr(searchText)}" data-name="${escAttr(x.name||'')}" data-inst="${escAttr(x.institution||'')}" data-detail="${escAttr(detail)}" data-motto="${escAttr(x.motto||'')}" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail,this.dataset.motto)">${personPhotoMarkup(x)}<div class="person-copy"><h3>${esc(x.name||'')}</h3><div class="muted">${esc(x.institution||'')}</div></div></div>`;
+    return `<div class="person" data-search="${escAttr(searchText)}" data-name="${escAttr(x.name||'')}" data-inst="${escAttr(x.institution||'')}" data-detail="${escAttr(detail)}" data-motto="${escAttr(x.motto||'')}" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail,this.dataset.motto)">${personPhotoMarkup(x)}<div class="person-copy"><h3>${esc(x.name||'')}</h3><div class="muted">${esc(x.institution||'')}</div>${personLinksMarkup(x)}</div></div>`;
   }).join('');
 }
 async function loadPeople(){
@@ -2434,6 +2463,9 @@ function clearPersonForm(){
   document.getElementById('personEmail').value='';
   document.getElementById('personPhone').value='';
   document.getElementById('personDescription').value='';
+  document.getElementById('personWebsiteUrl').value='';
+  document.getElementById('personFacebookUrl').value='';
+  document.getElementById('personInstagramUrl').value='';
   document.getElementById('personMotto').value='';
   document.getElementById('personPhoto').value='';
   personExistingPhoto=null;
@@ -2449,6 +2481,9 @@ function editPerson(id){
   document.getElementById('personEmail').value=x.email||'';
   document.getElementById('personPhone').value=x.phone||'';
   document.getElementById('personDescription').value=x.description||'';
+  document.getElementById('personWebsiteUrl').value=x.websiteUrl||'';
+  document.getElementById('personFacebookUrl').value=x.facebookUrl||'';
+  document.getElementById('personInstagramUrl').value=x.instagramUrl||'';
   document.getElementById('personMotto').value=x.motto||'';
   document.getElementById('personPhoto').value='';
   personExistingPhoto=x.photoKey?{key:x.photoKey,name:x.photoName||'',url:x.photoUrl||''}:null;
@@ -2466,6 +2501,9 @@ async function savePerson(){
     email:document.getElementById('personEmail').value.trim(),
     phone:document.getElementById('personPhone').value.trim(),
     description:document.getElementById('personDescription').value.trim(),
+    websiteUrl:document.getElementById('personWebsiteUrl').value.trim(),
+    facebookUrl:document.getElementById('personFacebookUrl').value.trim(),
+    instagramUrl:document.getElementById('personInstagramUrl').value.trim(),
     motto:document.getElementById('personMotto').value.trim(),
     photoKey:personExistingPhoto?.key||'',
     photoName:personExistingPhoto?.name||''
