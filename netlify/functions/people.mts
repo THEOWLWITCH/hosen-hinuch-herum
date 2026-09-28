@@ -200,6 +200,10 @@ const defaults: Person[] = [
 const dataStore = () => store("hosen-data");
 
 function clean(body:any, base:Partial<Person> = {}): Person {
+  const rawOrder = body.order;
+  const fallbackOrder = Number(base.order || Date.now());
+  const parsedOrder = rawOrder===undefined || rawOrder===null || rawOrder==="" ? fallbackOrder : Number(rawOrder);
+  const normalizedOrder = Number.isFinite(parsedOrder) ? Math.max(1,Math.trunc(parsedOrder)) : fallbackOrder;
   return {
     ...base,
     id:String(body.id || base.id || id()),
@@ -211,7 +215,7 @@ function clean(body:any, base:Partial<Person> = {}): Person {
     motto:String(body.motto || "").trim().slice(0,600),
     photoKey:body.photoKey===undefined ? String(base.photoKey || "") : (String(body.photoKey || "").startsWith("files/") ? String(body.photoKey) : ""),
     photoName:body.photoName===undefined ? String(base.photoName || "") : String(body.photoName || "").trim().slice(0,240),
-    order:Number.isFinite(Number(body.order)) ? Number(body.order) : Number(base.order || Date.now()),
+    order:normalizedOrder,
     createdAt:String(base.createdAt || body.createdAt || new Date().toISOString()),
     updatedAt:new Date().toISOString(),
     deleted:body.deleted === true
@@ -246,10 +250,13 @@ export default async (req:Request)=>{
   if(req.method==="POST"){
     const body=await req.json();
     const now=new Date().toISOString();
-    const x=clean({...body,id:id(),order:Date.now(),createdAt:now},{createdAt:now});
+    const current=await listAll();
+    const maxOrder=current.reduce((m,x)=>Math.max(m,Number(x.order||0)),0);
+    const requestedOrder=body.order===undefined || body.order===null || body.order==="" ? maxOrder+1 : body.order;
+    const x=clean({...body,id:id(),order:requestedOrder,createdAt:now},{createdAt:now,order:maxOrder+1});
     if(!x.name) return json({error:"missing_name"},400);
     await st.setJSON(`people/${x.id}.json`,x);
-    return json(x,201);
+    return json({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""},201);
   }
 
   if(req.method==="PUT"){
