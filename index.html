@@ -1923,6 +1923,35 @@ body:has(.feedback-modal.open){
   cursor:pointer;
 }
 </style>
+<style id="board-gallery-no-jump-v58">
+#boardFeed,
+#boardFeed .board-message-card,
+#boardFeed .board-image-gallery,
+#boardFeed .board-image-gallery-frame{
+  overflow-anchor:none!important;
+}
+#boardFeed .board-message-card{
+  animation:none!important;
+  transform:none!important;
+}
+#boardFeed .board-image-gallery-frame{
+  position:relative;
+  width:100%!important;
+  aspect-ratio:4 / 3!important;
+  overflow:hidden!important;
+  contain:layout paint!important;
+}
+#boardFeed .board-image-gallery-frame img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  transform:none!important;
+  animation:none!important;
+  transition:none!important;
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2381,33 +2410,42 @@ function boardImageMove(event,key,step){
   if(event){event.preventDefault();event.stopPropagation()}
   const x=boardMessages[boardIndex];if(!x)return;
   const images=(x.attachments||[]).filter(boardAttachmentIsImage);if(images.length<2)return;
-  const gallery=document.querySelector('#boardFeed .board-image-gallery');
-  if(!gallery)return;
+  const gallery=document.querySelector('#boardFeed .board-image-gallery');if(!gallery)return;
   window.__boardImageIndex=window.__boardImageIndex||{};
   const now=Number(window.__boardImageIndex[key]||0);
   const next=(now+step+images.length)%images.length;
-  const cur=images[next];
+  const cur=images[next];if(!cur?.url)return;
   const img=gallery.querySelector('.board-image-gallery-frame img');
   const count=gallery.querySelector('.board-image-gallery-controls span');
-  if(!img||!cur?.url)return;
+  if(!img)return;
+
+  const lockedX=window.scrollX;
+  const lockedY=window.scrollY;
+  const frame=gallery.querySelector('.board-image-gallery-frame');
+  const frameHeight=frame?.getBoundingClientRect().height||0;
+  if(frameHeight>0)frame.style.height=frameHeight+'px';
+
   boardRestartTimer();
-  const token=String((window.__boardSwapToken=(window.__boardSwapToken||0)+1));
-  gallery.dataset.swapToken=token;
-  img.classList.add('is-switching');
-  const pre=new Image();
+
   const apply=()=>{
-    if(gallery.dataset.swapToken!==token)return;
     window.__boardImageIndex[key]=next;
     img.src=cur.url;
     img.alt=cur.name||'תמונה מצורפת';
     if(count)count.textContent=(next+1)+' / '+images.length;
-    requestAnimationFrame(()=>img.classList.remove('is-switching'));
+    requestAnimationFrame(()=>{
+      window.scrollTo(lockedX,lockedY);
+      requestAnimationFrame(()=>{
+        window.scrollTo(lockedX,lockedY);
+        if(frame)frame.style.height='';
+      });
+    });
   };
+
+  const pre=new Image();
   pre.onload=apply;
   pre.onerror=apply;
   pre.src=cur.url;
-}
-function boardImageNext(event,key){boardImageMove(event,key,1)}
+}function boardImageNext(event,key){boardImageMove(event,key,1)}
 function boardImagePrev(event,key){boardImageMove(event,key,-1)}
 function ensureBoardImageLightbox(){
   let box=document.getElementById('boardImageLightbox');
@@ -2445,7 +2483,21 @@ function closeBoardImageLightbox(){
   if(back?.isConnected)back.focus({preventScroll:true});
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('boardImageLightbox')?.classList.contains('open'))closeBoardImageLightbox()});
-function renderBoardMessage(){const feed=document.getElementById('boardFeed'),counter=document.getElementById('boardCounter');if(!boardMessages.length){feed.innerHTML='<p class="muted">אין כרגע הודעות פעילות.</p>';counter.textContent='';return}const x=boardMessages[boardIndex];const files=(x.attachments||[]).filter(a=>!boardAttachmentIsImage(a)).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';const gallery=boardAttachmentGallery(x);feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;counter.textContent=`${boardIndex+1} / ${boardMessages.length}`}
+function renderBoardMessage(){
+  const lockedX=window.scrollX,lockedY=window.scrollY;
+  const feed=document.getElementById('boardFeed'),counter=document.getElementById('boardCounter');
+  if(!boardMessages.length){feed.innerHTML='<p class="muted">אין כרגע הודעות פעילות.</p>';counter.textContent='';return}
+  const x=boardMessages[boardIndex];
+  const files=(x.attachments||[]).filter(a=>!boardAttachmentIsImage(a)).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');
+  const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';
+  const gallery=boardAttachmentGallery(x);
+  feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;
+  counter.textContent=`${boardIndex+1} / ${boardMessages.length}`;
+  requestAnimationFrame(()=>{
+    window.scrollTo(lockedX,lockedY);
+    requestAnimationFrame(()=>window.scrollTo(lockedX,lockedY));
+  });
+}
 function boardNext(){if(!boardMessages.length)return;boardIndex=(boardIndex+1)%boardMessages.length;renderBoardMessage()}
 function boardPrev(){if(!boardMessages.length)return;boardIndex=(boardIndex-1+boardMessages.length)%boardMessages.length;renderBoardMessage();boardRestartTimer()}
 function setBoardStatus(text,type='info'){const el=document.getElementById('boardSubmitStatus');el.textContent=text||'';el.className='feedback-status '+type}
