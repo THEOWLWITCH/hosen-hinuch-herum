@@ -2291,7 +2291,7 @@ function boardAttachmentGallery(x){
   window.__boardImageIndex[key]=i;
   const cur=images[i];
   const nav=images.length>1?`<div class="board-image-gallery-controls"><button type="button" onclick="boardImagePrev(event,'${escAttr(key)}')" aria-label="תמונה קודמת">‹</button><span>${i+1} / ${images.length}</span><button type="button" onclick="boardImageNext(event,'${escAttr(key)}')" aria-label="תמונה הבאה">›</button></div>`:'';
-  return `<div class="board-image-gallery"><div class="board-image-gallery-frame"><img src="${escAttr(cur.url)}" alt="${escAttr(cur.name||'תמונה מצורפת')}"></div>${nav}</div>`;
+  return `<div class="board-image-gallery" data-gallery-key="${escAttr(key)}"><div class="board-image-gallery-frame"><img src="${escAttr(cur.url)}" alt="${escAttr(cur.name||'תמונה מצורפת')}"></div>${nav}</div>`;
 }
 function boardImageMove(event,key,step){
   if(event){event.preventDefault();event.stopPropagation()}
@@ -2299,8 +2299,18 @@ function boardImageMove(event,key,step){
   const images=(x.attachments||[]).filter(boardAttachmentIsImage);if(images.length<2)return;
   window.__boardImageIndex=window.__boardImageIndex||{};
   const now=Number(window.__boardImageIndex[key]||0);
-  window.__boardImageIndex[key]=(now+step+images.length)%images.length;
-  renderBoardMessage();
+  const next=(now+step+images.length)%images.length;
+  window.__boardImageIndex[key]=next;
+  const gallery=document.querySelector('#boardFeed .board-image-gallery');
+  if(!gallery||gallery.dataset.galleryKey!==String(key))return;
+  const img=gallery.querySelector('.board-image-gallery-frame img');
+  const count=gallery.querySelector('.board-image-gallery-controls span');
+  const cur=images[next];
+  if(img){
+    img.src=cur.url||'';
+    img.alt=cur.name||'תמונה מצורפת';
+  }
+  if(count)count.textContent=(next+1)+' / '+images.length;
 }
 function boardImageNext(event,key){boardImageMove(event,key,1)}
 function boardImagePrev(event,key){boardImageMove(event,key,-1)}
