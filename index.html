@@ -1985,6 +1985,31 @@ body:has(.feedback-modal.open){
 .research-institute h4{margin:0 0 4px;font-size:14px;color:#2d5064}.research-institute .research-institute-type{font-size:10.5px;color:#80909a;margin-bottom:7px}
 .research-institute p{margin:5px 0;font-size:11.8px;line-height:1.62;color:#5d707b}
 .research-institute a{display:inline-block;margin-top:4px;font-size:11px;color:#23668b;text-decoration:none;border-bottom:1px solid rgba(35,102,139,.22)}
+
+.community-research-spotlight{position:relative;margin:0 0 24px;padding:19px 20px;border:1px solid rgba(143,116,70,.28);background:linear-gradient(135deg,#fffdf7,#f5fafb);border-radius:10px;box-shadow:0 8px 24px rgba(71,65,49,.045)}
+.community-research-badge{display:inline-block;margin-bottom:8px;padding:4px 9px;border-radius:999px;background:#efe5d3;color:#715831;font-size:10.5px;font-weight:700}
+.community-research-main{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:18px;align-items:start}
+.community-research-author{font-size:11px;color:#6f7c84;margin-bottom:5px}
+.community-research-main h3{margin:0 0 4px;font-size:20px;line-height:1.38;color:#294b5e}
+.community-research-thesis{direction:ltr;text-align:left!important;font-style:italic;color:#6b7880!important;font-size:12px!important;margin:0 0 10px!important}
+.community-research-main p{font-size:12.5px;line-height:1.74;color:#4e636f;margin:7px 0}
+.community-research-note{padding:9px 11px;background:rgba(255,255,255,.75);border-right:3px solid #c5ab78;border-radius:4px}
+.community-research-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.community-research-links a{font-size:11px;color:#23668b;text-decoration:none;border-bottom:1px solid rgba(35,102,139,.25)}
+.community-research-mark{display:flex;align-items:center;justify-content:center;text-align:center;width:70px;height:70px;border-radius:50%;border:1px solid #d8c8a8;color:#705a34;font-size:12px;line-height:1.25;font-weight:700;background:rgba(255,255,255,.82)}
+.research-foundation-wrap{margin:0 0 28px;padding:18px;border:1px solid #dce6e9;background:#fff;border-radius:10px}
+.research-foundation-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:13px}
+.research-foundation-head span{font-size:10.5px;color:#80919a}.research-foundation-head h3{margin:2px 0 0;font-size:21px;color:#294b5e}
+.research-foundation-head p{margin:0;max-width:470px;font-size:11.5px;line-height:1.58;color:#71818a}
+.research-foundation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.research-foundation-item{padding:13px 14px;border:1px solid #e1e8ea;border-radius:8px;background:#fbfcfc}
+.research-foundation-item.featured{border-color:rgba(150,119,67,.32);background:linear-gradient(135deg,#fffdf8,#fbfcfc)}
+.research-foundation-origin{display:inline-block;margin:0 0 6px;padding:3px 7px;border-radius:999px;background:#f0e7d7;color:#715b36;font-size:9.8px;font-weight:700}
+.research-foundation-item h4{margin:0 0 5px;font-size:13.6px;line-height:1.45;color:#2e5063}
+.research-foundation-item p{margin:0;font-size:11.9px;line-height:1.64;color:#5b6f7a}
+.research-foundation-evidence{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:10.6px;color:#7c8b94}
+.research-foundation-evidence a{font-size:10.6px;color:#23668b;text-decoration:none;border-bottom:1px solid rgba(35,102,139,.22)}
+@media(max-width:760px){.community-research-main{grid-template-columns:1fr}.community-research-mark{display:none}.research-foundation{grid-template-columns:1fr}.research-foundation-head{align-items:flex-start;flex-direction:column}}
 .research-category-nav{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 28px}.research-category-nav a{font-size:12px;text-decoration:none;color:#355f76;background:#fff;border:1px solid #d4e0e5;border-radius:999px;padding:7px 12px}
 .research-category-nav a:hover{background:#eef5f7}.research-category-block{scroll-margin-top:92px;margin:0 0 36px;padding:0!important}
 .research-category-title{display:flex;align-items:end;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7ea;padding-bottom:9px;margin-bottom:12px}.research-category-title h3{margin:0;font-size:21px;font-weight:620;color:#2d4c5d}.research-category-title span{font-size:10.5px;color:#83919a}
@@ -2076,8 +2101,31 @@ body:has(.feedback-modal.open){
     <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום ממקורות אקדמיים מובילים. בכל פריט מוצגים הממצא המרכזי, המשמעות עבורנו וקישור ישיר למקור.</p>
     <p class="research-scope-note"><strong>גבול המדור:</strong> אין כאן מחקרים קליניים או מחקרים מתחום הפסיכולוגיה. „חוסן חינוכי ותפקודי” מתייחס ליכולת של תלמידים, צוותים, בתי ספר וקהילות להמשיך לתפקד, להשתייך, ללמוד ולהסתגל בזמן משבר.</p>
   </div>
+  <div class="community-research-spotlight">
+    <div class="community-research-badge">מושג מחקרי שפותח בקהילה</div>
+    <div class="community-research-main">
+      <div>
+        <div class="community-research-author">ד״ר יעל שדה · אוניברסיטת אריאל · דוקטורט 2024</div>
+        <h3>קהילת חוסן — From Community Resilience to a Resilient Community</h3>
+        <p class="community-research-thesis">A New Approach to Developing a Social Mechanism–Based Approach to Community Resilience</p>
+        <p><strong>הגדרה:</strong> המעבר מ־<span dir="ltr">community resilience</span> ל־<span dir="ltr">resilient community</span> — ובעברית, ל<strong>„קהילת חוסן”</strong> — מתרחש כאשר יכולות, ידע, קשרים ואמון אינם נשארים ברמת הפרט או הקבוצה, אלא הופכים למנגנונים חברתיים משותפים שמארגנים פעולה, תיאום והמשכיות תפקודית.</p>
+        <p class="community-research-note">המונח „קהילת חוסן” משמש כאן כמושג תיאורטי שפותח במסגרת עבודת הדוקטורט של ד״ר יעל שדה: לא רק קהילה שיש לה חוסן, אלא קהילה שהמבנים והמנגנונים החברתיים שלה מייצרים חוסן בפועל.</p>
+        <div class="community-research-links">
+          <a href="https://www.ariel.ac.il/wp/nrps/wp-content/uploads/sites/145/2024/12/Editors-Note.pdf" target="_blank" rel="noopener">הדוקטורט של יעל שדה — אזכור רשמי באוניברסיטת אריאל</a>
+          <a href="https://cris.ariel.ac.il/en/publications/the-use-of-internal-governance-in-the-renewed-kibbutz-as-a-tool-f-3/" target="_blank" rel="noopener">Sade &amp; Lewin — internal governance כמנגנון חברתי</a>
+        </div>
+      </div>
+      <div class="community-research-mark">קהילת<br>חוסן</div>
+    </div>
+  </div>
+
+  <div class="research-foundation-wrap">
+    <div class="research-foundation-head"><div><span>מה כבר ידוע היטב?</span><h3>בסיס מחקרי איתן — ידע מבוסס בחוסן חינוך וחירום</h3></div><p>עקרונות שנתמכים בגוף ידע מצטבר, במסגרות בינלאומיות ובמחקרים אמפיריים. הם אינם מוצגים כ״חידושים״ אלא כתשתית שממנה המחקר החדש מתקדם.</p></div>
+    <div id="researchFoundation" class="research-foundation"></div>
+  </div>
+
   <div class="research-insights-wrap">
-    <div class="research-insights-head"><div><span>סינתזה ביקורתית</span><h3>התובנות המרכזיות שעולות מהמחקר החדש</h3></div><p>לא סיסמאות ולא תקצירי מאמרים: כל תובנה היא טענה מערכתית שמבוססת על כמה מקורות חדשים, ובצדה המשמעות המחקרית והיישומית.</p></div>
+    <div class="research-insights-head"><div><span>מה חדש עכשיו?</span><h3>התובנות המרכזיות שעולות מהמחקר החדש</h3></div><p>טענות מערכתיות שמבוססות על הספרות החדשה של 2025–2026, ובצדן המשמעות המחקרית והיישומית.</p></div>
     <div id="researchInsights" class="research-insights"></div>
   </div>
   <div class="research-institutes-wrap">
@@ -2837,6 +2885,97 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 <script id="research-world-v58-js">
+const researchFoundationData=[
+{
+featured:true,
+label:'מסגרת שפותחה בקהילה',
+title:'„קהילת חוסן”: משאבים חברתיים הופכים לחוסן כאשר הם מתורגמים למנגנוני פעולה',
+body:'אמון, קשרים, ידע, שייכות והון חברתי הם תנאים חשובים, אך אינם מבטיחים כשלעצמם פעולה קולקטיבית. המסגרת של שדה מציעה את המעבר מ־community resilience ל־resilient community כאשר משאבים אלה מקבלים ביטוי במנגנונים חברתיים משותפים — ממשל פנימי, תהליכי החלטה, חלוקת תפקידים, תקשורת ורשתות עזרה — שמארגנים פעולה והמשכיות תפקודית.',
+evidence:[
+['Sade 2024 — doctoral dissertation','https://www.ariel.ac.il/wp/nrps/wp-content/uploads/sites/145/2024/12/Editors-Note.pdf'],
+['Sade & Lewin 2020 — internal governance','https://doi.org/10.1163/15691330-BJA10002'],
+['Norris et al. 2008 — adaptive capacities','https://doi.org/10.1007/s10464-007-9156-6']
+]
+},
+{
+title:'חוסן קהילתי נשען על רשת של יכולות הסתגלות ולא על משאב יחיד',
+body:'המסגרת הקלאסית של Norris ועמיתיה מתארת חוסן כתהליך שמקשר רשת של יכולות הסתגלות — פיתוח כלכלי, הון חברתי, מידע ותקשורת ויכולת קהילתית — להסתגלות לאחר הפרעה. לכן חוסן אינו תכונה יחידה אלא תפקוד של מערכת משאבים מקושרת.',
+evidence:[
+['Norris et al. 2008','https://doi.org/10.1007/s10464-007-9156-6'],
+['Aldrich & Meyer 2015','https://doi.org/10.1177/0002764214550299']
+]
+},
+{
+title:'תשתית חברתית וקשרים בין אנשים הם רכיב מרכזי בהישרדות ובהתאוששות מאסון',
+body:'מחקרי אסונות מצביעים על כך שרשתות חברתיות, אמון והון חברתי משפיעים על זרימת מידע, גיוס עזרה, נגישות למשאבים והחלמה. תשתיות פיזיות חשובות, אך אינן מסבירות לבדן מדוע קהילות דומות מתאוששות בקצב שונה.',
+evidence:[
+['Aldrich & Meyer 2015 — Social Capital and Community Resilience','https://doi.org/10.1177/0002764214550299'],
+['Norris et al. 2008','https://doi.org/10.1007/s10464-007-9156-6']
+]
+},
+{
+title:'היערכות לחירום צריכה להיבנות בשגרה ולהיות חלק מתכנון מערכת החינוך',
+body:'מסגרות בינלאומיות מרכזיות דורשות שתוכניות חינוך לא ימתינו לאירוע עצמו: הן צריכות לכלול מוכנות, תוכניות מגירה, מנגנוני תיאום, הערכת סיכונים וייצוג של קבוצות פגיעות כבר בתכנון השוטף.',
+evidence:[
+['INEE Minimum Standards 2024','https://inee.org/minimum-standards'],
+['INEE Standard 19 — Planning and Implementation','https://www.inee.org/minimum-standards/standard-19'],
+['Comprehensive School Safety Framework 2022–2030','https://gadrrres.net/comprehensive-school-safety-framework']
+]
+},
+{
+title:'בית הספר הוא תשתית קהילתית — לא רק מקום להעברת הוראה',
+body:'הגישה המקובלת כיום לבטיחות וחוסן בית־ספרי משלבת מתקנים בטוחים, ניהול רציפות וחירום וחינוך להפחתת סיכונים. במקביל, הספרות מראה שבית הספר יכול לשמש צומת של מידע, תיאום, קשר עם משפחות ופעולה קהילתית.',
+evidence:[
+['Comprehensive School Safety Framework 2022–2030','https://gadrrres.net/comprehensive-school-safety-framework'],
+['Role of schools in disaster risk management — systematic review','https://doi.org/10.1186/s12873-025-01453-z']
+]
+},
+{
+title:'השתתפות הקהילה היא מנגנון תפקודי, לא רק עיקרון נורמטיבי',
+body:'שיתוף קהילתי משמעותי משפר את ההתאמה של המענה להקשר, את זיהוי המשאבים המקומיים ואת הבעלות על התהליך. INEE מציב השתתפות, גיוס משאבים מקומיים ותיאום כסטנדרטים יסודיים בכל תגובת חינוך בחירום.',
+evidence:[
+['INEE Standard 1 — Participation','https://www.inee.org/minimum-standards/standard-1'],
+['INEE Minimum Standards 2024','https://inee.org/minimum-standards'],
+['Inclusive resilience in school communities 2025','https://doi.org/10.1016/j.ijdrr.2025.105759']
+]
+},
+{
+title:'רציפות חינוכית מחייבת יתירות — כמה דרכים חלופיות לשמור קשר, הוראה ותיאום',
+body:'מערכת חינוך חסינה אינה תלויה בערוץ יחיד. יש לתכנן מראש חלופות פיזיות ודיגיטליות, ערוצי קשר חלופיים ותהליכי מעבר כאשר תשתית אחת נפגעת. מחקרים עדכניים מחזקים עיקרון זה גם בניסויים אמפיריים.',
+evidence:[
+['INEE Minimum Standards — Coordination','https://inee.org/minimum-standards'],
+['Nature 2026 — mobile education across five countries','https://doi.org/10.1038/s41586-026-10990-x'],
+['UNESCO-IIEP — crisis-sensitive educational planning','https://www.iiep.unesco.org/en/projects/crisis-sensitive-educational-planning']
+]
+},
+{
+title:'מורים ומנהלים בחירום זקוקים ליכולת שיפוט והסתגלות — לא רק לציות לנהלים',
+body:'נהלים חיוניים, אבל מצבי חירום מתפתחים במהירות ולעיתים חורגים מן התרחיש המתוכנן. לכן הכשרה צריכה לפתח קבלת החלטות תחת אי־ודאות, תקשורת, ניהול משאבים וגמישות ארגונית.',
+evidence:[
+['Leading schools in crisis contexts 2026','https://doi.org/10.1177/17411432261442355'],
+['Collaborative professional development 2026','https://doi.org/10.1016/j.ijdrr.2026.106100'],
+['INEE Minimum Standards — Teachers and Personnel','https://inee.org/minimum-standards']
+]
+},
+{
+title:'חוסן בית־ספרי צריך להימדד בכמה שכבות ולא באמצעות מדד יחיד ושטוח',
+body:'מדידה רצינית של חוסן צריכה להבחין בין תשתית, סיכון, פגיעוּת חברתית, יכולת תגובה, רציפות ותפקוד. ציון כולל יכול להיות שימושי, אך הוא מסוכן אם הוא מסתיר היכן בדיוק נמצאת נקודת הכשל.',
+evidence:[
+['Assessment Tools for School Disaster Resilience 2026','https://doi.org/10.1017/S1049023X26102106'],
+['Comprehensive School Safety Targets and Indicators','https://gadrrres.net/comprehensive-school-safety-targets-and-indicators']
+]
+},
+{
+title:'טכנולוגיה וסימולציה תורמות כאשר הן משולבות במנגנון למידה והחלטה, לא כאשר הן עומדות בפני עצמן',
+body:'הערך של XR, משחקים, AI ולמידה מרחוק עולה כאשר הם מחייבים בחירה, משוב, תרגול חוזר והפעלת שיקול דעת. בחירום, יש לבחון בנוסף נגישות, אמינות תשתית, פרטיות והאם הכלי תומך באדם או יוצר תלות חדשה.',
+evidence:[
+['XR disaster education 2026','https://doi.org/10.1007/s44217-026-01827-w'],
+['Serious game for flood education 2026','https://doi.org/10.3389/frsus.2026.1780679'],
+['AI and crisis management in distance education 2026','https://doi.org/10.3389/feduc.2026.1791475']
+]
+}
+];
+
 const researchInsightsData=[
 {
 title:'חוסן חינוכי צריך להימדד כתכונה של מערכת מצומדת — לא כתכונה של בית ספר בודד',
@@ -3004,7 +3143,8 @@ const researchWorldItems=[
 ];
 
 function renderResearchWorld(){
- const root=document.getElementById('researchWorldContent'),insights=document.getElementById('researchInsights'),institutes=document.getElementById('researchInstitutes');
+ const root=document.getElementById('researchWorldContent'),insights=document.getElementById('researchInsights'),institutes=document.getElementById('researchInstitutes'),foundation=document.getElementById('researchFoundation');
+ if(foundation)foundation.innerHTML=researchFoundationData.map(x=>`<article class="research-foundation-item${x.featured?' featured':''}">${x.label?`<div class="research-foundation-origin">${esc(x.label)}</div>`:''}<h4>${esc(x.title)}</h4><p>${esc(x.body)}</p><div class="research-foundation-evidence"><strong>מקורות מבססים:</strong> ${x.evidence.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div></article>`).join('');
  if(insights)insights.innerHTML=researchInsightsData.map((x,i)=>`<article class="research-insight"><div class="research-insight-num">${i+1}</div><div><h4>${esc(x.title)}</h4><p>${esc(x.body)}</p><div class="research-insight-meaning"><strong>המשמעות עבורנו:</strong> ${esc(x.meaning.replace(/^המשמעות עבורנו:\s*/,''))}</div><div class="research-insight-evidence"><strong>מחקרים ומקורות מבססים:</strong> ${x.evidence.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div></div></article>`).join('');
  if(institutes)institutes.innerHTML=researchInstitutesData.map(x=>`<article class="research-institute"><h4>${esc(x.name)}</h4><div class="research-institute-type">${esc(x.type)}</div><p><strong>התרומה:</strong> ${esc(x.contribution)}</p><p><strong>הרלוונטיות לקהילה:</strong> ${esc(x.relevance)}</p><a href="${escAttr(x.url)}" target="_blank" rel="noopener">לאתר / מרכז המחקר</a></article>`).join('');
  if(!root)return;
