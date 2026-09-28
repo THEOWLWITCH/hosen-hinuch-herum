@@ -2122,6 +2122,13 @@ body:has(.feedback-modal.open){
   .research-foundation{grid-template-columns:1fr!important}
 }
 </style>
+<style id="library-biblio-v62">
+.research-library-search{display:grid!important;grid-template-columns:1fr!important;gap:5px!important}
+.research-library-search input,.research-library-search select{width:100%;box-sizing:border-box}
+.research-library-results .lib-biblio{display:flex;flex-direction:column;gap:2px;margin:3px 0 4px}
+.research-library-results .lib-biblio span{font-size:10px;line-height:1.3;color:#687c8d}
+.research-library-results .lib-biblio strong{font-weight:650;color:#456071}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2216,7 +2223,9 @@ body:has(.feedback-modal.open){
         <h3>חיפוש בספרייה</h3>
         <p>חיפוש לפי מחבר, שנה, כותרת, כתב עת, DOI או תקציר — בלי לצאת מהעמוד.</p>
         <div class="research-library-search">
-          <input id="libSearch" placeholder="חיפוש..." oninput="renderPublicLibrary()" aria-label="חיפוש במאגר המקורות">
+          <input id="libSearch" placeholder="כותרת, כתב עת, DOI או מונח..." oninput="renderPublicLibrary()" aria-label="חיפוש חופשי במאגר המקורות">
+          <input id="libAuthors" placeholder="מחבר/ים..." oninput="renderPublicLibrary()" aria-label="חיפוש לפי מחבר או מחברים">
+          <input id="libYear" placeholder="שנת פרסום..." inputmode="numeric" oninput="renderPublicLibrary()" aria-label="חיפוש לפי שנת פרסום">
           <select id="libType" onchange="renderPublicLibrary()" aria-label="סוג מקור"><option value="">כל הסוגים</option><option>מאמר</option><option>ספר</option><option>דוח</option><option>כנס</option><option>קישור</option><option>קובץ</option></select>
         </div>
         <div id="libResults" class="research-library-results"><p class="muted">טוען את מאגר המקורות...</p></div>
@@ -2595,9 +2604,9 @@ function resourceLink(x){const href=x.url||x.fileUrl||'';return href?`<a href="$
 async function refreshPublicResources(){if(currentCategory)showCategory(currentCategory,catLabels[currentCategory]||'משאבים')}
 function openLibrary(){const q=document.getElementById('libSearch');if(q){q.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>q.focus(),250)}}
 function closeLibrary(){}
-async function loadLibrary(admin){const r=await fetch('/api/library');libraryCache=await r.json();if(admin)renderAdminLibrary();else renderPublicLibrary()}
-function renderPublicLibrary(){const qEl=document.getElementById('libSearch'),tEl=document.getElementById('libType'),out=document.getElementById('libResults');if(!qEl||!tEl||!out)return;const q=(qEl.value||'').toLowerCase(),t=tEl.value||'';const a=libraryCache.filter(x=>(!t||x.type===t)&&(!q||Object.values(x).join(' ').toLowerCase().includes(q))).slice(0,25);out.innerHTML=a.length?a.map(sourceHtml).join(''):'<p class="muted">לא נמצאו מקורות.</p>'}
-function sourceHtml(x){return `<div class="lib-item"><h3>${esc(x.title||x.apa||'מקור')}</h3><div class="lib-meta">${esc([x.authors,x.year,x.journal,x.type].filter(Boolean).join(' · '))}</div>${x.apa?`<p>${esc(x.apa)}</p>`:''}${x.abstract?`<p>${esc(x.abstract)}</p>`:''}${x.doi?`<a href="${escAttr(x.doi)}" target="_blank" rel="noopener">קישור למקור</a>`:''}${x.fileUrl?` · <a href="${escAttr(x.fileUrl)}" target="_blank">קובץ</a>`:''}</div>`}
+async function loadLibrary(admin){const r=await fetch('/api/library');const stored=await r.json();if(admin){libraryCache=stored;renderAdminLibrary();return}const researchRows=(typeof researchWorldItems!=='undefined'?researchWorldItems:[]).map(x=>({id:'research-'+x.id,title:x.title,authors:x.authors||'',year:x.year||'',journal:x.source||'',doi:x.url||'',abstract:x.summary||'',type:(x.source||'').toLowerCase().includes('report')?'דוח':'מאמר'}));const seen=new Set();libraryCache=[...researchRows,...stored].filter(x=>{const k=String(x.doi||x.title||x.apa||'').trim().toLowerCase();if(!k||seen.has(k))return false;seen.add(k);return true});renderPublicLibrary()}
+function renderPublicLibrary(){const qEl=document.getElementById('libSearch'),aEl=document.getElementById('libAuthors'),yEl=document.getElementById('libYear'),tEl=document.getElementById('libType'),out=document.getElementById('libResults');if(!qEl||!aEl||!yEl||!tEl||!out)return;const q=(qEl.value||'').trim().toLowerCase(),author=(aEl.value||'').trim().toLowerCase(),year=(yEl.value||'').trim(),t=tEl.value||'';const rows=libraryCache.filter(x=>{const general=[x.title,x.journal,x.doi,x.apa,x.abstract].filter(Boolean).join(' ').toLowerCase();const authors=String(x.authors||'').toLowerCase();const yr=String(x.year||'');return(!t||x.type===t)&&(!q||general.includes(q))&&(!author||authors.includes(author))&&(!year||yr.includes(year))}).slice(0,25);out.innerHTML=rows.length?rows.map(sourceHtml).join(''):'<p class="muted">לא נמצאו מקורות.</p>'}
+function sourceHtml(x){return `<div class="lib-item"><h3>${esc(x.title||x.apa||'מקור')}</h3><div class="lib-meta lib-biblio">${x.authors?`<span><strong>מחברים:</strong> ${esc(x.authors)}</span>`:''}${x.year?`<span><strong>שנה:</strong> ${esc(x.year)}</span>`:''}${x.journal?`<span><strong>מקור:</strong> ${esc(x.journal)}</span>`:''}${x.type?`<span>${esc(x.type)}</span>`:''}</div>${x.apa?`<p>${esc(x.apa)}</p>`:''}${x.abstract?`<p>${esc(x.abstract)}</p>`:''}${x.doi?`<a href="${escAttr(x.doi)}" target="_blank" rel="noopener">קישור למקור</a>`:''}${x.fileUrl?` · <a href="${escAttr(x.fileUrl)}" target="_blank">קובץ</a>`:''}</div>`}
 async function saveSource(){try{let f=null;if(sourceFile.files[0])f=await uploadInput(sourceFile);const old=libraryCache.find(x=>x.id===sourceId.value)||{};const body={id:sourceId.value||undefined,title:sourceTitle.value.trim(),authors:sourceAuthors.value.trim(),year:sourceYear.value.trim(),journal:sourceJournal.value.trim(),doi:sourceDoi.value.trim(),type:sourceType.value,apa:sourceApa.value.trim(),abstract:sourceAbstract.value.trim(),fileKey:f?.key||old.fileKey||'',fileName:f?.name||old.fileName||''};const r=await fetch('/api/library',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw 0;clearSourceForm();await loadLibrary(true)}catch(e){alert('שמירת המקור נכשלה')}}
 function clearSourceForm(){sourceId.value='';sourceTitle.value='';sourceAuthors.value='';sourceYear.value='';sourceJournal.value='';sourceDoi.value='';sourceApa.value='';sourceAbstract.value='';sourceFile.value=''}
 async function importSourceList(){const rows=sourceBulk.value.split(/\n+/).map(x=>x.trim()).filter(Boolean);if(!rows.length)return;await fetch('/api/library',{method:'POST',headers:apiHeaders(),body:JSON.stringify({bulk:rows})});sourceBulk.value='';await loadLibrary(true)}
