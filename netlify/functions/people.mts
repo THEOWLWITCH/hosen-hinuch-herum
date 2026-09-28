@@ -9,6 +9,9 @@ type Person = {
   email?:string;
   phone?:string;
   motto?:string;
+  websiteUrl?:string;
+  facebookUrl?:string;
+  instagramUrl?:string;
   photoKey?:string;
   photoName?:string;
   photoUrl?:string;
@@ -199,6 +202,18 @@ const defaults: Person[] = [
 
 const dataStore = () => store("hosen-data");
 
+function cleanUrl(v:any): string {
+  const raw=String(v||"").trim();
+  if(!raw) return "";
+  const candidate=/^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+  try{
+    const u=new URL(candidate);
+    return (u.protocol==="http:"||u.protocol==="https:") ? u.toString().slice(0,700) : "";
+  }catch{
+    return "";
+  }
+}
+
 function clean(body:any, base:Partial<Person> = {}): Person {
   const rawOrder = body.order;
   const fallbackOrder = Number(base.order || Date.now());
@@ -213,6 +228,9 @@ function clean(body:any, base:Partial<Person> = {}): Person {
     email:String(body.email || "").trim().slice(0,240),
     phone:String(body.phone || "").trim().slice(0,80),
     motto:String(body.motto || "").trim().slice(0,600),
+    websiteUrl:body.websiteUrl===undefined ? String(base.websiteUrl || "") : cleanUrl(body.websiteUrl),
+    facebookUrl:body.facebookUrl===undefined ? String(base.facebookUrl || "") : cleanUrl(body.facebookUrl),
+    instagramUrl:body.instagramUrl===undefined ? String(base.instagramUrl || "") : cleanUrl(body.instagramUrl),
     photoKey:body.photoKey===undefined ? String(base.photoKey || "") : (String(body.photoKey || "").startsWith("files/") ? String(body.photoKey) : ""),
     photoName:body.photoName===undefined ? String(base.photoName || "") : String(body.photoName || "").trim().slice(0,240),
     order:normalizedOrder,
