@@ -1967,17 +1967,31 @@ body:has(.feedback-modal.open){
 .research-insights-wrap{margin:0 0 30px;padding:18px;border:1px solid #dce6e9;background:linear-gradient(135deg,#f5fafb,#fbf9f3);border-radius:10px}
 .research-insights-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:12px}.research-insights-head span{font-size:10.5px;color:#80919a}
 .research-insights-head h3{margin:2px 0 0;font-size:22px;color:#294b5e}.research-insights-head p{margin:0;max-width:420px;font-size:11.5px;line-height:1.55;color:#71818a}
-.research-insights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
-.research-insight{display:grid;grid-template-columns:30px 1fr;gap:9px;padding:10px 11px;background:rgba(255,255,255,.82);border:1px solid rgba(75,108,122,.12);border-radius:7px}
-.research-insight-num{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#e9f2f5;color:#315f76;font-size:11px;font-weight:700}
-.research-insight h4{margin:0 0 3px;font-size:13.2px;color:#315164}.research-insight p{margin:0;font-size:11.8px;line-height:1.55;color:#5d707a}
+.research-insights{display:grid;grid-template-columns:1fr;gap:10px}
+.research-insight{display:grid;grid-template-columns:34px 1fr;gap:11px;padding:14px 15px;background:rgba(255,255,255,.88);border:1px solid rgba(75,108,122,.13);border-radius:8px}
+.research-insight-num{display:flex;align-items:center;justify-content:center;width:31px;height:31px;border-radius:50%;background:#e9f2f5;color:#315f76;font-size:11px;font-weight:700}
+.research-insight h4{margin:0 0 5px;font-size:14.3px;line-height:1.45;color:#315164}
+.research-insight p{margin:0 0 7px;font-size:12.2px;line-height:1.72;color:#526773}
+.research-insight-meaning{margin-top:8px;padding:8px 10px;background:#f5f8f9;border-right:3px solid #9cb7c3;border-radius:4px;font-size:12px;line-height:1.65;color:#435d6b}
+.research-insight-evidence{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:10.8px;color:#7c8b94}
+.research-insight-evidence a{font-size:10.8px;color:#23668b;text-decoration:none;border-bottom:1px solid rgba(35,102,139,.22)}
+.research-insight-evidence a:hover{border-bottom-color:#23668b}
+.research-institutes-wrap{margin:0 0 32px;padding:18px;border:1px solid #e0e7e9;background:#fff;border-radius:10px}
+.research-institutes-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:13px}
+.research-institutes-head span{font-size:10.5px;color:#80919a}.research-institutes-head h3{margin:2px 0 0;font-size:21px;color:#294b5e}
+.research-institutes-head p{margin:0;max-width:460px;font-size:11.5px;line-height:1.55;color:#71818a}
+.research-institutes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.research-institute{padding:13px 14px;border:1px solid #e1e8ea;border-radius:8px;background:#fbfcfc}
+.research-institute h4{margin:0 0 4px;font-size:14px;color:#2d5064}.research-institute .research-institute-type{font-size:10.5px;color:#80909a;margin-bottom:7px}
+.research-institute p{margin:5px 0;font-size:11.8px;line-height:1.62;color:#5d707b}
+.research-institute a{display:inline-block;margin-top:4px;font-size:11px;color:#23668b;text-decoration:none;border-bottom:1px solid rgba(35,102,139,.22)}
 .research-category-nav{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 28px}.research-category-nav a{font-size:12px;text-decoration:none;color:#355f76;background:#fff;border:1px solid #d4e0e5;border-radius:999px;padding:7px 12px}
 .research-category-nav a:hover{background:#eef5f7}.research-category-block{scroll-margin-top:92px;margin:0 0 36px;padding:0!important}
 .research-category-title{display:flex;align-items:end;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7ea;padding-bottom:9px;margin-bottom:12px}.research-category-title h3{margin:0;font-size:21px;font-weight:620;color:#2d4c5d}.research-category-title span{font-size:10.5px;color:#83919a}
 .research-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.research-card{display:flex;flex-direction:column;gap:8px;padding:15px 16px;background:#fff;border:1px solid #dfe7ea;border-radius:9px;box-shadow:0 5px 16px rgba(41,72,89,.035)}
 .research-card-meta{font-size:10.5px;color:#7c8c95}.research-card h4{margin:0;color:#284b60;font-size:14.7px;line-height:1.42;font-weight:650;direction:ltr;text-align:left}.research-card p{margin:0;font-size:12.2px;line-height:1.66;color:#566b77}
 .research-why{font-size:12.1px;line-height:1.62;color:#465f6d;background:#f7f9fa;border-right:3px solid #abc1cb;border-radius:4px;padding:8px 10px}.research-card a{align-self:flex-start;margin-top:auto;font-size:11.5px;color:#1f668f;text-decoration:none;border-bottom:1px solid rgba(31,102,143,.28);padding-bottom:1px}
-.research-card a:hover{color:#164d6c;border-bottom-color:#164d6c}@media(max-width:760px){.research-grid,.research-insights{grid-template-columns:1fr}.research-insights-head{align-items:flex-start;flex-direction:column}.research-world-head h2{font-size:26px}.research-category-title{align-items:flex-start;flex-direction:column}}
+.research-card a:hover{color:#164d6c;border-bottom-color:#164d6c}@media(max-width:760px){.research-grid,.research-insights,.research-institutes{grid-template-columns:1fr}.research-insights-head,.research-institutes-head{align-items:flex-start;flex-direction:column}.research-world-head h2{font-size:26px}.research-category-title{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -2063,8 +2077,12 @@ body:has(.feedback-modal.open){
     <p class="research-scope-note"><strong>גבול המדור:</strong> אין כאן מחקרים קליניים או מחקרים מתחום הפסיכולוגיה. „חוסן חינוכי ותפקודי” מתייחס ליכולת של תלמידים, צוותים, בתי ספר וקהילות להמשיך לתפקד, להשתייך, ללמוד ולהסתגל בזמן משבר.</p>
   </div>
   <div class="research-insights-wrap">
-    <div class="research-insights-head"><div><span>התמונה הגדולה</span><h3>10 תובנות מהמחקר החדש בעולם</h3></div><p>מסקנות רוחב שחוזרות במחקרים החדשים — לפני שנכנסים לכל מאמר בנפרד.</p></div>
+    <div class="research-insights-head"><div><span>סינתזה ביקורתית</span><h3>התובנות המרכזיות שעולות מהמחקר החדש</h3></div><p>לא סיסמאות ולא תקצירי מאמרים: כל תובנה היא טענה מערכתית שמבוססת על כמה מקורות חדשים, ובצדה המשמעות המחקרית והיישומית.</p></div>
     <div id="researchInsights" class="research-insights"></div>
+  </div>
+  <div class="research-institutes-wrap">
+    <div class="research-institutes-head"><div><span>מי מייצר את הידע?</span><h3>מכוני ומרכזי מחקר מובילים שכדאי לעקוב אחריהם</h3></div><p>הגופים שמפתחים כיום את בסיס הראיות המרכזי בחינוך, חוסן וחירום — ומה בדיוק כל אחד מהם מוסיף לקהילה שלנו.</p></div>
+    <div id="researchInstitutes" class="research-institutes"></div>
   </div>
   <nav class="research-category-nav" aria-label="תחומי מחקר">
     <a href="#research-preparedness">מוכנות</a>
@@ -2820,16 +2838,135 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 <script id="research-world-v58-js">
 const researchInsightsData=[
-['חוסן נבנה בשגרה','מערכת שמחכה למשבר כדי להתארגן כבר נמצאת בפיגור. מוכנות, תפקידים, תשתיות וקשרים צריכים להיבנות מראש.'],
-['פשוט וזמין יכול להיות חזק יותר ממתוחכם','בניסויים רב־מדינתיים, הוראה ממוקדת בשיחת טלפון עבדה היטב בזמן שיבושים. רציפות אינה מחייבת תמיד מערכת טכנולוגית כבדה.'],
-['בית הספר הוא תשתית קהילתית','בתי ספר יכולים להיות בו־זמנית מקום למידה, מוקד מידע, מרכז קהילתי, נקודת התארגנות ומרכיב בהתאוששות המקומית.'],
-['צריך לתכנן ל־polycrisis','מלחמה, עקירה, אקלים קיצוני, מחסור בכוח אדם ופגיעה בתשתיות עלולים להתרחש יחד. תוכנית לתרחיש יחיד אינה מספיקה.'],
-['מורים אינם רק מבצעי נוהל','המחקר מדגיש הכשרה, אוטונומיה ושיקול דעת. בחירום משתנה, צוות שמסוגל לחשוב ולהחליט חשוב לא פחות מנוהל כתוב.'],
-['מנהיגות גמישה היא חלק מהמוכנות','מנהלים אפקטיביים במשבר משלבים החלטות מהירות, תקשורת אמינה, חלוקת משאבים ושינוי מבנים ותפקידים בהתאם למצב.'],
-['מה שלא מודדים קשה לשפר','אין עדיין מדד אוניברסלי טוב לחוסן בית־ספרי. הכלים הקיימים מחייבים התאמה מקומית שמשלבת תשתית, תפקוד, קהילה ורציפות.'],
-['אקלים קיצוני כבר הוא עניין חינוכי','חום, הצפות וסופות משפיעים על מבנים, שעות פעילות, בטיחות ועל היכולת של בית הספר להמשיך לפעול.'],
-['סימולציה עובדת כשהיא פדגוגיה ולא גאדג׳ט','XR, מטאוורס ומשחקים רציניים מבטיחים במיוחד כאשר הם כוללים החלטה, ניסוי, משוב ודיון בתוך תהליך למידה.'],
-['AI צריך לחזק שיקול דעת אנושי','היישומים המבטיחים כרגע הם זיהוי סיכון, תיעדוף, ניתוח נתונים ותמיכה במורים — עם שקיפות, הוגנות ואחריות.']
+{
+title:'חוסן חינוכי צריך להימדד כתכונה של מערכת מצומדת — לא כתכונה של בית ספר בודד',
+body:'הספרות החדשה מתרחקת בהדרגה ממדידה חד־ממדית של “מוכנות”. סקירת 85 מחקרים על הסתגלות בתי ספר לשינוי אקלים זיהתה שלושה תפקידים שונים של בית הספר — פדגוגיה, תשתית ופעולה קהילתית — אך רק שני מחקרים מתוך 85 התייחסו לשלושתם יחד. במקביל, מודלים חדשים לרציפות חינוכית משלבים פגיעוּת פיזית עם פגיעוּת חברתית ותפקודית. מכאן עולה שחוסן אינו סכום של כמה ציונים נפרדים אלא תוצאה של תלות הדדית בין תשתית, כוח אדם, קהילה, נתונים ויכולת הוראה.',
+meaning:'המשמעות עבורנו: מדד חוסן בית־ספרי או עירוני צריך לבדוק גם יחסי תלות ונקודות כשל משותפות. בית ספר בעל מבנה מוגן אך ללא צוות זמין, תקשורת, חלופה פדגוגית או קשר קהילתי אינו בהכרח מערכת חסינה.',
+evidence:[
+['WIREs Climate Change 2026','https://doi.org/10.1002/wcc.70080'],
+['Bayesian education continuity model 2026','https://doi.org/10.1016/j.ijdrr.2026.106084'],
+['School resilience assessment review 2026','https://doi.org/10.1017/S1049023X26102106']
+]
+},
+{
+title:'בתכנון רציפות, יתירות וגמישות חשובות יותר מ“דיגיטציה” כשלעצמה',
+body:'הראיה הניסויית החזקה ביותר ברשימה הנוכחית אינה מגיעה מפלטפורמת AI מתקדמת אלא מחמישה ניסויים אקראיים בחמש מדינות: הוראה ממוקדת באמצעות שיחות טלפון עבדה בעקביות בזמן שיבושים, בעוד SMS חד־כיווני נתן תוצאות מעורבות. במקביל, UNESCO-IIEP מדגיש תכנון רגיש־משבר שמחבר נתוני סיכון, מערכות מידע ותכנון חלופות. יחד, הממצאים מצביעים על כך שרציפות אינה “האם יש לנו LMS”, אלא האם קיימים כמה ערוצי הוראה חלופיים שיכולים להחליף זה את זה כאשר תשתית אחת נופלת.',
+meaning:'המשמעות עבורנו: יש לתכנן ארכיטקטורת רציפות עם ערוץ ראשי, ערוצים חלופיים ונהלי מעבר ביניהם — כולל פתרונות low-tech. הטכנולוגיה הטובה ביותר בחירום היא זו שנשארת נגישה כאשר התנאים אינם אידיאליים.',
+evidence:[
+['Nature 2026 — five randomized trials','https://doi.org/10.1038/s41586-026-10990-x'],
+['Oxford CSAE — Building Resilient Education Systems','https://www.csae.ox.ac.uk/building-resilient-education-systems'],
+['UNESCO-IIEP crisis-sensitive planning','https://www.iiep.unesco.org/en/projects/crisis-sensitive-educational-planning']
+]
+},
+{
+title:'תכנון לפי “תרחיש יחיד” עלול להפריז בחוסן, משום שבמשברים מורכבים שכבות הכשל אינן בלתי־תלויות',
+body:'סקירת UCL/ERICC מ־2026 מצביעה על פער מרכזי: רוב המחקר עדיין מפריד בין סכסוך, עקירה, אקלים ואסונות, אף שבפועל משברים אלה חופפים. כאשר אירועים חופפים, אותה פגיעה יכולה להשפיע בו־זמנית על מבנים, צוות, תחבורה, חשמל, תקשורת ואוכלוסיית התלמידים. לכן הנחה סמויה שלפיה כל שכבת הגנה תיכשל בנפרד אינה מציאותית; במשבר מורכב עלולה להתרחש קריסה מתואמת של כמה שכבות.',
+meaning:'המשמעות עבורנו: סימולציות ומודלים צריכים לעבור מ־single hazard ל־compound / cascading failure. כדאי לבדוק לא רק “מה קורה אם בית הספר נסגר”, אלא מה קורה כאשר במקביל חסרים מורים, התלמידים מפוזרים, התקשורת חלקית ותשתיות ציבוריות משמשות לצורכי חירום.',
+evidence:[
+['UCL/ERICC — Continuity amid environmental shocks 2026','https://doi.org/10.14324/000.ch.10223218'],
+['Systemic resilience of educational facilities 2026','https://doi.org/10.1016/j.scs.2026.107675'],
+['UNICEF Global Outlook 2026','https://www.unicef.org/innocenti/prospects-children-2026-global-outlook']
+]
+},
+{
+title:'הספרות החדשה מעבירה את מרכז הכובד מציות לנוהל ליכולת הסתגלות מקצועית תחת אי־ודאות',
+body:'סקירת המנהיגות הבית־ספרית במשבר מ־2026 אינה מזהה “נוהל מנצח” אלא חבילה של פרקטיקות משתנות: קבלת החלטות זריזה, תקשורת מותאמת, ניהול משאבים, נראות וקישוריות, ושינוי דפוסי הנהגה בין שלבי המשבר. מחקר נוסף מצא שפיתוח מקצועי משותף של מורים, מחנכים בלתי־פורמליים ואנשי ניהול חירום יצר שיפור מתמשך בידע, במסוגלות ובפעולה בשתי זירות ותשעה מחזורים. כלומר, המיומנות המרכזית אינה לזכור הוראות אלא לפעול היטב כאשר ההוראות אינן מכסות את המצב.',
+meaning:'המשמעות עבורנו: הכשרה בחירום צריכה לכלול סימולציות של מצבי עמימות, קונפליקט בין מטרות, מחסור במשאבים ושינויים בתרחיש. יש להעריך איכות החלטה והסתגלות, לא רק ביצוע נכון של checklist.',
+evidence:[
+['Leading schools in crisis contexts 2026','https://doi.org/10.1177/17411432261442355'],
+['Collaborative professional development 2026','https://doi.org/10.1016/j.ijdrr.2026.106100'],
+['Teacher training and evacuation planning 2026','https://doi.org/10.20965/jdr.2026.p0138']
+]
+},
+{
+title:'מדד חוסן אוניברסלי יחיד עלול לייצר דיוק מדומה; הכיוון החדש הוא מדידה רב־שכבתית ומקומית',
+body:'סקירת כלי המדידה מ־2026 מצאה שכלים קיימים חסרים לעיתים התאמה אזורית ומקיפים רק חלק מן הממדים. מנגד, מחקר על 100 בתי ספר כפריים בקולומביה שילב סכנה, חשיפה, שבריריות מבנית, פגיעוּת סוציו־אקונומית ויכולת תגובה, והראה שמבנה כזה יכול לתמוך בתיעדוף באמצעות שילוב מומחים ו־Random Forest. זה אינו מוכיח שמודל מסוים מתאים לכל מקום; להפך — הוא מדגים את הערך של שילוב נתונים מקומיים בתוך מסגרת רב־ממדית.',
+meaning:'המשמעות עבורנו: אם נפתח מדד ישראלי, עדיף לבנות “ליבה” משותפת ולצדה משקולות ומדדים מקומיים לפי סוג יישוב, אוכלוסייה וסוג איום. חשוב להימנע מציון יחיד שמסתיר את הסיבה לחולשה.',
+evidence:[
+['School disaster resilience assessment review 2026','https://doi.org/10.1017/S1049023X26102106'],
+['Multi-hazard schools + machine learning 2026','https://doi.org/10.1016/j.ijdrr.2026.106221'],
+['UNICEF Data Must Speak — Learning Together 2026','https://www.unicef.org/innocenti/reports/learning-together-DMS']
+]
+},
+{
+title:'ב־AI לחירום יש כרגע אי־סימטריה ראייתית: ההבטחה גבוהה, אך בסיס הראיות הישיר עדיין חלש יותר מזה של פתרונות אנושיים־מתווכים',
+body:'הספרות מ־2026 מתארת שימושים מבטיחים ב־AI לזיהוי סיכון, ניתוח השתתפות, תמיכה בהחלטות ובפיתוח מקצועי למורים. עם זאת, חלק גדול מן הכתיבה הוא עדיין ניתוח מושגי או פיילוטים, בעוד שלפתרונות אנושיים דו־כיווניים כמו tutoring טלפוני כבר קיימת ראיה ניסויית רב־מדינתית חזקה. גם Brookings ו־IRC/Airbel ממקמים כיום את השימושים המבטיחים של AI בעיקר כתמיכה במורה, תרגום, התאמת חומר ותיעדוף — לא כתחליף אוטונומי לקשר ההוראה.',
+meaning:'המשמעות עבורנו: בטווח הקרוב נכון לבחון AI כ־decision support וכ־teacher augmentation, ולדרוש ניסויי תוצאה לפני הרחבת שימושים ישירים עם תלמידים. “חדשנות” איננה תחליף לרמת ראיות.',
+evidence:[
+['Nature phone tutoring RCTs 2026','https://doi.org/10.1038/s41586-026-10990-x'],
+['Frontiers — AI and crisis management 2026','https://doi.org/10.3389/feduc.2026.1791475'],
+['Brookings CUE — AI in education emergencies 2026','https://www.brookings.edu/articles/ai-in-education-emergencies-should-start-with-supporting-teachers/'],
+['IRC Airbel — aprendIA','https://airbel.rescue.org/projects/aprendia/']
+]
+},
+{
+title:'שותפות מקומית אינה רק ערך אתי; היא מנגנון שמגדיל את הסיכוי שהראיה תהיה ניתנת להטמעה ולהרחבה',
+body:'UNICEF Innocenti מסכם ארבע שנות מחקר ב־15 מדינות ומדגיש שוב ושוב שחקני בית ספר כמשתמשי ראיות וכסוכני שינוי, התאמה להקשר, סיוע טכני מתמשך ובעלות לאומית. ERICC בנה מראש אג׳נדות מחקר בשיתוף בעלי עניין מקומיים, ו־NYU Global TIES מגדיר “מה עובד, למי ובאילו תנאים” כליבת המחקר בנסיבות משבר. המסקנה היא שהעברה של פתרון “מוכח” ממקום למקום אינה פעולה טכנית; היא חלק מתהליך המחקר עצמו.',
+meaning:'המשמעות עבורנו: בפרויקטים של הקהילה כדאי לשלב מנהלים, מורים, רשויות ואנשי חירום כבר בניסוח השאלה, המדדים והתרחישים. כך אפשר להבחין בין אפקט מדעי כללי לבין תנאים מקומיים הנדרשים ליישום.',
+evidence:[
+['UNICEF Innocenti — Learning Together 2026','https://www.unicef.org/innocenti/reports/learning-together-DMS'],
+['ERICC — rigorous context-relevant evidence','https://airbel.rescue.org/projects/education-research-in-conflict-and-protracted-crisis-ericc/'],
+['NYU Global TIES — Our Work','https://globaltiesforchildren.nyu.edu/our-work']
+]
+}
+]
+const researchInstitutesData=[
+{
+name:'University of Oxford — Centre for the Study of African Economies (CSAE)',
+type:'מחקר ניסויי על רציפות וחוסן של מערכות חינוך',
+contribution:'הוביל עם שותפים סדרת ניסויים אקראיים רחבי־היקף בחמש מדינות לבדיקת מודלים של הוראה בזמן שיבושים. העבודה שפורסמה ב־Nature ב־2026 מספקת כיום אחת הראיות הסיבתיות החזקות ביותר בתחום.',
+relevance:'רלוונטי במיוחד לרציפות למידה, cost-effectiveness ולבחינה אילו פתרונות באמת עובדים תחת תנאי חירום ולא רק נראים חדשניים.',
+url:'https://www.csae.ox.ac.uk/building-resilient-education-systems'
+},
+{
+name:'UCL Institute of Education — Centre for Education and International Development / ERICC',
+type:'חינוך בסכסוך, משברים ממושכים ו־polycrisis',
+contribution:'UCL הוא השותף האקדמי המוביל בקונסורציום ERICC ומפתח מחקר על רציפות, מורים, אי־שוויון, עקירה והקשרים בין חינוך לסכסוך. ב־2026 פורסמו דרכו סקירות חדשות על משברים חופפים ועל מה שעובד בחינוך במצבי סכסוך ומשבר.',
+relevance:'מקור מרכזי לחשיבה על מלחמה, עקירה, שיבושים מצטברים ותכנון מערכתי שאינו נשען על תרחיש יחיד.',
+url:'https://www.ucl.ac.uk/ioe/departments-and-centres/centre-education-and-international-development/research/education-conflict-and-peacebuilding'
+},
+{
+name:'International Rescue Committee — Airbel Impact Lab / ERICC',
+type:'מחקר יישומי ו־R&D הומניטרי',
+contribution:'Airbel משלב מחקר, ניסויי שדה ופיתוח מוצרים בתנאי משבר. הוא מוביל את רכיבי המחקר המרכזיים של ERICC ובמקביל מפתח פתרונות low-tech ו־AI למורים וללומדים, כולל aprendIA.',
+relevance:'חשוב במיוחד לקהילה משום שהוא מחבר בין מאמר, פיילוט, הטמעה וסקייל — ולא עוצר בשלב התיאורטי.',
+url:'https://airbel.rescue.org/projects/education-research-in-conflict-and-protracted-crisis-ericc/'
+},
+{
+name:'UNESCO — International Institute for Educational Planning (IIEP)',
+type:'תכנון מערכות חינוך רגיש־משבר',
+contribution:'IIEP עובד ישירות עם משרדי חינוך על ניתוח סיכונים, climate adaptation, שילוב נתוני חירום ב־EMIS, תכנון לרציפות ושילוב אוכלוסיות עקורות ופליטים במערכות לאומיות.',
+relevance:'זה הגוף שכדאי לעקוב אחריו כאשר עוברים מרמת בית הספר לרמת מערכת, רשות או משרד חינוך — במיוחד בנושאי נתונים, תכנון והטמעה במדיניות.',
+url:'https://www.iiep.unesco.org/en/projects/crisis-sensitive-educational-planning'
+},
+{
+name:'UNICEF Office of Strategy and Evidence — Innocenti',
+type:'מחקר השוואתי, נתונים, דיגיטל ואקלים',
+contribution:'Innocenti מפעיל מחקרים רב־מדינתיים על שיפור מערכות חינוך, שימוש בנתונים, למידה דיגיטלית, אי־שוויון וסיכוני אקלים. דוח Learning Together מ־2026 מסכם תהליך co-creation של מחקר ב־15 מדינות.',
+relevance:'רלוונטי במיוחד לבניית מדדים, מחקר יישומי עם מערכות ציבוריות, digital learning ותרגום ראיות למדיניות בקנה מידה ארצי.',
+url:'https://www.unicef.org/innocenti/areas-of-work/education-and-human-capital'
+},
+{
+name:'New York University — Global TIES for Children',
+type:'Education in Emergencies, מדידה ומחקר יישומי',
+contribution:'Global TIES בנה במשך עשור תשתית מחקר על למידה בתנאי סכסוך ומשבר, כולל 3EA, כלי מדידה ושותפויות עם IRC. המרכז מתמקד בשאלה מה עובד, עבור מי, באילו תנאים וכיצד ראיות עוברות ממחקר ליישום.',
+relevance:'חשוב למי שמבקש לבנות מחקר רב־אתרי, כלי מדידה או התערבות שתהיה גם תקפה מדעית וגם ניתנת להרחבה.',
+url:'https://globaltiesforchildren.nyu.edu/our-work'
+},
+{
+name:'EdTech Hub',
+type:'מחקר ראיות על טכנולוגיה בחינוך',
+contribution:'שותפות מחקר גלובלית שמפעילה מחקרים, sandboxes וסיוע למשרדי חינוך. תחומי הליבה כוללים כיום AI, EdTech for Emergencies, climate resilience, data for decisions ופיתוח מקצועי למורים.',
+relevance:'זה מקור חשוב במיוחד כדי להפריד בין hype טכנולוגי לבין ראיות על יעילות, עלות, התאמה להקשר ויכולת סקייל בחינוך.',
+url:'https://edtechhub.org/research/'
+},
+{
+name:'Inter-agency Network for Education in Emergencies (INEE) / Journal on Education in Emergencies',
+type:'מרכז ידע ורשת מחקר גלובלית',
+contribution:'INEE אינה מכון אקדמי יחיד אלא רשת הידע המרכזית בתחום. כתב העת JEiE מפרסם מחקר אקדמי ויישומי ייעודי לחינוך בחירום, וב־2026 פורסם גיליון חדש לצד סינתזות ראיות של ERICC.',
+relevance:'זה המקום היעיל ביותר למעקב שוטף אחר הספרות המתפתחת, תקנים, סקירות ראיות וחיבור בין חוקרים לאנשי שדה.',
+url:'https://www.inee.org/journal'
+}
 ];
 const researchWorldCategories=[
 {id:'preparedness',label:'מוכנות'},{id:'resilience',label:'חוסן חינוכי ותפקודי'},{id:'continuity',label:'רציפות למידה'},{id:'teachers',label:'מורים צוותים ומנהיגות'},{id:'tech',label:'טכנולוגיה AI וסימולציה בחירום'}
@@ -2867,8 +3004,9 @@ const researchWorldItems=[
 ];
 
 function renderResearchWorld(){
- const root=document.getElementById('researchWorldContent'),insights=document.getElementById('researchInsights');
- if(insights)insights.innerHTML=researchInsightsData.map((x,i)=>`<article class="research-insight"><div class="research-insight-num">${i+1}</div><div><h4>${esc(x[0])}</h4><p>${esc(x[1])}</p></div></article>`).join('');
+ const root=document.getElementById('researchWorldContent'),insights=document.getElementById('researchInsights'),institutes=document.getElementById('researchInstitutes');
+ if(insights)insights.innerHTML=researchInsightsData.map((x,i)=>`<article class="research-insight"><div class="research-insight-num">${i+1}</div><div><h4>${esc(x.title)}</h4><p>${esc(x.body)}</p><div class="research-insight-meaning"><strong>המשמעות עבורנו:</strong> ${esc(x.meaning.replace(/^המשמעות עבורנו:\s*/,''))}</div><div class="research-insight-evidence"><strong>מחקרים ומקורות מבססים:</strong> ${x.evidence.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div></div></article>`).join('');
+ if(institutes)institutes.innerHTML=researchInstitutesData.map(x=>`<article class="research-institute"><h4>${esc(x.name)}</h4><div class="research-institute-type">${esc(x.type)}</div><p><strong>התרומה:</strong> ${esc(x.contribution)}</p><p><strong>הרלוונטיות לקהילה:</strong> ${esc(x.relevance)}</p><a href="${escAttr(x.url)}" target="_blank" rel="noopener">לאתר / מרכז המחקר</a></article>`).join('');
  if(!root)return;
  root.innerHTML=researchWorldCategories.map(cat=>{
    const rows=researchWorldItems.filter(x=>x.cat===cat.id);
