@@ -2235,6 +2235,7 @@ body:has(.feedback-modal.open){
       <label class="wide">אתר אישי / דף אישי באתר המוסד<input id="personWebsiteUrl" type="url" dir="ltr" placeholder="https://..."></label>
       <label>Facebook<input id="personFacebookUrl" type="url" dir="ltr" placeholder="https://facebook.com/..."></label>
       <label>Instagram<input id="personInstagramUrl" type="url" dir="ltr" placeholder="https://instagram.com/..."></label>
+      <label>LinkedIn<input id="personLinkedinUrl" type="url" dir="ltr" placeholder="https://linkedin.com/in/..."></label>
       <label class="wide">מוטו<input id="personMotto" dir="auto" maxlength="600" placeholder="משפט קצר"></label>
     </div>
     <div class="admin-actions"><button type="button" onclick="savePerson()">שמירה</button><button type="button" class="secondary" onclick="clearPersonForm()">ניקוי</button></div>
@@ -2555,13 +2556,14 @@ function personDetailText(x){
   return [x.description||'',x.email?'מייל: '+x.email:'',x.phone?'טלפון: '+x.phone:''].filter(Boolean).join('\n');
 }
 function personSearchText(x){
-  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||'',x.websiteUrl||'',x.facebookUrl||'',x.instagramUrl||'',x.motto||''].filter(Boolean).join(' ');
+  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||'',x.websiteUrl||'',x.facebookUrl||'',x.instagramUrl||'',x.linkedinUrl||'',x.motto||''].filter(Boolean).join(' ');
 }
 function personLinksMarkup(x){
   const links=[];
   if(x.websiteUrl)links.push(`<a href="${escAttr(x.websiteUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">אתר אישי</a>`);
   if(x.facebookUrl)links.push(`<a href="${escAttr(x.facebookUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Facebook</a>`);
   if(x.instagramUrl)links.push(`<a href="${escAttr(x.instagramUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Instagram</a>`);
+  if(x.linkedinUrl)links.push(`<a href="${escAttr(x.linkedinUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">LinkedIn</a>`);
   return links.length?`<div class="person-links">${links.join('')}</div>`:'';
 }
 function personPhotoMarkup(x){
@@ -2637,6 +2639,7 @@ function clearPersonForm(){
   document.getElementById('personWebsiteUrl').value='';
   document.getElementById('personFacebookUrl').value='';
   document.getElementById('personInstagramUrl').value='';
+  document.getElementById('personLinkedinUrl').value='';
   document.getElementById('personMotto').value='';
   document.getElementById('personPhoto').value='';
   personExistingPhoto=null;
@@ -2655,6 +2658,7 @@ function editPerson(id){
   document.getElementById('personWebsiteUrl').value=x.websiteUrl||'';
   document.getElementById('personFacebookUrl').value=x.facebookUrl||'';
   document.getElementById('personInstagramUrl').value=x.instagramUrl||'';
+  document.getElementById('personLinkedinUrl').value=x.linkedinUrl||'';
   document.getElementById('personMotto').value=x.motto||'';
   document.getElementById('personPhoto').value='';
   personExistingPhoto=x.photoKey?{key:x.photoKey,name:x.photoName||'',url:x.photoUrl||''}:null;
@@ -2675,6 +2679,7 @@ async function savePerson(){
     websiteUrl:document.getElementById('personWebsiteUrl').value.trim(),
     facebookUrl:document.getElementById('personFacebookUrl').value.trim(),
     instagramUrl:document.getElementById('personInstagramUrl').value.trim(),
+    linkedinUrl:document.getElementById('personLinkedinUrl').value.trim(),
     motto:document.getElementById('personMotto').value.trim(),
     photoKey:personExistingPhoto?.key||'',
     photoName:personExistingPhoto?.name||''
