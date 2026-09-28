@@ -1939,7 +1939,7 @@ body:has(.feedback-modal.open){
   width:100%!important;
   aspect-ratio:4 / 3!important;
   overflow:hidden!important;
-  contain:strict!important;
+  contain:layout paint!important;
 }
 #boardFeed .board-image-gallery-frame img{
   position:absolute!important;
@@ -2483,7 +2483,21 @@ function closeBoardImageLightbox(){
   if(back?.isConnected)back.focus({preventScroll:true});
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('boardImageLightbox')?.classList.contains('open'))closeBoardImageLightbox()});
-function renderBoardMessage(){const feed=document.getElementById('boardFeed'),counter=document.getElementById('boardCounter');if(!boardMessages.length){feed.innerHTML='<p class="muted">אין כרגע הודעות פעילות.</p>';counter.textContent='';return}const x=boardMessages[boardIndex];const files=(x.attachments||[]).filter(a=>!boardAttachmentIsImage(a)).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';const gallery=boardAttachmentGallery(x);feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;counter.textContent=`${boardIndex+1} / ${boardMessages.length}`}
+function renderBoardMessage(){
+  const lockedX=window.scrollX,lockedY=window.scrollY;
+  const feed=document.getElementById('boardFeed'),counter=document.getElementById('boardCounter');
+  if(!boardMessages.length){feed.innerHTML='<p class="muted">אין כרגע הודעות פעילות.</p>';counter.textContent='';return}
+  const x=boardMessages[boardIndex];
+  const files=(x.attachments||[]).filter(a=>!boardAttachmentIsImage(a)).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');
+  const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';
+  const gallery=boardAttachmentGallery(x);
+  feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;
+  counter.textContent=`${boardIndex+1} / ${boardMessages.length}`;
+  requestAnimationFrame(()=>{
+    window.scrollTo(lockedX,lockedY);
+    requestAnimationFrame(()=>window.scrollTo(lockedX,lockedY));
+  });
+}
 function boardNext(){if(!boardMessages.length)return;boardIndex=(boardIndex+1)%boardMessages.length;renderBoardMessage()}
 function boardPrev(){if(!boardMessages.length)return;boardIndex=(boardIndex-1+boardMessages.length)%boardMessages.length;renderBoardMessage();boardRestartTimer()}
 function setBoardStatus(text,type='info'){const el=document.getElementById('boardSubmitStatus');el.textContent=text||'';el.className='feedback-status '+type}
