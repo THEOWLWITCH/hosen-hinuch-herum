@@ -1754,6 +1754,54 @@ body:has(.feedback-modal.open){
   color:#667b8a;
 }
 </style>
+<style id="people-photo-motto-v54">
+#people .person{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-height:58px;
+}
+.person-photo{
+  width:44px;
+  height:44px;
+  min-width:44px;
+  border-radius:50%;
+  overflow:hidden;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#f2f6f8;
+  border:1px solid #d7e3e9;
+  box-sizing:border-box;
+}
+.person-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.person-photo-empty{background:linear-gradient(145deg,#f7fafb,#eaf1f4)}
+.person-copy{min-width:0;flex:1}
+.person-copy h3,.person-copy .muted{overflow-wrap:anywhere}
+.person-motto-detail{
+  display:none;
+  margin:15px 0 0;
+  padding-top:12px;
+  border-top:1px solid #e2eaee;
+  color:#315d77;
+  font-size:14px;
+  line-height:1.7;
+  font-style:italic;
+  white-space:pre-wrap;
+}
+.person-photo-editor-preview{min-height:48px;display:flex;align-items:center}
+.person-photo-preview-row{display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid #e1e9ed;border-radius:9px;background:#fafcfd}
+.person-photo-preview-row img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid #d6e2e8}
+.person-photo-preview-row span{font-size:11px;color:#647a88}
+.person-photo-preview-row button{font:inherit;font-size:11px;border:1px solid #d7e2e8;background:#fff;color:#496b7e;border-radius:12px;padding:4px 8px;cursor:pointer}
+.admin-person-summary{display:flex;align-items:center;gap:9px;min-width:0}
+.admin-person-summary .person-photo{width:38px;height:38px;min-width:38px}
+.admin-person-motto{margin-top:4px;font-size:11px;color:#607b8a;font-style:italic}
+@media(max-width:600px){
+  .person-photo{width:40px;height:40px;min-width:40px}
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2027,7 +2075,13 @@ body:has(.feedback-modal.open){
       <label>מוסד / שיוך<input id="personInstitution" dir="auto"></label>
       <label>מייל<input id="personEmail" type="email" dir="ltr"></label>
       <label>טלפון<input id="personPhone" type="tel" dir="ltr"></label>
+      <label>תמונה
+        <input id="personPhoto" type="file" accept="image/*">
+        <span class="field-hint">התמונה תוצג בעיגול קטן בצד ימין של הכרטיס.</span>
+      </label>
+      <div id="personPhotoPreview" class="person-photo-editor-preview wide"></div>
       <label class="wide">תיאור ותחומי עיסוק<textarea id="personDescription" rows="6" dir="auto"></textarea></label>
+      <label class="wide">מוטו<input id="personMotto" dir="auto" maxlength="600" placeholder="משפט קצר"></label>
     </div>
     <div class="admin-actions"><button type="button" onclick="savePerson()">שמירה</button><button type="button" class="secondary" onclick="clearPersonForm()">ניקוי</button></div>
     <div id="peopleSaveStatus" class="inline-status" role="status" aria-live="polite"></div>
@@ -2071,9 +2125,9 @@ body:has(.feedback-modal.open){
 
 
 <div class="modal" id="submitModal" onclick="if(event.target===this)closeSubmit()"><div class="modalbox" style="max-width:680px"><button class="close" onclick="closeSubmit()">×</button><h2>הצעת רעיון / שיתוף פעולה</h2><p class="muted">מלאו את הפרטים. הזמנה לשיתוף פעולה שאושרה תוכל להופיע ב״מקום בגן עדן״.</p><form id="ideaForm" name="community-ideas" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitIdea(event)"><input type="hidden" name="form-name" value="community-ideas"><p style="display:none"><label>לא למלא: <input name="bot-field"></label></p><div class="formgrid"><div class="field"><label>שם מלא *</label><input name="name" required></div><div class="field"><label>שייכות מוסדית *</label><input name="institution" required placeholder="אוניברסיטה / מכללה / מכון / ארגון"></div><div class="field"><label>מייל *</label><input type="email" name="email" required placeholder="ישמש גם לכפתור פנייה ליוזמ.ת"></div><div class="field"><label>טלפון</label><input type="tel" name="phone" placeholder="שדה רשות"></div><div class="field"><label>סוג הפנייה *</label><select name="request_type" required><option value="">בחרו...</option><option>רעיון למחקר</option><option>חיפוש שותפים</option><option>הצעת שיתוף פעולה</option><option>הגשת מענק</option><option>אירוע / מפגש</option><option>משאב</option><option>קול קורא</option><option>אחר</option></select></div><div class="field"><label>תחום</label><input name="field" placeholder="למשל: חוסן, הכשרת מורים, AI בחינוך"></div><div class="field full"><label>כותרת קצרה *</label><input name="title" required></div><div class="field full"><label>יש לי / הרעיון שלי *</label><textarea name="offer" required></textarea></div><div class="field full"><label>אני מחפש/ת</label><textarea name="looking_for"></textarea></div><div class="field full"><label>מידע נוסף</label><textarea name="details"></textarea></div><div class="field"><label>קישור רלוונטי</label><input type="url" name="link" placeholder="https://..."></div><div class="field"><label>האם אפשר לפרסם בפינת השידוכים?</label><select name="permission_to_publish"><option>כן</option><option>לא — לעיון מנהלי הקהילה בלבד</option></select></div></div><button class="btn" type="submit" style="background:#17324d;color:#fff;margin-top:18px">שליחת הפנייה</button><div class="submit-note">הטופס מחובר למנגנון Forms של Netlify בשם community-ideas. לאחר פרסום האתר, הפניות יישמרו שם עם כל פרטי הטופס.</div><div class="success" id="ideaSuccess">הפנייה נשלחה בהצלחה.</div></form></div></div>
-<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><button class="close" onclick="closeModal()">×</button><h2 id="mname"></h2><b id="mrole"></b><p id="mdetail" class="muted"></p></div></div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><button class="close" onclick="closeModal()">×</button><h2 id="mname"></h2><b id="mrole"></b><p id="mdetail" class="muted"></p><p id="mmotto" class="person-motto-detail" dir="auto"></p></div></div>
 <script>
-function showPerson(n,r,d){mname.textContent=n;mrole.textContent=r;mdetail.textContent=d;modal.classList.add('open')}
+function showPerson(n,r,d,motto){mname.textContent=n;mrole.textContent=r;mdetail.textContent=d;mmotto.textContent=motto||'';mmotto.style.display=motto?'block':'none';modal.classList.add('open')}
 function closeModal(){modal.classList.remove('open')}
 function filterPeople(){let q=search.value.trim().toLowerCase();document.querySelectorAll('.person').forEach(p=>p.style.display=p.dataset.search.toLowerCase().includes(q)?'block':'none')}
 function openSubmit(){document.getElementById('submitModal').classList.add('open')}
@@ -2233,12 +2287,43 @@ function editAdminMessage(id){const x=adminMessagesCache.find(a=>a.id===id);if(!
 async function deleteAdminMessage(id){if(!confirm('למחוק את ההודעה?'))return;await fetch('/api/messages',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminMessages();await loadBoardMessages()}
 
 let adminPeopleCache=[];
+let personExistingPhoto=null;
 
 function personDetailText(x){
   return [x.description||'',x.email?'מייל: '+x.email:'',x.phone?'טלפון: '+x.phone:''].filter(Boolean).join('\n');
 }
 function personSearchText(x){
-  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||''].filter(Boolean).join(' ');
+  return [x.name||'',x.institution||'',x.description||'',x.email||'',x.phone||'',x.motto||''].filter(Boolean).join(' ');
+}
+function personPhotoMarkup(x){
+  return x.photoUrl
+    ? `<span class="person-photo"><img src="${escAttr(x.photoUrl)}" alt="${escAttr(x.name||'')}"></span>`
+    : '<span class="person-photo person-photo-empty" aria-hidden="true"></span>';
+}
+function renderPersonPhotoPreview(){
+  const box=document.getElementById('personPhotoPreview');if(!box)return;
+  const f=document.getElementById('personPhoto')?.files?.[0];
+  if(f){
+    const url=URL.createObjectURL(f);
+    box.innerHTML=`<div class="person-photo-preview-row"><img src="${url}" alt=""><span>${esc(f.name)}</span><button type="button" onclick="clearSelectedPersonPhoto()">ביטול בחירה</button></div>`;
+    return;
+  }
+  if(personExistingPhoto?.url){
+    box.innerHTML=`<div class="person-photo-preview-row"><img src="${escAttr(personExistingPhoto.url)}" alt=""><span>תמונה קיימת</span><button type="button" onclick="removePersonPhoto()">הסרת תמונה</button></div>`;
+  }else{
+    box.innerHTML='<span class="muted">אין תמונה.</span>';
+  }
+}
+function clearSelectedPersonPhoto(){const el=document.getElementById('personPhoto');if(el)el.value='';renderPersonPhotoPreview()}
+function removePersonPhoto(){personExistingPhoto=null;const el=document.getElementById('personPhoto');if(el)el.value='';renderPersonPhotoPreview()}
+async function uploadPersonPhoto(file){
+  if(!file)return null;
+  if(!String(file.type||'').startsWith('image/'))throw new Error('יש לבחור קובץ תמונה.');
+  const fd=new FormData();fd.append('file',file);
+  const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+editorToken},body:fd});
+  if(r.status===401){logoutEditor();throw new Error('unauthorized')}
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||'העלאת התמונה נכשלה')}
+  return await r.json();
 }
 function renderPeople(rows){
   const grid=document.getElementById('peopleGrid');
@@ -2250,7 +2335,7 @@ function renderPeople(rows){
   grid.innerHTML=rows.map(x=>{
     const detail=personDetailText(x);
     const searchText=personSearchText(x);
-    return `<div class="person" data-search="${escAttr(searchText)}" data-name="${escAttr(x.name||'')}" data-inst="${escAttr(x.institution||'')}" data-detail="${escAttr(detail)}" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>${esc(x.name||'')}</h3><div class="muted">${esc(x.institution||'')}</div></div>`;
+    return `<div class="person" data-search="${escAttr(searchText)}" data-name="${escAttr(x.name||'')}" data-inst="${escAttr(x.institution||'')}" data-detail="${escAttr(detail)}" data-motto="${escAttr(x.motto||'')}" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail,this.dataset.motto)">${personPhotoMarkup(x)}<div class="person-copy"><h3>${esc(x.name||'')}</h3><div class="muted">${esc(x.institution||'')}</div></div></div>`;
   }).join('');
 }
 async function loadPeople(){
@@ -2270,7 +2355,7 @@ async function loadAdminPeople(){
   if(r.status===401){logoutEditor();return}
   adminPeopleCache=await r.json();
   if(!box)return;
-  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>${esc(x.institution||'')}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small></div><div class="admin-row-actions"><button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
+  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div class="admin-person-summary">${personPhotoMarkup(x)}<div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>${esc(x.institution||'')}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small>${x.motto?`<div class="admin-person-motto" dir="auto">${esc(x.motto)}</div>`:''}</div></div><div class="admin-row-actions"><button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
 }
 function clearPersonForm(){
   document.getElementById('personId').value='';
@@ -2279,6 +2364,10 @@ function clearPersonForm(){
   document.getElementById('personEmail').value='';
   document.getElementById('personPhone').value='';
   document.getElementById('personDescription').value='';
+  document.getElementById('personMotto').value='';
+  document.getElementById('personPhoto').value='';
+  personExistingPhoto=null;
+  renderPersonPhotoPreview();
   const st=document.getElementById('peopleSaveStatus');if(st)st.textContent='';
 }
 function editPerson(id){
@@ -2289,21 +2378,34 @@ function editPerson(id){
   document.getElementById('personEmail').value=x.email||'';
   document.getElementById('personPhone').value=x.phone||'';
   document.getElementById('personDescription').value=x.description||'';
+  document.getElementById('personMotto').value=x.motto||'';
+  document.getElementById('personPhoto').value='';
+  personExistingPhoto=x.photoKey?{key:x.photoKey,name:x.photoName||'',url:x.photoUrl||''}:null;
+  renderPersonPhotoPreview();
   document.getElementById('adminPeople').scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function savePerson(){
   const st=document.getElementById('peopleSaveStatus');
+  const photoFile=document.getElementById('personPhoto').files?.[0]||null;
   const body={
     id:document.getElementById('personId').value||undefined,
     name:document.getElementById('personName').value.trim(),
     institution:document.getElementById('personInstitution').value.trim(),
     email:document.getElementById('personEmail').value.trim(),
     phone:document.getElementById('personPhone').value.trim(),
-    description:document.getElementById('personDescription').value.trim()
+    description:document.getElementById('personDescription').value.trim(),
+    motto:document.getElementById('personMotto').value.trim(),
+    photoKey:personExistingPhoto?.key||'',
+    photoName:personExistingPhoto?.name||''
   };
   if(!body.name){if(st)st.textContent='יש להזין שם מלא.';return}
-  if(st)st.textContent='שומר...';
+  if(st)st.textContent=photoFile?'מעלה תמונה ושומר...':'שומר...';
   try{
+    if(photoFile){
+      const up=await uploadPersonPhoto(photoFile);
+      body.photoKey=up.key;
+      body.photoName=up.name||photoFile.name;
+    }
     const r=await fetch('/api/people',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});
     if(r.status===401){logoutEditor();return}
     if(!r.ok)throw new Error('שמירה נכשלה');
@@ -2336,6 +2438,7 @@ document.addEventListener('DOMContentLoaded',()=>{loadBoardMessages();loadGaller
 document.addEventListener('DOMContentLoaded',()=>{
  const gf=document.getElementById('galleryFiles');if(gf)gf.addEventListener('change',e=>{addGalleryFiles([...e.target.files]);e.target.value=''});
  const bf=document.getElementById('boardFiles');if(bf)bf.addEventListener('change',e=>{for(const f of [...e.target.files]){const key=f.name+'|'+f.size+'|'+f.lastModified;if(!boardPendingFiles.some(x=>(x.name+'|'+x.size+'|'+x.lastModified)===key))boardPendingFiles.push(f)}renderBoardSelectedFiles();e.target.value=''});
+ const pf=document.getElementById('personPhoto');if(pf)pf.addEventListener('change',renderPersonPhotoPreview);
 });
 </script>
 <script id="atelier-v36-js">
