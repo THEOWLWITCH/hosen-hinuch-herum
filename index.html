@@ -2390,7 +2390,7 @@ function esc(s){return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&l
 document.addEventListener('DOMContentLoaded',()=>{if(window.resStart&&!resStart.value)setResourceDateParts('resStart',todayLocalISO());const input=document.getElementById('editorCode');if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')checkEditorCode()})});
 </script>
 <script id="v33-dynamic-js">
-let boardMessages=[];let boardIndex=0;let boardTimer=null;let boardPendingFiles=[];let boardEditingId='';let boardExistingAttachments=[];let boardExistingCover=null;let galleryCache=[];let galleryCurrent=null;let galleryMediaIndex=0;let adminGalleryCache=[];let adminMessagesCache=[];let galleryEditMedia=[];let galleryPendingFiles=[];
+let boardMessages=[];let boardIndex=0;let boardTimer=null;let boardImageTimer=null;let boardPendingFiles=[];let boardEditingId='';let boardExistingAttachments=[];let boardExistingCover=null;let galleryCache=[];let galleryCurrent=null;let galleryMediaIndex=0;let adminGalleryCache=[];let adminMessagesCache=[];let galleryEditMedia=[];let galleryPendingFiles=[];
 function heDateTime(v){try{return new Intl.DateTimeFormat('he-IL',{dateStyle:'short',timeStyle:'short'}).format(new Date(v))}catch(e){return v||''}}
 function heDate(v){try{return new Intl.DateTimeFormat('he-IL',{dateStyle:'medium'}).format(new Date(v+'T12:00:00'))}catch(e){return v||''}}
 function linkifyText(text){const safe=esc(text||'');return safe.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
@@ -2413,9 +2413,19 @@ function boardRestartTimer(){
   if(boardTimer)clearInterval(boardTimer);
   if(boardMessages.length>1)boardTimer=setInterval(()=>boardNext(),7000);
 }
-function boardImageMove(event,key,step){
+function boardRestartImageTimer(){
+  if(boardImageTimer)clearInterval(boardImageTimer);
+  boardImageTimer=null;
+  const x=boardMessages[boardIndex];if(!x)return;
+  const images=(x.attachments||[]).filter(boardAttachmentIsImage);if(images.length<2)return;
+  const key=String(x.id||boardIndex);
+  boardImageTimer=setInterval(()=>boardImageMove(null,key,1,false),4000);
+}
+function boardImageMove(event,key,step,restartTimers=true){
   if(event){event.preventDefault();event.stopPropagation()}
   const x=boardMessages[boardIndex];if(!x)return;
+  const activeKey=String(x.id||boardIndex);
+  if(String(key)!==activeKey)return;
   const images=(x.attachments||[]).filter(boardAttachmentIsImage);if(images.length<2)return;
   const gallery=document.querySelector('#boardFeed .board-image-gallery');if(!gallery)return;
   window.__boardImageIndex=window.__boardImageIndex||{};
@@ -2426,14 +2436,17 @@ function boardImageMove(event,key,step){
   const lockedX=window.scrollX;
   const lockedY=window.scrollY;
   gallery.outerHTML=boardAttachmentGallery(x);
-  boardRestartTimer();
+  if(restartTimers){
+    boardRestartTimer();
+    boardRestartImageTimer();
+  }
 
   requestAnimationFrame(()=>{
     window.scrollTo(lockedX,lockedY);
     requestAnimationFrame(()=>window.scrollTo(lockedX,lockedY));
   });
-}function boardImageNext(event,key){boardImageMove(event,key,1)}
-function boardImagePrev(event,key){boardImageMove(event,key,-1)}
+}function boardImageNext(event,key){boardImageMove(event,key,1,true)}
+function boardImagePrev(event,key){boardImageMove(event,key,-1,true)}
 function ensureBoardImageLightbox(){
   let box=document.getElementById('boardImageLightbox');
   if(box)return box;
@@ -2451,6 +2464,7 @@ function openBoardImageLightbox(event,img){
   if(event){event.preventDefault();event.stopPropagation()}
   if(!img?.src)return;
   if(boardTimer)clearInterval(boardTimer);
+  if(boardImageTimer)clearInterval(boardImageTimer);
   const box=ensureBoardImageLightbox();
   const big=box.querySelector('img');
   big.src=img.src;
@@ -2466,6 +2480,7 @@ function closeBoardImageLightbox(){
   box.setAttribute('aria-hidden','true');
   const big=box.querySelector('img');if(big)big.removeAttribute('src');
   boardRestartTimer();
+  boardRestartImageTimer();
   const back=window.__boardLightboxReturn;
   if(back?.isConnected)back.focus({preventScroll:true});
 }
@@ -2480,6 +2495,7 @@ function renderBoardMessage(){
   const gallery=boardAttachmentGallery(x);
   feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;
   counter.textContent=`${boardIndex+1} / ${boardMessages.length}`;
+  boardRestartImageTimer();
   requestAnimationFrame(()=>{
     window.scrollTo(lockedX,lockedY);
     requestAnimationFrame(()=>window.scrollTo(lockedX,lockedY));
