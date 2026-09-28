@@ -2073,6 +2073,7 @@ body:has(.feedback-modal.open){
     <input type="hidden" id="personId">
     <div class="admin-grid">
       <label>שם מלא*<input id="personName" dir="auto"></label>
+      <label>סדר הופעה<input id="personOrder" type="number" min="1" step="1" inputmode="numeric" placeholder="1"><span class="field-hint">מספר קטן יותר יופיע קודם. אם יישאר ריק, חבר/ה חדש/ה יתווסף לסוף.</span></label>
       <label>מוסד / שיוך<input id="personInstitution" dir="auto"></label>
       <label>מייל<input id="personEmail" type="email" dir="ltr"></label>
       <label>טלפון<input id="personPhone" type="tel" dir="ltr"></label>
@@ -2356,11 +2357,12 @@ async function loadAdminPeople(){
   if(r.status===401){logoutEditor();return}
   adminPeopleCache=await r.json();
   if(!box)return;
-  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div class="admin-person-summary">${personPhotoMarkup(x)}<div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>${esc(x.institution||'')}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small>${x.motto?`<div class="admin-person-motto" dir="auto">${esc(x.motto)}</div>`:''}</div></div><div class="admin-row-actions"><button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
+  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div class="admin-person-summary">${personPhotoMarkup(x)}<div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>סדר: ${esc(String(x.order||''))}${x.institution?' · '+esc(x.institution):''}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small>${x.motto?`<div class="admin-person-motto" dir="auto">${esc(x.motto)}</div>`:''}</div></div><div class="admin-row-actions"><button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
 }
 function clearPersonForm(){
   document.getElementById('personId').value='';
   document.getElementById('personName').value='';
+  document.getElementById('personOrder').value='';
   document.getElementById('personInstitution').value='';
   document.getElementById('personEmail').value='';
   document.getElementById('personPhone').value='';
@@ -2375,6 +2377,7 @@ function editPerson(id){
   const x=adminPeopleCache.find(a=>a.id===id);if(!x)return;
   document.getElementById('personId').value=x.id||'';
   document.getElementById('personName').value=x.name||'';
+  document.getElementById('personOrder').value=x.order||'';
   document.getElementById('personInstitution').value=x.institution||'';
   document.getElementById('personEmail').value=x.email||'';
   document.getElementById('personPhone').value=x.phone||'';
@@ -2391,6 +2394,7 @@ async function savePerson(){
   const body={
     id:document.getElementById('personId').value||undefined,
     name:document.getElementById('personName').value.trim(),
+    order:document.getElementById('personOrder').value.trim()?Number(document.getElementById('personOrder').value):undefined,
     institution:document.getElementById('personInstitution').value.trim(),
     email:document.getElementById('personEmail').value.trim(),
     phone:document.getElementById('personPhone').value.trim(),
