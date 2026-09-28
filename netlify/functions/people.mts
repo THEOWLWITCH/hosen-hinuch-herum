@@ -237,6 +237,29 @@ async function listAll(): Promise<Person[]> {
     .map(x=>({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""}));
 }
 
+async function placeAt(person:Person, desired:number): Promise<Person> {
+  const st=dataStore();
+  const others=(await listAll()).filter(x=>x.id!==person.id);
+  const position=Math.min(Math.max(1,Math.trunc(desired||1)),others.length+1);
+  const arranged=[...others];
+  arranged.splice(position-1,0,{...person,order:position});
+  for(let i=0;i<arranged.length;i++){
+    const { photoUrl, ...stored } = arranged[i] as Person;
+    const normalized={...stored,order:i+1,updatedAt:arranged[i].id===person.id?person.updatedAt:stored.updatedAt};
+    await st.setJSON(`people/${normalized.id}.json`,normalized);
+  }
+  return {...person,order:position,photoUrl:person.photoKey?`/api/file?key=${encodeURIComponent(person.photoKey)}`:""};
+}
+
+async function resequence(): Promise<void> {
+  const st=dataStore();
+  const rows=await listAll();
+  for(let i=0;i<rows.length;i++){
+    const { photoUrl, ...stored } = rows[i] as Person;
+    await st.setJSON(`people/${stored.id}.json`,{...stored,order:i+1});
+  }
+}
+
 export default async (req:Request)=>{
   const st=dataStore();
   if(req.method==="GET"){
@@ -255,8 +278,8 @@ export default async (req:Request)=>{
     const requestedOrder=body.order===undefined || body.order===null || body.order==="" ? maxOrder+1 : body.order;
     const x=clean({...body,id:id(),order:requestedOrder,createdAt:now},{createdAt:now,order:maxOrder+1});
     if(!x.name) return json({error:"missing_name"},400);
-    await st.setJSON(`people/${x.id}.json`,x);
-    return json({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""},201);
+    const placed=await placeAt(x,x.order||maxOrder+1);
+    return json(placed,201);
   }
 
   if(req.method==="PUT"){
@@ -269,11 +292,11 @@ export default async (req:Request)=>{
     if(!old) return json({error:"not_found"},404);
     const x=clean(body,old);
     if(!x.name) return json({error:"missing_name"},400);
-    await st.setJSON(key,x);
+    const placed=await placeAt(x,x.order||old.order||1);
     if(old.photoKey && old.photoKey!==x.photoKey){
       try{ await store("hosen-files").delete(old.photoKey); }catch{}
     }
-    return json({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""});
+    return json(placed);
   }
 
   if(req.method==="DELETE"){
@@ -287,6 +310,7 @@ export default async (req:Request)=>{
     if(old.photoKey){
       try{ await store("hosen-files").delete(old.photoKey); }catch{}
     }
+    await resequence();
     return json({ok:true});
   }
 
