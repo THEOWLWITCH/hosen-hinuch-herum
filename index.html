@@ -2012,6 +2012,116 @@ body:has(.feedback-modal.open){
 @media(max-width:900px){.research-latest-shell{grid-template-columns:1fr}.research-library-sticky{position:static;max-height:none}.research-library-panel{order:-1}.research-theme-list{grid-template-columns:1fr}}
 @media(max-width:650px){.research-latest-head,.research-themes-head,.research-suggest-head{align-items:flex-start;flex-direction:column}.research-suggest-grid{grid-template-columns:1fr}.research-suggest-grid .wide{grid-column:auto}}
 </style>
+<style id="research-compact-v61">
+/* Compact research cards */
+.research-chronological-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important
+}
+.research-chronological-card{
+  gap:4px!important;
+  padding:8px 9px!important;
+  border-radius:6px!important;
+  box-shadow:none!important
+}
+.research-chronological-card .research-card-topline{
+  gap:6px!important;
+  min-height:16px
+}
+.research-chronological-card .research-card-date{
+  font-size:9.6px!important
+}
+.research-chronological-card .research-card-category{
+  font-size:8.8px!important;
+  padding:2px 5px!important
+}
+.research-chronological-card h4{
+  font-size:12.3px!important;
+  line-height:1.28!important;
+  margin:0!important
+}
+.research-chronological-card .research-citation{
+  font-size:9.7px!important;
+  line-height:1.25!important;
+  margin:0!important
+}
+.research-chronological-card p{
+  font-size:10.35px!important;
+  line-height:1.38!important;
+  margin:0!important
+}
+.research-chronological-card .research-why{
+  font-size:10.25px!important;
+  line-height:1.36!important;
+  padding:4px 6px!important;
+  border-right-width:2px!important
+}
+.research-chronological-card>a{
+  font-size:9.9px!important;
+  margin-top:1px!important
+}
+
+/* Make the established knowledge section match the compact theme-card language */
+.research-foundation-wrap{
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  border-radius:0!important;
+  margin-bottom:26px!important
+}
+.research-foundation-head{
+  padding-bottom:9px!important;
+  border-bottom:1px solid #dfe7ea!important;
+  margin-bottom:8px!important
+}
+.research-foundation{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important
+}
+.research-foundation-item{
+  padding:9px 10px!important;
+  border:1px solid #e1e8ea!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  box-shadow:none!important
+}
+.research-foundation-item.featured{
+  border-color:#e1e8ea!important;
+  background:#fff!important
+}
+.research-foundation-item h4{
+  font-size:12.2px!important;
+  line-height:1.4!important;
+  margin:0 0 4px!important;
+  color:#2b5065!important
+}
+.research-foundation-item p{
+  font-size:10.75px!important;
+  line-height:1.45!important;
+  margin:0!important;
+  color:#5d707b!important
+}
+.research-foundation-evidence{
+  gap:4px!important;
+  margin-top:5px!important;
+  font-size:9.5px!important;
+  line-height:1.35!important
+}
+.research-foundation-evidence a{
+  font-size:9.5px!important
+}
+.research-foundation-origin{
+  font-size:8.8px!important;
+  padding:2px 5px!important;
+  margin-bottom:4px!important
+}
+@media(max-width:900px){
+  .research-chronological-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:760px){
+  .research-foundation{grid-template-columns:1fr!important}
+}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
