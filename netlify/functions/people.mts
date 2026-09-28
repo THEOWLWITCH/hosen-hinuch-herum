@@ -12,6 +12,7 @@ type Person = {
   websiteUrl?:string;
   facebookUrl?:string;
   instagramUrl?:string;
+  linkedinUrl?:string;
   photoKey?:string;
   photoName?:string;
   photoUrl?:string;
@@ -231,6 +232,7 @@ function clean(body:any, base:Partial<Person> = {}): Person {
     websiteUrl:body.websiteUrl===undefined ? String(base.websiteUrl || "") : cleanUrl(body.websiteUrl),
     facebookUrl:body.facebookUrl===undefined ? String(base.facebookUrl || "") : cleanUrl(body.facebookUrl),
     instagramUrl:body.instagramUrl===undefined ? String(base.instagramUrl || "") : cleanUrl(body.instagramUrl),
+    linkedinUrl:body.linkedinUrl===undefined ? String(base.linkedinUrl || "") : cleanUrl(body.linkedinUrl),
     photoKey:body.photoKey===undefined ? String(base.photoKey || "") : (String(body.photoKey || "").startsWith("files/") ? String(body.photoKey) : ""),
     photoName:body.photoName===undefined ? String(base.photoName || "") : String(body.photoName || "").trim().slice(0,240),
     order:normalizedOrder,
