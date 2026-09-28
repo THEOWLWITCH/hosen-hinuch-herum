@@ -8,6 +8,10 @@ type Person = {
   description?:string;
   email?:string;
   phone?:string;
+  motto?:string;
+  photoKey?:string;
+  photoName?:string;
+  photoUrl?:string;
   order?:number;
   createdAt?:string;
   updatedAt?:string;
@@ -204,6 +208,9 @@ function clean(body:any, base:Partial<Person> = {}): Person {
     description:String(body.description || "").trim().slice(0,6000),
     email:String(body.email || "").trim().slice(0,240),
     phone:String(body.phone || "").trim().slice(0,80),
+    motto:String(body.motto || "").trim().slice(0,600),
+    photoKey:body.photoKey===undefined ? String(base.photoKey || "") : (String(body.photoKey || "").startsWith("files/") ? String(body.photoKey) : ""),
+    photoName:body.photoName===undefined ? String(base.photoName || "") : String(body.photoName || "").trim().slice(0,240),
     order:Number.isFinite(Number(body.order)) ? Number(body.order) : Number(base.order || Date.now()),
     createdAt:String(base.createdAt || body.createdAt || new Date().toISOString()),
     updatedAt:new Date().toISOString(),
@@ -220,7 +227,10 @@ async function listAll(): Promise<Person[]> {
     if(!v?.id) continue;
     if(v.deleted) map.delete(v.id); else map.set(v.id,v);
   }
-  return [...map.values()].filter(x=>!x.deleted).sort((a,b)=>(a.order||0)-(b.order||0) || a.name.localeCompare(b.name,"he"));
+  return [...map.values()]
+    .filter(x=>!x.deleted)
+    .sort((a,b)=>(a.order||0)-(b.order||0) || a.name.localeCompare(b.name,"he"))
+    .map(x=>({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""}));
 }
 
 export default async (req:Request)=>{
@@ -253,7 +263,10 @@ export default async (req:Request)=>{
     const x=clean(body,old);
     if(!x.name) return json({error:"missing_name"},400);
     await st.setJSON(key,x);
-    return json(x);
+    if(old.photoKey && old.photoKey!==x.photoKey){
+      try{ await store("hosen-files").delete(old.photoKey); }catch{}
+    }
+    return json({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""});
   }
 
   if(req.method==="DELETE"){
@@ -264,6 +277,9 @@ export default async (req:Request)=>{
     const old=saved || fallback;
     if(!old) return json({error:"not_found"},404);
     await st.setJSON(`people/${body.id}.json`,{...old,deleted:true,updatedAt:new Date().toISOString()});
+    if(old.photoKey){
+      try{ await store("hosen-files").delete(old.photoKey); }catch{}
+    }
     return json({ok:true});
   }
 
