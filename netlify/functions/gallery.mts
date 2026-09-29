@@ -23,12 +23,12 @@ export default async (req:Request) => {
   const st=dataStore();
   if(req.method==="GET"){
     const u=new URL(req.url); const admin=u.searchParams.get("admin")==="1";
-    if(admin && !(await validToken(req))) return json({error:"unauthorized"},401);
+    if(admin && !(await validToken(req,"admin"))) return json({error:"unauthorized"},401);
     let rows=await listAll(); if(!admin) rows=rows.filter(x=>x.active!==false);
     return json(rows.map(decorate));
   }
-  if(!(await validToken(req))) return json({error:"unauthorized"},401);
   if(req.method==="POST"){
+    if(!(await validToken(req,["admin","uploader"]))) return json({error:"unauthorized"},401);
     const body=await req.json(); const now=new Date().toISOString();
     const x:GalleryItem={...body,id:id(),active:body.active!==false,createdAt:now,updatedAt:now,media:Array.isArray(body.media)?body.media:[]};
     if(!x.title||!x.date||!x.media.length) return json({error:"missing_fields",message:"חסרים כותרת, תאריך או תמונות."},400);
@@ -36,6 +36,7 @@ export default async (req:Request) => {
     await st.setJSON(`gallery/${x.id}.json`,x); return json(decorate(x),201);
   }
   if(req.method==="PUT"){
+    if(!(await validToken(req,"admin"))) return json({error:"unauthorized"},401);
     const body=await req.json(); if(!body.id) return json({error:"missing_id"},400);
     const key=`gallery/${body.id}.json`; const old=await st.get(key,{type:"json"}) as GalleryItem|null;
     if(!old) return json({error:"not_found"},404);
@@ -48,6 +49,7 @@ export default async (req:Request) => {
     await st.setJSON(key,x); return json(decorate(x));
   }
   if(req.method==="DELETE"){
+    if(!(await validToken(req,"admin"))) return json({error:"unauthorized"},401);
     const body=await req.json(); if(!body.id) return json({error:"missing_id"},400);
     const key=`gallery/${body.id}.json`; const old=await st.get(key,{type:"json"}) as GalleryItem|null;
     for(const m of old?.media||[]){ if(m.key) await fileStore().delete(m.key); }
