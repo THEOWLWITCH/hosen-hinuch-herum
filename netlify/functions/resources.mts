@@ -41,15 +41,15 @@ export default async (req: Request) => {
   if (req.method === "GET") {
     const u = new URL(req.url);
     const admin = u.searchParams.get("admin") === "1";
-    if (admin && !(await validToken(req))) return json({ error: "unauthorized" }, 401);
+    if (admin && !(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     let rows = await listAll();
     if (!admin) rows = rows.filter(publicVisible);
     const cat = u.searchParams.get("category");
     if (cat) rows = rows.filter(x => x.category === cat);
     return json(rows.map(decorate));
   }
-  if (!(await validToken(req))) return json({ error: "unauthorized" }, 401);
   if (req.method === "POST") {
+    if (!(await validToken(req, ["admin","uploader"]))) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
     const now = new Date().toISOString();
     const x: Resource = { ...body, id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
@@ -58,6 +58,7 @@ export default async (req: Request) => {
     return json(decorate(x), 201);
   }
   if (req.method === "PUT") {
+    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
     if (!body.id) return json({ error: "missing_id" }, 400);
     const key = `resources/${body.id}.json`;
@@ -68,6 +69,7 @@ export default async (req: Request) => {
     return json(decorate(x));
   }
   if (req.method === "DELETE") {
+    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
     if (!body.id) return json({ error: "missing_id" }, 400);
     const key = `resources/${body.id}.json`;
