@@ -3,7 +3,7 @@ import { id, json, safeName, store, validToken } from "../lib/shared.mts";
 
 export default async (req:Request) => {
   if(req.method!=="POST") return json({error:"method"},405);
-  if(!(await validToken(req))) return json({error:"unauthorized"},401);
+  if(!(await validToken(req,["admin","uploader"]))) return json({error:"unauthorized"},401);
   const form=await req.formData(); const f=form.get("file");
   if(!(f instanceof File)) return json({error:"missing_file"},400);
   if(f.size > 4_000_000) return json({error:"file_too_large",message:"בשל מגבלת Netlify, העלאה ישירה מוגבלת לכ־4MB. לקובץ גדול יש להשתמש בקישור."},413);
