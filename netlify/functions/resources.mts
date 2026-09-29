@@ -49,8 +49,14 @@ export default async (req: Request) => {
     return json(rows.map(decorate));
   }
   if (req.method === "POST") {
-    if (!(await validToken(req, ["admin","uploader"]))) return json({ error: "unauthorized" }, 401);
+    const adminOK = await validToken(req, "admin");
+    const uploaderOK = adminOK || await validToken(req, "uploader");
+    if (!uploaderOK) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
+    if (!adminOK) {
+      const uploaderCategories = new Set(["professional","publications","policy","research-tools"]);
+      if (!uploaderCategories.has(String(body.category || ""))) return json({ error: "forbidden_category" }, 403);
+    }
     const now = new Date().toISOString();
     const x: Resource = { ...body, id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
     if (!x.title || !x.category) return json({ error: "missing_fields" }, 400);
