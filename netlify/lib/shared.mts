@@ -35,18 +35,38 @@ async function hmac(payload: string) {
   return hex(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload)));
 }
 
-export async function issueToken() {
+export type AccessRole = "admin" | "uploader";
+
+export async function issueToken(role: AccessRole = "admin") {
   const exp = Date.now() + 12 * 60 * 60 * 1000;
-  const payload = String(exp);
+  const payload = `${role}:${exp}`;
   return `${payload}.${await hmac(payload)}`;
 }
 
-export async function validToken(req: Request) {
+export async function validToken(req: Request, allowed: AccessRole | AccessRole[] = "admin") {
   const h = req.headers.get("authorization") || "";
   if (!h.startsWith("Bearer ")) return false;
-  const [payload, sig] = h.slice(7).split(".");
-  if (!payload || !sig || Number(payload) < Date.now()) return false;
-  return sig === (await hmac(payload));
+  const token = h.slice(7);
+  const dot = token.lastIndexOf(".");
+  if (dot < 1) return false;
+  const payload = token.slice(0, dot);
+  const sig = token.slice(dot + 1);
+  if (!sig || sig !== (await hmac(payload))) return false;
+
+  let role: AccessRole = "admin";
+  let exp = 0;
+  if (/^\d+$/.test(payload)) {
+    // Backward compatibility for editor tokens issued before role separation.
+    exp = Number(payload);
+  } else {
+    const m = payload.match(/^(admin|uploader):(\d+)$/);
+    if (!m) return false;
+    role = m[1] as AccessRole;
+    exp = Number(m[2]);
+  }
+  if (!Number.isFinite(exp) || exp < Date.now()) return false;
+  const roles = Array.isArray(allowed) ? allowed : [allowed];
+  return roles.includes(role);
 }
 
 export function id() {
