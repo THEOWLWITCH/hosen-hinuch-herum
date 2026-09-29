@@ -284,13 +284,12 @@ export default async (req:Request)=>{
   const st=dataStore();
   if(req.method==="GET"){
     const u=new URL(req.url);
-    if(u.searchParams.get("admin")==="1" && !(await validToken(req))) return json({error:"unauthorized"},401);
+    if(u.searchParams.get("admin")==="1" && !(await validToken(req,"admin"))) return json({error:"unauthorized"},401);
     return json(await listAll());
   }
 
-  if(!(await validToken(req))) return json({error:"unauthorized"},401);
-
   if(req.method==="POST"){
+    if(!(await validToken(req,["admin","uploader"]))) return json({error:"unauthorized"},401);
     const body=await req.json();
     const now=new Date().toISOString();
     const current=await listAll();
@@ -303,6 +302,7 @@ export default async (req:Request)=>{
   }
 
   if(req.method==="PUT"){
+    if(!(await validToken(req,"admin"))) return json({error:"unauthorized"},401);
     const body=await req.json();
     if(!body.id) return json({error:"missing_id"},400);
     const key=`people/${body.id}.json`;
@@ -320,6 +320,7 @@ export default async (req:Request)=>{
   }
 
   if(req.method==="DELETE"){
+    if(!(await validToken(req,"admin"))) return json({error:"unauthorized"},401);
     const body=await req.json();
     if(!body.id) return json({error:"missing_id"},400);
     const saved=await st.get(`people/${body.id}.json`,{type:"json"}) as Person | null;
