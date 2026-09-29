@@ -2376,7 +2376,7 @@ body:has(.feedback-modal.open){
  <div class="modal-card admin-card" dir="rtl">
   <button type="button" class="close" onclick="closeAdmin()">×</button>
   <div class="admin-head"><h2 id="adminPanelTitle">ניהול מערכת</h2><div class="admin-head-actions"><button id="adminCommunityMail" type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
-  <div class="admin-tabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">כל החומרים</button><button id="tabLib" onclick="showAdminTab('library')">מאגר מקורות</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
+  <div class="admin-tabs" id="adminTabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">כל החומרים</button><button id="tabLib" onclick="showAdminTab('library')">מאגר מקורות</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
   <section id="adminResources">
    <h3 id="adminResourcesTitle">ניהול כל החומרים באתר</h3>
    <p id="adminResourcesNote" class="admin-note">כאן מרוכזים החומרים מכל מדורי האתר. מנהלת המערכת יכולה להוסיף, לערוך ולמחוק.</p>
@@ -2593,6 +2593,7 @@ async function prepareFeedback(e){
 let editorToken=sessionStorage.getItem('hosen_editor_token')||'';
 let uploaderToken=sessionStorage.getItem('hosen_uploader_token')||'';
 let currentAccessRole='';
+let currentUploaderTarget='library';
 let pendingAccessMode='admin';
 let adminResourcesCache=[]; let libraryCache=[]; let currentCategory='';
 function activeAccessToken(){return currentAccessRole==='uploader'?uploaderToken:editorToken}
@@ -2676,8 +2677,50 @@ function openManagementAccess(){if(editorToken){currentAccessRole='admin';openAd
 function closeEditorAccess(){const m=document.getElementById('editorAccessModal');m.style.display='none';m.setAttribute('aria-hidden','true')}
 async function checkEditorCode(){editorCodeStatus.textContent='בודק...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:editorCode.value.trim(),mode:pendingAccessMode})});if(!r.ok)throw 0;const j=await r.json();if(j.role==='uploader'){uploaderToken=j.token;sessionStorage.setItem('hosen_uploader_token',uploaderToken);currentAccessRole='uploader'}else{editorToken=j.token;sessionStorage.setItem('hosen_editor_token',editorToken);currentAccessRole='admin'}closeEditorAccess();openAdmin()}catch(e){editorCodeStatus.textContent='קוד שגוי'}}
 function logoutEditor(){if(currentAccessRole==='uploader'){uploaderToken='';sessionStorage.removeItem('hosen_uploader_token')}else{editorToken='';sessionStorage.removeItem('hosen_editor_token')}currentAccessRole='';closeAdmin()}
-function configureAccessPanel(){const isAdmin=currentAccessRole==='admin';const title=document.getElementById('adminPanelTitle');if(title)title.textContent=isAdmin?'ניהול מערכת':'העלאת חומרים';const mail=document.getElementById('adminCommunityMail');if(mail)mail.hidden=!isAdmin;const tabLib=document.getElementById('tabLib');if(tabLib)tabLib.hidden=!isAdmin;const tabRes=document.getElementById('tabRes');if(tabRes)tabRes.textContent=isAdmin?'כל החומרים':'חומרים';const resTitle=document.getElementById('adminResourcesTitle');if(resTitle)resTitle.textContent=isAdmin?'ניהול כל החומרים באתר':'העלאת חומר חדש';const resNote=document.getElementById('adminResourcesNote');if(resNote)resNote.textContent=isAdmin?'כאן מרוכזים החומרים מכל מדורי האתר. מנהלת המערכת יכולה להוסיף, לערוך ולמחוק.':'אפשר להעלות חומר לספריה, פעילות חדשה בקהילה או פרויקט פעיל. ניתן לצרף תמונה ראשית וגם גלריית תמונות. חומרים קיימים אינם ניתנים לעריכה או למחיקה באזור זה.';const destWrap=document.getElementById('resDestinationWrap');if(destWrap)destWrap.hidden=false;const dest=document.getElementById('resDestination');if(dest){const all=[['library','ספריה'],['activity','פעילות חדשה בקהילה'],['project','פרויקט פעיל'],['research','מחקרים חדשים בישראל ובעולם'],['calls','קולות קוראים'],['conferences','כנסים'],['grants','מענקי מחקר'],['lectures','הרצאות']];const allowed=isAdmin?all:all.slice(0,3);const current=dest.value;dest.innerHTML=allowed.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join('');dest.value=allowed.some(x=>x[0]===current)?current:'library'}const resList=document.getElementById('adminResourceList');if(resList)resList.hidden=!isAdmin;const galList=document.getElementById('adminGalleryList');if(galList)galList.hidden=!isAdmin;const msgList=document.getElementById('adminMessageList');if(msgList)msgList.hidden=!isAdmin;const peopleList=document.getElementById('adminPeopleList');if(peopleList)peopleList.hidden=!isAdmin;const msgAction=document.getElementById('messageUploadAction');if(msgAction)msgAction.hidden=isAdmin;const msgNote=document.getElementById('adminMessagesNote');if(msgNote)msgNote.textContent=isAdmin?'הודעות שפג תוקפן מוסרות אוטומטית מהתצוגה ונמחקות בניקוי שעתי.':'הוספת הודעה חדשה בלבד. עריכה ומחיקה נעשות בניהול המערכת.';const orderWrap=document.getElementById('personOrderWrap');if(orderWrap)orderWrap.hidden=!isAdmin;if(!isAdmin){clearResourceForm();resDestination.value='library';updateResourceSectionOptions();clearGalleryForm();clearPersonForm()}}
-function openAdmin(){const token=activeAccessToken();if(!token)return openEditorAccess(currentAccessRole==='uploader'?'upload':'admin');configureAccessPanel();document.getElementById('adminModal').style.display='flex';document.getElementById('adminModal').setAttribute('aria-hidden','false');showAdminTab('resources')}
+function configureAccessPanel(){
+ const isAdmin=currentAccessRole==='admin';
+ const title=document.getElementById('adminPanelTitle');if(title)title.textContent=isAdmin?'ניהול מערכת':'העלאת חומרים';
+ const mail=document.getElementById('adminCommunityMail');if(mail)mail.hidden=!isAdmin;
+ const tabs=document.getElementById('adminTabs');
+ if(tabs){
+   tabs.innerHTML=isAdmin
+    ? '<button class="active" id="tabRes" onclick="showAdminTab(\'resources\')">כל החומרים</button><button id="tabLib" onclick="showAdminTab(\'library\')">מאגר מקורות</button><button id="tabGal" onclick="showAdminTab(\'gallery\')">גלריה</button><button id="tabMsg" onclick="showAdminTab(\'messages\')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab(\'people\')">הנבחרת</button>'
+    : '<button data-upload-target="library" onclick="selectUploadTarget(\'library\')">ספריה</button><button data-upload-target="activity" onclick="selectUploadTarget(\'activity\')">פעילות חדשה בקהילה</button><button data-upload-target="project" onclick="selectUploadTarget(\'project\')">פרויקט פעיל</button><button data-upload-target="gallery" onclick="selectUploadTarget(\'gallery\')">גלריה</button><button data-upload-target="messages" onclick="selectUploadTarget(\'messages\')">הודעות קהילה</button><button data-upload-target="people" onclick="selectUploadTarget(\'people\')">הנבחרת</button>';
+ }
+ const resList=document.getElementById('adminResourceList');if(resList)resList.hidden=!isAdmin;
+ const galList=document.getElementById('adminGalleryList');if(galList)galList.hidden=!isAdmin;
+ const msgList=document.getElementById('adminMessageList');if(msgList)msgList.hidden=!isAdmin;
+ const peopleList=document.getElementById('adminPeopleList');if(peopleList)peopleList.hidden=!isAdmin;
+ const msgAction=document.getElementById('messageUploadAction');if(msgAction)msgAction.hidden=isAdmin;
+ const msgNote=document.getElementById('adminMessagesNote');if(msgNote)msgNote.textContent=isAdmin?'הודעות שפג תוקפן מוסרות אוטומטית מהתצוגה ונמחקות בניקוי שעתי.':'הוספת הודעה חדשה בלבד. עריכה ומחיקה נעשות בניהול המערכת.';
+ const orderWrap=document.getElementById('personOrderWrap');if(orderWrap)orderWrap.hidden=!isAdmin;
+ const destWrap=document.getElementById('resDestinationWrap');if(destWrap)destWrap.hidden=!isAdmin;
+ if(!isAdmin){clearResourceForm();clearGalleryForm();clearPersonForm()}
+}
+function selectUploadTarget(target){
+ if(currentAccessRole!=='uploader')return;
+ currentUploaderTarget=target;
+ document.querySelectorAll('#adminTabs [data-upload-target]').forEach(b=>b.classList.toggle('active',b.dataset.uploadTarget===target));
+ if(target==='library'||target==='activity'||target==='project'){
+   showAdminTab('resources');
+   resDestination.value=target;
+   updateResourceSectionOptions();
+   const t=document.getElementById('adminResourcesTitle');
+   const n=document.getElementById('adminResourcesNote');
+   if(t)t.textContent=target==='library'?'העלאה לספריה':target==='activity'?'העלאת פעילות חדשה בקהילה':'העלאת פרויקט פעיל';
+   if(n)n.textContent=target==='library'?'בחרו מדור בספריה והעלו את החומר. ניתן לצרף תמונה ראשית וגלריית תמונות.':target==='activity'?'העלו פעילות שמתקיימת עכשיו. ניתן לצרף תמונה ראשית וגלריית תמונות.':'העלו פרויקט או קבוצת עבודה הפעילים כעת. ניתן לצרף תמונה ראשית וגלריית תמונות.';
+ }else{
+   showAdminTab(target);
+ }
+}
+function openAdmin(){
+ const token=activeAccessToken();
+ if(!token)return openEditorAccess(currentAccessRole==='uploader'?'upload':'admin');
+ configureAccessPanel();
+ document.getElementById('adminModal').style.display='flex';
+ document.getElementById('adminModal').setAttribute('aria-hidden','false');
+ if(currentAccessRole==='uploader')selectUploadTarget('library');else showAdminTab('resources');
+}
 function closeAdmin(){document.getElementById('adminModal').style.display='none';document.getElementById('adminModal').setAttribute('aria-hidden','true')}
 function showAdminTab(tab){adminResources.hidden=tab!=='resources';if(window.adminLibrary)adminLibrary.hidden=true;tabRes.classList.toggle('active',tab==='resources');if(tab==='resources'&&currentAccessRole==='admin')loadAdminResources()}
 async function uploadInput(input){const f=input.files&&input.files[0];if(!f)return null;const fd=new FormData();fd.append('file',f);const token=activeAccessToken();const r=await fetch('/api/upload',{method:'POST',headers:token?{Authorization:'Bearer '+token}:{},body:fd});const j=await r.json();if(!r.ok)throw new Error(j.message||'העלאה נכשלה');return j}
@@ -3038,16 +3081,14 @@ async function deletePerson(id){
 // Extend existing admin navigation.
 showAdminTab=function(tab){
  const isAdmin=currentAccessRole==='admin';
- if(!isAdmin&&tab==='library')tab='resources';
  const sections={resources:document.getElementById('adminResources'),library:document.getElementById('adminLibrary'),gallery:document.getElementById('adminGallery'),messages:document.getElementById('adminMessages'),people:document.getElementById('adminPeople')};
  Object.entries(sections).forEach(([k,v])=>{if(v)v.hidden=k!==tab});
- const tabs={resources:document.getElementById('tabRes'),library:document.getElementById('tabLib'),gallery:document.getElementById('tabGal'),messages:document.getElementById('tabMsg'),people:document.getElementById('tabPeople')};
- Object.entries(tabs).forEach(([k,v])=>{if(v)v.classList.toggle('active',k===tab)});
  if(isAdmin){
+   const tabs={resources:document.getElementById('tabRes'),library:document.getElementById('tabLib'),gallery:document.getElementById('tabGal'),messages:document.getElementById('tabMsg'),people:document.getElementById('tabPeople')};
+   Object.entries(tabs).forEach(([k,v])=>{if(v)v.classList.toggle('active',k===tab)});
    if(tab==='resources')loadAdminResources();else if(tab==='library')loadLibrary(true);else if(tab==='gallery')loadAdminGallery();else if(tab==='messages')loadAdminMessages();else if(tab==='people')loadAdminPeople();
  }else{
-   if(tab==='resources'){clearResourceForm();resDestination.value='library';updateResourceSectionOptions()}
-   else if(tab==='gallery')clearGalleryForm();
+   if(tab==='gallery')clearGalleryForm();
    else if(tab==='people')clearPersonForm();
  }
 };
