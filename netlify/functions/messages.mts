@@ -60,7 +60,7 @@ export default async (req: Request) => {
   if (req.method === "GET") {
     const u = new URL(req.url);
     const admin = u.searchParams.get("admin") === "1";
-    if (admin && !(await validToken(req))) return json({ error:"unauthorized" }, 401);
+    if (admin && !(await validToken(req,"admin"))) return json({ error:"unauthorized" }, 401);
 
     let rows = await listAll();
     if (!admin) {
@@ -72,7 +72,8 @@ export default async (req: Request) => {
 
   if (req.method === "POST") {
     const body = await req.json();
-    if (!pinOK(body.code)) return json({ error:"invalid_code" }, 401);
+    const tokenOK = await validToken(req, ["admin","uploader"]);
+    if (!pinOK(body.code) && !tokenOK) return json({ error:"invalid_code" }, 401);
 
     const now = new Date();
     const expires = new Date(body.expiresAt || "");
@@ -116,7 +117,7 @@ export default async (req: Request) => {
   }
 
   if (req.method === "PUT") {
-    if (!(await validToken(req))) return json({ error:"unauthorized" }, 401);
+    if (!(await validToken(req,"admin"))) return json({ error:"unauthorized" }, 401);
 
     const body = await req.json();
     if (!body.id) return json({ error:"missing_id" }, 400);
