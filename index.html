@@ -1013,6 +1013,7 @@ html[data-page="gallery"] #gallery,
 html[data-page="people"] #people,
 html[data-page="articles"] #researchWorld,
 html[data-page="calls"] #resources,
+html[data-page="publications"] #resources,
 html[data-page="conferences"] #resources,
 html[data-page="grants"] #resources,
 html[data-page="lectures"] #resources,
@@ -2146,6 +2147,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="gallery" href="/gallery">גלריה</a>
     <a class="site-tab" data-route="people" href="/people">הנבחרת</a>
     <a class="site-tab" data-route="calls" href="/calls">קולות קוראים</a>
+    <a class="site-tab" data-route="publications" href="/publications">פרסומים</a>
     <a class="site-tab" data-route="articles" href="/articles">מחקר חדש בעולם</a>
     <a class="site-tab" data-route="conferences" href="/conferences">כנסים</a>
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
@@ -2275,6 +2277,7 @@ body:has(.feedback-modal.open){
 <div class="section-head"><div><h2>ועוד...</h2></div></div>
 <div class="topics">
 <button type="button" class="topic" onclick="showCategory('calls','קולות קוראים')">קולות קוראים</button>
+<button type="button" class="topic" onclick="showCategory('publications','פרסומים')">פרסומים</button>
 <button type="button" class="topic" onclick="showCategory('articles','מחקר חדש בעולם')">מחקר חדש בעולם</button>
 <button type="button" class="topic" onclick="showCategory('conferences','כנסים')">כנסים</button>
 <button type="button" class="topic" onclick="showCategory('grants','מענקי מחקר')">מענקי מחקר</button>
@@ -2369,8 +2372,8 @@ body:has(.feedback-modal.open){
    <input type="hidden" id="resId">
    <div class="admin-grid">
     <label>כותרת*<input id="resTitle" dir="auto"></label>
-    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="articles">מחקר חדש בעולם</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option></select></label>
-    <label>סוג משאב<select id="resType"><option value="text">טקסט</option><option value="link">קישור</option><option value="file">קובץ</option><option value="presentation">מצגת</option></select></label>
+    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="publications">פרסומים</option><option value="articles">מחקר חדש בעולם</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option></select></label>
+    <label>סוג משאב<select id="resType"><option value="text">טקסט</option><option value="image-title">תמונה + כותרת</option><option value="link">קישור</option><option value="file">קובץ</option><option value="presentation">מצגת</option></select></label>
     <label>קישור<input id="resUrl" placeholder="https://..."></label>
     <label>תאריך תחילת הצגה
       <div class="resource-date-parts" dir="ltr" aria-label="תאריך תחילת הצגה">
@@ -2394,7 +2397,7 @@ body:has(.feedback-modal.open){
     </label>
     <label class="wide">תיאור<textarea id="resDescription" rows="3" dir="auto"></textarea></label>
     <label>קובץ / מצגת<input id="resFile" type="file"></label>
-    <label>תמונה ממוזערת<input id="resThumb" type="file" accept="image/*"></label>
+    <label>תמונה / תמונה ממוזערת<input id="resThumb" type="file" accept="image/*"></label>
     <label class="check"><input id="resActive" type="checkbox" checked> פעיל</label>
    </div>
    <div class="admin-actions"><button class="resource-publish-btn" onclick="saveResource()">העלאה ופרסום</button><button class="secondary" onclick="clearResourceForm()">ניקוי</button></div>
@@ -2558,7 +2561,7 @@ async function prepareFeedback(e){
 <script id="v31-backend-js">
 let editorToken=sessionStorage.getItem('hosen_editor_token')||'';
 let adminResourcesCache=[]; let libraryCache=[]; let currentCategory='';
-const catLabels={calls:'קולות קוראים',articles:'מחקר חדש בעולם',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים'};
+const catLabels={calls:'קולות קוראים',publications:'פרסומים',articles:'מחקר חדש בעולם',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים'};
 function todayLocalISO(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function setResourceDateParts(prefix,iso){
   const day=document.getElementById(prefix+'Day'),month=document.getElementById(prefix+'Month'),year=document.getElementById(prefix+'Year'),hidden=document.getElementById(prefix);
@@ -2592,7 +2595,7 @@ function openAdmin(){if(!editorToken)return openEditorAccess();document.getEleme
 function closeAdmin(){document.getElementById('adminModal').style.display='none';document.getElementById('adminModal').setAttribute('aria-hidden','true')}
 function showAdminTab(tab){adminResources.hidden=tab!=='resources';adminLibrary.hidden=tab!=='library';tabRes.classList.toggle('active',tab==='resources');tabLib.classList.toggle('active',tab==='library');if(tab==='resources')loadAdminResources();else loadLibrary(true)}
 async function uploadInput(input){const f=input.files&&input.files[0];if(!f)return null;const fd=new FormData();fd.append('file',f);const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+editorToken},body:fd});const j=await r.json();if(!r.ok)throw new Error(j.message||'העלאה נכשלה');return j}
-async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');const savedCategory=body.category;clearResourceForm();await loadAdminResources();currentCategory=savedCategory;await showCategory(savedCategory,catLabels[savedCategory]||'משאבים')}catch(e){alert(e.message||'שמירה נכשלה')}}
+async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');if(body.type==='image-title'&&!(thumb?.key||old.thumbnailKey))return alert('יש להעלות תמונה');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');const savedCategory=body.category;clearResourceForm();await loadAdminResources();currentCategory=savedCategory;await showCategory(savedCategory,catLabels[savedCategory]||'משאבים')}catch(e){alert(e.message||'שמירה נכשלה')}}
 function clearResourceForm(){resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value=''}
 async function loadAdminResources(){const r=await fetch('/api/resources?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminResourcesCache=await r.json();adminResourceList.innerHTML=adminResourcesCache.length?adminResourcesCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${esc(catLabels[x.category]||x.category)} · ${esc(x.type||'')} ${x.endDate?'· עד '+esc(formatResourceDate(x.endDate)):''} ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editResource('${x.id}')">עריכה</button><button class="danger" onclick="deleteResource('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין משאבים עדיין.</p>'}
 function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;resId.value=x.id;resTitle.value=x.title||'';resDescription.value=x.description||'';resCategory.value=x.category||'calls';resType.value=x.type||'text';resUrl.value=x.url||'';setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
@@ -3283,6 +3286,7 @@ document.addEventListener('DOMContentLoaded',renderResearchWorld);
 (function(){
   const labels={
     calls:'קולות קוראים',
+    publications:'פרסומים',
     conferences:'כנסים',
     grants:'מענקי מחקר',
     lectures:'הרצאות',
