@@ -1013,6 +1013,7 @@ html[data-page="gallery"] #gallery,
 html[data-page="people"] #people,
 html[data-page="articles"] #researchWorld,
 html[data-page="calls"] #resources,
+html[data-page="library"] #resources,
 html[data-page="publications"] #resources,
 html[data-page="conferences"] #resources,
 html[data-page="grants"] #resources,
@@ -1029,7 +1030,13 @@ html[data-resource-page="1"] #resources .resource-area{
   padding-top:0!important;
 }
 html:not([data-page="calls"]) #resources .call-note{display:none!important}
+html[data-page="library"] #resources .library-topics{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 24px}
+html[data-page="library"] #resources .library-topics .topic{min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:650}
+html[data-page="library"] #resources .library-topics .topic span{display:block;font-size:11px;font-weight:500;color:#6d7f89}
+html[data-page="library"] #resources .library-topics .topic.active{background:#eaf2f5;border-color:#9eb7c3;color:#244b61}
 @media(max-width:700px){
+  html[data-page="library"] #resources .library-topics{grid-template-columns:repeat(2,minmax(0,1fr))}
+
   .exact-site-banner{height:88px!important}
   .mofet-icer-strip{height:54px!important}
   .site-tabs{padding:7px 10px!important}
@@ -2147,14 +2154,11 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="gallery" href="/gallery">גלריה</a>
     <a class="site-tab" data-route="people" href="/people">הנבחרת</a>
     <a class="site-tab" data-route="calls" href="/calls">קולות קוראים</a>
-    <a class="site-tab" data-route="publications" href="/publications">פרסומים</a>
-    <a class="site-tab" data-route="articles" href="/articles">מחקר חדש בעולם</a>
+    <a class="site-tab" data-route="articles" href="/articles">מחקרים חדשים בישראל ובעולם</a>
     <a class="site-tab" data-route="conferences" href="/conferences">כנסים</a>
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
     <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
-    <a class="site-tab" data-route="research-tools" href="/research-tools">כלי מחקר</a>
-    <a class="site-tab" data-route="policy" href="/policy">מסמכי מדיניות</a>
-    <a class="site-tab" data-route="professional" href="/professional">משאבים מקצועיים</a>
+    <a class="site-tab" data-route="library" href="/library">ספריה</a>
   </div>
 </nav>
 <main>
@@ -2209,7 +2213,7 @@ body:has(.feedback-modal.open){
 <section id="researchWorld" class="research-world"><div class="wrap">
   <div class="research-world-head">
     <div class="research-kicker">עודכן: 28.9.2026 · מחקרים ופרסומים נבחרים מ־2024–2026</div>
-    <h2>מחקרים חדשים בעולם</h2>
+    <h2>מחקרים חדשים בישראל ובעולם</h2>
     <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום. המחקרים מוצגים לפי תאריך הפרסום — החדש ביותר למעלה והישן ביותר למטה.</p>
     <p class="research-scope-note"><strong>גבול המדור:</strong> אין כאן מחקרים קליניים או מחקרים מתחום הפסיכולוגיה. „חוסן חינוכי ותפקודי” מתייחס ליכולת של תלמידים, צוותים, בתי ספר וקהילות להמשיך לתפקד, להשתייך, ללמוד ולהסתגל בזמן משבר.</p>
   </div>
@@ -2274,17 +2278,12 @@ body:has(.feedback-modal.open){
 </div></section>
 
 <section id="resources"><div class="wrap">
-<div class="section-head"><div><h2>ועוד...</h2></div></div>
-<div class="topics">
-<button type="button" class="topic" onclick="showCategory('calls','קולות קוראים')">קולות קוראים</button>
-<button type="button" class="topic" onclick="showCategory('publications','פרסומים')">פרסומים</button>
-<button type="button" class="topic" onclick="showCategory('articles','מחקר חדש בעולם')">מחקר חדש בעולם</button>
-<button type="button" class="topic" onclick="showCategory('conferences','כנסים')">כנסים</button>
-<button type="button" class="topic" onclick="showCategory('grants','מענקי מחקר')">מענקי מחקר</button>
-<button type="button" class="topic" onclick="showCategory('lectures','הרצאות')">הרצאות</button>
-<button type="button" class="topic" onclick="showCategory('research-tools','כלי מחקר')">כלי מחקר</button>
-<button type="button" class="topic" onclick="showCategory('policy','מסמכי מדיניות')">מסמכי מדיניות</button>
-<button type="button" class="topic" onclick="showCategory('professional','משאבים מקצועיים')">משאבים מקצועיים</button>
+<div class="section-head"><div><h2>ספריה</h2><p class="muted">מאגר הידע של הקהילה, מרוכז בארבעה מדורים.</p></div></div>
+<div class="topics library-topics" aria-label="מדורי הספריה">
+<button type="button" class="topic" data-library-category="professional" onclick="showCategory('professional','משאבים')">משאבים</button>
+<button type="button" class="topic" data-library-category="publications" onclick="showCategory('publications','פרסומים — ספרים ומאמרים')">פרסומים <span>ספרים ומאמרים</span></button>
+<button type="button" class="topic" data-library-category="policy" onclick="showCategory('policy','מסמכי מדיניות')">מסמכי מדיניות</button>
+<button type="button" class="topic" data-library-category="research-tools" onclick="showCategory('research-tools','כלי מחקר')">כלי מחקר</button>
 </div>
 <div id="resourceArea" class="resource-area" hidden><div class="resource-area-head"><h3 id="resourceAreaTitle"></h3><button type="button" onclick="closeCategory()">×</button></div><div id="resourceCards" class="resource-cards"></div></div>
 <div class="call-note" id="neamanCall" data-expiry="2026-10-06">
@@ -2366,15 +2365,28 @@ body:has(.feedback-modal.open){
  <div class="modal-card admin-card" dir="rtl">
   <button type="button" class="close" onclick="closeAdmin()">×</button>
   <div class="admin-head"><h2>ניהול האתר</h2><div class="admin-head-actions"><button type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה מעריכה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
-  <div class="admin-tabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">משאבים</button><button id="tabLib" onclick="showAdminTab('library')">ספריה</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
+  <div class="admin-tabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">ניהול משאבים</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
   <section id="adminResources">
-   <h3>הוספה / עריכת משאב</h3>
+   <h3>העלאת חומר / ניהול משאבים</h3>
+   <p class="admin-note">טופס אחד לכל החומרים. בוחרים תחילה לאן החומר מיועד, ולאחר מכן את המדור המתאים. הרשימה בתחתית העמוד מיועדת לעריכה ולמחיקה ונגישה לעורכות האתר בלבד.</p>
    <input type="hidden" id="resId">
    <div class="admin-grid">
+    <label>יעד פרסום*<select id="resDestination" onchange="updateResourceSectionOptions()">
+      <option value="library">ספריה</option>
+      <option value="research">מחקרים חדשים בישראל ובעולם</option>
+      <option value="calls">קולות קוראים</option>
+      <option value="conferences">כנסים</option>
+      <option value="grants">מענקי מחקר</option>
+      <option value="lectures">הרצאות</option>
+    </select></label>
+    <label id="resSectionWrap">מדור*<select id="resCategory" onchange="updateResourceMetadataFields()"></select></label>
     <label>כותרת*<input id="resTitle" dir="auto"></label>
-    <label>שיוך*<select id="resCategory"><option value="calls">קולות קוראים</option><option value="publications">פרסומים</option><option value="articles">מחקר חדש בעולם</option><option value="conferences">כנסים</option><option value="grants">מענקי מחקר</option><option value="lectures">הרצאות</option><option value="research-tools">כלי מחקר</option><option value="policy">מסמכי מדיניות</option><option value="professional">משאבים מקצועיים</option></select></label>
     <label>סוג משאב<select id="resType"><option value="text">טקסט</option><option value="image-title">תמונה + כותרת</option><option value="link">קישור</option><option value="file">קובץ</option><option value="presentation">מצגת</option></select></label>
     <label>קישור<input id="resUrl" placeholder="https://..."></label>
+    <label id="resAuthorsWrap" hidden>מחברים<input id="resAuthors" dir="auto"></label>
+    <label id="resYearWrap" hidden>שנת פרסום<input id="resYear" inputmode="numeric" placeholder="2026"></label>
+    <label id="resSourceWrap" hidden>כתב עת / הוצאה / מקור<input id="resSource" dir="auto"></label>
+    <label id="resWhyWrap" class="wide" hidden>למה זה חשוב לקהילה?<textarea id="resWhy" rows="2" dir="auto"></textarea></label>
     <label>תאריך תחילת הצגה
       <div class="resource-date-parts" dir="ltr" aria-label="תאריך תחילת הצגה">
         <input id="resStartDay" inputmode="numeric" maxlength="2" placeholder="יום" aria-label="יום">
@@ -2561,7 +2573,49 @@ async function prepareFeedback(e){
 <script id="v31-backend-js">
 let editorToken=sessionStorage.getItem('hosen_editor_token')||'';
 let adminResourcesCache=[]; let libraryCache=[]; let currentCategory='';
-const catLabels={calls:'קולות קוראים',publications:'פרסומים',articles:'מחקר חדש בעולם',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות','research-tools':'כלי מחקר',policy:'מסמכי מדיניות',professional:'משאבים מקצועיים'};
+const catLabels={
+  calls:'קולות קוראים',
+  conferences:'כנסים',
+  grants:'מענקי מחקר',
+  lectures:'הרצאות',
+  professional:'ספריה / משאבים',
+  publications:'ספריה / פרסומים',
+  policy:'ספריה / מסמכי מדיניות',
+  'research-tools':'ספריה / כלי מחקר',
+  'research-preparedness':'מחקרים / מוכנות',
+  'research-resilience':'מחקרים / חוסן חינוכי ותפקודי',
+  'research-continuity':'מחקרים / רציפות למידה',
+  'research-teachers':'מחקרים / מורים צוותים ומנהיגות',
+  'research-tech':'מחקרים / טכנולוגיה AI וסימולציה בחירום'
+};
+const resourceDestinationSections={
+  library:[['professional','משאבים'],['publications','פרסומים — ספרים ומאמרים'],['policy','מסמכי מדיניות'],['research-tools','כלי מחקר']],
+  research:[['research-preparedness','מוכנות'],['research-resilience','חוסן חינוכי ותפקודי'],['research-continuity','רציפות למידה'],['research-teachers','מורים צוותים ומנהיגות'],['research-tech','טכנולוגיה AI וסימולציה בחירום']],
+  calls:[['calls','קולות קוראים']],
+  conferences:[['conferences','כנסים']],
+  grants:[['grants','מענקי מחקר']],
+  lectures:[['lectures','הרצאות']]
+};
+function resourceDestinationForCategory(cat){
+  for(const [dest,items] of Object.entries(resourceDestinationSections)) if(items.some(x=>x[0]===cat)) return dest;
+  return 'library';
+}
+function updateResourceSectionOptions(preferred){
+  const dest=document.getElementById('resDestination')?.value||'library';
+  const select=document.getElementById('resCategory'); if(!select)return;
+  const items=resourceDestinationSections[dest]||[];
+  select.innerHTML=items.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join('');
+  if(preferred&&items.some(x=>x[0]===preferred))select.value=preferred;
+  const wrap=document.getElementById('resSectionWrap'); if(wrap)wrap.hidden=items.length<=1;
+  updateResourceMetadataFields();
+}
+function updateResourceMetadataFields(){
+  const cat=document.getElementById('resCategory')?.value||'';
+  const isResearch=cat.startsWith('research-');
+  const isPublication=cat==='publications';
+  ['resAuthorsWrap','resYearWrap','resSourceWrap'].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=!(isResearch||isPublication)});
+  const why=document.getElementById('resWhyWrap');if(why)why.hidden=!isResearch;
+}
 function todayLocalISO(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
 function setResourceDateParts(prefix,iso){
   const day=document.getElementById(prefix+'Day'),month=document.getElementById(prefix+'Month'),year=document.getElementById(prefix+'Year'),hidden=document.getElementById(prefix);
@@ -2593,21 +2647,21 @@ async function checkEditorCode(){editorCodeStatus.textContent='בודק...';try{
 function logoutEditor(){editorToken='';sessionStorage.removeItem('hosen_editor_token');closeAdmin()}
 function openAdmin(){if(!editorToken)return openEditorAccess();document.getElementById('adminModal').style.display='flex';document.getElementById('adminModal').setAttribute('aria-hidden','false');showAdminTab('resources')}
 function closeAdmin(){document.getElementById('adminModal').style.display='none';document.getElementById('adminModal').setAttribute('aria-hidden','true')}
-function showAdminTab(tab){adminResources.hidden=tab!=='resources';adminLibrary.hidden=tab!=='library';tabRes.classList.toggle('active',tab==='resources');tabLib.classList.toggle('active',tab==='library');if(tab==='resources')loadAdminResources();else loadLibrary(true)}
+function showAdminTab(tab){adminResources.hidden=tab!=='resources';if(window.adminLibrary)adminLibrary.hidden=true;tabRes.classList.toggle('active',tab==='resources');if(tab==='resources')loadAdminResources()}
 async function uploadInput(input){const f=input.files&&input.files[0];if(!f)return null;const fd=new FormData();fd.append('file',f);const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+editorToken},body:fd});const j=await r.json();if(!r.ok)throw new Error(j.message||'העלאה נכשלה');return j}
-async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');if(body.type==='image-title'&&!(thumb?.key||old.thumbnailKey))return alert('יש להעלות תמונה');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');const savedCategory=body.category;clearResourceForm();await loadAdminResources();currentCategory=savedCategory;await showCategory(savedCategory,catLabels[savedCategory]||'משאבים')}catch(e){alert(e.message||'שמירה נכשלה')}}
-function clearResourceForm(){resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value=''}
+async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),authors:resAuthors.value.trim(),year:resYear.value.trim(),source:resSource.value.trim(),whyImportant:resWhy.value.trim(),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||''};if(!body.title)return alert('יש להזין כותרת');if(body.type==='image-title'&&!(thumb?.key||old.thumbnailKey))return alert('יש להעלות תמונה');if(body.category.startsWith('research-')&&(!body.authors||!body.year||!body.source))return alert('במחקר חדש יש להזין מחברים, שנה ומקור');const r=await fetch('/api/resources',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw new Error('שמירה נכשלה');clearResourceForm();await loadAdminResources();if(document.documentElement.dataset.page==='articles'&&typeof renderResearchWorld==='function')await renderResearchWorld()}catch(e){alert(e.message||'שמירה נכשלה')}}
+function clearResourceForm(){resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';resAuthors.value='';resYear.value='';resSource.value='';resWhy.value='';resDestination.value='library';updateResourceSectionOptions();setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value=''}
 async function loadAdminResources(){const r=await fetch('/api/resources?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminResourcesCache=await r.json();adminResourceList.innerHTML=adminResourcesCache.length?adminResourcesCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${esc(catLabels[x.category]||x.category)} · ${esc(x.type||'')} ${x.endDate?'· עד '+esc(formatResourceDate(x.endDate)):''} ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editResource('${x.id}')">עריכה</button><button class="danger" onclick="deleteResource('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין משאבים עדיין.</p>'}
-function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;resId.value=x.id;resTitle.value=x.title||'';resDescription.value=x.description||'';resCategory.value=x.category||'calls';resType.value=x.type||'text';resUrl.value=x.url||'';setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
+function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;resId.value=x.id;resDestination.value=resourceDestinationForCategory(x.category);updateResourceSectionOptions(x.category);resTitle.value=x.title||'';resDescription.value=x.description||'';resType.value=x.type||'text';resUrl.value=x.url||'';resAuthors.value=x.authors||'';resYear.value=x.year||'';resSource.value=x.source||'';resWhy.value=x.whyImportant||'';setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;updateResourceMetadataFields();document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
 async function deleteResource(id){if(!confirm('למחוק את המשאב?'))return;await fetch('/api/resources',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminResources();await refreshPublicResources()}
-async function showCategory(cat,label){currentCategory=cat;resourceArea.hidden=false;resourceAreaTitle.textContent=label;const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();renderResourceCards(rows);resourceArea.scrollIntoView({behavior:'smooth',block:'nearest'})}
+async function showCategory(cat,label){currentCategory=cat;resourceArea.hidden=false;resourceAreaTitle.textContent=label;document.querySelectorAll('[data-library-category]').forEach(b=>b.classList.toggle('active',b.dataset.libraryCategory===cat));const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();renderResourceCards(rows);resourceArea.scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeCategory(){resourceArea.hidden=true;currentCategory=''}
 function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4 dir="auto" class="auto-dir">${esc(x.title)}</h4>${x.description?`<p dir="auto" class="auto-dir">${esc(x.description)}</p>`:''}${x.endDate?`<p><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
 function resourceLink(x){const href=x.url||x.fileUrl||'';return href?`<a href="${escAttr(href)}" target="_blank" rel="noopener">לפרטים</a>`:''}
 async function refreshPublicResources(){if(currentCategory)showCategory(currentCategory,catLabels[currentCategory]||'משאבים')}
 function openLibrary(){const q=document.getElementById('libSearch');if(q){q.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>q.focus(),250)}}
 function closeLibrary(){}
-async function loadLibrary(admin){const r=await fetch('/api/library');const stored=await r.json();if(admin){libraryCache=stored;renderAdminLibrary();return}const researchRows=(typeof researchWorldItems!=='undefined'?researchWorldItems:[]).map(x=>({id:'research-'+x.id,title:x.title,authors:x.authors||'',year:x.year||'',journal:x.source||'',doi:x.url||'',abstract:x.summary||'',type:(x.source||'').toLowerCase().includes('report')?'דוח':'מאמר'}));const seen=new Set();libraryCache=[...researchRows,...stored].filter(x=>{const k=String(x.doi||x.title||x.apa||'').trim().toLowerCase();if(!k||seen.has(k))return false;seen.add(k);return true});renderPublicLibrary()}
+async function loadLibrary(admin){const r=await fetch('/api/library');const stored=await r.json();if(admin){libraryCache=stored;renderAdminLibrary();return}const allResearch=[...(typeof researchWorldItems!=='undefined'?researchWorldItems:[]),...(typeof uploadedResearchItems!=='undefined'?uploadedResearchItems:[])];const researchRows=allResearch.map(x=>({id:'research-'+x.id,title:x.title,authors:x.authors||'',year:x.year||'',journal:x.source||'',doi:x.url||'',abstract:x.summary||'',type:(x.source||'').toLowerCase().includes('report')?'דוח':'מאמר'}));const seen=new Set();libraryCache=[...researchRows,...stored].filter(x=>{const k=String(x.doi||x.title||x.apa||'').trim().toLowerCase();if(!k||seen.has(k))return false;seen.add(k);return true});renderPublicLibrary()}
 function renderPublicLibrary(){const qEl=document.getElementById('libSearch'),aEl=document.getElementById('libAuthors'),yEl=document.getElementById('libYear'),tEl=document.getElementById('libType'),out=document.getElementById('libResults');if(!qEl||!aEl||!yEl||!tEl||!out)return;const q=(qEl.value||'').trim().toLowerCase(),author=(aEl.value||'').trim().toLowerCase(),year=(yEl.value||'').trim(),t=tEl.value||'';const rows=libraryCache.filter(x=>{const general=[x.title,x.journal,x.doi,x.apa,x.abstract].filter(Boolean).join(' ').toLowerCase();const authors=String(x.authors||'').toLowerCase();const yr=String(x.year||'');return(!t||x.type===t)&&(!q||general.includes(q))&&(!author||authors.includes(author))&&(!year||yr.includes(year))}).slice(0,25);out.innerHTML=rows.length?rows.map(sourceHtml).join(''):'<p class="muted">לא נמצאו מקורות.</p>'}
 function sourceHtml(x){return `<div class="lib-item"><h3>${esc(x.title||x.apa||'מקור')}</h3><div class="lib-meta lib-biblio">${x.authors?`<span><strong>מחברים:</strong> ${esc(x.authors)}</span>`:''}${x.year?`<span><strong>שנה:</strong> ${esc(x.year)}</span>`:''}${x.journal?`<span><strong>מקור:</strong> ${esc(x.journal)}</span>`:''}${x.type?`<span>${esc(x.type)}</span>`:''}</div>${x.apa?`<p>${esc(x.apa)}</p>`:''}${x.abstract?`<p>${esc(x.abstract)}</p>`:''}${x.doi?`<a href="${escAttr(x.doi)}" target="_blank" rel="noopener">קישור למקור</a>`:''}${x.fileUrl?` · <a href="${escAttr(x.fileUrl)}" target="_blank">קובץ</a>`:''}</div>`}
 async function saveSource(){try{let f=null;if(sourceFile.files[0])f=await uploadInput(sourceFile);const old=libraryCache.find(x=>x.id===sourceId.value)||{};const body={id:sourceId.value||undefined,title:sourceTitle.value.trim(),authors:sourceAuthors.value.trim(),year:sourceYear.value.trim(),journal:sourceJournal.value.trim(),doi:sourceDoi.value.trim(),type:sourceType.value,apa:sourceApa.value.trim(),abstract:sourceAbstract.value.trim(),fileKey:f?.key||old.fileKey||'',fileName:f?.name||old.fileName||''};const r=await fetch('/api/library',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw 0;clearSourceForm();await loadLibrary(true)}catch(e){alert('שמירת המקור נכשלה')}}
@@ -2617,7 +2671,7 @@ function renderAdminLibrary(){const q=(adminLibSearch.value||'').toLowerCase();c
 function editSource(id){const x=libraryCache.find(a=>a.id===id);if(!x)return;sourceId.value=x.id;sourceTitle.value=x.title||'';sourceAuthors.value=x.authors||'';sourceYear.value=x.year||'';sourceJournal.value=x.journal||'';sourceDoi.value=x.doi||'';sourceType.value=x.type||'מאמר';sourceApa.value=x.apa||'';sourceAbstract.value=x.abstract||''}
 async function deleteSource(id){if(!confirm('למחוק את המקור?'))return;await fetch('/api/library',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadLibrary(true)}
 function esc(s){return String(s||'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c))}function escAttr(s){return esc(s)}
-document.addEventListener('DOMContentLoaded',()=>{if(window.resStart&&!resStart.value)setResourceDateParts('resStart',todayLocalISO());const input=document.getElementById('editorCode');if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')checkEditorCode()})});
+document.addEventListener('DOMContentLoaded',()=>{if(window.resStart&&!resStart.value)setResourceDateParts('resStart',todayLocalISO());updateResourceSectionOptions();const input=document.getElementById('editorCode');if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')checkEditorCode()})});
 </script>
 <script id="v33-dynamic-js">
 let boardMessages=[];let boardIndex=0;let boardTimer=null;let boardImageTimer=null;let boardPendingFiles=[];let boardEditingId='';let boardExistingAttachments=[];let boardExistingCover=null;let galleryCache=[];let galleryCurrent=null;let galleryMediaIndex=0;let adminGalleryCache=[];let adminMessagesCache=[];let galleryEditMedia=[];let galleryPendingFiles=[];
@@ -3259,20 +3313,42 @@ const researchWorldItems=[
 
 ];
 
+let uploadedResearchItems=[];
 function researchCategoryLabel(id){return researchWorldCategories.find(c=>c.id===id)?.label||id}
+async function loadUploadedResearch(){
+  const cats=researchWorldCategories.map(c=>'research-'+c.id);
+  try{
+    const groups=await Promise.all(cats.map(async cat=>{const r=await fetch('/api/resources?category='+encodeURIComponent(cat));return r.ok?await r.json():[]}));
+    uploadedResearchItems=groups.flat().map(x=>({
+      id:'uploaded-'+x.id,
+      date:x.startDate||String(x.createdAt||'').slice(0,10)||'',
+      dateLabel:x.startDate?formatResourceDate(x.startDate):(x.year||''),
+      authors:x.authors||'',
+      cat:String(x.category||'').replace(/^research-/,''),
+      source:x.source||'',
+      year:x.year||'',
+      title:x.title||'',
+      summary:x.description||'',
+      why:x.whyImportant||'',
+      url:x.url||x.fileUrl||'',
+      thumbnailUrl:x.thumbnailUrl||''
+    }));
+  }catch(e){uploadedResearchItems=[]}
+}
 function renderResearchStudies(){
  const root=document.getElementById('researchWorldContent');if(!root)return;
- const rows=researchWorldItems.slice().sort((a,b)=>String(b.date||b.year||'').localeCompare(String(a.date||a.year||'')));
- root.innerHTML=`<div class="research-chronological-grid">${rows.map(x=>`<article class="research-card research-chronological-card"><div class="research-card-topline"><span class="research-card-date">${esc(x.dateLabel||x.year||'')}</span><span class="research-card-category">${esc(researchCategoryLabel(x.cat))}</span></div><h4>${esc(x.title)}</h4><div class="research-citation">${esc(x.authors||'')} (${esc(x.year||'')}) · ${esc(x.source||'')}</div><p>${esc(x.summary)}</p><div class="research-why"><strong>למה זה חשוב לנו?</strong> ${esc(x.why)}</div><a href="${escAttr(x.url)}" target="_blank" rel="noopener">למקור</a></article>`).join('')}</div>`;
+ const rows=[...researchWorldItems,...uploadedResearchItems].sort((a,b)=>String(b.date||b.year||'').localeCompare(String(a.date||a.year||'')));
+ root.innerHTML=`<div class="research-chronological-grid">${rows.map(x=>`<article class="research-card research-chronological-card">${x.thumbnailUrl?`<img class="research-uploaded-thumb" src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<div class="research-card-topline"><span class="research-card-date">${esc(x.dateLabel||x.year||'')}</span><span class="research-card-category">${esc(researchCategoryLabel(x.cat))}</span></div><h4>${esc(x.title)}</h4><div class="research-citation">${esc(x.authors||'')} (${esc(x.year||'')}) · ${esc(x.source||'')}</div><p>${esc(x.summary)}</p>${x.why?`<div class="research-why"><strong>למה זה חשוב לנו?</strong> ${esc(x.why)}</div>`:''}${x.url?`<a href="${escAttr(x.url)}" target="_blank" rel="noopener">למקור</a>`:''}</article>`).join('')}</div>`;
 }
 function renderResearchThemes(){
  const root=document.getElementById('researchThemeSections');if(!root)return;
  root.innerHTML=researchWorldCategories.map(cat=>{
-   const rows=researchWorldItems.filter(x=>x.cat===cat.id).slice().sort((a,b)=>String(b.date||b.year||'').localeCompare(String(a.date||a.year||'')));
+   const rows=[...researchWorldItems,...uploadedResearchItems].filter(x=>x.cat===cat.id).sort((a,b)=>String(b.date||b.year||'').localeCompare(String(a.date||a.year||'')));
    return `<section class="research-theme-section"><div class="research-category-title"><h4>${esc(cat.label)}</h4><span>${rows.length} פריטים</span></div><div class="research-theme-list">${rows.map(x=>`<a class="research-theme-item" href="${escAttr(x.url)}" target="_blank" rel="noopener"><span class="research-theme-title">${esc(x.title)}</span><span class="research-theme-cite">${esc(x.authors||'')} (${esc(x.year||'')})</span></a>`).join('')}</div></section>`;
  }).join('');
 }
-function renderResearchWorld(){
+async function renderResearchWorld(){
+ await loadUploadedResearch();
  const insights=document.getElementById('researchInsights'),institutes=document.getElementById('researchInstitutes'),foundation=document.getElementById('researchFoundation');
  if(foundation)foundation.innerHTML=researchFoundationData.map(x=>`<article class="research-foundation-item${x.featured?' featured':''}">${x.label?`<div class="research-foundation-origin">${esc(x.label)}</div>`:''}<h4>${esc(x.title)}</h4><p>${esc(x.body)}</p>${x.source?`<div class="research-foundation-evidence"><strong>מקור המושג:</strong> <a href="${escAttr(x.source[1])}" target="_blank" rel="noopener">${esc(x.source[0])}</a></div>`:''}${x.support?.length?`<div class="research-foundation-evidence"><strong>ספרות תומכת ברכיבי המסגרת:</strong> ${x.support.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div>`:''}${x.evidence?.length?`<div class="research-foundation-evidence"><strong>מקורות מבססים:</strong> ${x.evidence.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div>`:''}</article>`).join('');
  if(institutes)institutes.innerHTML=researchInstitutesData.map(x=>`<article class="research-institute"><h4>${esc(x.name)}</h4><div class="research-institute-type">${esc(x.type)}</div><p><strong>התרומה:</strong> ${esc(x.contribution)}</p><p><strong>הרלוונטיות לקהילה:</strong> ${esc(x.relevance)}</p><a href="${escAttr(x.url)}" target="_blank" rel="noopener">לאתר / מרכז המחקר</a></article>`).join('');
@@ -3284,23 +3360,16 @@ document.addEventListener('DOMContentLoaded',renderResearchWorld);
 </script>
 <script id="separate-pages-v38-js">
 (function(){
-  const labels={
-    calls:'קולות קוראים',
-    publications:'פרסומים',
-    conferences:'כנסים',
-    grants:'מענקי מחקר',
-    lectures:'הרצאות',
-    'research-tools':'כלי מחקר',
-    policy:'מסמכי מדיניות',
-    professional:'משאבים מקצועיים'
-  };
+  const labels={calls:'קולות קוראים',conferences:'כנסים',grants:'מענקי מחקר',lectures:'הרצאות'};
+  const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
-  const page=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles']);
+  const requested=path||'now';
+  const simplePages=new Set(['now','match','gallery','people','articles','library']);
   const resourcePages=new Set(Object.keys(labels));
-  const resolved=simplePages.has(page)||resourcePages.has(page)?page:'now';
+  const libraryAliases=new Set(Object.keys(libraryLabels));
+  const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
   document.documentElement.dataset.page=resolved;
-  if(resourcePages.has(resolved)) document.documentElement.dataset.resourcePage='1';
+  if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
 
   document.addEventListener('DOMContentLoaded',async()=>{
     document.querySelectorAll('.site-tab[data-route]').forEach(a=>{
@@ -3310,24 +3379,24 @@ document.addEventListener('DOMContentLoaded',renderResearchWorld);
     });
 
     if(resourcePages.has(resolved)){
-      if(typeof currentCategory!=='undefined') currentCategory=resolved;
-      const h=document.querySelector('#resources .section-head h2');
-      if(h)h.textContent=labels[resolved];
+      if(typeof currentCategory!=='undefined')currentCategory=resolved;
+      const h=document.querySelector('#resources .section-head h2');if(h)h.textContent=labels[resolved];
+      const topics=document.querySelector('#resources .topics');if(topics)topics.style.display='none';
+      const area=document.getElementById('resourceArea'),cards=document.getElementById('resourceCards');if(area)area.hidden=false;
+      try{const r=await fetch('/api/resources?category='+encodeURIComponent(resolved));const rows=await r.json();if(typeof renderResourceCards==='function')renderResourceCards(rows)}
+      catch(e){if(cards)cards.innerHTML='<p class="muted">אין כרגע פריטים להצגה.</p>'}
+    }
 
-      const topics=document.querySelector('#resources .topics');
-      if(topics)topics.style.display='none';
-
-      const area=document.getElementById('resourceArea');
-      const cards=document.getElementById('resourceCards');
-      if(area)area.hidden=false;
-
-      try{
-        const r=await fetch('/api/resources?category='+encodeURIComponent(resolved));
-        const rows=await r.json();
-        if(typeof renderResourceCards==='function') renderResourceCards(rows);
-      }catch(e){
-        if(cards)cards.innerHTML='<p class="muted">אין כרגע פריטים להצגה.</p>';
-      }
+    if(resolved==='library'){
+      const cat=libraryAliases.has(requested)?requested:'professional';
+      if(typeof currentCategory!=='undefined')currentCategory=cat;
+      const h=document.querySelector('#resources .section-head h2');if(h)h.textContent='ספריה';
+      const topics=document.querySelector('#resources .topics');if(topics)topics.style.display='';
+      document.querySelectorAll('[data-library-category]').forEach(b=>b.classList.toggle('active',b.dataset.libraryCategory===cat));
+      const area=document.getElementById('resourceArea'),cards=document.getElementById('resourceCards'),title=document.getElementById('resourceAreaTitle');
+      if(area)area.hidden=false;if(title)title.textContent=libraryLabels[cat]||'ספריה';
+      try{const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();if(typeof renderResourceCards==='function')renderResourceCards(rows)}
+      catch(e){if(cards)cards.innerHTML='<p class="muted">אין כרגע פריטים להצגה.</p>'}
     }
   });
 })();
