@@ -1,9 +1,11 @@
 import type { Config } from "@netlify/functions";
 import { id, json, store, validToken } from "../lib/shared.mts";
 
+type ResourceImage = { key:string; name:string; type?:string };
 type Resource = {
   id: string; title: string; description?: string; category: string; type: string;
   url?: string; fileKey?: string; fileName?: string; thumbnailKey?: string; thumbnailName?: string;
+  gallery?: ResourceImage[];
   startDate?: string; endDate?: string; active?: boolean; createdAt?: string; updatedAt?: string;
 };
 
@@ -33,6 +35,7 @@ function decorate(x: Resource) {
     ...x,
     fileUrl: x.fileKey ? `/api/file?key=${encodeURIComponent(x.fileKey)}` : "",
     thumbnailUrl: x.thumbnailKey ? `/api/file?key=${encodeURIComponent(x.thumbnailKey)}` : "",
+    gallery: (x.gallery || []).map(m => ({...m, url:`/api/file?key=${encodeURIComponent(m.key)}`})),
   };
 }
 
@@ -54,11 +57,11 @@ export default async (req: Request) => {
     if (!uploaderOK) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
     if (!adminOK) {
-      const uploaderCategories = new Set(["professional","publications","policy","research-tools"]);
+      const uploaderCategories = new Set(["professional","publications","policy","research-tools","community-activity","active-project"]);
       if (!uploaderCategories.has(String(body.category || ""))) return json({ error: "forbidden_category" }, 403);
     }
     const now = new Date().toISOString();
-    const x: Resource = { ...body, id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
+    const x: Resource = { ...body, gallery:Array.isArray(body.gallery)?body.gallery:[], id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
     if (!x.title || !x.category) return json({ error: "missing_fields" }, 400);
     await st.setJSON(`resources/${x.id}.json`, x);
     return json(decorate(x), 201);
@@ -70,7 +73,7 @@ export default async (req: Request) => {
     const key = `resources/${body.id}.json`;
     const old = await st.get(key, { type: "json" });
     if (!old) return json({ error: "not_found" }, 404);
-    const x = { ...old, ...body, id: body.id, updatedAt: new Date().toISOString() };
+    const x = { ...old, ...body, gallery:Array.isArray(body.gallery)?body.gallery:(old as Resource).gallery||[], id: body.id, updatedAt: new Date().toISOString() };
     await st.setJSON(key, x);
     return json(decorate(x));
   }
@@ -82,6 +85,7 @@ export default async (req: Request) => {
     const old = await st.get(key, { type: "json" });
     if (old?.fileKey) await store("hosen-files").delete(old.fileKey);
     if (old?.thumbnailKey) await store("hosen-files").delete(old.thumbnailKey);
+    for (const m of (old as Resource)?.gallery || []) if (m?.key) await store("hosen-files").delete(m.key);
     await st.delete(key);
     return json({ ok: true });
   }
