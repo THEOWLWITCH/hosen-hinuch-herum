@@ -289,12 +289,14 @@ export default async (req:Request)=>{
   }
 
   if(req.method==="POST"){
-    if(!(await validToken(req,["admin","uploader"]))) return json({error:"unauthorized"},401);
+    const adminOK=await validToken(req,"admin");
+    const uploaderOK=adminOK || await validToken(req,"uploader");
+    if(!uploaderOK) return json({error:"unauthorized"},401);
     const body=await req.json();
     const now=new Date().toISOString();
     const current=await listAll();
     const maxOrder=current.reduce((m,x)=>Math.max(m,Number(x.order||0)),0);
-    const requestedOrder=body.order===undefined || body.order===null || body.order==="" ? maxOrder+1 : body.order;
+    const requestedOrder=adminOK && !(body.order===undefined || body.order===null || body.order==="") ? body.order : maxOrder+1;
     const x=clean({...body,id:id(),order:requestedOrder,createdAt:now},{createdAt:now,order:maxOrder+1});
     if(!x.name) return json({error:"missing_name"},400);
     const placed=await placeAt(x,x.order||maxOrder+1);
