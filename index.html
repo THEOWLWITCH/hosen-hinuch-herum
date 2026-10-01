@@ -1528,6 +1528,14 @@ section{
   margin:0;
   padding:0;
 }
+.banner-top-v44{
+  aspect-ratio:2400/377;
+}
+.banner-top-v44 img{
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
 .banner-icer-v44{
   text-decoration:none;
 }
@@ -2156,12 +2164,9 @@ body:has(.feedback-modal.open){
 </head>
 <body>
 <div class="banner-stack-v44">
-  <div class="banner-image-v44 banner-top-v44" role="banner" aria-label="חוסן חינוך חרום">
-    <img src="/assets/hosen-top-exact.webp" alt="חוסן חינוך חרום">
+  <div class="banner-image-v44 banner-top-v44" role="banner" aria-label="בינה מלאכותית חוסן חינוך חרום">
+    <img src="/assets/hosen-social-ai-banner.webp" alt="בינה מלאכותית חוסן חינוך חרום. קהילה אקדמית מקצועית לחינוך בחרום">
   </div>
-  <a class="banner-image-v44 banner-icer-v44" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="ICER 2027 — לפרטים">
-    <img src="/assets/icer-bottom-exact.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027">
-  </a>
 </div>
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
@@ -2186,10 +2191,9 @@ body:has(.feedback-modal.open){
   <div class="board-controls"><button type="button" onclick="boardPrev()" aria-label="הודעה קודמת">הודעה קודמת</button><span id="boardCounter"></span><button type="button" onclick="boardNext()" aria-label="הודעה הבאה">הודעה הבאה</button></div>
 </aside>
 <div class="top-now-content">
-<div class="section-head"><div><h2>מה שקורה עכשיו</h2></div></div>
 <div class="grid">
-<article class="card now-live-card" id="nowActivityCard"><h3>פעילות חדשה בקהילה</h3><p class="muted">טוען פעילות...</p></article>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
+<a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
 </div>
 </div>
 </div></section>
@@ -2763,8 +2767,8 @@ function heDate(v){try{return new Intl.DateTimeFormat('he-IL',{dateStyle:'medium
 function linkifyText(text){const safe=esc(text||'');return safe.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
 function attachmentIcon(a){const t=(a.type||'').toLowerCase(),n=(a.name||'').toLowerCase();if(t.startsWith('image/')||/\.(jpg|jpeg|png|webp|gif)$/.test(n))return '🖼️';if(t.startsWith('video/')||/\.(mp4|mov)$/.test(n))return '🎬';if(/\.pdf$/.test(n))return '📕';if(/\.(ppt|pptx)$/.test(n))return '📊';if(/\.(doc|docx)$/.test(n))return '📄';return '📎'}
 function nowMediaMarkup(x){const images=[];if(x?.thumbnailUrl)images.push({url:x.thumbnailUrl,name:x.thumbnailName||x.title||'תמונה'});for(const m of x?.gallery||[])if(m?.url)images.push(m);if(!images.length)return '';const key='now-'+String(x.id||Math.random());const thumbs=images.map((m,i)=>`<button type="button" class="now-media-thumb" onclick="event.stopPropagation();openBoardImageLightbox(event,this.querySelector('img'))"><img src="${escAttr(m.url)}" alt="${escAttr(m.name||x.title||'תמונה')}" loading="lazy"></button>`).join('');return `<div class="now-media-gallery ${images.length===1?'single':''}">${thumbs}</div>`}
-function nowItemMarkup(x,heading,emptyText){if(!x)return `<h3>${esc(heading)}</h3><p class="muted">${esc(emptyText)}</p>`;const title=String(x.title||'').trim(),description=String(x.description||'').trim(),norm=s=>s.replace(/\s+/g,' ').trim().toLocaleLowerCase('he');const showDescription=description&&norm(description)!==norm(title);return `<h3>${esc(heading)}</h3>${nowMediaMarkup(x)}<h4 class="now-live-title" dir="auto">${esc(title)}</h4>${showDescription?`<p dir="auto" class="auto-dir">${esc(description)}</p>`:''}${x.endDate?`<p class="now-live-date"><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}`}
-async function loadNowCard(category,elementId,heading,emptyText){const el=document.getElementById(elementId);if(!el)return;try{const r=await fetch('/api/resources?category='+encodeURIComponent(category));const rows=await r.json();const x=Array.isArray(rows)&&rows.length?rows[0]:null;el.innerHTML=nowItemMarkup(x,heading,emptyText)}catch(e){el.innerHTML=`<h3>${esc(heading)}</h3><p class="muted">לא ניתן לטעון כרגע.</p>`}}
+function nowItemMarkup(x,heading,emptyText){if(!x)return `<p class="muted">${esc(emptyText)}</p>`;const title=String(x.title||'').trim(),description=String(x.description||'').trim(),norm=s=>s.replace(/\s+/g,' ').trim().toLocaleLowerCase('he');const showDescription=description&&norm(description)!==norm(title);return `${nowMediaMarkup(x)}<h4 class="now-live-title" dir="auto">${esc(title)}</h4>${showDescription?`<p dir="auto" class="auto-dir">${esc(description)}</p>`:''}${x.endDate?`<p class="now-live-date"><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}`}
+async function loadNowCard(category,elementId,heading,emptyText){const el=document.getElementById(elementId);if(!el)return;try{const r=await fetch('/api/resources?category='+encodeURIComponent(category));const rows=await r.json();const x=Array.isArray(rows)&&rows.length?rows[0]:null;el.innerHTML=nowItemMarkup(x,heading,emptyText)}catch(e){el.innerHTML='<p class="muted">לא ניתן לטעון כרגע.</p>'}}
 async function loadNowCards(){await loadNowCard('community-activity','nowActivityCard','פעילות חדשה בקהילה','כאן יופיעו פעילויות שמתקיימות עכשיו.')}
 
 async function loadBoardMessages(){try{const r=await fetch('/api/messages');boardMessages=await r.json();if(!Array.isArray(boardMessages))boardMessages=[];boardIndex=Math.min(boardIndex,Math.max(0,boardMessages.length-1));renderBoardMessage();if(boardTimer)clearInterval(boardTimer);if(boardMessages.length>1)boardTimer=setInterval(()=>boardNext(),7000)}catch(e){boardFeed.innerHTML='<p class="muted">לא ניתן לטעון הודעות כרגע.</p>'}}
