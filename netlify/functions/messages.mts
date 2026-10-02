@@ -4,7 +4,7 @@ import { id, json, store, validToken } from "../lib/shared.mts";
 type Attachment = { key:string; name:string; type?:string; size?:number };
 type Message = {
   id:string; title?:string; degree:string; name:string; institution:string; message:string;
-  createdAt:string; expiresAt:string; attachments:Attachment[]; coverAttachment?:Attachment | null;
+  createdAt:string; expiresAt?:string | null; attachments:Attachment[]; coverAttachment?:Attachment | null;
 };
 
 function cleanAttachment(a: any): Attachment | null {
@@ -65,7 +65,7 @@ export default async (req: Request) => {
     let rows = await listAll();
     if (!admin) {
       const now = Date.now();
-      rows = rows.filter(x => Date.parse(x.expiresAt) > now);
+      rows = rows.filter(x => !x.expiresAt || Date.parse(x.expiresAt) > now);
     }
     return json(rows.map(decorate));
   }
@@ -76,7 +76,8 @@ export default async (req: Request) => {
     if (!pinOK(body.code) && !tokenOK) return json({ error:"invalid_code" }, 401);
 
     const now = new Date();
-    const expires = new Date(body.expiresAt || "");
+    const expiresText = String(body.expiresAt || "").trim();
+    const expires = expiresText ? new Date(expiresText) : null;
     const missing: string[] = [];
 
     if (!body.title) missing.push("כותרת");
@@ -92,7 +93,7 @@ export default async (req: Request) => {
       }, 400);
     }
 
-    if (!Number.isFinite(expires.getTime()) || expires.getTime() <= now.getTime()) {
+    if (expires && (!Number.isFinite(expires.getTime()) || expires.getTime() <= now.getTime())) {
       return json({
         error:"missing_fields",
         message:"מועד סיום ההצגה חייב להיות בעתיד."
@@ -107,7 +108,7 @@ export default async (req: Request) => {
       institution:String(body.institution).slice(0,180),
       message:String(body.message).slice(0,5000),
       createdAt:now.toISOString(),
-      expiresAt:expires.toISOString(),
+      expiresAt:expires ? expires.toISOString() : null,
       attachments:cleanAttachments(body.attachments),
       coverAttachment:cleanAttachment(body.coverAttachment)
     };
@@ -126,7 +127,8 @@ export default async (req: Request) => {
     const old = await st.get(key, { type:"json" }) as Message | null;
     if (!old) return json({ error:"not_found" }, 404);
 
-    const expires = new Date(body.expiresAt || "");
+    const expiresText = String(body.expiresAt || "").trim();
+    const expires = expiresText ? new Date(expiresText) : null;
     const missing: string[] = [];
     if (!body.title) missing.push("כותרת");
     if (!body.degree) missing.push("תואר אקדמי");
@@ -134,7 +136,7 @@ export default async (req: Request) => {
     if (!body.institution) missing.push("מוסד אקדמי");
     if (!body.message) missing.push("הודעה");
     if (missing.length) return json({ error:"missing_fields", message:`חסרים שדות חובה: ${missing.join(", ")}.` }, 400);
-    if (!Number.isFinite(expires.getTime()) || expires.getTime() <= Date.now()) {
+    if (expires && (!Number.isFinite(expires.getTime()) || expires.getTime() <= Date.now())) {
       return json({ error:"missing_fields", message:"מועד סיום ההצגה חייב להיות בעתיד." }, 400);
     }
 
@@ -155,7 +157,7 @@ export default async (req: Request) => {
       name:String(body.name).slice(0,120),
       institution:String(body.institution).slice(0,180),
       message:String(body.message).slice(0,5000),
-      expiresAt:expires.toISOString(),
+      expiresAt:expires ? expires.toISOString() : null,
       attachments,
       coverAttachment
     };

@@ -1,7 +1,7 @@
 import type { Config } from "@netlify/functions";
 import { id, json, store, validToken } from "../lib/shared.mts";
 
-type Source = { id:string; apa?:string; authors?:string; year?:string; title?:string; journal?:string; doi?:string; abstract?:string; type?:string; fileKey?:string; fileName?:string; createdAt?:string; updatedAt?:string };
+type Source = { id:string; apa?:string; authors?:string; year?:string; title?:string; journal?:string; doi?:string; abstract?:string; type?:string; country?:string; population?:string; emergency?:string; application?:string; subject?:string; fileKey?:string; fileName?:string; createdAt?:string; updatedAt?:string };
 const st = () => store("hosen-data");
 
 async function listAll(): Promise<Source[]> {
