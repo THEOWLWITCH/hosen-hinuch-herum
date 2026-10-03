@@ -2374,6 +2374,646 @@ body:has(.feedback-modal.open){
   });
 })();
 </script>
+<style id="calls-hub-v66">
+html[data-page="calls"] #libraryAcademicHub,
+html[data-page="calls"] #resources .library-knowledge-section,
+html[data-page="calls"] #resourceArea{display:none!important}
+#callsHub,.ch-modal{--ch-ink:#1f4256;--ch-soft:#5f7686;--ch-line:#d7e3e7;--ch-bg:#f4f9fa;--ch-accent:#245f82;--ch-red:#a23b3b;--ch-amber:#9a6a12;--ch-green:#2f6e4f;color:var(--ch-ink);font-size:14px;line-height:1.6}
+#callsHub [hidden]{display:none!important}
+.ch-intro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:14px;margin:0 0 16px}
+.ch-intro p{margin:0;max-width:640px;color:var(--ch-soft)}
+.ch-actions{display:flex;flex-wrap:wrap;gap:8px}
+.ch-btn{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:6px 14px;border:1px solid #9fc2d5;border-radius:999px;background:#fff;color:var(--ch-accent);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+.ch-btn:hover{background:#eef5f7}.ch-btn.primary{background:#245f82;border-color:#245f82;color:#fff}.ch-btn.primary:hover{background:#1d4f6d}
+.ch-btn.small{min-height:28px;padding:3px 10px;font-size:12px}.ch-btn.danger{color:var(--ch-red);border-color:#e3b9b9}
+.ch-filters{display:grid;grid-template-columns:1.4fr 1fr auto;gap:8px;margin:0 0 10px}
+.ch-filters input,.ch-filters select,.ch-form input,.ch-form select,.ch-form textarea,.ch-ws textarea,.ch-ws input,.ch-ws select{width:100%;box-sizing:border-box;min-height:36px;padding:7px 10px;border:1px solid var(--ch-line);border-radius:7px;background:#fff;font:inherit;color:inherit}
+.ch-toggle{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:13px;color:var(--ch-soft)}
+.ch-toggle input[type=checkbox]{width:auto!important;min-height:0!important;margin:0}
+.ch-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.ch-chip{padding:3px 11px;border:1px solid var(--ch-line);border-radius:999px;background:#fff;color:var(--ch-soft);font:inherit;font-size:12px;cursor:pointer}
+.ch-chip.active{background:#dceff1;border-color:#a9cbd1;color:#285f6d;font-weight:700}
+.ch-list{display:grid;gap:12px}
+.ch-card{position:relative;padding:16px 18px;border:1px solid var(--ch-line);border-radius:10px;background:#fff;break-inside:avoid}
+.ch-card.flash{box-shadow:0 0 0 3px #a9cbd1}
+.ch-card h3{margin:4px 0 6px;font-size:17px;line-height:1.4;color:#173b5d}
+.ch-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700}
+.ch-badge.red{background:#fbeaea;color:var(--ch-red)}.ch-badge.amber{background:#fbf2df;color:var(--ch-amber)}.ch-badge.green{background:#e6f3ec;color:var(--ch-green)}.ch-badge.gray{background:#eef2f4;color:var(--ch-soft)}
+.ch-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 8px;padding:0;list-style:none;font-size:13px;color:var(--ch-soft)}
+.ch-meta strong{color:var(--ch-ink);font-weight:650}
+.ch-desc{margin:0 0 10px}
+.ch-tags{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}
+.ch-tag{padding:1px 8px;border-radius:5px;background:var(--ch-bg);color:#456071;font-size:11.5px}
+.ch-match{margin:0 0 10px;font-size:13px}.ch-match a{color:var(--ch-accent)}
+.ch-teams{margin:10px 0;padding:10px 12px;border-right:3px solid #89b8c3;border-radius:6px;background:#f1f8f8}
+.ch-teams h4{margin:0 0 6px;font-size:13px}
+.ch-team{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed #cfe0e4}
+.ch-team:first-of-type{border-top:0}
+.ch-team p{margin:0;font-size:13px}.ch-team small{display:block;color:var(--ch-soft)}
+.ch-card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ch-credit{margin-top:8px;font-size:11.5px;color:#7b8d98}
+.ch-section{margin-top:34px}
+.ch-section h3{margin:0 0 4px;font-size:19px;color:#263d4d}
+.ch-section>p{margin:0 0 12px;color:var(--ch-soft)}
+.ch-empty{padding:18px;border:1px dashed var(--ch-line);border-radius:10px;color:var(--ch-soft);text-align:center}
+.ch-archive summary{cursor:pointer;font-weight:700;color:var(--ch-accent)}
+.ch-archive .ch-card{opacity:.85}
+.ch-modal{position:fixed;inset:0;z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;background:rgba(28,43,52,.38);backdrop-filter:blur(5px);overflow:auto}
+.ch-modal[hidden]{display:none}
+.ch-dialog{position:relative;width:min(620px,100%);padding:22px 22px 18px;border:1px solid rgba(62,91,106,.13);border-radius:16px;background:#fff;box-shadow:0 28px 75px rgba(25,42,51,.18);color:#1f4256;font-size:14px;line-height:1.6}
+.ch-dialog.wide{width:min(1060px,100%)}
+.ch-dialog h2{margin:0 0 4px;font-size:20px;font-weight:600}
+.ch-dialog .ch-x{position:absolute;top:10px;left:12px;border:0;background:transparent;font-size:24px;color:#7d898f;cursor:pointer}
+.ch-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ch-form label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:650;color:#456071}
+.ch-form .wide{grid-column:1/-1}
+.ch-form .hint{font-weight:400;color:#7b8d98}
+.ch-hp{position:absolute!important;left:-9999px!important}
+.ch-status{min-height:20px;margin-top:8px;font-size:13px;color:var(--ch-soft)}.ch-status.ok{color:var(--ch-green)}.ch-status.err{color:var(--ch-red)}
+.ch-linkbox{display:flex;gap:6px;margin:10px 0}.ch-linkbox input{flex:1;direction:ltr;font-size:12px}
+.ch-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:14px 0 12px;border-bottom:1px solid var(--ch-line)}
+.ch-tabs button{padding:7px 12px;border:0;border-bottom:2px solid transparent;background:transparent;font:inherit;font-size:13px;color:var(--ch-soft);cursor:pointer}
+.ch-tabs button.active{border-bottom-color:#245f82;color:#173b5d;font-weight:700}
+.ch-ws-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:flex-start}
+.ch-ws-head .ch-meta{margin:4px 0 0}
+.ch-ws-me{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ch-soft)}.ch-ws .ch-ws-me input{width:170px}.ch-ws #chWsStatus{width:auto}
+.ch-sec{margin:0 0 14px;padding:12px 14px;border:1px solid var(--ch-line);border-radius:9px;background:#fff}
+.ch-sec-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ch-sec h4{margin:0;font-size:15px}
+.ch-sec .hint{margin:2px 0 6px;font-size:12px;color:#7b8d98}
+.ch-sec textarea{min-height:110px;resize:vertical;line-height:1.6}
+.ch-sec-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:center;margin-top:6px;font-size:11.5px;color:#7b8d98}
+.ch-conflict{margin-top:8px;padding:10px;border:1px solid #e9cf9a;border-radius:7px;background:#fffaf0;font-size:12.5px}
+.ch-conflict pre{max-height:160px;overflow:auto;margin:6px 0;white-space:pre-wrap;font:inherit}
+.ch-rows{display:grid;gap:6px}
+.ch-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--ch-line);border-radius:8px;background:#fff;font-size:13px}
+.ch-row .grow{flex:1;min-width:180px}
+.ch-row.done .grow{text-decoration:line-through;color:#8a9aa4}
+.ch-inline{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:6px;margin-top:10px}
+.ch-msg{padding:8px 10px;border-radius:8px;background:var(--ch-bg);font-size:13px}.ch-msg b{font-size:12px}.ch-msg small{color:#7b8d98}
+.ch-msg p{margin:2px 0 0;white-space:pre-wrap}
+.ch-admin-item{margin:0 0 12px;padding:12px;border:1px solid var(--ch-line);border-radius:9px;background:#fff}
+.ch-admin-item h4{margin:0 0 4px;font-size:14.5px}
+.ch-topics-pick{display:flex;flex-wrap:wrap;gap:4px 12px;font-weight:400!important}
+.ch-topics-pick label{flex-direction:row!important;align-items:center;gap:4px!important;font-weight:400!important}
+.ch-topics-pick input{width:auto;min-height:0}
+.ch-people-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 12px;margin:6px 0}
+.ch-people-pick label{display:flex;gap:6px;align-items:center;font-size:12.5px}
+.ch-people-pick input{width:auto;min-height:0}
+.ch-note{padding:10px 12px;border-right:3px solid #89b8c3;border-radius:6px;background:#f1f8f8;font-size:12.5px;color:#456071}
+.ch-note ol{margin:6px 0 0;padding-inline-start:20px}
+@media(max-width:760px){
+  .ch-filters,.ch-form,.ch-inline{grid-template-columns:1fr}
+  .ch-dialog{padding:18px 14px}
+  .ch-ws .ch-ws-me input{width:130px}
+}
+</style>
+<script id="calls-hub-v66-js">
+(function(){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const tabs=document.getElementById('adminTabs');
+    if(!tabs||document.getElementById('tabCalls'))return;
+    const b=document.createElement('button');b.id='tabCalls';b.type='button';b.textContent='קולות קוראים';
+    b.onclick=()=>{if(document.documentElement.dataset.page==='calls'){if(typeof closeAdmin==='function')closeAdmin();window.hosenCallsAdmin?.()}else location.href='/calls#calls-admin'};
+    tabs.appendChild(b);
+  });
+  // סוג העמוד נקבע בסקריפט שרץ אחרי זה, ולכן בודקים אותו רק כשהעמוד נטען.
+  const isCalls=()=>document.documentElement.dataset.page==='calls';
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${+m[3]}.${+m[2]}.${m[1]}`:''};
+  const store={get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  const state={open:[],archive:[],people:[],themes:{},teams:[],q:'',me:store.get('hosen.calls.me'),topic:'',soon:false};
+  const adminToken=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  const teamKey=id=>store.get('hosen.team.'+id);
+  const myName=()=>store.get('hosen.team.myname');
+
+  async function api(path,opts={}){
+    const r=await fetch(path,{...opts,headers:{'Content-Type':'application/json',...(opts.headers||{})}});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה. נסו שוב.');e.status=r.status;e.data=j;throw e}
+    return j;
+  }
+
+  // ---------- מבנה המסך ----------
+  function mount(){
+    const head=document.querySelector('#resources .section-head');
+    if(!head||document.getElementById('callsHub'))return;
+    const root=document.createElement('div');
+    root.id='callsHub';
+    root.innerHTML=`
+      <div class="ch-intro">
+        <p>קולות קוראים, מענקים וכנסים בתחום — <strong>מהמקורות ומהקהילה</strong>, ממוינים לפי המועד האחרון להגשה. לכל קול קורא מוצגות החוקרות שהוא מתאים להן, ואפשר להקים סביבו <strong>קבוצת משימה</strong> ולכתוב את ההצעה יחד.</p>
+        <div class="ch-actions">
+          <button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button>
+          <button type="button" class="ch-btn" data-ch="suggest">＋ מצאתי קול קורא</button>
+          <button type="button" class="ch-btn" data-ch="calendar">📅 כל המועדים ביומן</button>
+          <button type="button" class="ch-btn" data-ch="admin" hidden id="chAdminBtn">⚙ ניהול קולות קוראים</button>
+        </div>
+      </div>
+      <div class="ch-filters">
+        <input id="chSearch" type="search" placeholder="חיפוש לפי נושא, גוף מממן או מילת מפתח" aria-label="חיפוש">
+        <select id="chMe" aria-label="הצגת קולות קוראים שמתאימים לחוקרת"><option value="">מתאים לי — בחרי את שמך</option></select>
+        <label class="ch-toggle"><input type="checkbox" id="chSoon"> נסגרים בחודש הקרוב</label>
+      </div>
+      <div class="ch-chips" id="chChips" aria-label="סינון לפי נושא"></div>
+      <div class="ch-list" id="chList"><p class="ch-empty">טוען קולות קוראים…</p></div>
+      <section class="ch-section" id="teams" aria-labelledby="chTeamsTitle">
+        <h3 id="chTeamsTitle">🤝 זירת קבוצות המשימה</h3>
+        <p>קבוצות אד־הוק להגשות משותפות — סביב קול קורא מהרשימה, או סביב <strong>קול קורא פנימי</strong> שחוקרת מהקהילה מציעה. כל קבוצה כותבת את ההצעה בסביבת עבודה משלה.</p>
+        <div class="ch-list" id="chTeams"></div>
+      </section>
+      <details class="ch-section ch-archive" id="chArchiveWrap" hidden>
+        <summary>קולות קוראים שנסגרו וסיפורי הצלחה</summary>
+        <div class="ch-list" id="chArchive" style="margin-top:12px"></div>
+      </details>`;
+    head.after(root);
+    root.addEventListener('click',onClick);
+    document.getElementById('chSearch').addEventListener('input',e=>{state.q=e.target.value;renderCalls()});
+    document.getElementById('chMe').addEventListener('change',e=>{state.me=e.target.value;store.set('hosen.calls.me',state.me);renderCalls()});
+    document.getElementById('chSoon').addEventListener('change',e=>{state.soon=e.target.checked;renderCalls()});
+    const syncAdmin=()=>{document.getElementById('chAdminBtn').hidden=!adminToken()};
+    syncAdmin();setInterval(syncAdmin,2000);
+  }
+
+  async function load(){
+    try{
+      const [calls,teams]=await Promise.all([api('/api/calls?view=public'),api('/api/teams').catch(()=>[])]);
+      Object.assign(state,{open:calls.open||[],archive:calls.archive||[],people:calls.people||[],themes:calls.themes||{},teams:Array.isArray(teams)?teams:[]});
+    }catch(e){
+      document.getElementById('chList').innerHTML='<p class="ch-empty">לא ניתן לטעון כרגע את הקולות הקוראים.</p>';
+      return;
+    }
+    const sel=document.getElementById('chMe');
+    sel.innerHTML='<option value="">מתאים לי — בחרי את שמך</option>'+state.people.map(p=>`<option value="${h(p.id)}">${h(p.name)}</option>`).join('');
+    sel.value=state.people.some(p=>p.id===state.me)?state.me:'';
+    renderChips();renderCalls();renderTeams();renderArchive();
+    handleHash();
+  }
+
+  // ---------- קולות קוראים ----------
+  function renderChips(){
+    const used=new Set(state.open.flatMap(c=>c.topics||[]));
+    const el=document.getElementById('chChips');
+    el.innerHTML=[...used].map(k=>`<button type="button" class="ch-chip${state.topic===k?' active':''}" data-ch="topic" data-k="${h(k)}">${h(state.themes[k]||k)}</button>`).join('');
+  }
+  function urgency(c){
+    if(c.daysLeft===null||c.daysLeft===undefined)return '<span class="ch-badge gray">מועד לא צוין</span>';
+    const d=c.daysLeft;
+    const cls=d<=7?'red':d<=30?'amber':'green';
+    const txt=d===0?'נסגר היום':d===1?'נסגר מחר':`נשארו ${d} ימים`;
+    return `<span class="ch-badge ${cls}">${d<=7?'⏳ ':''}${txt} · עד ${fmt(c.endDate)}</span>`;
+  }
+  function teamRow(t){
+    const mine=teamKey(t.id);
+    return `<div class="ch-team"><p><strong>${h(t.title)}</strong> <span class="ch-badge gray">${h(t.statusLabel)}</span>
+      <small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
+      <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn small" data-ch="join" data-id="${h(t.id)}">בקשת הצטרפות</button>`:'')}</span></div>`;
+  }
+  function callCard(c,archived){
+    const teams=state.teams.filter(t=>t.callId===c.id);
+    const meta=[c.funder&&['גוף מממן',c.funder],c.amount&&['היקף',c.amount],c.eligibility&&['מי יכולה להגיש',c.eligibility],c.language&&['שפת ההגשה',c.language]].filter(Boolean);
+    const matches=(c.matches||[]).map(m=>`<a href="/people">${h(m.name)}</a>`).join(', ');
+    const credit=c.source==='member'&&c.suggestedBy?`הובא לקהילה על ידי ${h(c.suggestedBy)}`:c.source==='auto'&&c.sourceName?`נמצא באיסוף האוטומטי · ${h(c.sourceName)}`:'';
+    return `<article class="ch-card" id="call-${h(c.id)}">
+      ${archived?`<span class="ch-badge gray">נסגר ב־${fmt(c.endDate)}</span>`:urgency(c)}
+      <h3 dir="auto">${h(c.title)}</h3>
+      ${meta.length?`<ul class="ch-meta">${meta.map(([k,v])=>`<li><strong>${h(k)}:</strong> ${h(v)}</li>`).join('')}</ul>`:''}
+      ${c.description?`<p class="ch-desc" dir="auto">${h(c.description)}</p>`:''}
+      ${c.outcome?`<p class="ch-desc"><strong>🏆 ${h(c.outcome)}</strong></p>`:''}
+      ${(c.topics||[]).length?`<div class="ch-tags">${c.topics.map(k=>`<span class="ch-tag">${h(state.themes[k]||k)}</span>`).join('')}</div>`:''}
+      ${!archived&&matches?`<p class="ch-match"><strong>מתאים במיוחד ל:</strong> ${matches}</p>`:''}
+      ${teams.length?`<div class="ch-teams"><h4>🤝 קבוצות משימה סביב הקול הקורא</h4>${teams.map(teamRow).join('')}</div>`:''}
+      ${archived?'':`<div class="ch-card-actions">
+        ${c.url||c.fileUrl?`<a class="ch-btn small primary" href="${h(c.url||c.fileUrl)}" target="_blank" rel="noopener">לפרטים ולהגשה</a>`:''}
+        <button type="button" class="ch-btn small" data-ch="team-new" data-call="${h(c.id)}">🤝 הקמת קבוצה להגשה</button>
+        ${c.endDate?`<a class="ch-btn small" href="/api/calls?format=ics&id=${encodeURIComponent(c.id)}">📅 ליומן</a>`:''}
+      </div>`}
+      ${credit?`<div class="ch-credit">${credit}</div>`:''}
+    </article>`;
+  }
+  function renderCalls(){
+    const q=state.q.trim().toLowerCase();
+    const rows=state.open.filter(c=>{
+      if(state.topic&&!(c.topics||[]).includes(state.topic))return false;
+      if(state.soon&&!(c.daysLeft!==null&&c.daysLeft<=31))return false;
+      if(state.me&&!(c.matches||[]).some(m=>m.id===state.me))return false;
+      if(q&&![c.title,c.description,c.funder,c.eligibility].join(' ').toLowerCase().includes(q))return false;
+      return true;
+    });
+    const el=document.getElementById('chList');
+    el.innerHTML=rows.length?rows.map(c=>callCard(c,false)).join(''):`<p class="ch-empty">${state.open.length?'אין קולות קוראים שמתאימים לסינון.':'אין כרגע קולות קוראים פתוחים. מצאת קול קורא? אפשר להוסיף אותו.'}</p>`;
+    document.querySelectorAll('#chChips .ch-chip').forEach(b=>b.classList.toggle('active',b.dataset.k===state.topic));
+  }
+  function renderTeams(){
+    const el=document.getElementById('chTeams');
+    const rows=state.teams.filter(t=>t.internal||!state.open.some(c=>c.id===t.callId));
+    const linked=state.teams.length-rows.length;
+    el.innerHTML=(rows.length?`<div class="ch-card"><h3 style="font-size:15px">קולות קוראים פנימיים וקבוצות פתוחות</h3>${rows.map(teamRow).join('')}</div>`:'<p class="ch-empty">עדיין אין קבוצות משימה פנימיות. רוצה להוביל הגשה? הקימי קבוצה, וכתבי מי דרושה לך.</p>')+
+      (linked?`<p class="ch-credit">${linked} קבוצות נוספות מוצגות ליד הקולות הקוראים שלהן, למעלה.</p>`:'');
+  }
+  function renderArchive(){
+    const wrap=document.getElementById('chArchiveWrap');
+    if(!state.archive.length){wrap.hidden=true;return}
+    wrap.hidden=false;
+    document.getElementById('chArchive').innerHTML=state.archive.map(c=>callCard(c,true)).join('');
+  }
+
+  // ---------- חלונות ----------
+  function modal(html,wide){
+    const m=document.createElement('div');
+    m.className='ch-modal';
+    m.innerHTML=`<div class="ch-dialog${wide?' wide':''}" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="ch-x" aria-label="סגירה">×</button>${html}</div>`;
+    const close=()=>{m.remove();document.removeEventListener('keydown',esc)};
+    const esc=e=>{if(e.key==='Escape')close()};
+    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('ch-x'))close()});
+    document.addEventListener('keydown',esc);
+    document.body.appendChild(m);
+    setTimeout(()=>m.querySelector('input:not([type=hidden]):not(.ch-hp),textarea,select')?.focus(),30);
+    m.close=close;
+    return m;
+  }
+  const codeField=()=>`<label>קוד הקהילה*<input name="communityCode" required autocomplete="off"><span class="hint">הקוד שחברות הקהילה מקבלות. הוא שומר על האתר מספאם.</span></label><input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
+  function formData(form){return Object.fromEntries(new FormData(form))}
+  function setStatus(el,msg,kind){el.className='ch-status'+(kind?' '+kind:'');el.textContent=msg}
+
+  function openSuggest(){
+    const m=modal(`<h2>מצאתי קול קורא</h2><p class="ch-credit">הקול הקורא יגיע לאישור, ויפורסם עם קרדיט לך. אחרי הפרסום הוא יישלח לחוקרות שהוא מתאים להן.</p>
+      <form class="ch-form">
+        <label class="wide">שם הקול הקורא*<input name="title" required dir="auto"></label>
+        <label class="wide">קישור*<input name="url" required type="url" dir="ltr" placeholder="https://"></label>
+        <label>מועד אחרון להגשה<input name="endDate" type="date"></label>
+        <label>גוף מממן<input name="funder" dir="auto"></label>
+        <label class="wide">כמה מילים על הקול הקורא<textarea name="description" rows="3" dir="auto"></textarea></label>
+        <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
+        <label>מייל (לא יפורסם)<input name="email" type="email" dir="ltr"></label>
+        ${codeField()}
+        <div class="wide"><button class="ch-btn primary">שליחה לאישור</button><div class="ch-status"></div></div>
+      </form>`);
+    m.querySelector('form').addEventListener('submit',async e=>{
+      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'שולח…');
+      try{const j=await api('/api/calls',{method:'POST',body:JSON.stringify({action:'suggest',...formData(e.target)})});
+        setStatus(st,j.duplicate?'הקול הקורא הזה כבר אצלנו. תודה!':'תודה! הקול הקורא נשלח לאישור.','ok');e.target.reset();
+      }catch(err){setStatus(st,err.message,'err')}
+    });
+  }
+
+  function openTeamNew(callId){
+    const call=state.open.find(c=>c.id===callId);
+    const options=state.open.map(c=>`<option value="${h(c.id)}"${c.id===callId?' selected':''}>${h(c.title)}${c.endDate?' · עד '+fmt(c.endDate):''}</option>`).join('');
+    const m=modal(`<h2>הקמת קבוצת משימה להגשה</h2>
+      <p class="ch-credit">הקבוצה תופיע באתר עם השם שלך ועם מה שאתן מחפשות. נוסח ההצעה יהיה גלוי רק לחברות הקבוצה.</p>
+      <form class="ch-form">
+        <label class="wide">סביב איזה קול קורא?<select name="callId"><option value="">קול קורא פנימי / קול קורא שלא מופיע ברשימה</option>${options}</select></label>
+        <label class="wide">שם הקבוצה או ההצעה${call?'':'*'}<input name="title" dir="auto" placeholder="${call?'הגשה משותפת: '+h(call.title.replace(/^\s*(קול קורא|call for [a-z]+)\s*[:\-–—]\s*/i,'')):'למשל: רציפות למידה בפינוי — הצעה ל־ISF'}"></label>
+        <label class="wide">הרעיון בקצרה<textarea name="summary" rows="3" dir="auto" placeholder="מה רוצות לחקור, ולמה זה חשוב עכשיו"></textarea></label>
+        <label class="wide">את מי מחפשות?<input name="need" dir="auto" placeholder="למשל: חוקרת עם ניסיון בשיטות כמותיות, שותפה מרשות מקומית"></label>
+        <label data-internal>גוף מממן<input name="funder" dir="auto"></label>
+        <label data-internal>מועד הגשה<input name="deadline" type="date"></label>
+        <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
+        <label>מייל (לקבלת הקישור לסביבת העבודה)<input name="email" type="email" dir="ltr"></label>
+        ${codeField()}
+        <div class="wide"><button class="ch-btn primary">הקמת הקבוצה</button><div class="ch-status"></div></div>
+      </form>`);
+    const form=m.querySelector('form'),sel=form.elements.callId;
+    const sync=()=>form.querySelectorAll('[data-internal]').forEach(l=>l.hidden=!!sel.value);
+    sel.addEventListener('change',sync);sync();
+    form.addEventListener('submit',async e=>{
+      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'מקימה…');
+      const body=formData(form);
+      try{
+        const j=await api('/api/teams',{method:'POST',body:JSON.stringify({action:'create',...body})});
+        store.set('hosen.team.'+j.id,j.key);store.set('hosen.team.myname',body.name);
+        m.querySelector('.ch-dialog').innerHTML=`<button type="button" class="ch-x" aria-label="סגירה">×</button><h2>הקבוצה הוקמה 🎉</h2>
+          <p><strong>זה הקישור לסביבת העבודה.</strong> רק מי שיש לה אותו יכולה להיכנס ולכתוב. שמרי אותו, ושלחי אותו לשותפות.</p>
+          <div class="ch-linkbox"><input readonly value="${h(j.link)}"><button type="button" class="ch-btn small" data-copy>העתקה</button></div>
+          <p class="ch-credit">${j.mailed?'הקישור נשלח גם למייל שלך.':'בדפדפן הזה הקישור נשמר, ואפשר להיכנס מכאן.'}</p>
+          <button type="button" class="ch-btn primary" data-open>כניסה לסביבת העבודה</button>`;
+        m.querySelector('[data-copy]').onclick=ev=>copy(j.link,ev.target);
+        m.querySelector('[data-open]').onclick=()=>{m.close();openWorkspace(j.id)};
+        await refreshTeams();
+      }catch(err){setStatus(st,err.message,'err')}
+    });
+  }
+
+  function openJoin(teamId){
+    const t=state.teams.find(x=>x.id===teamId);if(!t)return;
+    const m=modal(`<h2>בקשת הצטרפות</h2><p><strong>${h(t.title)}</strong>${t.need?`<br><span class="ch-credit">מחפשות: ${h(t.need)}</span>`:''}</p>
+      <form class="ch-form">
+        <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
+        <label>מייל (לקבלת הקישור אחרי האישור)<input name="email" type="email" dir="ltr"></label>
+        <label class="wide">מה את מביאה לקבוצה?<textarea name="note" rows="3" dir="auto"></textarea></label>
+        ${codeField()}
+        <div class="wide"><button class="ch-btn primary">שליחת הבקשה</button><div class="ch-status"></div></div>
+      </form>`);
+    m.querySelector('form').addEventListener('submit',async e=>{
+      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'שולח…');
+      try{const body=formData(e.target);await api('/api/teams',{method:'POST',body:JSON.stringify({action:'join',id:teamId,...body})});
+        store.set('hosen.team.myname',body.name);
+        setStatus(st,'הבקשה נשלחה למובילת הקבוצה. אחרי האישור יגיע אלייך הקישור לסביבת העבודה.','ok');e.target.querySelector('button').disabled=true;
+      }catch(err){setStatus(st,err.message,'err')}
+    });
+  }
+
+  function openCalendar(){
+    const url=location.origin+'/api/calls?format=ics';
+    const m=modal(`<h2>כל המועדים ביומן</h2>
+      <p>אפשר <strong>להירשם ליומן</strong> של הקולות הקוראים. כל קול קורא חדש יופיע בו מעצמו, עם המועד האחרון להגשה.</p>
+      <div class="ch-linkbox"><input readonly value="${h(url)}"><button type="button" class="ch-btn small" data-copy>העתקה</button></div>
+      <div class="ch-note"><strong>ביומן Google:</strong><ol><li>בצד שמאל, ליד "יומנים אחרים", לוחצים על ＋.</li><li>בוחרים "מכתובת URL" ומדביקים את הכתובת.</li></ol></div>
+      <p style="margin-top:12px"><a class="ch-btn" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url.replace(/^https?:/,'webcal:'))}" target="_blank" rel="noopener">הוספה ליומן Google</a>
+      <a class="ch-btn" href="${h(url.replace(/^https?:/,'webcal:'))}">יומן Apple / Outlook</a></p>`);
+    m.querySelector('[data-copy]').onclick=ev=>copy(url,ev.target);
+  }
+
+  async function copy(text,btn){
+    try{await navigator.clipboard.writeText(text);if(btn){btn.textContent='הועתק ✓';setTimeout(()=>btn.textContent='העתקה',1600)}}
+    catch(e){prompt('העתיקי את הקישור:',text)}
+  }
+
+  async function refreshTeams(){try{state.teams=await api('/api/teams')}catch(e){}renderCalls();renderTeams()}
+
+  // ---------- סביבת העבודה של קבוצת משימה ----------
+  async function openWorkspace(teamId){
+    const key=teamKey(teamId);
+    let team;
+    try{team=await api('/api/teams?id='+encodeURIComponent(teamId),{headers:{'x-team-key':key}})}
+    catch(e){modal(`<h2>אין גישה</h2><p>${h(e.message)} אפשר לבקש ממובילת הקבוצה לשלוח שוב את הקישור.</p>`);return}
+    const m=modal('<div id="chWs" class="ch-ws"></div>',true);
+    const ws={team,tab:'write',drafts:{},conflicts:{}};
+    const call=()=>state.open.find(c=>c.id===ws.team.callId)||state.archive.find(c=>c.id===ws.team.callId);
+    const me=()=>m.querySelector('#chWsMe')?.value.trim()||myName()||'';
+
+    async function act(action,payload={}){
+      const j=await api('/api/teams',{method:'POST',headers:{'x-team-key':key},body:JSON.stringify({action,id:teamId,name:me(),...payload})});
+      if(j.team)ws.team=j.team;
+      return j;
+    }
+    function words(t){return (String(t||'').trim().match(/\S+/g)||[]).length}
+    function head(){
+      const t=ws.team,c=call();
+      const deadline=t.deadline||c?.endDate||'';
+      const left=deadline?Math.round((Date.parse(deadline)-Date.parse(new Date().toISOString().slice(0,10)))/86400000):null;
+      return `<div class="ch-ws-head"><div><h2 dir="auto">${h(t.title)}</h2>
+        <ul class="ch-meta">${c?`<li><strong>קול קורא:</strong> ${c.url?`<a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.title)}</a>`:h(c.title)}</li>`:'<li><strong>קול קורא פנימי</strong></li>'}
+        ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
+        <div class="ch-actions"><label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>
+        <select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>
+        <button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
+        <nav class="ch-tabs">${[['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
+    }
+    function sectionHtml(s){
+      const draft=ws.drafts[s.id]??s.text;const conflict=ws.conflicts[s.id];
+      return `<div class="ch-sec" data-sec="${h(s.id)}"><div class="ch-sec-head"><h4>${h(s.title)}</h4>${!s.text.trim()&&!draft.trim()?`<button type="button" class="ch-btn small danger" data-w="sec-remove" data-id="${h(s.id)}">הסרה</button>`:''}</div>
+        ${s.hint?`<p class="hint">${h(s.hint)}</p>`:''}
+        <textarea dir="auto" data-sec-text="${h(s.id)}">${h(draft)}</textarea>
+        ${conflict?`<div class="ch-conflict"><strong>${h(conflict.updatedBy||'חברה אחרת')} עדכנה את הסעיף בזמן שכתבת.</strong> הנוסח שלך נשאר בתיבה. זה הנוסח שלה — שלבי ביניהם ושמרי שוב:<pre dir="auto">${h(conflict.text)}</pre></div>`:''}
+        <div class="ch-sec-foot"><span>${words(draft)} מילים${s.updatedAt?` · עודכן ע״י ${h(s.updatedBy||'')} ב־${new Date(s.updatedAt).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}`:''}</span>
+        <span><span data-saved="${h(s.id)}"></span> <button type="button" class="ch-btn small primary" data-w="sec-save" data-id="${h(s.id)}">שמירה</button></span></div></div>`;
+    }
+    function body(){
+      const t=ws.team,c=call();
+      if(ws.tab==='write')return `<div class="ch-note" style="margin-bottom:12px">כל חברה כותבת בסעיף שלה ושומרת. אם שתיים עובדות על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בלשונית "קישורים וקבצים".</div>
+        ${t.sections.map(sectionHtml).join('')}
+        <form class="ch-inline" data-form="sec-add" style="grid-template-columns:1fr auto"><input name="title" placeholder="סעיף נוסף שהקול הקורא דורש" dir="auto"><button class="ch-btn small">הוספת סעיף</button></form>`;
+      if(ws.tab==='tasks'){
+        const names=t.members.map(x=>x.name);
+        return `<div class="ch-rows">${t.tasks.length?t.tasks.map(k=>`<div class="ch-row${k.done?' done':''}"><input type="checkbox" data-w="task-toggle" data-id="${h(k.id)}"${k.done?' checked':''} aria-label="בוצע"><span class="grow" dir="auto">${h(k.text)}</span>${k.owner?`<span class="ch-tag">${h(k.owner)}</span>`:''}${k.due?`<span class="ch-tag">עד ${fmt(k.due)}</span>`:''}<button type="button" class="ch-btn small danger" data-w="task-remove" data-id="${h(k.id)}">מחיקה</button></div>`).join(''):'<p class="ch-empty">עדיין אין משימות. התחילו מחלוקת הסעיפים בין חברות הקבוצה.</p>'}</div>
+          <form class="ch-inline" data-form="task-add"><input name="text" required placeholder="משימה" dir="auto"><select name="owner"><option value="">אחראית</option>${names.map(n=>`<option>${h(n)}</option>`).join('')}</select><input name="due" type="date" aria-label="עד מתי"><button class="ch-btn small">הוספה</button></form>`;
+      }
+      if(ws.tab==='talk')return `<div class="ch-rows">${t.messages.length?t.messages.map(x=>`<div class="ch-msg"><b>${h(x.name)}</b> <small>${new Date(x.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</small><p dir="auto">${h(x.text)}</p></div>`).join(''):'<p class="ch-empty">כאן מתייעצות, מחליטות ומעדכנות.</p>'}</div>
+        <form class="ch-inline" data-form="message" style="grid-template-columns:1fr auto"><textarea name="text" rows="2" required dir="auto" placeholder="הודעה לקבוצה"></textarea><button class="ch-btn small">שליחה</button></form>`;
+      if(ws.tab==='team'){
+        const invite=(c?.matches||[]).filter(x=>!t.members.some(mm=>mm.name===x.name));
+        return `<h4 style="margin:0 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong><input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקרת ראשית, שיטות)" dir="auto">${x.name!==t.lead.name?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:'<span class="ch-tag">מובילה</span>'}</div>`).join('')}</div>
+          <h4 style="margin:16px 0 6px">בקשות הצטרפות</h4>${t.requests.length?`<div class="ch-rows">${t.requests.map(r=>`<div class="ch-row"><span class="grow"><strong>${h(r.name)}</strong>${r.note?` — ${h(r.note)}`:''}</span><button type="button" class="ch-btn small primary" data-w="req-approve" data-id="${h(r.id)}">אישור</button><button type="button" class="ch-btn small" data-w="req-decline" data-id="${h(r.id)}">לא הפעם</button></div>`).join('')}</div>`:'<p class="ch-credit">אין בקשות חדשות.</p>'}
+          ${invite.length?`<h4 style="margin:16px 0 6px">חוקרות מהקהילה שהקול הקורא מתאים להן</h4><p class="ch-credit">${invite.map(x=>h(x.name)).join(' · ')} — אפשר לשלוח להן את הקישור לקבוצה, או להזמין אותן לבקש להצטרף.</p>`:''}`;
+      }
+      if(ws.tab==='links')return `<div class="ch-rows">${t.links.length?t.links.map(l=>`<div class="ch-row"><a class="grow" href="${h(l.url)}" target="_blank" rel="noopener" dir="auto">${h(l.label)}</a><button type="button" class="ch-btn small danger" data-w="link-remove" data-id="${h(l.id)}">הסרה</button></div>`).join(''):'<p class="ch-empty">קישורים למסמך משותף, לנוסח הקול הקורא, לטפסים ולתקציב.</p>'}</div>
+        <form class="ch-inline" data-form="link-add" style="grid-template-columns:1fr 1.4fr auto"><input name="label" placeholder="שם (למשל: טיוטה ב־Google Docs)" dir="auto"><input name="url" required type="url" dir="ltr" placeholder="https://"><button class="ch-btn small">הוספה</button></form>`;
+      return `<form class="ch-form" data-form="meta">
+        <label class="wide">שם הקבוצה<input name="title" value="${h(t.title)}" dir="auto"></label>
+        <label class="wide">הרעיון בקצרה<span class="hint">מוצג באתר לכל הקהילה</span><textarea name="summary" rows="3" dir="auto">${h(t.summary)}</textarea></label>
+        <label class="wide">את מי מחפשות<span class="hint">מוצג באתר לכל הקהילה</span><input name="need" value="${h(t.need)}" dir="auto"></label>
+        <label>גוף מממן<input name="funder" value="${h(t.funder||'')}" dir="auto"></label>
+        <label>מועד הגשה<input name="deadline" type="date" value="${h(t.deadline||'')}"></label>
+        <div class="wide"><button class="ch-btn primary">שמירה</button></div></form>`;
+    }
+    function render(keepScroll){
+      const root=m.querySelector('#chWs');const y=m.scrollTop;
+      root.innerHTML=head()+body()+'<div class="ch-status" id="chWsStatusMsg"></div>';
+      if(keepScroll)m.scrollTop=y;
+    }
+    const msg=(t,k)=>{const el=m.querySelector('#chWsStatusMsg');if(el)setStatus(el,t,k)};
+    async function run(fn){try{await fn();render(true)}catch(e){msg(e.message,'err')}}
+    async function saveSection(id){
+      const s=ws.team.sections.find(x=>x.id===id);if(!s)return;
+      const text=m.querySelector(`[data-sec-text="${CSS.escape(id)}"]`).value;
+      const version=ws.conflicts[id]?ws.conflicts[id].version:s.version;
+      try{await act('section-save',{sectionId:id,text,version});delete ws.drafts[id];delete ws.conflicts[id];render(true);
+        const el=m.querySelector(`[data-saved="${CSS.escape(id)}"]`);if(el)el.textContent='נשמר ✓';}
+      catch(e){if(e.status===409&&e.data?.section){ws.drafts[id]=text;ws.conflicts[id]=e.data.section;render(true)}else msg(e.message,'err')}
+    }
+    m.addEventListener('input',e=>{const id=e.target.dataset?.secText;if(id)ws.drafts[id]=e.target.value;if(e.target.id==='chWsMe')store.set('hosen.team.myname',e.target.value.trim())});
+    m.addEventListener('change',async e=>{
+      if(e.target.id==='chWsStatus')run(()=>act('meta',{status:e.target.value}));
+      const role=e.target.dataset?.role;if(role!==undefined)run(()=>act('member-update',{member:role,role:e.target.value}));
+    });
+    m.addEventListener('click',async e=>{
+      const tab=e.target.closest('[data-tab]');if(tab){ws.tab=tab.dataset.tab;render();return}
+      const b=e.target.closest('[data-w]');if(!b)return;
+      const w=b.dataset.w,id=b.dataset.id;
+      if(w==='sec-save')return saveSection(id);
+      if(w==='sec-remove')return run(()=>act('section-remove',{sectionId:id}));
+      if(w==='task-toggle')return run(()=>act('task-toggle',{taskId:id}));
+      if(w==='task-remove')return run(()=>act('task-remove',{taskId:id}));
+      if(w==='link-remove')return run(()=>act('link-remove',{linkId:id}));
+      if(w==='member-remove'){if(confirm('להסיר את '+b.dataset.name+' מהקבוצה?'))run(()=>act('member-update',{member:b.dataset.name,remove:true}));return}
+      if(w==='req-decline')return run(()=>act('request-decline',{requestId:id}));
+      if(w==='req-approve'){let j;try{j=await act('request-approve',{requestId:id})}catch(err){return msg(err.message,'err')}
+        render(true);
+        if(j.mailed)msg(`${j.member.name} צורפה, והקישור לסביבת העבודה נשלח אליה במייל.`,'ok');
+        else{const mail='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(j.member.email||'')+'&su='+encodeURIComponent('הצטרפת לקבוצת המשימה: '+ws.team.title)+'&body='+encodeURIComponent(`שלום ${j.member.name},\n\nשמחות שהצטרפת לקבוצת המשימה "${ws.team.title}".\n\nזה הקישור לסביבת העבודה שלנו. שמרי אותו — רק איתו נכנסים:\n${j.link}\n\n${me()}`);
+          window.open(mail,'_blank','noopener');msg(`${j.member.name} צורפה. נפתחה טיוטה ב-Gmail עם הקישור לסביבת העבודה — נשאר רק לשלוח.`,'ok')}
+        return}
+      if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
+      if(w==='print')return printProposal(ws.team,call());
+    });
+    m.addEventListener('submit',async e=>{
+      const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
+      const d=formData(f),kind=f.dataset.form;
+      const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['meta',d]};
+      run(async()=>{await act(...map[kind]);if(kind==='meta'){msg('נשמר ✓','ok');refreshTeams()}});
+    });
+    render();
+  }
+
+  // ייצוא ההצעה להדפסה: שוליים נדיבים, בלי שבירת סעיפים באמצע.
+  function printProposal(t,c){
+    const para=txt=>{
+      const out=[];let list=null;
+      for(const line of String(txt||'').split(/\n/)){
+        const l=line.trim();
+        if(/^[-•]\s+/.test(l)){if(!list){list=[];out.push(list)}list.push(l.replace(/^[-•]\s+/,''));continue}
+        list=null;if(l)out.push(l);else out.push('');
+      }
+      return out.map(x=>Array.isArray(x)?`<ul>${x.map(i=>`<li>${bold(i)}</li>`).join('')}</ul>`:x?`<p>${bold(x)}</p>`:'').join('');
+    };
+    const bold=s=>h(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    const sections=t.sections.filter(s=>s.text.trim());
+    const w=window.open('','_blank');if(!w)return alert('הדפדפן חסם חלון חדש. אפשרי חלונות קופצים לאתר ונסי שוב.');
+    w.document.write(`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>${h(t.title)}</title><style>
+      @page{size:A4;margin:20mm 22mm}body{font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#1d3445;font-size:11.5pt;line-height:1.65;max-width:170mm;margin:auto}
+      h1{font-size:18pt;margin:0 0 4pt}h2{font-size:13pt;margin:18pt 0 6pt;padding-bottom:3pt;border-bottom:1px solid #cfdde3;break-after:avoid}
+      .meta{color:#5f7686;font-size:10pt;margin:0 0 14pt}section{break-inside:avoid-page}p{margin:0 0 8pt}ul{margin:0 0 8pt;padding-inline-start:18pt}
+      .team{font-size:10pt;color:#5f7686}</style></head><body>
+      <h1>${h(t.title)}</h1><p class="meta">${c?h(c.title)+' · ':''}${t.funder?h(t.funder)+' · ':''}${t.deadline||c?.endDate?'הגשה: '+fmt(t.deadline||c.endDate):''}</p>
+      <p class="team"><strong>הצוות:</strong> ${t.members.map(m=>h(m.name)+(m.role?' — '+h(m.role):'')).join(' · ')}</p>
+      ${sections.length?sections.map(s=>`<section><h2>${h(s.title)}</h2>${para(s.text)}</section>`).join(''):'<p>עדיין לא נכתבו סעיפים.</p>'}
+      <script>setTimeout(()=>print(),300)<\/script></body></html>`);
+    w.document.close();
+  }
+
+  // ---------- ניהול: תיבת אישור, פרסום, מקורות ומיילים ----------
+  async function openCallsAdmin(){
+    const token=adminToken();
+    if(!token){alert('יש להיכנס קודם דרך "🔒 ניהול מערכת" בתחתית העמוד.');return}
+    const m=modal('<div id="chAdm"></div>',true);
+    const A={tab:'inbox',d:null};
+    const call=(action,payload)=>api('/api/calls',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action,...payload})});
+    async function reload(){
+      try{A.d=await api('/api/calls?admin=1',{headers:{Authorization:'Bearer '+token}});
+        A.teams=await api('/api/teams?admin=1',{headers:{Authorization:'Bearer '+token}}).catch(()=>[]);}
+      catch(e){m.querySelector('#chAdm').innerHTML=`<h2>ניהול קולות קוראים</h2><p class="ch-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`;return false}
+      return true;
+    }
+    const topicsPick=(sel)=>`<div class="ch-topics-pick">${Object.entries(A.d.themes).map(([k,v])=>`<label><input type="checkbox" name="topics" value="${k}"${sel.includes(k)?' checked':''}>${h(v)}</label>`).join('')}</div>`;
+    const editor=(x,isInbox)=>`<form class="ch-form" data-edit="${h(isInbox?x.key:x.id)}" data-kind="${isInbox?'inbox':'call'}">
+      <label class="wide">כותרת<input name="title" value="${h(x.title)}" dir="auto"></label>
+      <label class="wide">קישור<input name="url" value="${h(x.url||'')}" dir="ltr"></label>
+      <label>מועד אחרון להגשה<input name="endDate" type="date" value="${h(x.endDate||'')}"></label>
+      <label>מדור<select name="category">${Object.entries(A.d.categories).map(([k,v])=>`<option value="${k}"${(x.category||'calls')===k?' selected':''}>${h(v)}</option>`).join('')}</select></label>
+      <label>גוף מממן<input name="funder" value="${h(x.funder||'')}" dir="auto"></label>
+      <label>היקף (סכום ומשך)<input name="amount" value="${h(x.amount||'')}" dir="auto"></label>
+      <label>מי יכולה להגיש<input name="eligibility" value="${h(x.eligibility||'')}" dir="auto"></label>
+      <label>שפת ההגשה<input name="language" value="${h(x.language||'')}" dir="auto"></label>
+      <label class="wide">תיאור קצר<textarea name="description" rows="3" dir="auto">${h(x.description||'')}</textarea></label>
+      <label class="wide">נושאים <span class="hint">(קובעים למי הקול הקורא מתאים)</span>${topicsPick(x.topics||[])}</label>
+      ${isInbox?'':`<label class="wide">🏆 סיפור הצלחה <span class="hint">(למשל: "זכינו! ד״ר … וד״ר …") — יוצג בארכיון</span><input name="outcome" value="${h(x.outcome||'')}" dir="auto"></label>`}
+      <div class="wide ch-actions">${isInbox?`<button class="ch-btn primary" data-act="approve">אישור ופרסום</button><button type="button" class="ch-btn danger" data-act="reject" data-key="${h(x.key)}">לא רלוונטי</button>`:`<button class="ch-btn primary" data-act="save">שמירה</button>`}</div></form>`;
+    function notifyBox(c){
+      const best=Math.max(0,...c.matches.map(x=>x.score));const min=best>=2?2:1;
+      const already=new Set((c.notified||[]).map(n=>n.email.toLowerCase()));
+      return `<div class="ch-note" style="margin-top:10px"><strong>שליחה לחוקרות הרלוונטיות</strong> ${(c.notified||[]).length?`<span class="ch-credit">· כבר נשלח ל־${new Set((c.notified||[]).map(n=>n.email)).size}</span>`:''}
+        <div class="ch-people-pick" data-notify="${h(c.id)}">${c.matches.length?c.matches.map(x=>`<label title="${h(x.shared.map(k=>A.d.themes[k]).join(', '))}"><input type="checkbox" value="${h(x.id)}"${x.hasEmail&&x.score>=min&&!already.has(x.email.toLowerCase())?' checked':''}${x.hasEmail?'':' disabled'}>${h(x.name)} <span class="ch-credit">(${x.score})${x.hasEmail?'':' · אין מייל'}</span></label>`).join(''):'<span class="ch-credit">לא נמצאו חוקרות שהנושאים שלהן תואמים. אפשר לסמן נושאים לקול הקורא.</span>'}</div>
+        ${c.matches.length?`<button type="button" class="ch-btn small primary" data-act="notify" data-id="${h(c.id)}">${A.d.mail.configured?'✉ שליחת מייל אישי לכל אחת':'✉ פתיחת טיוטה ב-Gmail'}</button>`:''}</div>`;
+    }
+    function render(){
+      const d=A.d,t=A.tab;
+      const tabs=[['inbox',`📥 לאישור (${d.inbox.length})`],['calls','📢 מפורסמים'],['teams',`🤝 קבוצות (${(A.teams||[]).length})`],['sources','🔎 מקורות לאיסוף'],['mail','✉ מיילים']];
+      let html=`<h2>ניהול קולות קוראים</h2><nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
+      if(t==='inbox')html+=d.inbox.length?d.inbox.map(x=>`<div class="ch-admin-item"><h4 dir="auto">${h(x.title)}</h4><p class="ch-credit">${x.source==='member'?`הוצע על ידי ${h(x.suggestedBy||'')}${x.suggestedEmail?' · '+h(x.suggestedEmail):''}`:`נמצא אוטומטית · ${h(x.sourceName)}`} · <a href="${h(x.url)}" target="_blank" rel="noopener">פתיחת המקור לבדיקה</a></p>${editor(x,true)}</div>`).join(''):'<p class="ch-empty">אין קולות קוראים שמחכים לאישור.</p>';
+      if(t==='calls'){
+        html+=`<details class="ch-admin-item"><summary><strong>＋ הוספת קול קורא ידנית</strong></summary>${editor({},false).replace('data-kind="call"','data-kind="new"').replace('>שמירה<','>פרסום<')}</details>`;
+        html+=d.calls.length?d.calls.map(c=>`<details class="ch-admin-item"${c.open?'':' style="opacity:.75"'}><summary><strong dir="auto">${h(c.title)}</strong> <span class="ch-credit">${c.endDate?'עד '+fmt(c.endDate):'בלי מועד'} · ${h(d.categories[c.category]||c.category)}${c.open?'':' · נסגר'} · ${c.matches.length} מתאימות</span></summary>${editor(c,false)}${c.open?notifyBox(c):''}</details>`).join(''):'<p class="ch-empty">עדיין אין קולות קוראים מפורסמים.</p>';
+      }
+      if(t==='teams')html+=(A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מובילה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} חברות · ${x.callTitle?'קול קורא: '+h(x.callTitle):'קול קורא פנימי'}</p>
+        <div class="ch-actions"><button type="button" class="ch-btn small" data-act="rekey" data-id="${h(x.id)}">קישור חדש לסביבת העבודה</button><button type="button" class="ch-btn small danger" data-act="team-delete" data-id="${h(x.id)}">מחיקת הקבוצה</button></div><div data-rekey="${h(x.id)}"></div></div>`).join(''):'<p class="ch-empty">עדיין לא הוקמו קבוצות משימה.</p>';
+      if(t==='sources'){
+        const st=Object.fromEntries((d.sourceStatus||[]).map(s=>[s.url,s]));
+        html+=`<div class="ch-note"><strong>איך מוסיפים מקור?</strong> כל מקור הוא כתובת של פיד (RSS / Atom) או של עמוד שמרכז קולות קוראים. כל בוקר המערכת סורקת את המקורות, ומעבירה ללשונית "לאישור" רק פריטים חדשים שנראים כמו קול קורא בתחום.
+          <ol><li><strong>הדרך המומלצת — Google Alerts (חינם):</strong> ב־google.com/alerts יוצרים התראה (למשל <code>"קול קורא" חינוך חירום</code> או <code>"call for proposals" education resilience</code>), ובאפשרויות בוחרים "שליחה אל: RSS feed". את כתובת הפיד מדביקים כאן.</li>
+          <li><strong>עמודי קולות קוראים</strong> של רשויות המחקר באוניברסיטאות, של קרנות ושל מכונים — מדביקים את כתובת העמוד.</li>
+          <li><strong>"בלי סינון"</strong> מתאים למקור שכל הפריטים בו רלוונטיים (למשל התראת Google ממוקדת).</li></ol></div>
+          <div class="ch-rows" id="chSrcRows" style="margin-top:12px">${(d.sources.length?d.sources:[{name:'',url:'',filter:true,enabled:true}]).map(s=>srcRow(s,st[s.url])).join('')}</div>
+          <div class="ch-actions" style="margin-top:10px"><button type="button" class="ch-btn small" data-act="src-add">＋ מקור</button><button type="button" class="ch-btn small primary" data-act="src-save">שמירת המקורות</button><button type="button" class="ch-btn small" data-act="fetch">🔎 איסוף עכשיו</button></div>`;
+      }
+      if(t==='mail')html+=`<div class="ch-note">${d.mail.configured?'<strong>✅ חיבור Gmail פעיל.</strong> מיילים אישיים נשלחים ישירות, וכל יום ראשון בבוקר יוצא סיכום שבועי אישי לכל חוקרת.':`<strong>עדיין אין חיבור מיילים — וזה בסדר.</strong> בינתיים כל שליחה פותחת טיוטה מוכנה ב-Gmail, עם הנמענות בעותק מוסתר. נשאר רק ללחוץ "שליחה".
+          <br><br><strong>חיבור חינמי לשליחה אוטומטית (5 דקות, פעם אחת):</strong><ol><li>בחשבון Google: אבטחה ← אימות דו־שלבי (אם עוד לא מופעל).</li><li>אבטחה ← "סיסמאות לאפליקציות" ← יצירת סיסמה בשם "אתר חוסן".</li><li>ב-Netlify: Site configuration ← Environment variables ← להוסיף <code>GMAIL_USER</code> (כתובת ה-Gmail) ו-<code>GMAIL_APP_PASSWORD</code> (הסיסמה שנוצרה).</li><li>פריסה מחדש של האתר. מכאן המיילים יוצאים לבד — עד 500 ביום, בחינם.</li></ol>`}</div>
+        <div class="ch-admin-item" style="margin-top:12px"><h4>סיכום שבועי</h4><p class="ch-credit">מה מתאים לכל חוקרת, מה נסגר בשבועיים הקרובים, מה חדש, ואילו קבוצות משימה מחפשות שותפות.</p>
+          <div class="ch-actions"><button type="button" class="ch-btn small" data-act="digest">${d.mail.configured?'שליחת הסיכום עכשיו':'פתיחת הסיכום כטיוטה ב-Gmail'}</button></div></div>
+        <div class="ch-admin-item"><h4>הסרה מרשימת ההתראות</h4><p class="ch-credit">מי שהשיבה "הסרה" — כתובת מייל בכל שורה.</p><textarea id="chOptout" rows="3" dir="ltr" style="width:100%">${h(d.optout.join('\n'))}</textarea><button type="button" class="ch-btn small" data-act="optout">שמירה</button></div>`;
+      m.querySelector('#chAdm').innerHTML=html+'<div class="ch-status" id="chAdmMsg"></div>';
+      if(A.msg)setStatus(m.querySelector('#chAdmMsg'),A.msg[0],A.msg[1]);
+    }
+    const srcRow=(s,st)=>`<div class="ch-row" data-src><input class="grow" name="name" value="${h(s.name)}" placeholder="שם המקור" style="max-width:200px" dir="auto"><input class="grow" name="url" value="${h(s.url)}" placeholder="https://… (פיד או עמוד)" dir="ltr"><label class="ch-toggle"><input type="checkbox" name="nofilter"${s.filter===false?' checked':''}>בלי סינון</label><label class="ch-toggle"><input type="checkbox" name="enabled"${s.enabled!==false?' checked':''}>פעיל</label>${st?`<span class="ch-tag" title="${h(st.error||'')}">${st.ok?`✓ ${st.found} נמצאו · ${st.added} חדשים`:'✗ '+h(st.error||'שגיאה')} · ${new Date(st.at).toLocaleDateString('he-IL')}</span>`:''}<button type="button" class="ch-btn small danger" data-act="src-remove">✕</button></div>`;
+    // ההודעה נשמרת גם כשהחלון מתרענן אחרי הפעולה.
+    const amsg=(t,k)=>{A.msg=[t,k];const el=m.querySelector('#chAdmMsg');if(el){setStatus(el,t,k);el.scrollIntoView({block:'nearest'})}};
+    const fields=f=>{const d=formData(f);d.topics=[...f.querySelectorAll('input[name=topics]:checked')].map(i=>i.value);return d};
+    m.addEventListener('click',async e=>{
+      const tb=e.target.closest('[data-atab]');if(tb){A.tab=tb.dataset.atab;A.msg=null;render();return}
+      const b=e.target.closest('[data-act]');if(!b||b.tagName==='BUTTON'&&b.closest('form')&&!b.type.includes('button'))return;
+      const a=b.dataset.act;
+      try{
+        if(a==='reject'){await call('reject',{id:b.dataset.key});await reload();render();amsg('הוסר מהתיבה. הוא לא יחזור באיסוף הבא.','ok')}
+        if(a==='notify'){
+          const ids=[...m.querySelectorAll(`[data-notify="${CSS.escape(b.dataset.id)}"] input:checked`)].map(i=>i.value);
+          const j=await call('notify',{callId:b.dataset.id,personIds:ids});
+          if(j.mode==='compose'){window.open(j.href,'_blank','noopener');amsg(`נפתחה טיוטה ב-Gmail ל־${j.count} חוקרות (בעותק מוסתר). נשאר רק ללחוץ "שליחה".`,'ok')}
+          else amsg(`נשלחו ${j.sent} מיילים אישיים.${j.failed.length?' לא נשלח ל: '+j.failed.join(', '):''}`,j.failed.length?'err':'ok');
+          await reload();render();
+        }
+        if(a==='src-add'){m.querySelector('#chSrcRows').insertAdjacentHTML('beforeend',srcRow({name:'',url:'',filter:true,enabled:true}))}
+        if(a==='src-remove'){b.closest('[data-src]').remove()}
+        if(a==='src-save'||a==='fetch'){
+          const rows=[...m.querySelectorAll('[data-src]')].map(r=>({name:r.querySelector('[name=name]').value,url:r.querySelector('[name=url]').value,filter:!r.querySelector('[name=nofilter]').checked,enabled:r.querySelector('[name=enabled]').checked})).filter(r=>r.url.trim());
+          await call('sources',{sources:rows});
+          if(a==='fetch'){amsg('אוסף מהמקורות… (עד חצי דקה)');const j=await call('fetch',{});const added=j.status.reduce((s,x)=>s+x.added,0);await reload();render();amsg(`האיסוף הסתיים: ${added} קולות קוראים חדשים מחכים לאישור.`,'ok')}
+          else{await reload();render();amsg('המקורות נשמרו.','ok')}
+        }
+        if(a==='digest'){const j=await call('digest',{send:true});
+          if(j.mode==='empty')amsg('אין השבוע מה לשלוח: אין קולות קוראים פתוחים או קבוצות שמחפשות שותפות.');
+          else if(j.mode==='compose'){window.open(j.href,'_blank','noopener');amsg('הסיכום נפתח כטיוטה ב-Gmail.','ok')}
+          else amsg(`הסיכום נשלח ל־${j.sent} חוקרות.${j.failed?` ${j.failed} נכשלו.`:''}`,j.failed?'err':'ok')}
+        if(a==='optout'){await call('optout',{optout:m.querySelector('#chOptout').value.split(/\s+/)});amsg('נשמר.','ok')}
+        if(a==='rekey'){const j=await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-rekey',id:b.dataset.id})});
+          m.querySelector(`[data-rekey="${CSS.escape(b.dataset.id)}"]`).innerHTML=`<div class="ch-linkbox"><input readonly value="${h(j.link)}"></div><p class="ch-credit">הקישור הישן כבר לא פותח את סביבת העבודה. שלחי את החדש לחברות הקבוצה.</p>`}
+        if(a==='team-delete'&&confirm('למחוק את הקבוצה ואת כל מה שנכתב בה? אי אפשר לשחזר.')){await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-delete',id:b.dataset.id})});await reload();render();refreshTeams()}
+      }catch(err){amsg(err.message,'err')}
+    });
+    m.addEventListener('submit',async e=>{
+      const f=e.target.closest('[data-edit]');if(!f)return;e.preventDefault();
+      const d=fields(f),kind=f.dataset.kind;
+      try{
+        if(kind==='inbox'){const j=await call('approve',{id:f.dataset.edit,call:d});await reload();A.tab='calls';render();
+          const det=[...m.querySelectorAll('details')].find(x=>x.querySelector(`[data-edit="${CSS.escape(j.call.id)}"]`));if(det){det.open=true;det.scrollIntoView({block:'start'})}
+          amsg('פורסם ✓ עכשיו אפשר לשלוח אותו לחוקרות הרלוונטיות.','ok')}
+        else if(kind==='new'){await call('create',{call:d});await reload();render();amsg('פורסם ✓','ok')}
+        else{await call('save-call',{call:{...d,id:f.dataset.edit}});await reload();render();amsg('נשמר ✓','ok')}
+        load();
+      }catch(err){amsg(err.message,'err')}
+    });
+    if(await reload())render();
+  }
+
+  function onClick(e){
+    const b=e.target.closest('[data-ch]');if(!b)return;
+    const a=b.dataset.ch;
+    if(a==='topic'){state.topic=state.topic===b.dataset.k?'':b.dataset.k;renderCalls();return}
+    if(a==='suggest')return openSuggest();
+    if(a==='team-new')return openTeamNew(b.dataset.call||'');
+    if(a==='join')return openJoin(b.dataset.id);
+    if(a==='ws')return openWorkspace(b.dataset.id);
+    if(a==='calendar')return openCalendar();
+    if(a==='admin')return openCallsAdmin();
+  }
+
+  // #team=ID.KEY — קישור לסביבת עבודה. שומרים את המפתח בדפדפן ומסירים אותו משורת הכתובת.
+  function handleHash(){
+    const t=location.hash.match(/^#team=([\w-]+)\.([\w-]+)$/);
+    if(t){store.set('hosen.team.'+t[1],t[2]);history.replaceState(null,'',location.pathname+'#teams');renderCalls();renderTeams();openWorkspace(t[1]);return}
+    const c=location.hash.match(/^#call-([\w-]+)$/);
+    if(c){const el=document.getElementById('call-'+c[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2500)}}
+    if(location.hash==='#calls-admin'){history.replaceState(null,'',location.pathname);openCallsAdmin()}
+    if(location.hash==='#teams')document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(!isCalls())return;
+    window.addEventListener('hashchange',handleHash);
+    window.hosenCallsAdmin=openCallsAdmin;
+    mount();load();
+  });
+})();
+</script>
 <div class="site-credit" dir="rtl">
   <span>עיצוב ובניית האתר: ד"ר יעל שדה</span>
   <a href="tel:+972523969417">052-3969417</a>

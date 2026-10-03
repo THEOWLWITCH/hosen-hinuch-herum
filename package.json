@@ -7,9 +7,11 @@
   },
   "dependencies": {
     "@netlify/blobs": "latest",
-    "@netlify/functions": "latest"
+    "@netlify/functions": "latest",
+    "nodemailer": "^10.0.13"
   },
   "devDependencies": {
-    "@types/node": "latest"
+    "@types/node": "latest",
+    "@types/nodemailer": "^8.0.2"
   }
 }
