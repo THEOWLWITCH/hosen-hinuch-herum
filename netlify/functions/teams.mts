@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { json, looksHuman, validToken } from "../lib/shared.mts";
+import { communityCodeOK, json, looksHuman, validToken } from "../lib/shared.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, listTeams, newItemId, newKey,
@@ -52,6 +52,7 @@ export default async (req: Request) => {
   // ----- הקמת קבוצה ובקשת הצטרפות: בקוד הקהילה -----
   if (action === "create" || action === "join") {
     if (!looksHuman(body)) return json({ ok: true });
+    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
     const name = clip(body.name, 160);
     const email = clip(body.email, 240);
     if (!name || !email.includes("@")) return json({ error: "missing_fields", message: "נא למלא שם ומייל." }, 400);

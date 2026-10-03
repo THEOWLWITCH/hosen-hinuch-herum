@@ -3309,8 +3309,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     m.close=close;
     return m;
   }
-  // בלי קוד: שדה מלכודת לבוטים (נסתר), וזמן המילוי נשלח עם הטופס.
-  const codeField=()=>`<input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
+  const codeField=()=>`<label>קוד הקהילה*<input name="communityCode" required autocomplete="off"><span class="hint">הקוד של חברות הקהילה.</span></label><input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
   function formData(form){const d=Object.fromEntries(new FormData(form));const m=form.closest('.ch-modal');if(m)d.elapsed=Date.now()-Number(m.dataset.opened||0);return d}
   function setStatus(el,msg,kind){el.className='ch-status'+(kind?' '+kind:'');el.textContent=msg}
 

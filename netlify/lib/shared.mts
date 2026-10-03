@@ -71,6 +71,12 @@ export async function validToken(req: Request, allowed: AccessRole | AccessRole[
 
 // טפסים פתוחים לכולן (בלי קוד): הגנה שקטה מספאם — שדה מלכודת שאדם לא רואה,
 // ומינימום זמן מילוי. בנוסף יש מגבלת קצב בכל נקודת קצה.
+// קוד הקהילה: לפעולות של חברות הקהילה באתר (הודעות, קבוצות משימה, הצעת קול קורא).
+export function communityCodeOK(code: unknown): boolean {
+  const expected = Netlify.env.get("BOARD_CODE") || "";
+  return !!expected && String(code ?? "").trim() === expected;
+}
+
 export function looksHuman(body: any): boolean {
   if (body?.website) return false;
   const elapsed = Number(body?.elapsed);
