@@ -445,7 +445,7 @@ function icsFold(line: string) {
   return out.join("\r\n");
 }
 
-export function buildIcs(calls: Call[], site: string, calName = "קולות קוראים — חוסן חינוך חרום"): string {
+export function buildIcs(calls: Call[], site: string, calName = "קולות קוראים — בינה מלאכותית: חוסן-חינוך-חרום"): string {
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
   const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//hosen-hinuch-herum//calls//HE", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", `X-WR-CALNAME:${icsText(calName)}`, "X-WR-TIMEZONE:Asia/Jerusalem"];
   for (const c of calls) {
@@ -500,7 +500,7 @@ function transport() {
 
 export async function sendMail(to: string, subject: string, html: string, text: string) {
   const user = (Netlify.env.get("GMAIL_USER") || "").trim();
-  await (await transport()).sendMail({ from: { name: "קהילת חוסן חינוך חרום", address: user }, to, subject, html, text });
+  await (await transport()).sendMail({ from: { name: "בינה מלאכותית: חוסן-חינוך-חרום", address: user }, to, subject, html, text });
 }
 
 // שליחה במקביל (עד שלוש בכל רגע, דרך אותו חיבור).
@@ -542,7 +542,7 @@ function callLines(c: Call, today: string) {
 function wrapHtml(inner: string, site: string) {
   return `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${inner}
 <hr style="border:0;border-top:1px solid #dde6ea;margin:26px 0 12px">
-<p style="font-size:12px;color:#6b7d88;margin:0">קהילת חוסן · חינוך · חרום — <a href="${site}/calls" style="color:#17649a">כל הקולות הקוראים באתר</a>.<br>לא רוצה לקבל התראות כאלה? אפשר פשוט להשיב למייל הזה ולכתוב "הסרה".</p></div>`;
+<p style="font-size:12px;color:#6b7d88;margin:0">בינה מלאכותית: חוסן-חינוך-חרום — <a href="${site}/calls" style="color:#17649a">כל הקולות הקוראים באתר</a>.<br>לא רוצה לקבל התראות כאלה? אפשר פשוט להשיב למייל הזה ולכתוב "הסרה".</p></div>`;
 }
 
 function callBlockHtml(c: Call, today: string, site: string) {
@@ -574,7 +574,7 @@ ${callBlockHtml(c, today, site)}
 // טיוטה כללית (בלי פנייה אישית) — לשליחה דרך Gmail כשאין חיבור מיילים.
 export function callEmailGeneric(c: Call, site: string, today = israelToday()) {
   const subject = `קול קורא חדש: ${bareTitle(c.title)}`.slice(0, 160);
-  const text = `שלום,\n\nפורסם קול קורא חדש, ונראה לנו שהוא מתאים לתחומי העיסוק שלך.\n\n${callBlockText(c, today, site)}\n\nאם את מתכוונת להגיש, אפשר להקים באתר קבוצת משימה להגשה, או להצטרף לקבוצה שכבר קמה. בקבוצה כותבות את ההצעה יחד.\n\nקהילת חוסן · חינוך · חרום`;
+  const text = `שלום,\n\nפורסם קול קורא חדש, ונראה לנו שהוא מתאים לתחומי העיסוק שלך.\n\n${callBlockText(c, today, site)}\n\nאם את מתכוונת להגיש, אפשר להקים באתר קבוצת משימה להגשה, או להצטרף לקבוצה שכבר קמה. בקבוצה כותבות את ההצעה יחד.\n\nבינה מלאכותית: חוסן-חינוך-חרום`;
   return { subject, text };
 }
 

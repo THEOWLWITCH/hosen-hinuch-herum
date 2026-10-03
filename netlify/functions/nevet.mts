@@ -36,7 +36,7 @@ async function mailEntryLink(site: string, c: { name: string; email: string; cod
   const lines = welcome
     ? [`שלום ${first},`, "הפנייה שלך לנבט אושרה 🌱", `יש לך ${c.credits} פעולות${c.expires ? `, בתוקף עד ${c.expires.split("-").reverse().join(".")}` : ""}. נבט קורא מאמר, מציע רעיונות ליישום ומפיק מדריך פיתוח — ומיזי מלווה אותך שלב אחר שלב.`, "זה הקישור האישי שלך לכניסה. כדאי לשמור את המייל הזה."]
     : [`שלום ${first},`, "ביקשת קישור כניסה לנבט. הנה הוא:"];
-  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;line-height:1.7;color:#1d3445">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none;font-weight:700">כניסה לנבט 🌱</a></p><p style="font-size:12px;color:#6b7d88">הקישור אישי — לא להעביר אותו הלאה.<br>קהילת חוסן · חינוך · חרום</p></div>`;
+  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;line-height:1.7;color:#1d3445">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none;font-weight:700">כניסה לנבט 🌱</a></p><p style="font-size:12px;color:#6b7d88">הקישור אישי — לא להעביר אותו הלאה.<br>בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
   try { await sendMail(c.email, welcome ? "הפנייה שלך לנבט אושרה 🌱" : "קישור כניסה לנבט 🌱", html, lines.join("\n\n") + `\n\nכניסה: ${link}`); return true; } catch { return false; }
 }
 

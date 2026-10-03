@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>חוסן | חינוך | חירום</title>
+<title>בינה מלאכותית: חוסן-חינוך-חרום</title>
 <style>
 :root{--ink:#17324d;--blue:#246b8f;--sky:#eaf5f8;--sand:#f7f4ec;--white:#fff;--muted:#657786;--accent:#d99a43}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,"Noto Sans Hebrew",sans-serif;color:var(--ink);background:#fbfcfd;line-height:1.6}
@@ -2836,7 +2836,7 @@ html[data-page="apps"] #apps{display:block!important}
     return `<div class="cert"><div style="font-size:30pt">🌱</div><h1>תעודת הוקרה</h1><p>מוענקת ל</p><p class="name">${h(name)}</p>
       <p>על ${name===p.ownerName?'הובלת':'השתתפות ותרומה ל'}מיזם היישום</p><h2 style="border:0;margin:0">${h(p.guide?.productName||p.title)}</h2>
       <p class="meta">מתוך המאמר "${h(p.analysis.article.title)}"</p><p>${h(praise||c.praise)}</p>
-      <div class="sig"><span>ד״ר יעל שדה<br>קהילת חוסן · חינוך · חרום</span><span>מיזי 🌱<br>העוזרת האישית של המיזם</span></div>
+      <div class="sig"><span>ד״ר יעל שדה<br>בינה מלאכותית: חוסן-חינוך-חרום</span><span>מיזי 🌱<br>העוזרת האישית של המיזם</span></div>
       <p class="meta">${fmt(c.issuedAt)}</p><p class="verify">אימות התעודה: ${h(url)}</p></div>`;
   }
 
@@ -2936,7 +2936,7 @@ html[data-page="apps"] #apps{display:block!important}
 
   async function showVerify(pid,code){
     try{const r=await fetch('/api/nevet?verify='+encodeURIComponent(pid)+'&c='+encodeURIComponent(code));const j=await r.json();if(!r.ok)throw new Error(j.message);
-      modal(`<h2>✅ תעודה מאומתת</h2><p>מיזם היישום <strong>${h(j.title)}</strong>, מתוך המאמר "${h(j.articleTitle)}".</p><p>הוביל/ה: ${h(j.owner)} · הושלם ב־${fmt(j.issuedAt)}</p><p><strong>הצוות:</strong> ${j.members.map(h).join(', ')}</p>${rich(j.praise)}<p class="nv-status">הונפקה על ידי קהילת חוסן · חינוך · חרום.</p>`)}
+      modal(`<h2>✅ תעודה מאומתת</h2><p>מיזם היישום <strong>${h(j.title)}</strong>, מתוך המאמר "${h(j.articleTitle)}".</p><p>הוביל/ה: ${h(j.owner)} · הושלם ב־${fmt(j.issuedAt)}</p><p><strong>הצוות:</strong> ${j.members.map(h).join(', ')}</p>${rich(j.praise)}<p class="nv-status">הונפקה על ידי בינה מלאכותית: חוסן-חינוך-חרום.</p>`)}
     catch(e){modal(`<h2>התעודה לא אומתה</h2><p>${h(e.message||'')}</p>`)}
   }
 
@@ -3021,7 +3021,7 @@ html[data-page="apps"] #apps{display:block!important}
   const DEFAULT_SUBJECT='מה חדש באתר הקהילה: קולות קוראים, קבוצות משימה, מצפן המחקר — ובקרוב נבט 🌱';
   const DEFAULT_BODY=`שלום לחברות ולחברי הקהילה,
 
-באתר "חוסן · חינוך · חרום" נוספו בשבועות האחרונים כמה כלים חדשים. כולם נבנו כדי לעזור לנו לעבוד יחד, להגיש יחד וליישם יחד.
+באתר "בינה מלאכותית: חוסן-חינוך-חרום" נוספו בשבועות האחרונים כמה כלים חדשים. כולם נבנו כדי לעזור לנו לעבוד יחד, להגיש יחד וליישם יחד.
 
 📢 **קולות קוראים — מגיעים אליכם**
 - האתר אוסף כל בוקר קולות קוראים, מענקים וכנסים בתחום, ממקורות בארץ ובעולם.
@@ -3062,7 +3062,7 @@ https://hosen-hinuch-herum.netlify.app/apps
 
 בברכה,
 ד״ר יעל שדה
-קהילת חוסן · חינוך · חרום`;
+בינה מלאכותית: חוסן-חינוך-חרום`;
   const KEY='hosen.communityMail.draft';
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
@@ -5147,7 +5147,7 @@ function collectCommunityEmails(){
 }
 async function copyCommunityEmailLogo(){
   const logoUrl='https://hosen-hinuch-herum.netlify.app/assets/community-logo-email.jpg';
-  const html='<div style="margin-top:16px;"><img src="'+logoUrl+'" alt="חוסן חינוך חרום" width="190" style="display:block;width:190px;max-width:190px;height:auto;border:0;"></div>';
+  const html='<div style="margin-top:16px;"><img src="'+logoUrl+'" alt="בינה מלאכותית: חוסן-חינוך-חרום" width="190" style="display:block;width:190px;max-width:190px;height:auto;border:0;"></div>';
   try{
     if(navigator.clipboard && window.ClipboardItem){
       const item=new ClipboardItem({
@@ -5186,8 +5186,8 @@ async function openCommunityMail(){
     if(status) status.textContent='לא נמצאו כתובות מייל בכרטיסי חברי הקהילה.';
     return;
   }
-  const subject='משהו התחדש באתר חוסן . חינוך . חירום';
-  const body='מוזמנות ומוזמנים להכנס לאתר חוסן - חינוך - חרום - https://hosen-hinuch-herum.netlify.app/ - משהו שם התחדש.\n\n';
+  const subject='משהו התחדש באתר בינה מלאכותית: חוסן-חינוך-חרום';
+  const body='מוזמנות ומוזמנים להיכנס לאתר בינה מלאכותית: חוסן-חינוך-חרום - https://hosen-hinuch-herum.netlify.app/ - משהו שם התחדש.\n\n';
   let w=null;
   try{w=window.open('about:blank','_blank');if(w)w.opener=null}catch(e){}
   const logoCopied=await copyCommunityEmailLogo();

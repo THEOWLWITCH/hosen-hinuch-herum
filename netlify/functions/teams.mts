@@ -17,7 +17,7 @@ function esc(s: string) {
 
 async function mail(to: string | undefined, subject: string, lines: string[], link?: [string, string]) {
   if (!to || !to.includes("@") || !mailConfigured()) return false;
-  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}${link ? `<p><a href="${esc(link[1])}" style="color:#17649a"><strong>${esc(link[0])}</strong></a></p>` : ""}<p style="font-size:12px;color:#6b7d88">קהילת חוסן · חינוך · חרום</p></div>`;
+  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}${link ? `<p><a href="${esc(link[1])}" style="color:#17649a"><strong>${esc(link[0])}</strong></a></p>` : ""}<p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
   try {
     await sendMail(to, subject, html, lines.join("\n\n") + (link ? `\n\n${link[0]}: ${link[1]}` : ""));
     return true;
