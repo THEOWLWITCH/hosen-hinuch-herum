@@ -4256,8 +4256,8 @@ const researchPracticalSources=[
 
 let uploadedResearchItems=[];
 function researchCategoryLabel(id){return researchWorldCategories.find(c=>c.id===id)?.label||id}
-function researchSortValue(x){return String(x.date||x.year||'')}
-function sortResearchItems(items){return [...items].sort((a,b)=>researchSortValue(b).localeCompare(researchSortValue(a)))}
+function researchSortValue(x){const raw=String(x.date||x.year||'').trim();if(/^\d{4}$/.test(raw))return Date.UTC(Number(raw),0,1);const stamp=Date.parse(raw);return Number.isFinite(stamp)?stamp:0}
+function sortResearchItems(items){return [...items].sort((a,b)=>researchSortValue(b)-researchSortValue(a))}
 function researchCardMarkup(x){return `<article class="research-card research-chronological-card${x.weeklyNew?' weekly-new':''}">${x.weeklyNew?`<span class="research-weekly-flag">חדש בסקירה השבועית</span>`:''}${x.thumbnailUrl?`<img class="research-uploaded-thumb" src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<div class="research-card-topline"><span class="research-card-date">${esc(x.dateLabel||x.year||'')}</span><span class="research-card-category">${esc(researchCategoryLabel(x.cat))}</span></div><h4>${esc(x.title)}</h4><div class="research-citation">${esc(x.authors||'')} (${esc(x.year||'')}) · ${esc(x.source||'')}</div><p>${esc(x.summary)}</p>${x.why?`<div class="research-why"><strong>למה זה חשוב לנו?</strong> ${esc(x.why)}</div>`:''}${x.url?`<a href="${escAttr(x.url)}" target="_blank" rel="noopener">למקור</a>`:''}</article>`}
 async function loadUploadedResearch(){
   const cats=researchWorldCategories.map(c=>'research-'+c.id);
