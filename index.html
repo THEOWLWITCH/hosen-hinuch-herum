@@ -2202,6 +2202,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
     <a class="site-tab compass-tab" data-route="compass" href="/compass">מצפן המחקר</a>
+    <a class="site-tab" data-route="apps" href="/apps">🌱 יישומים</a>
   </div>
 </nav>
 <main>
@@ -2435,6 +2436,567 @@ body:has(.feedback-modal.open){
 </div>
 </div></section>
 
+<style id="nevet-v1">
+#apps{display:none}
+html[data-page="apps"] #apps{display:block!important}
+#nevetRoot,.nv-modal{--nv-ink:#1f4256;--nv-soft:#5f7686;--nv-line:#d7e3e7;--nv-bg:#f4f9f6;--nv-green:#2f6e4f;--nv-accent:#245f82;--nv-red:#a23b3b;--nv-amber:#9a6a12}
+#nevetRoot{color:var(--nv-ink);font-size:14px;line-height:1.65}
+#nevetRoot [hidden],.nv-modal [hidden]{display:none!important}
+.nv-hero{padding:22px 24px;border:1px solid #cfe3d8;border-radius:14px;background:linear-gradient(135deg,#f1f9f4 0%,#fffaf0 100%)}
+.nv-hero h2{margin:0 0 4px;font-size:24px;color:#1d4b3a}
+.nv-hero p{margin:0;max-width:760px;color:#4d6b5d}
+.nv-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:16px 0 0;padding:0;list-style:none;counter-reset:nv}
+.nv-steps li{position:relative;padding:10px 12px;border:1px solid #d5e7dc;border-radius:9px;background:#fff;font-size:12.5px;color:#4d6b5d}
+.nv-steps li b{display:block;font-size:13.5px;color:#1d4b3a}
+.nv-steps li.on{border-color:#7fb596;background:#eaf6ee}
+.nv-card{margin:16px 0 0;padding:16px 18px;border:1px solid var(--nv-line);border-radius:11px;background:#fff;break-inside:avoid}
+.nv-card h3{margin:0 0 8px;font-size:17px;color:#173b5d}
+.nv-card h4{margin:12px 0 4px;font-size:14px;color:#244b61;break-after:avoid}
+.nv-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nv-btn{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:6px 14px;border:1px solid #9fc2b0;border-radius:999px;background:#fff;color:#2a6048;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+.nv-btn:hover{background:#eef7f1}.nv-btn.primary{background:#2f6e4f;border-color:#2f6e4f;color:#fff}.nv-btn.primary:hover{background:#255a40}
+.nv-btn.small{min-height:28px;padding:3px 10px;font-size:12px}.nv-btn.danger{color:var(--nv-red);border-color:#e3b9b9}
+.nv-btn[disabled]{opacity:.5;cursor:not-allowed}
+.nv-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.nv-form label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:650;color:#456071}
+.nv-form .wide{grid-column:1/-1}
+.nv-form .hint{font-weight:400;color:#7b8d98}
+#nevetRoot input:not([type=checkbox]):not([type=radio]),#nevetRoot select,#nevetRoot textarea,.nv-modal input:not([type=checkbox]):not([type=radio]),.nv-modal select,.nv-modal textarea{width:100%;box-sizing:border-box;min-height:36px;padding:7px 10px;border:1px solid var(--nv-line);border-radius:7px;background:#fff;font:inherit;color:inherit}
+#nevetRoot textarea,.nv-modal textarea{line-height:1.6;resize:vertical}
+.nv-hp{position:absolute!important;left:-9999px!important}
+.nv-status{min-height:20px;margin-top:8px;font-size:13px;color:var(--nv-soft)}.nv-status.ok{color:var(--nv-green)}.nv-status.err{color:var(--nv-red)}
+.nv-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;background:#eef2f4;color:var(--nv-soft);font-size:12px;font-weight:700}
+.nv-badge.green{background:#e6f3ec;color:var(--nv-green)}.nv-badge.amber{background:#fbf2df;color:var(--nv-amber)}.nv-badge.red{background:#fbeaea;color:var(--nv-red)}.nv-badge.blue{background:#e5f0f7;color:#245f82}
+.nv-tag{display:inline-block;margin:0 0 4px 4px;padding:1px 8px;border-radius:5px;background:var(--nv-bg);color:#456b5a;font-size:12px}
+.nv-list{display:grid;gap:10px;margin-top:10px}
+.nv-proj{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border:1px solid var(--nv-line);border-radius:9px;background:#fff;cursor:pointer}
+.nv-proj:hover{border-color:#9fc2b0}
+.nv-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:16px 0 4px;border-bottom:1px solid var(--nv-line)}
+.nv-tabs button{padding:8px 12px;border:0;border-bottom:2px solid transparent;background:transparent;font:inherit;font-size:13.5px;color:var(--nv-soft);cursor:pointer}
+.nv-tabs button.active{border-bottom-color:#2f6e4f;color:#173b5d;font-weight:700}
+.nv-tabs button[disabled]{opacity:.45;cursor:not-allowed}
+.nv-idea{border-right:4px solid #cfe3d8}
+.nv-idea.chosen{border-right-color:#2f6e4f;box-shadow:0 0 0 2px #cfe3d8}
+.nv-res{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0}
+.nv-res div{padding:7px 9px;border-radius:7px;background:var(--nv-bg);font-size:12.5px}.nv-res b{display:block;font-size:11.5px;color:#4d6b5d}
+.nv-checks{display:grid;gap:4px;margin:6px 0 0;padding:10px 12px;border:1px dashed #b9d4c4;border-radius:8px;background:#fbfdfb}
+.nv-checks label{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer}
+.nv-checks input{margin-top:4px}
+.nv-rich p{margin:0 0 8px}.nv-rich ul,.nv-rich ol{margin:0 0 8px;padding-inline-start:20px}
+.nv-table{width:100%;border-collapse:collapse;font-size:13px}.nv-table th,.nv-table td{padding:6px 8px;border-bottom:1px solid #e3ecef;text-align:start;vertical-align:top}.nv-table th{color:#456071;font-size:12px}
+.nv-stage{margin:0 0 8px;padding:10px 12px;border:1px solid var(--nv-line);border-radius:9px;background:#fff;break-inside:avoid}
+.nv-stage summary{cursor:pointer;font-weight:700}
+.nv-stage.done{background:#f3faf5}.nv-stage.in_progress{border-color:#9fc2b0;box-shadow:0 0 0 2px #e3f1e8}
+.nv-highlight{padding:12px 14px;border-right:4px solid #2f6e4f;border-radius:8px;background:#eef7f1}
+.nv-mizi{display:grid;grid-template-columns:260px 1fr;gap:14px;margin-top:12px}
+.nv-stagelist{display:grid;gap:6px;align-content:start}
+.nv-stagebtn{display:flex;justify-content:space-between;gap:6px;padding:8px 10px;border:1px solid var(--nv-line);border-radius:8px;background:#fff;font:inherit;font-size:12.5px;text-align:start;cursor:pointer}
+.nv-stagebtn.done{background:#f3faf5;color:#2f6e4f}.nv-stagebtn.in_progress{border-color:#7fb596;font-weight:700}
+.nv-chat{display:grid;gap:8px;max-height:560px;overflow:auto;padding:4px}
+.nv-msg{padding:10px 12px;border-radius:10px;background:#f6f8f9;font-size:13.5px}
+.nv-msg.mizi{background:#eef7f1;border:1px solid #d5e7dc}
+.nv-msg.milestone{background:#fffaf0;border:1px dashed #e9cf9a;text-align:center}
+.nv-msg-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;font-size:12px;color:#6b7d88}
+.nv-msg-head b{color:#1f4256}
+.nv-composer{display:grid;gap:8px;margin-top:10px;padding:12px;border:1px solid var(--nv-line);border-radius:10px;background:#fbfdfc}
+.nv-composer .nv-row select{width:auto}
+.nv-modal{position:fixed;inset:0;z-index:2100;display:flex;align-items:flex-start;justify-content:center;padding:5vh 12px;background:rgba(28,43,52,.38);backdrop-filter:blur(5px);overflow:auto}
+.nv-dialog{position:relative;width:min(640px,100%);padding:22px;border-radius:16px;background:#fff;box-shadow:0 28px 75px rgba(25,42,51,.18);color:#1f4256;font-size:14px;line-height:1.6}
+.nv-dialog.wide{width:min(1000px,100%)}
+.nv-dialog h2{margin:0 0 6px;font-size:20px}
+.nv-x{position:absolute;top:10px;left:12px;border:0;background:transparent;font-size:24px;color:#7d898f;cursor:pointer}
+.nv-thinking{text-align:center;padding:10px 0}
+.nv-sprout{font-size:44px;display:inline-block;animation:nvgrow 1.6s ease-in-out infinite}
+@keyframes nvgrow{0%,100%{transform:scale(.85)}50%{transform:scale(1.1)}}
+.nv-progress{height:6px;margin:12px 0 4px;border-radius:999px;background:#e6efe9;overflow:hidden}.nv-progress i{display:block;height:100%;width:0;background:#2f6e4f;transition:width .4s}
+.nv-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:10px}
+@media(max-width:860px){.nv-steps{grid-template-columns:1fr 1fr}.nv-mizi{grid-template-columns:1fr}.nv-res{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.nv-form,.nv-grid{grid-template-columns:1fr}.nv-steps{grid-template-columns:1fr}.nv-dialog{padding:18px 14px}}
+</style>
+<section id="apps" aria-label="יישומים"><div class="wrap" id="nevetRoot"></div></section>
+<script id="nevet-v1-js">
+(function(){
+  // לשונית "נבט" בחלון הניהול של האתר (מתווספת מחדש בכל פתיחה, רק למנהלת המערכת).
+  function addNevetTab(){
+    const tabs=document.getElementById('adminTabs');
+    if(!tabs||document.getElementById('tabNevet'))return;
+    if(typeof currentAccessRole!=='undefined'&&currentAccessRole!=='admin')return;
+    const b=document.createElement('button');b.id='tabNevet';b.type='button';b.textContent='🌱 נבט';
+    b.onclick=()=>{if(document.documentElement.dataset.page==='apps'){if(typeof closeAdmin==='function')closeAdmin();window.hosenNevetAdmin?.()}else location.href='/apps#nevet-admin'};
+    tabs.appendChild(b);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{const t=document.getElementById('adminTabs');if(!t)return;addNevetTab();new MutationObserver(addNevetTab).observe(t,{childList:true})});
+
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt=iso=>{const d=new Date(iso);return isNaN(d)?'':d.toLocaleDateString('he-IL')};
+  const fmtTime=iso=>{const d=new Date(iso);return isNaN(d)?'':d.toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})};
+  const ls={get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set(k,v){try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}};
+  const adminToken=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  const S={code:ls.get('hosen.nevet.code'),me:null,project:null,key:'',tab:'ideas',cost:{analyze:2,guide:3,mizi:1,certificate:1},ai:true,stageFilter:''};
+  const root=()=>document.getElementById('nevetRoot');
+
+  // טקסט מהמודל: פסקאות, תבליטים, רשימות ממוספרות ו**הדגשות** — בלי כוכביות וסימני #.
+  function rich(text){
+    const lines=String(text||'').replace(/\r/g,'').split('\n');let html='',list=null;
+    const close=()=>{if(list){html+=`</${list}>`;list=null}};
+    const inline=s=>h(s.replace(/^#+\s*/,'')).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    for(const raw of lines){const l=raw.trim();
+      if(!l){close();continue}
+      let m;
+      if((m=l.match(/^[-•*]\s+(.*)$/))){if(list!=='ul'){close();html+='<ul>';list='ul'}html+=`<li>${inline(m[1])}</li>`;continue}
+      if((m=l.match(/^\d+[.)]\s+(.*)$/))){if(list!=='ol'){close();html+='<ol>';list='ol'}html+=`<li>${inline(m[1])}</li>`;continue}
+      close();html+=`<p>${inline(l)}</p>`}
+    close();return `<div class="nv-rich">${html}</div>`;
+  }
+  const bullets=arr=>(arr||[]).length?`<ul>${arr.map(x=>`<li>${h(x)}</li>`).join('')}</ul>`:'<p class="nv-status">—</p>';
+
+  function headers(){
+    const x={'Content-Type':'application/json'};
+    if(S.code)x['x-nevet-code']=S.code;
+    if(S.key)x['x-project-key']=S.key;
+    const t=adminToken();if(t)x.Authorization='Bearer '+t;
+    return x;
+  }
+  async function api(path,opts={}){
+    const r=await fetch(path,{...opts,headers:{...headers(),...(opts.headers||{})}});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה. נסי שוב.');e.status=r.status;throw e}
+    return j;
+  }
+  const post=(body)=>api('/api/nevet',{method:'POST',body:JSON.stringify(body)});
+
+  // ---------- חלונות ----------
+  function modal(html,wide){
+    const m=document.createElement('div');m.className='nv-modal';
+    m.innerHTML=`<div class="nv-dialog${wide?' wide':''}" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button>${html}</div>`;
+    const close=()=>{m.remove();document.removeEventListener('keydown',esc)};
+    const esc=e=>{if(e.key==='Escape'&&!m.dataset.busy)close()};
+    m.addEventListener('click',e=>{if(!m.dataset.busy&&(e.target===m||e.target.classList.contains('nv-x')))close()});
+    document.addEventListener('keydown',esc);document.body.appendChild(m);m.close=close;return m;
+  }
+  function setStatus(el,msg,kind){if(!el)return;el.className='nv-status'+(kind?' '+kind:'');el.textContent=msg}
+
+  // ---------- קריאה לנבט / למיזי: הזרמה מפונקציית הקצה ----------
+  const AI_LABELS={analyze:['נבט קורא את המאמר','זה לוקח בדרך כלל דקה עד שלוש. נבט קורא, חושב, ואז כותב את הרעיונות.'],guide:['נבט כותב את מדריך הפיתוח','מדריך מפורט לוקח כמה דקות. אפשר להשאיר את החלון פתוח ולהכין קפה ☕'],mizi:['מיזי קוראת וחושבת','עוד רגע היא עונה.'],certificate:['מיזי כותבת את התעודות','רגע של חגיגה 🎉']};
+  async function ai(op,payload){
+    const [title,sub]=AI_LABELS[op];
+    const m=modal(`<div class="nv-thinking"><span class="nv-sprout" aria-hidden="true">🌱</span><h2>${title}…</h2><p class="nv-status">${sub}</p><div class="nv-progress"><i></i></div><p class="nv-status" data-tick>מתחברים…</p></div>`);
+    m.dataset.busy='1';
+    const tick=m.querySelector('[data-tick]'),bar=m.querySelector('.nv-progress i');
+    const t0=Date.now();let chars=0,phase='מתחברים…';
+    const timer=setInterval(()=>{const s=Math.round((Date.now()-t0)/1000);tick.textContent=`${phase} · ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;bar.style.width=Math.min(92,chars?20+chars/(op==='guide'?260:op==='analyze'?120:40):Math.min(18,s/2))+'%'},500);
+    try{
+      const r=await fetch('/api/nevet-ai',{method:'POST',headers:headers(),body:JSON.stringify({op,...payload})});
+      if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||'נבט לא זמין כרגע. נסי שוב בעוד כמה דקות.')}
+      const ticket=r.headers.get('x-nevet-ticket');
+      let meta={};try{meta=JSON.parse(decodeURIComponent(r.headers.get('x-nevet-meta')||'%7B%7D'))}catch(e){}
+      phase='חושב…';
+      const reader=r.body.getReader(),dec=new TextDecoder();let buf='',text='',stop='',apiErr='';
+      for(;;){const {value,done}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});
+        let i;while((i=buf.indexOf('\n\n'))>=0){const chunk=buf.slice(0,i);buf=buf.slice(i+2);
+          const data=chunk.split('\n').filter(l=>l.startsWith('data:')).map(l=>l.slice(5).trim()).join('');
+          if(!data)continue;let ev;try{ev=JSON.parse(data)}catch(e){continue}
+          if(ev.type==='content_block_start'&&ev.content_block?.type==='fallback'){text='';chars=0}
+          else if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){text+=ev.delta.text;chars=text.length;phase='כותב…'}
+          else if(ev.type==='message_delta'&&ev.delta?.stop_reason)stop=ev.delta.stop_reason;
+          else if(ev.type==='error')apiErr=ev.error?.message||'שגיאה';}}
+      if(apiErr)throw new Error('המודל עצר באמצע: '+apiErr+'. אפשר לנסות שוב.');
+      if(stop==='refusal')throw new Error('המודל סירב לענות על הבקשה הזו. אפשר לנסח אחרת ולנסות שוב.');
+      if(stop==='max_tokens')throw new Error('התשובה נקטעה כי הייתה ארוכה מדי. אפשר לנסות שוב, או לקצר את המאמר.');
+      let result;try{result=JSON.parse(text)}catch(e){throw new Error('התשובה לא התקבלה במלואה. אפשר לנסות שוב.')}
+      phase='שומר…';bar.style.width='96%';
+      return {ticket,result,meta};
+    }finally{clearInterval(timer);m.dataset.busy='';m.close()}
+  }
+
+  // ---------- חילוץ טקסט מקבצים (בדפדפן, הקובץ לא נשלח ולא נשמר) ----------
+  function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('טעינת רכיב הקריאה נכשלה. נסי לרענן את העמוד.'));document.head.appendChild(s)})}
+  async function fileText(file){
+    const name=file.name.toLowerCase();
+    if(name.endsWith('.pdf')||file.type==='application/pdf'){
+      if(!window.pdfjsLib)await loadScript('/assets/vendor/pdf-3.11.174.min.js');
+      pdfjsLib.GlobalWorkerOptions.workerSrc='/assets/vendor/pdf-3.11.174.worker.min.js';
+      const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;const out=[];
+      for(let i=1;i<=pdf.numPages;i++){const c=await (await pdf.getPage(i)).getTextContent();out.push(c.items.map(it=>it.str+(it.hasEOL?'\n':' ')).join(''))}
+      return out.join('\n\n');
+    }
+    if(name.endsWith('.docx')){if(!window.mammoth)await loadScript('/assets/vendor/mammoth-1.13.0.browser.min.js');return (await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()})).value}
+    if(name.endsWith('.txt')||name.endsWith('.md')||file.type.startsWith('text/'))return await file.text();
+    throw new Error('אפשר להעלות PDF, Word (docx) או קובץ טקסט.');
+  }
+
+  // ---------- הדפסה ----------
+  function printDoc(title,body){
+    const w=window.open('','_blank');if(!w)return alert('הדפדפן חסם חלון חדש. אפשרי חלונות קופצים לאתר ונסי שוב.');
+    w.document.write(`<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>${h(title)}</title><style>
+      @page{size:A4;margin:20mm 22mm}body{font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#1d3445;font-size:11.5pt;line-height:1.65;max-width:170mm;margin:auto}
+      h1{font-size:19pt;margin:0 0 4pt;color:#1d4b3a}h2{font-size:13.5pt;margin:16pt 0 6pt;padding-bottom:3pt;border-bottom:1px solid #cfdde3;break-after:avoid}h3{font-size:12pt;margin:10pt 0 4pt;break-after:avoid}
+      p{margin:0 0 7pt}ul,ol{margin:0 0 8pt;padding-inline-start:18pt}.box,section,.stage,tr{break-inside:avoid}.meta{color:#5f7686;font-size:10pt}
+      table{width:100%;border-collapse:collapse;font-size:10pt}th,td{border-bottom:1px solid #dfe8ec;padding:4pt 5pt;text-align:start;vertical-align:top}
+      .box{padding:8pt 10pt;border-right:3pt solid #2f6e4f;background:#f1f8f4;margin:6pt 0}
+      .cert{border:6pt double #2f6e4f;border-radius:10pt;padding:22mm 18mm;text-align:center;min-height:220mm;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:8pt}
+      .cert h1{font-size:28pt}.cert .name{font-size:22pt;font-weight:700;color:#173b5d}.cert .sig{display:flex;justify-content:space-around;margin-top:18pt;font-size:10.5pt}.cert .verify{font-size:9pt;color:#6b7d88;margin-top:10pt}
+    </style></head><body>${body}<script>setTimeout(()=>print(),350)<\/script></body></html>`);
+    w.document.close();
+  }
+
+  // ---------- המסך ----------
+  function stepsHtml(active){
+    const steps=[['מאמר','מעלים מאמר מחקר'],['רעיונות','נבט מציע רעיונות ליישום'],['מדריך','מדריך פיתוח מפורט'],['מיזי מלווה','שלב אחר שלב, סיפור דרך'],['תעודה','סיום חגיגי לכל הצוות']];
+    return `<ol class="nv-steps">${steps.map(([a,b],i)=>`<li class="${i===active?'on':''}"><b>${i+1}. ${a}</b>${b}</li>`).join('')}</ol>`;
+  }
+  function render(){
+    const el=root();if(!el)return;
+    const isAdmin=!!adminToken();
+    const statusStep={ideas:1,guide:2,active:3,done:4};
+    let html=`<div class="nv-hero"><h2>🌱 נבט — מהמאמר אל השטח</h2>
+      <p><strong>נבט</strong> קורא מאמר מחקר, מוצא בו רעיונות שאפשר ליישם בחינוך, ומפיק מדריך פיתוח מפורט. אחר כך <strong>מיזי</strong>, העוזרת האישית של המיזם, מלווה אתכן שלב אחר שלב — עד תעודה חגיגית לכל הצוות.</p>
+      ${stepsHtml(S.project?statusStep[S.project.status]:0)}
+      <p class="nv-status" style="margin-top:10px">🔒 המאמר נקרא בדפדפן ונשלח לנבט לניתוח בלבד — הוא לא נשמר. בתיק נשמרים רק הניתוח, ההחלטות וסיפור הדרך.${isAdmin?' · <button type="button" class="nv-btn small" data-a="admin">⚙ ניהול נבט</button>':''}</p></div>`;
+
+    if(S.project)html+=projectHtml();
+    else if(S.me)html+=dashboardHtml();
+    else html+=accessHtml();
+    html+=`<div class="nv-card" id="nvGallery"><h3>🌳 ספריית המיזמים של הקהילה</h3><p class="nv-status">מיזמים שהסתיימו, ושהצוות שלהם הסכים לשתף.</p><div class="nv-gallery" data-gallery><p class="nv-status">טוען…</p></div></div>`;
+    el.innerHTML=html;
+    loadGallery();
+  }
+
+  function accessHtml(){
+    return `<div class="nv-grid">
+      <div class="nv-card"><h3>כניסה עם קוד</h3><p class="nv-status">נבט פתוח לחברות הקהילה עם קוד אישי.</p>
+        <form class="nv-row" data-form="code" style="margin-top:8px"><input name="code" dir="ltr" placeholder="NEVET-XXXX-XXXX" autocomplete="off" style="flex:1;min-width:180px" value="${h(S.code)}"><button class="nv-btn primary">כניסה</button></form>
+        <div class="nv-status" data-st="code"></div></div>
+      <div class="nv-card"><h3>אין לך קוד?</h3><p>השאירי פרטים, וד״ר יעל שדה תחזור אלייך עם קוד ועם פרטי ההשתתפות בעלות.</p>
+        <form class="nv-form" data-form="request"><label>שם*<input name="name" required></label><label>מייל*<input name="email" type="email" required dir="ltr"></label>
+        <label class="wide">מוסד / מסגרת<input name="institution"></label><label class="wide">על מה תרצי לעבוד?<textarea name="note" rows="2"></textarea></label>
+        <input class="nv-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="wide"><button class="nv-btn">שליחת פנייה</button><div class="nv-status" data-st="request"></div></div></form></div></div>`;
+  }
+
+  function dashboardHtml(){
+    const me=S.me,c=S.cost;
+    const left=me.code?.left;
+    const statusLabel={ideas:['💡 רעיונות','amber'],guide:['🧭 יש מדריך','blue'],active:['🌱 בליווי מיזי','green'],done:['🏅 הושלם','green']};
+    return `<div class="nv-card"><div class="nv-row" style="justify-content:space-between">
+        <div><h3 style="margin:0">שלום ${h(me.code?.name||'')} 🌱</h3><p class="nv-status" style="margin:2px 0 0">${left===null||left===undefined?'גישה ללא הגבלה':`נותרו <strong>${left}</strong> פעולות`} · ניתוח מאמר: ${c.analyze} · מדריך: ${c.guide} · שיחה עם מיזי: ${c.mizi} · תעודה: ${c.certificate}${me.code?.expires?` · בתוקף עד ${fmt(me.code.expires)}`:''}</p></div>
+        <button type="button" class="nv-btn small" data-a="logout">יציאה</button></div>
+        ${S.ai===false?'<p class="nv-status err">נבט עוד לא מחובר למודל השפה. אפשר לעיין, אבל עוד אי אפשר לנתח מאמרים.</p>':''}</div>
+      ${me.projects.length?`<div class="nv-card"><h3>המיזמים שלי</h3><div class="nv-list">${me.projects.map(p=>`<div class="nv-proj" data-open="${h(p.id)}"><span><strong>${h(p.title)}</strong><br><span class="nv-status">עודכן ${fmt(p.updatedAt)}${me.admin&&p.ownerName?` · ${h(p.ownerName)}`:''}</span></span><span class="nv-badge ${statusLabel[p.status][1]}">${statusLabel[p.status][0]}</span></div>`).join('')}</div></div>`:''}
+      <div class="nv-card"><h3>📄 מאמר חדש</h3><p class="nv-status">אפשר להעלות PDF, Word או טקסט — או להדביק את הטקסט. כדאי לספר לנבט איפה תרצי ליישם, כדי שהרעיונות יתאימו לך.</p>
+        <form class="nv-form" data-form="analyze">
+          <label class="wide">קובץ המאמר<input type="file" name="file" accept=".pdf,.docx,.txt,.md,application/pdf"></label>
+          <label class="wide">או הדבקת הטקסט<textarea name="text" rows="4" placeholder="הדביקי כאן את טקסט המאמר"></textarea></label>
+          <label>איפה תרצי ליישם?<select name="setting"><option>בית ספר יסודי</option><option>חטיבת ביניים</option><option>תיכון</option><option>גן ילדים</option><option>רשות מקומית / מחלקת חינוך</option><option>מכללה / אוניברסיטה — הכשרת מורים</option><option>ארגון / עמותה</option><option>קהילה</option><option>אחר</option></select></label>
+          <label>גילאים<input name="ageGroup" placeholder="למשל: כיתות ד–ו"></label>
+          <label class="wide">עוד משהו שחשוב לדעת?<span class="hint">למשל: אוכלוסייה, אילוצים, מה כבר קיים</span><textarea name="notes" rows="2"></textarea></label>
+          <div class="wide"><button class="nv-btn primary">🌱 נבט, קרא את המאמר (${c.analyze} פעולות)</button><div class="nv-status" data-st="analyze"></div></div></form></div>`;
+  }
+
+  // ---------- תיק יישום ----------
+  const SOURCE={academia:'אקדמיה',field:'אנשי שדה',teachers:'מורות ומורים',principals:'מנהלות',students:'תלמידים',parents:'הורים',authorities:'רשויות',organizations:'ארגונים',community:'קהילה',other:'אחר'};
+  const KIND={update:'עדכון התקדמות',doc:'מסמך או תיעוד',barrier:'חסם או בעיה',question:'שאלה',reflection:'רפלקציה',mizi:'מיזי',milestone:'אבן דרך'};
+  function projectHtml(){
+    const p=S.project,g=p.guide;
+    const tabs=[['ideas','💡 רעיונות',true],['guide','🧭 מדריך הפיתוח',!!g],['team','👥 הצוות',!!g],['mizi','🌱 מיזי',!!g],['story','📖 סיפור הדרך',true],['cert','🏅 תעודה',!!g]];
+    if(!tabs.find(t=>t[0]===S.tab)?.[2])S.tab='ideas';
+    let body='';
+    if(S.tab==='ideas')body=ideasHtml();
+    if(S.tab==='guide')body=guideHtml();
+    if(S.tab==='team')body=teamHtml();
+    if(S.tab==='mizi')body=miziHtml();
+    if(S.tab==='story')body=storyHtml();
+    if(S.tab==='cert')body=certHtml();
+    return `<div class="nv-card"><div class="nv-row" style="justify-content:space-between">
+        <div><button type="button" class="nv-btn small" data-a="back">→ כל המיזמים</button>
+        <h3 style="margin:10px 0 0">${h(g?.productName||p.title)}</h3><p class="nv-status" style="margin:0">תיק יישום · מתוך המאמר "${h(p.analysis.article.title)}" · יוזמת: ${h(p.ownerName)}</p></div>
+        <div class="nv-row"><button type="button" class="nv-btn small" data-a="share">🔗 קישור לצוות</button></div></div>
+      <nav class="nv-tabs">${tabs.map(([k,l,ok])=>`<button type="button" data-tab="${k}" class="${S.tab===k?'active':''}"${ok?'':' disabled title="ייפתח אחרי הפקת המדריך"'}>${l}</button>`).join('')}</nav>
+      ${body}<div class="nv-status" data-st="project"></div></div>`;
+  }
+
+  function ideasHtml(){
+    const p=S.project,a=p.analysis.article;
+    return `<div class="nv-card" style="background:#fbfdfc"><h4 style="margin-top:0">📄 ${h(a.title)}</h4><p class="nv-status" style="margin:0 0 6px">${h(a.authors)} · ${h(a.year)} · ${h(a.field)}</p>${rich(a.summary)}
+        <h4>ממצאים מרכזיים</h4>${bullets(a.keyFindings)}${a.context?`<h4>הקשר המחקר</h4>${rich(a.context)}`:''}</div>
+      <p style="margin:14px 0 0"><strong>בחרי רעיון אחד ליישום</strong>, וסמני אילו תנאים מקדימים כבר קיימים אצלך. נבט יתאים את המדריך — גם לפערים.</p>
+      ${p.analysis.ideas.map(x=>{const on=p.chosenIdeaId===x.id;const eff={low:['מאמץ נמוך','green'],medium:['מאמץ בינוני','amber'],high:['מאמץ גבוה','red']}[x.effort]||['','gray'];
+        return `<div class="nv-card nv-idea${on?' chosen':''}"><div class="nv-row" style="justify-content:space-between"><h3 style="margin:0">${h(x.title)}</h3><span class="nv-badge ${eff[1]}">${eff[0]}</span></div>
+          ${rich(x.essence)}<h4>איך מיישמים</h4>${rich(x.howToApply)}
+          <h4>למי זה מתאים</h4><div>${x.audience.map(t=>`<span class="nv-tag">${h(t)}</span>`).join('')}${x.setting?`<span class="nv-tag">📍 ${h(x.setting)}</span>`:''}</div>
+          <h4>משאבים נדרשים</h4><div class="nv-res"><div><b>אנשים</b>${h(x.resources.people)}</div><div><b>זמן</b>${h(x.resources.time)}</div><div><b>תקציב</b>${h(x.resources.budget)}</div><div><b>חומרים</b>${h(x.resources.materials)}</div></div>
+          <h4>תנאים מקדימים — מה כבר קיים?</h4><div class="nv-checks">${x.prerequisites.map(q=>`<label><input type="checkbox" data-check="${h(q.id)}"${p.checks[q.id]?' checked':''}> ${h(q.text)}</label>`).join('')}</div>
+          <h4>מה ישתנה</h4>${rich(x.impact)}<p class="nv-status"><strong>על מה זה נשען במאמר:</strong> ${h(x.evidence)}<br><strong>מה עלול להשתבש:</strong> ${h(x.risks)}</p>
+          <label class="nv-row" style="margin-top:8px;cursor:pointer"><input type="radio" name="nvIdea" data-choose="${h(x.id)}"${on?' checked':''}> <strong>זה הרעיון שאני רוצה ליישם</strong></label></div>`}).join('')}
+      <div class="nv-highlight" style="margin-top:14px"><div class="nv-row" style="justify-content:space-between"><span>${p.guide?'כבר הופק מדריך פיתוח. הפקה מחדש תחליף אותו (סיפור הדרך נשמר).':'כשבחרת רעיון — נבט יכתוב מדריך פיתוח מפורט, כולל תיאור התוצר בפרטי פרטים, שלבים, צוות מגוון, תקציב ומדדים.'}</span>
+        <button type="button" class="nv-btn primary" data-a="guide"${p.chosenIdeaId?'':' disabled'}>🧭 הפקת מדריך פיתוח ליישום (${S.cost.guide} פעולות)</button></div></div>`;
+  }
+
+  function guideHtml(){
+    const g=S.project.guide;
+    return `<div class="nv-row" style="justify-content:flex-end;margin-top:10px"><button type="button" class="nv-btn small" data-a="print-guide">🖨 הדפסה / PDF</button><button type="button" class="nv-btn small primary" data-tab="mizi">🌱 לליווי של מיזי</button></div>
+      <div class="nv-highlight" style="margin-top:10px"><strong>הצעד הראשון לשבוע הקרוב:</strong> ${h(g.firstStepThisWeek)}</div>
+      ${guideBody(g,false)}`;
+  }
+  function guideBody(g,forPrint){
+    const sec=(t,c)=>forPrint?`<section><h2>${t}</h2>${c}</section>`:`<div class="nv-card"><h3>${t}</h3>${c}</div>`;
+    const table=(cols,rows)=>`<table class="nv-table"><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>${rows.join('')}</table>`;
+    return [
+      sec('התוצר: '+h(g.productName),rich(g.productDescription)+(g.productComponents.length?`<h4>רכיבי התוצר</h4>${g.productComponents.map(c=>`<p><strong>${h(c.name)}:</strong> ${h(c.description)}</p>`).join('')}`:'')),
+      sec('מסע המשתמש/ת',rich(g.userJourney)),
+      sec('יעדים וקהל יעד',bullets(g.goals)+`<p><strong>קהל היעד:</strong> ${h(g.audience)}</p>`),
+      g.gapsPlan.length?sec('סגירת פערים בתנאים המקדימים',g.gapsPlan.map(x=>`<p><strong>${h(x.prerequisite)}:</strong> ${h(x.howToClose)}</p>`).join('')):'',
+      sec(`שלבי המיזם · ${h(g.totalDuration)}`,g.stages.map((s,i)=>`<div class="${forPrint?'stage':'nv-stage'}">${forPrint?`<h3>${i+1}. ${h(s.title)} · ${h(s.duration)}</h3>`:`<details${i===0?' open':''}><summary>${i+1}. ${h(s.title)} · ${h(s.duration)}</summary>`}
+        <p><strong>מטרה:</strong> ${h(s.goal)}</p><strong>פעולות</strong>${bullets(s.actions)}<strong>תוצרים</strong>${bullets(s.deliverables)}<strong>משאבים</strong>${bullets(s.resources)}<p><strong>איך נדע שהצלחנו:</strong> ${h(s.successCriteria)}</p>${forPrint?'':'</details>'}</div>`).join('')),
+      sec('הצוות המומלץ',g.team.map(t=>`<p><strong>${h(t.role)}</strong> (${h(SOURCE[t.sourceType]||t.sourceType)}): ${h(t.why)}<br><span class="${forPrint?'meta':'nv-status'}">${h(t.profile)}${t.communityMatches.length?` · מהקהילה: ${t.communityMatches.map(h).join(', ')}`:''}</span></p>`).join('')),
+      sec('תקציב משוער',table(['פריט','הערכה'],g.budget.map(b=>`<tr><td>${h(b.item)}</td><td>${h(b.estimate)}</td></tr>`))),
+      sec('מדדים: איך נדע שזה עובד',table(['מה מודדים','איך','מתי'],g.metrics.map(m=>`<tr><td>${h(m.what)}</td><td>${h(m.how)}</td><td>${h(m.when)}</td></tr>`))),
+      sec('אתיקה, הסכמות ופרטיות',bullets(g.ethics)),
+      sec('סיכונים ודרכי התמודדות',g.risks.map(r=>`<p><strong>${h(r.risk)}:</strong> ${h(r.mitigation)}</p>`).join('')),
+      g.funding.length?sec('מימון אפשרי מהקולות הקוראים באתר',g.funding.map(f=>`<p><strong>${h(f.callTitle)}:</strong> ${h(f.why)}</p>`).join('')+(forPrint?'':'<a class="nv-btn small" href="/calls">לקולות הקוראים</a>')):'',
+      sec('שיתוף והפצה',bullets(g.dissemination)),
+    ].join('');
+  }
+
+  function teamHtml(){
+    const g=S.project.guide;
+    return `<p style="margin:12px 0 0">מיזם טוב נבנה בצוות מגוון. לכל תפקיד: למה הוא חשוב, ומי מהקהילה יכולה לעזור. כשמישהי מצטרפת — כתבי את שמה.</p>
+      ${g.team.map((t,i)=>`<div class="nv-card"><div class="nv-row" style="justify-content:space-between"><h3 style="margin:0">${h(t.role)}</h3><span class="nv-badge">${h(SOURCE[t.sourceType]||t.sourceType)}</span></div>
+        ${rich(t.why)}<p class="nv-status">${h(t.profile)}</p>
+        ${t.communityMatches.length?`<p><strong>מהקהילה:</strong> ${t.communityMatches.map(n=>`<a href="/people">${h(n)}</a>`).join(', ')}</p>`:''}
+        <form class="nv-row" data-form="fill" data-i="${i}"><input name="name" value="${h(t.filledBy||'')}" placeholder="מי ממלא/ת את התפקיד?" style="flex:1;min-width:200px"><button class="nv-btn small">שמירה</button></form></div>`).join('')}
+      <div class="nv-highlight" style="margin-top:12px"><div class="nv-row" style="justify-content:space-between"><span>רוצה לגייס שותפות מהקהילה? אפשר להקים <strong>קבוצת משימה</strong> בזירה של עמוד הקולות הקוראים — עם הרעיון ועם מה שחסר.</span><button type="button" class="nv-btn primary" data-a="taskforce">🤝 הקמת קבוצת משימה</button></div></div>`;
+  }
+
+  function miziHtml(){
+    const p=S.project;
+    const entries=p.journal.filter(j=>!S.stageFilter||j.stageId===S.stageFilter||j.kind==='milestone');
+    const icon={not_started:'○',in_progress:'◐',done:'●'};
+    const current=p.stages.find(s=>s.status==='in_progress')||p.stages.find(s=>s.status!=='done');
+    const name=ls.get('hosen.nevet.author')||p.ownerName;
+    return `<div class="nv-mizi"><div class="nv-stagelist"><strong>שלבי המיזם</strong>
+        ${p.stages.map(s=>`<button type="button" class="nv-stagebtn ${s.status}${S.stageFilter===s.id?' active':''}" data-stage="${h(s.id)}" title="לחיצה מסננת את השיחה לפי השלב"><span>${icon[s.status]} ${h(s.title)}</span><span class="nv-status" style="margin:0">${h(s.duration)}</span></button>`).join('')}
+        ${S.stageFilter?'<button type="button" class="nv-btn small" data-stage="">כל השלבים</button>':''}
+        ${current?`<div class="nv-highlight" style="margin-top:6px;font-size:12.5px"><strong>עכשיו:</strong> ${h(current.title)}<br>${h(current.goal)}<br><select data-stagestatus="${h(current.id)}" style="margin-top:6px"><option value="not_started"${current.status==='not_started'?' selected':''}>טרם התחיל</option><option value="in_progress"${current.status==='in_progress'?' selected':''}>בתהליך</option><option value="done">הושלם ✓</option></select></div>`:'<div class="nv-highlight">כל השלבים הושלמו 🎉 אפשר לעבור ללשונית התעודה.</div>'}
+      </div>
+      <div><div class="nv-chat" data-chat>${entries.length?entries.map(msgHtml).join(''):'<p class="nv-status">כאן מתחיל סיפור הדרך. ספרי למיזי מאיפה את מתחילה.</p>'}</div>
+        <form class="nv-composer" data-form="mizi">
+          <div class="nv-row"><select name="kind">${['update','doc','barrier','question','reflection'].map(k=>`<option value="${k}">${KIND[k]}</option>`).join('')}</select>
+            <input name="author" value="${h(name)}" placeholder="השם שלך" style="flex:1;min-width:140px"></div>
+          <textarea name="text" rows="3" required placeholder="מה קרה? מה עשיתן? במה נתקלתן? מה צריך?"></textarea>
+          <input name="links" dir="ltr" placeholder="קישורים למסמכים, תמונות או תיעוד (אפשר כמה, מופרדים ברווח)">
+          <div class="nv-row"><button class="nv-btn primary" data-send="mizi">🌱 שליחה למיזי (${S.cost.mizi} פעולה)</button><button class="nv-btn" data-send="journal">שמירה ביומן בלי מיזי (חינם)</button></div>
+        </form></div></div>`;
+  }
+  function msgHtml(j){
+    const cls=j.kind==='mizi'?'mizi':j.kind==='milestone'?'milestone':'';
+    const m=j.mizi;
+    return `<div class="nv-msg ${cls}"><div class="nv-msg-head"><b>${h(j.author)}${j.kind!=='mizi'&&j.kind!=='milestone'?` · ${h(KIND[j.kind]||j.kind)}`:''}</b><span>${fmtTime(j.at)}</span></div>
+      ${j.kind==='milestone'?h(j.text):rich(j.text)}
+      ${(j.links||[]).length?`<p>${j.links.map(l=>`<a href="${h(l)}" target="_blank" rel="noopener" dir="ltr">${h(l.replace(/^https?:\/\//,'').slice(0,50))}</a>`).join(' · ')}</p>`:''}
+      ${m?`${m.nextActions?.length?`<strong>הצעדים הבאים</strong>${bullets(m.nextActions)}`:''}${m.requests?.length?`<strong>מה כדאי לצרף או לתעד</strong>${bullets(m.requests)}`:''}${m.estimate?`<p class="nv-status">⏱ ${h(m.estimate)}</p>`:''}${m.reflectionQuestions?.length?`<div class="nv-highlight"><strong>רגע של רפלקציה</strong>${bullets(m.reflectionQuestions)}<span class="nv-status">אפשר לענות למיזי בסוג "רפלקציה".</span></div>`:''}`:''}</div>`;
+  }
+
+  function storyHtml(){
+    const p=S.project;
+    const kinds=[...new Set(p.journal.map(j=>j.kind))];
+    const rows=p.journal.filter(j=>!S.storyKind||j.kind===S.storyKind);
+    return `<div class="nv-row" style="justify-content:space-between;margin-top:12px"><div class="nv-row"><button type="button" class="nv-btn small${S.storyKind?'':' primary'}" data-kind="">הכול</button>${kinds.map(k=>`<button type="button" class="nv-btn small${S.storyKind===k?' primary':''}" data-kind="${k}">${h(KIND[k]||k)}</button>`).join('')}</div>
+      <button type="button" class="nv-btn small" data-a="print-story">🖨 הדפסת סיפור הדרך</button></div>
+      <div class="nv-chat" style="max-height:none;margin-top:10px">${rows.map(msgHtml).join('')||'<p class="nv-status">אין עדיין רשומות.</p>'}</div>`;
+  }
+
+  function certHtml(){
+    const p=S.project,c=p.certificate;
+    const members=[...new Set([p.ownerName,...(p.guide?.team||[]).map(t=>t.filledBy).filter(Boolean)])];
+    if(!c)return `<div class="nv-card"><h3>🏅 סיום המיזם</h3><p>כשהמיזם מגיע לסיומו, מיזי כותבת שבחים, תקציר ושלד למאמר רפלקטיבי — ומפיקה <strong>תעודה לכל אחת ואחד מהצוות</strong>: יוזמות, אנשי שדה, תלמידים, הורים — כל מי שעזר.</p>
+        <form class="nv-form" data-form="cert"><label class="wide">חברי הצוות שיקבלו תעודה<span class="hint">שם בכל שורה</span><textarea name="members" rows="5">${h(members.join('\n'))}</textarea></label>
+        <label class="wide" style="flex-direction:row;align-items:center;gap:8px;font-weight:400"><input type="checkbox" name="consent"${p.galleryConsent?' checked':''}> אנחנו מסכימות לשתף את המיזם בספריית המיזמים של הקהילה (שם המיזם, תקציר ושמות הצוות)</label>
+        <div class="wide"><button class="nv-btn primary">🏅 סיום המיזם והפקת תעודות (${S.cost.certificate} פעולה)</button></div></form></div>`;
+    const url=`${location.origin}/apps#cert=${p.id}.${c.code}`;
+    return `<div class="nv-card"><h3>🏅 המיזם הושלם — ${fmt(c.issuedAt)}</h3>${rich(c.praise)}<p class="nv-status">${h(c.projectSummary)}</p>
+        <h4>תעודות</h4><div class="nv-row">${c.members.map((n,i)=>`<button type="button" class="nv-btn small" data-cert="${i}">🖨 ${h(n)}</button>`).join('')}</div>
+        <p class="nv-status">קישור לאימות התעודות: <a href="${h(url)}" dir="ltr">${h(url)}</a></p>
+        <label class="nv-row" style="margin-top:8px"><input type="checkbox" data-consent${p.galleryConsent?' checked':''}> לשתף בספריית המיזמים של הקהילה</label></div>
+      <div class="nv-card"><h3>✍️ שלד למאמר רפלקטיבי</h3><p><strong>${h(c.reflectiveArticle.title)}</strong></p>${bullets(c.reflectiveArticle.outline)}<p class="nv-status">השלד נבנה מתוך סיפור הדרך. הכתיבה עצמה — שלכן.</p></div>`;
+  }
+  function certPage(p,name,praise){
+    const c=p.certificate,url=`${location.origin}/apps#cert=${p.id}.${c.code}`;
+    return `<div class="cert"><div style="font-size:30pt">🌱</div><h1>תעודת הוקרה</h1><p>מוענקת ל</p><p class="name">${h(name)}</p>
+      <p>על ${name===p.ownerName?'הובלת':'השתתפות ותרומה ל'}מיזם היישום</p><h2 style="border:0;margin:0">${h(p.guide?.productName||p.title)}</h2>
+      <p class="meta">מתוך המאמר "${h(p.analysis.article.title)}"</p><p>${h(praise||c.praise)}</p>
+      <div class="sig"><span>ד״ר יעל שדה<br>קהילת חוסן · חינוך · חרום</span><span>מיזי 🌱<br>העוזרת האישית של המיזם</span></div>
+      <p class="meta">${fmt(c.issuedAt)}</p><p class="verify">אימות התעודה: ${h(url)}</p></div>`;
+  }
+
+  // ---------- פעולות ----------
+  async function loadMe(){
+    if(!S.code&&!adminToken()){S.me=null;return}
+    try{const j=await api('/api/nevet?me=1');S.me=j;S.cost=j.cost||S.cost;S.ai=j.ai}
+    catch(e){S.me=null;if(e.status===403&&S.code){const msg=e.message;S.code='';ls.set('hosen.nevet.code','');render();setStatus(root().querySelector('[data-st=code]'),msg,'err');throw e}}
+  }
+  async function openProject(pid){
+    S.key=ls.get('hosen.nevet.key.'+pid);
+    try{const j=await api('/api/nevet?project='+encodeURIComponent(pid));S.project=j.project;S.cost=j.cost||S.cost;S.ai=j.ai;S.tab=S.project.guide?(S.project.status==='done'?'cert':'mizi'):'ideas';S.stageFilter='';render();root().scrollIntoView({behavior:'smooth'})}
+    catch(e){modal(`<h2>אין גישה</h2><p>${h(e.message)}</p>`)}
+  }
+  async function patch(x){const j=await post({action:'update',projectId:S.project.id,patch:x});S.project=j.project;return j}
+  const pmsg=(t,k)=>setStatus(root().querySelector('[data-st=project]'),t,k);
+
+  root.handle=async e=>{
+    const t=e.target;
+    const tab=t.closest('[data-tab]');if(tab&&!tab.disabled){S.tab=tab.dataset.tab;render();return}
+    const open=t.closest('[data-open]');if(open)return openProject(open.dataset.open);
+    const st=t.closest('[data-stage]');if(st){S.stageFilter=st.dataset.stage;render();return}
+    const kb=t.closest('[data-kind]');if(kb){S.storyKind=kb.dataset.kind;render();return}
+    const cb=t.closest('[data-cert]');if(cb){const p=S.project,i=+cb.dataset.cert,name=p.certificate.members[i];const tp=(p.certificate.teamPraise||[]).find(x=>x.name===name);printDoc('תעודה — '+name,certPage(p,name,tp?.praise));return}
+    const b=t.closest('[data-a]');if(!b)return;
+    const a=b.dataset.a;
+    if(a==='logout'){S.code='';S.me=null;ls.set('hosen.nevet.code','');render();return}
+    if(a==='back'){S.project=null;S.key='';history.replaceState(null,'',location.pathname);await loadMe().catch(()=>{});render();return}
+    if(a==='admin')return openNevetAdmin();
+    if(a==='share'){const key=S.key||ls.get('hosen.nevet.key.'+S.project.id);
+      if(!key)return modal(`<h2>קישור לצוות</h2><p>את הקישור לתיק מקבלים כשהתיק נוצר. היוזמת יכולה להיכנס תמיד עם הקוד שלה.</p>`);
+      const url=`${location.origin}/apps#project=${S.project.id}.${key}`;
+      const m=modal(`<h2>🔗 קישור לתיק היישום</h2><p>שלחי אותו רק לחברות ולחברי הצוות. עם הקישור אפשר לצפות, לכתוב ביומן ולשוחח עם מיזי (הפעולות נספרות מהקוד שלך).</p><div class="nv-row"><input readonly value="${h(url)}" dir="ltr" style="flex:1"><button type="button" class="nv-btn small" data-copy>העתקה</button></div>`);
+      m.querySelector('[data-copy]').onclick=ev=>navigator.clipboard.writeText(url).then(()=>ev.target.textContent='הועתק ✓');return}
+    if(a==='guide'){const p=S.project;
+      try{const {ticket,result}=await ai('guide',{projectId:p.id,chosenIdeaId:p.chosenIdeaId,checks:p.checks});
+        const j=await post({action:'save',ticket,result});S.project=j.project;S.tab='guide';await loadMe().catch(()=>{});render();pmsg('המדריך מוכן 🎉','ok')}
+      catch(err){pmsg(err.message,'err')}return}
+    if(a==='print-guide'){const p=S.project;printDoc('מדריך פיתוח — '+p.guide.productName,`<h1>${h(p.guide.productName)}</h1><p class="meta">מדריך פיתוח ליישום · מתוך המאמר "${h(p.analysis.article.title)}" · ${h(p.ownerName)} · ${fmt(p.updatedAt)}</p><div class="box"><strong>הצעד הראשון לשבוע הקרוב:</strong> ${h(p.guide.firstStepThisWeek)}</div>${guideBody(p.guide,true)}`);return}
+    if(a==='print-story'){const p=S.project;printDoc('סיפור הדרך — '+(p.guide?.productName||p.title),`<h1>סיפור הדרך</h1><p class="meta">${h(p.guide?.productName||p.title)} · ${h(p.ownerName)}</p>${p.journal.map(j=>`<section><h3>${fmtTime(j.at)} · ${h(j.author)} · ${h(KIND[j.kind]||j.kind)}</h3>${rich(j.text)}${j.mizi?.nextActions?.length?`<strong>הצעדים הבאים</strong>${bullets(j.mizi.nextActions)}`:''}</section>`).join('')}`);return}
+    if(a==='taskforce'){const p=S.project,g=p.guide;const missing=g.team.filter(t=>!t.filledBy).map(t=>t.role).slice(0,4).join(', ');
+      try{sessionStorage.setItem('hosen.teamDraft',JSON.stringify({title:g.productName,summary:`${g.productDescription.split('\n')[0].slice(0,400)} (מתוך נבט: המאמר "${p.analysis.article.title}")`,need:missing}))}catch(e){}
+      location.href='/calls#team-new';return}
+  };
+
+  root.change=async e=>{
+    const t=e.target;
+    try{
+      if(t.dataset.check!==undefined){S.project.checks[t.dataset.check]=t.checked;await patch({checks:S.project.checks});return}
+      if(t.dataset.choose!==undefined){S.project.chosenIdeaId=t.dataset.choose;await patch({chosenIdeaId:t.dataset.choose});render();return}
+      if(t.dataset.stagestatus!==undefined){await patch({stage:{id:t.dataset.stagestatus,status:t.value}});render();return}
+      if(t.dataset.consent!==undefined){await patch({galleryConsent:t.checked});pmsg('נשמר ✓','ok');return}
+    }catch(err){pmsg(err.message,'err')}
+  };
+
+  root.submit=async e=>{
+    const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
+    const kind=f.dataset.form,d=Object.fromEntries(new FormData(f));
+    const st=root().querySelector(`[data-st=${kind}]`);
+    try{
+      if(kind==='code'){S.code=String(d.code||'').trim().toUpperCase();setStatus(st,'בודקת…');await loadMe();ls.set('hosen.nevet.code',S.code);render();return}
+      if(kind==='request'){setStatus(st,'שולחת…');await post({action:'request-access',...d});f.reset();setStatus(st,'הפנייה נשלחה. ד״ר יעל שדה תחזור אלייך 🌱','ok');return}
+      if(kind==='analyze'){
+        let text=String(d.text||'').trim();const file=f.elements.file.files[0];
+        if(file){setStatus(st,'קוראת את הקובץ…');text=await fileText(file)}
+        text=text.replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+        if(text.length<400)return setStatus(st,'לא נמצא מספיק טקסט. אם זה PDF סרוק, הדביקי את הטקסט ידנית.','err');
+        if(text.length>380000){if(!confirm(`המאמר ארוך מאוד (${Math.round(text.length/1000)} אלף תווים). נבט יקרא את 380 אלף התווים הראשונים בלבד. להמשיך?`))return;text=text.slice(0,380000)}
+        setStatus(st,'');
+        const {ticket,result}=await ai('analyze',{text,setting:d.setting,ageGroup:d.ageGroup,notes:d.notes});
+        const j=await post({action:'save',ticket,result,setting:d.setting,ageGroup:d.ageGroup,notes:d.notes});
+        ls.set('hosen.nevet.key.'+j.projectId,j.key);
+        await openProject(j.projectId);pmsg('נבט סיים לקרוא. הנה הרעיונות 💡','ok');return}
+      if(kind==='fill'){await patch({teamFill:{index:+f.dataset.i,name:d.name}});pmsg('נשמר ✓','ok');return}
+      if(kind==='mizi'){
+        const send=e.submitter?.dataset.send||'mizi';
+        ls.set('hosen.nevet.author',String(d.author||'').trim());
+        const links=String(d.links||'').split(/\s+/).filter(x=>/^https?:\/\//.test(x));
+        if(send==='journal'){await patch({entry:{kind:d.kind,text:d.text,author:d.author,links}});render();pmsg('נשמר ביומן ✓','ok');return}
+        const {ticket,result}=await ai('mizi',{projectId:S.project.id,kind:d.kind,text:d.text,author:d.author,links});
+        const j=await post({action:'save',ticket,result});S.project=j.project;await loadMe().catch(()=>{});render();
+        const chat=root().querySelector('[data-chat]');if(chat)chat.scrollTop=chat.scrollHeight;return}
+      if(kind==='cert'){
+        const members=String(d.members||'').split('\n').map(x=>x.trim()).filter(Boolean);
+        if(f.elements.consent.checked!==S.project.galleryConsent)await patch({galleryConsent:f.elements.consent.checked});
+        const {ticket,result,meta}=await ai('certificate',{projectId:S.project.id,members});
+        const j=await post({action:'save',ticket,result,members:meta.members||members});S.project=j.project;await loadMe().catch(()=>{});render();pmsg('מזל טוב! 🎉 התעודות מוכנות.','ok');return}
+    }catch(err){setStatus(st||root().querySelector('[data-st=project]'),err.message,'err')}
+  };
+
+  async function loadGallery(){
+    const el=root()?.querySelector('[data-gallery]');if(!el)return;
+    try{const rows=await api('/api/nevet?gallery=1');
+      el.innerHTML=rows.length?rows.map(r=>`<div class="nv-card" style="margin:0"><h3>${h(r.title)}</h3><p class="nv-status">מתוך "${h(r.articleTitle)}" · ${fmt(r.doneAt)}</p>${rich(r.summary)}<p class="nv-status">👥 ${r.members.map(h).join(', ')}</p></div>`).join(''):'<p class="nv-status">עוד אין מיזמים שהסתיימו. הראשון יכול להיות שלך 🌱</p>'}
+    catch(e){el.innerHTML='<p class="nv-status">לא ניתן לטעון כרגע.</p>'}
+  }
+
+  async function showVerify(pid,code){
+    try{const r=await fetch('/api/nevet?verify='+encodeURIComponent(pid)+'&c='+encodeURIComponent(code));const j=await r.json();if(!r.ok)throw new Error(j.message);
+      modal(`<h2>✅ תעודה מאומתת</h2><p>מיזם היישום <strong>${h(j.title)}</strong>, מתוך המאמר "${h(j.articleTitle)}".</p><p>הוביל/ה: ${h(j.owner)} · הושלם ב־${fmt(j.issuedAt)}</p><p><strong>הצוות:</strong> ${j.members.map(h).join(', ')}</p>${rich(j.praise)}<p class="nv-status">הונפקה על ידי קהילת חוסן · חינוך · חרום.</p>`)}
+    catch(e){modal(`<h2>התעודה לא אומתה</h2><p>${h(e.message||'')}</p>`)}
+  }
+
+  // ---------- ניהול נבט ----------
+  async function openNevetAdmin(){
+    const token=adminToken();if(!token)return alert('יש להיכנס קודם דרך "🔒 ניהול מערכת" בתחתית העמוד.');
+    const m=modal('<div data-adm></div>',true);const A={tab:'codes',d:null,msg:null};
+    const call=b=>post(b);
+    async function reload(){A.d=await api('/api/nevet?admin=1')}
+    function render2(){
+      const d=A.d,t=A.tab;
+      const tabs=[['codes',`🔑 קודים (${d.codes.length})`],['requests',`📨 פניות (${d.requests.filter(r=>!r.handled).length})`],['projects',`🌱 מיזמים (${d.projects.length})`],['setup','⚙ חיבור']];
+      let html=`<h2>🌱 ניהול נבט</h2><nav class="nv-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
+      if(t==='codes')html+=`<form class="nv-form nv-card" data-aform="create" style="margin-top:8px"><label>שם*<input name="name" required></label><label>מייל<input name="email" type="email" dir="ltr"></label><label>מספר פעולות<input name="credits" type="number" min="1" value="20"></label><label>בתוקף עד<input name="expires" type="date"></label><label class="wide">הערה (למשל: שולם)<input name="note"></label><input type="hidden" name="requestId"><div class="wide"><button class="nv-btn primary">יצירת קוד</button></div></form>
+        <p class="nv-status">ניתוח מאמר: ${d.cost.analyze} פעולות · מדריך: ${d.cost.guide} · שיחה עם מיזי: ${d.cost.mizi} · תעודה: ${d.cost.certificate}. מיזם שלם צורך בדרך כלל 15–30 פעולות.</p>
+        <table class="nv-table"><tr><th>שם</th><th>קוד</th><th>נוצלו</th><th>נותרו</th><th>תוקף</th><th></th></tr>${d.codes.map(c=>`<tr style="${c.active?'':'opacity:.5'}"><td>${h(c.name)}<br><span class="nv-status">${h(c.email)}${c.note?' · '+h(c.note):''}</span></td><td dir="ltr"><code>${h(c.code)}</code></td><td>${c.used}</td><td>${c.left}</td><td>${c.expires?fmt(c.expires):'—'}</td>
+          <td><div class="nv-row"><button type="button" class="nv-btn small" data-act="add" data-code="${h(c.code)}">＋10</button><button type="button" class="nv-btn small" data-act="send" data-code="${h(c.code)}">✉ שליחה</button><button type="button" class="nv-btn small${c.active?' danger':''}" data-act="toggle" data-code="${h(c.code)}" data-active="${c.active?'0':'1'}">${c.active?'השבתה':'הפעלה'}</button></div></td></tr>`).join('')||'<tr><td colspan="6" class="nv-status">עוד אין קודים.</td></tr>'}</table>`;
+      if(t==='requests')html+=d.requests.length?d.requests.map(r=>`<div class="nv-card" style="${r.handled?'opacity:.6':''}"><strong>${h(r.name)}</strong>${r.institution?` · ${h(r.institution)}`:''} · <span dir="ltr">${h(r.email)}</span> · ${fmt(r.at)}${r.note?`<p>${h(r.note)}</p>`:''}<div class="nv-row">${r.handled?'<span class="nv-badge green">טופל</span>':`<button type="button" class="nv-btn small primary" data-act="from-request" data-id="${h(r.id)}">יצירת קוד עבורה</button><button type="button" class="nv-btn small" data-act="handled" data-id="${h(r.id)}">סימון כטופל</button>`}</div></div>`).join(''):'<p class="nv-status">אין פניות.</p>';
+      if(t==='projects')html+=`<table class="nv-table"><tr><th>מיזם</th><th>יוזמת</th><th>שלב</th><th>פעילות אחרונה</th><th>רשומות</th></tr>${d.projects.map(p=>`<tr><td>${h(p.title)}</td><td>${h(p.ownerName)}</td><td>${h({ideas:'רעיונות',guide:'מדריך',active:'בליווי מיזי',done:'הושלם'}[p.status])}</td><td>${fmt(p.lastActivityAt)}</td><td>${p.journal}</td></tr>`).join('')||'<tr><td colspan="5" class="nv-status">עוד אין מיזמים.</td></tr>'}</table>`;
+      if(t==='setup')html+=`<div class="nv-card"><h3>${d.ai.configured?'✅ נבט מחובר למודל השפה':'⏳ נבט עוד לא מחובר למודל השפה'}</h3>
+        <p>נבט ומיזי משתמשים במודל השפה Claude של Anthropic. החיבור דורש מפתח, והתשלום הוא לפי שימוש: ניתוח מאמר עולה בערך 15–30 סנט, ומיזם שלם בערך ‎$1–3.</p>
+        <ol><li>ב־<a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>: יוצרים Workspace חדש בשם "קהילת חוסן", ומגדירים לו תקרת הוצאה חודשית (למשל ‎$20).</li>
+        <li>בתוך ה-Workspace: API Keys ← Create Key. מעתיקים את המפתח.</li>
+        <li>ב-Netlify: Site configuration ← Environment variables ← Add a variable: <code>ANTHROPIC_API_KEY</code>, והמפתח כערך.</li>
+        <li>Deploys ← Trigger deploy ← Deploy project.</li></ol>
+        <p>${d.mail.configured?'✅ חיבור Gmail פעיל: פניות חדשות מגיעות אלייך במייל, ומיזי שולחת "עצירת התרעננות" ☕ למיזמים שלא התעדכנו שבועיים.':'חיבור Gmail לא פעיל: פניות יופיעו רק כאן.'}</p></div>`;
+      m.querySelector('[data-adm]').innerHTML=html+'<div class="nv-status" data-amsg></div>';
+      if(A.msg)setStatus(m.querySelector('[data-amsg]'),A.msg[0],A.msg[1]);
+    }
+    const amsg=(t,k)=>{A.msg=[t,k];setStatus(m.querySelector('[data-amsg]'),t,k)};
+    m.addEventListener('click',async e=>{
+      const tb=e.target.closest('[data-atab]');if(tb){A.tab=tb.dataset.atab;A.msg=null;render2();return}
+      const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act;
+      try{
+        if(act==='add'){await call({action:'code-update',code:b.dataset.code,addCredits:10});await reload();render2();amsg('נוספו 10 פעולות ✓','ok')}
+        if(act==='toggle'){await call({action:'code-update',code:b.dataset.code,active:b.dataset.active==='1'});await reload();render2()}
+        if(act==='handled'){await call({action:'request-handled',id:b.dataset.id});await reload();render2()}
+        if(act==='from-request'){const r=A.d.requests.find(x=>x.id===b.dataset.id);A.tab='codes';A.msg=null;render2();const f=m.querySelector('[data-aform=create]');f.elements.name.value=r.name;f.elements.email.value=r.email;f.elements.requestId.value=r.id;f.elements.name.focus()}
+        if(act==='send'){const c=A.d.codes.find(x=>x.code===b.dataset.code);
+          const body=`שלום ${c.name},\n\nשמחה שהצטרפת לנבט 🌱\n\nהקוד האישי שלך: ${c.code}\nהוא כולל ${c.credits} פעולות${c.expires?` ובתוקף עד ${fmt(c.expires)}`:''}.\n\nנכנסים כאן: ${location.origin}/apps\nמעלים מאמר, ונבט מציע רעיונות ליישום. אחר כך מיזי מלווה אותך שלב אחר שלב.\n\nבהצלחה!\nד״ר יעל שדה`;
+          window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(c.email||'')+'&su='+encodeURIComponent('הקוד שלך לנבט 🌱')+'&body='+encodeURIComponent(body),'_blank','noopener');amsg('נפתחה טיוטה ב-Gmail עם הקוד.','ok')}
+      }catch(err){amsg(err.message,'err')}
+    });
+    m.addEventListener('submit',async e=>{const f=e.target.closest('[data-aform]');if(!f)return;e.preventDefault();
+      try{const d=Object.fromEntries(new FormData(f));const j=await call({action:'code-create',...d});await reload();render2();amsg(`הקוד נוצר: ${j.code.code} — אפשר לשלוח אותו בכפתור "✉ שליחה".`,'ok')}catch(err){amsg(err.message,'err')}});
+    try{await reload();render2()}catch(e){m.querySelector('[data-adm]').innerHTML=`<h2>ניהול נבט</h2><p class="nv-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`}
+  }
+
+  async function handleHash(){
+    const p=location.hash.match(/^#project=([\w-]+)\.([\w-]+)$/);
+    if(p){ls.set('hosen.nevet.key.'+p[1],p[2]);history.replaceState(null,'',location.pathname);return openProject(p[1])}
+    const c=location.hash.match(/^#cert=([\w-]+)\.([A-Z0-9]+)$/);
+    if(c)return showVerify(c[1],c[2]);
+    if(location.hash==='#nevet-admin'){history.replaceState(null,'',location.pathname);return openNevetAdmin()}
+  }
+
+  document.addEventListener('DOMContentLoaded',async()=>{
+    if(document.documentElement.dataset.page!=='apps')return;
+    const el=root();if(!el)return;
+    el.addEventListener('click',e=>root.handle(e));
+    el.addEventListener('change',e=>root.change(e));
+    el.addEventListener('submit',e=>root.submit(e));
+    window.hosenNevetAdmin=openNevetAdmin;
+    await loadMe().catch(()=>{});
+    render();
+    window.addEventListener('hashchange',handleHash);
+    handleHash();
+  });
+})();
+</script>
 </main>
 <script id="expiry-hide-v65-js">
 /* פריט עם data-expiry="YYYY-MM-DD" מוסר מהעמוד החל מהתאריך הזה (לפי שעון ישראל). */
@@ -2758,6 +3320,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <div class="wide"><button class="ch-btn primary">הקמת הקבוצה</button><div class="ch-status"></div></div>
       </form>`);
     const form=m.querySelector('form'),sel=form.elements.callId;
+    // טיוטה מנבט: שם המיזם, הרעיון ומה שחסר בצוות.
+    try{const dr=JSON.parse(sessionStorage.getItem('hosen.teamDraft')||'null');if(dr){sessionStorage.removeItem('hosen.teamDraft');form.elements.title.value=dr.title||'';form.elements.summary.value=dr.summary||'';form.elements.need.value=dr.need||''}}catch(e){}
     const sync=()=>form.querySelectorAll('[data-internal]').forEach(l=>l.hidden=!!sel.value);
     sel.addEventListener('change',sync);sync();
     form.addEventListener('submit',async e=>{
@@ -3086,6 +3650,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(t){store.set('hosen.team.'+t[1],t[2]);history.replaceState(null,'',location.pathname+'#teams');renderCalls();renderTeams();openWorkspace(t[1]);return}
     const c=location.hash.match(/^#call-([\w-]+)$/);
     if(c){const el=document.getElementById('call-'+c[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2500)}}
+    if(location.hash==='#team-new'){history.replaceState(null,'',location.pathname+'#teams');openTeamNew('');return}
     if(location.hash==='#calls-admin'){history.replaceState(null,'',location.pathname);openCallsAdmin()}
     if(location.hash==='#teams')document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});
   }
@@ -4315,7 +4880,7 @@ document.addEventListener('DOMContentLoaded',renderResearchWorld);
   const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library','compass']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');

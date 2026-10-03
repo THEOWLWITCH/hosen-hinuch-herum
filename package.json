@@ -6,6 +6,7 @@
     "build": "node build.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "@netlify/blobs": "latest",
     "@netlify/functions": "latest",
     "nodemailer": "^10.0.13"
