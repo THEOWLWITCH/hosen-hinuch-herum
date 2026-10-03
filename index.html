@@ -3343,7 +3343,6 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <p>קבוצות אד־הוק להגשות משותפות — סביב קול קורא מהרשימה, או סביב <strong>קול קורא פנימי</strong> שחוקרת מהקהילה מציעה. כל קבוצה כותבת את ההצעה בסביבת עבודה משלה.</p>
         <div class="ch-list" id="chTeams"></div>
       </section>
-      <p class="ch-credit" style="margin-top:28px;text-align:center"><button type="button" class="ch-btn small" data-ch="admin">⚙ כניסה לצוות אישור הקולות הקוראים</button></p>
       <details class="ch-section ch-archive" id="chArchiveWrap" hidden>
         <summary>קולות קוראים שנסגרו וסיפורי הצלחה</summary>
         <div class="ch-list" id="chArchive" style="margin-top:12px"></div>
@@ -3735,7 +3734,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
 
   async function openCallsAdmin(){
     const token=adminToken();
-    if(!token)return callsTeamLogin();
+    if(!token){alert('יש להיכנס קודם דרך "🔒 ניהול מערכת" בתחתית העמוד.');return}
     const m=modal('<div id="chAdm"></div>',true);
     const A={tab:'inbox',d:null};
     const call=(action,payload)=>api('/api/calls',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action,...payload})});
