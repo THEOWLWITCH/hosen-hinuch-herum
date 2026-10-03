@@ -2533,7 +2533,7 @@ html[data-page="apps"] #apps{display:block!important}
   const fmtTime=iso=>{const d=new Date(iso);return isNaN(d)?'':d.toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})};
   const ls={get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set(k,v){try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}};
   const adminToken=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
-  const S={code:ls.get('hosen.nevet.code'),me:null,project:null,key:'',tab:'ideas',cost:{analyze:2,guide:3,mizi:1,certificate:1},ai:true,stageFilter:''};
+  const S={loadedAt:Date.now(),code:ls.get('hosen.nevet.code'),me:null,project:null,key:'',tab:'ideas',cost:{analyze:2,guide:3,mizi:1,certificate:1},ai:true,stageFilter:''};
   const root=()=>document.getElementById('nevetRoot');
 
   // טקסט מהמודל: פסקאות, תבליטים, רשימות ממוספרות ו**הדגשות** — בלי כוכביות וסימני #.
@@ -2665,14 +2665,14 @@ html[data-page="apps"] #apps{display:block!important}
 
   function accessHtml(){
     return `<div class="nv-grid">
-      <div class="nv-card"><h3>כניסה עם קוד</h3><p class="nv-status">נבט פתוח לחברות הקהילה עם קוד אישי.</p>
-        <form class="nv-row" data-form="code" style="margin-top:8px"><input name="code" dir="ltr" placeholder="NEVET-XXXX-XXXX" autocomplete="off" style="flex:1;min-width:180px" value="${h(S.code)}"><button class="nv-btn primary">כניסה</button></form>
-        <div class="nv-status" data-st="code"></div></div>
-      <div class="nv-card"><h3>אין לך קוד?</h3><p>השאירי פרטים, וד״ר יעל שדה תחזור אלייך עם קוד ועם פרטי ההשתתפות בעלות.</p>
+      <div class="nv-card"><h3>בקשת גישה לנבט</h3><p>השאירי פרטים. ד״ר יעל שדה תחזור אלייך עם פרטי ההשתתפות, ואחרי האישור יגיע אלייך למייל <strong>קישור כניסה אישי</strong>.</p>
         <form class="nv-form" data-form="request"><label>שם*<input name="name" required></label><label>מייל*<input name="email" type="email" required dir="ltr"></label>
         <label class="wide">מוסד / מסגרת<input name="institution"></label><label class="wide">על מה תרצי לעבוד?<textarea name="note" rows="2"></textarea></label>
         <input class="nv-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <div class="wide"><button class="nv-btn">שליחת פנייה</button><div class="nv-status" data-st="request"></div></div></form></div></div>`;
+        <div class="wide"><button class="nv-btn primary">שליחת פנייה</button><div class="nv-status" data-st="request"></div></div></form></div>
+      <div class="nv-card"><h3>כבר אושרת?</h3><p class="nv-status">נכנסים דרך הקישור האישי שנשלח אלייך במייל. אין אותו לידך, או שאת במחשב אחר? הקלידי את המייל, ונשלח קישור חדש.</p>
+        <form class="nv-row" data-form="login" style="margin-top:8px"><input name="email" type="email" dir="ltr" required placeholder="המייל שלך" style="flex:1;min-width:180px"><input class="nv-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><button class="nv-btn">שליחת קישור כניסה</button></form>
+        <div class="nv-status" data-st="login"></div></div></div>`;
   }
 
   function dashboardHtml(){
@@ -2680,7 +2680,7 @@ html[data-page="apps"] #apps{display:block!important}
     const left=me.code?.left;
     const statusLabel={ideas:['💡 רעיונות','amber'],guide:['🧭 יש מדריך','blue'],active:['🌱 בליווי מיזי','green'],done:['🏅 הושלם','green']};
     return `<div class="nv-card"><div class="nv-row" style="justify-content:space-between">
-        <div><h3 style="margin:0">שלום ${h(me.code?.name||'')} 🌱</h3><p class="nv-status" style="margin:2px 0 0">${left===null||left===undefined?'גישה ללא הגבלה':`נותרו <strong>${left}</strong> פעולות`} · ניתוח מאמר: ${c.analyze} · מדריך: ${c.guide} · שיחה עם מיזי: ${c.mizi} · תעודה: ${c.certificate}${me.code?.expires?` · בתוקף עד ${fmt(me.code.expires)}`:''}</p></div>
+        <div><h3 style="margin:0">שלום ${h(me.code?.name||'')} 🌱</h3><p class="nv-status" style="margin:2px 0 0">${left===null||left===undefined?'גישה ללא הגבלה':`נותרו לך <strong>${left}</strong> פעולות`} · ניתוח מאמר: ${c.analyze} · מדריך: ${c.guide} · שיחה עם מיזי: ${c.mizi} · תעודה: ${c.certificate}${me.code?.expires?` · בתוקף עד ${fmt(me.code.expires)}`:''}</p></div>
         <button type="button" class="nv-btn small" data-a="logout">יציאה</button></div>
         ${S.ai===false?'<p class="nv-status err">נבט עוד לא מחובר למודל השפה. אפשר לעיין, אבל עוד אי אפשר לנתח מאמרים.</p>':''}</div>
       ${me.projects.length?`<div class="nv-card"><h3>המיזמים שלי</h3><div class="nv-list">${me.projects.map(p=>`<div class="nv-proj" data-open="${h(p.id)}"><span><strong>${h(p.title)}</strong><br><span class="nv-status">עודכן ${fmt(p.updatedAt)}${me.admin&&p.ownerName?` · ${h(p.ownerName)}`:''}</span></span><span class="nv-badge ${statusLabel[p.status][1]}">${statusLabel[p.status][0]}</span></div>`).join('')}</div></div>`:''}
@@ -2834,7 +2834,7 @@ html[data-page="apps"] #apps{display:block!important}
   async function loadMe(){
     if(!S.code&&!adminToken()){S.me=null;return}
     try{const j=await api('/api/nevet?me=1');S.me=j;S.cost=j.cost||S.cost;S.ai=j.ai}
-    catch(e){S.me=null;if(e.status===403&&S.code){const msg=e.message;S.code='';ls.set('hosen.nevet.code','');render();setStatus(root().querySelector('[data-st=code]'),msg,'err');throw e}}
+    catch(e){S.me=null;if(e.status===403&&S.code){const msg=e.message;S.code='';ls.set('hosen.nevet.code','');render();setStatus(root().querySelector('[data-st=login]'),msg,'err');throw e}}
   }
   async function openProject(pid){
     S.key=ls.get('hosen.nevet.key.'+pid);
@@ -2857,9 +2857,9 @@ html[data-page="apps"] #apps{display:block!important}
     if(a==='back'){S.project=null;S.key='';history.replaceState(null,'',location.pathname);await loadMe().catch(()=>{});render();return}
     if(a==='admin')return openNevetAdmin();
     if(a==='share'){const key=S.key||ls.get('hosen.nevet.key.'+S.project.id);
-      if(!key)return modal(`<h2>קישור לצוות</h2><p>את הקישור לתיק מקבלים כשהתיק נוצר. היוזמת יכולה להיכנס תמיד עם הקוד שלה.</p>`);
+      if(!key)return modal(`<h2>קישור לצוות</h2><p>את הקישור לתיק מקבלים כשהתיק נוצר. היוזמת יכולה להיכנס תמיד דרך הקישור האישי שלה לנבט.</p>`);
       const url=`${location.origin}/apps#project=${S.project.id}.${key}`;
-      const m=modal(`<h2>🔗 קישור לתיק היישום</h2><p>שלחי אותו רק לחברות ולחברי הצוות. עם הקישור אפשר לצפות, לכתוב ביומן ולשוחח עם מיזי (הפעולות נספרות מהקוד שלך).</p><div class="nv-row"><input readonly value="${h(url)}" dir="ltr" style="flex:1"><button type="button" class="nv-btn small" data-copy>העתקה</button></div>`);
+      const m=modal(`<h2>🔗 קישור לתיק היישום</h2><p>שלחי אותו רק לחברות ולחברי הצוות. עם הקישור אפשר לצפות, לכתוב ביומן ולשוחח עם מיזי (הפעולות נספרות מהחשבון שלך).</p><div class="nv-row"><input readonly value="${h(url)}" dir="ltr" style="flex:1"><button type="button" class="nv-btn small" data-copy>העתקה</button></div>`);
       m.querySelector('[data-copy]').onclick=ev=>navigator.clipboard.writeText(url).then(()=>ev.target.textContent='הועתק ✓');return}
     if(a==='guide'){const p=S.project;
       try{const {ticket,result}=await ai('guide',{projectId:p.id,chosenIdeaId:p.chosenIdeaId,checks:p.checks});
@@ -2887,8 +2887,8 @@ html[data-page="apps"] #apps{display:block!important}
     const kind=f.dataset.form,d=Object.fromEntries(new FormData(f));
     const st=root().querySelector(`[data-st=${kind}]`);
     try{
-      if(kind==='code'){S.code=String(d.code||'').trim().toUpperCase();setStatus(st,'בודקת…');await loadMe();ls.set('hosen.nevet.code',S.code);render();return}
-      if(kind==='request'){setStatus(st,'שולחת…');await post({action:'request-access',...d});f.reset();setStatus(st,'הפנייה נשלחה. ד״ר יעל שדה תחזור אלייך 🌱','ok');return}
+      if(kind==='login'){setStatus(st,'שולחת…');const j=await post({action:'login-link',...d,elapsed:Date.now()-S.loadedAt});setStatus(st,j.message||'נשלח.','ok');return}
+      if(kind==='request'){setStatus(st,'שולחת…');await post({action:'request-access',...d,elapsed:Date.now()-S.loadedAt});f.reset();setStatus(st,'הפנייה נשלחה. ד״ר יעל שדה תחזור אלייך 🌱','ok');return}
       if(kind==='analyze'){
         let text=String(d.text||'').trim();const file=f.elements.file.files[0];
         if(file){setStatus(st,'קוראת את הקובץ…');text=await fileText(file)}
@@ -2938,13 +2938,13 @@ html[data-page="apps"] #apps{display:block!important}
     async function reload(){A.d=await api('/api/nevet?admin=1')}
     function render2(){
       const d=A.d,t=A.tab;
-      const tabs=[['codes',`🔑 קודים (${d.codes.length})`],['requests',`📨 פניות (${d.requests.filter(r=>!r.handled).length})`],['projects',`🌱 מיזמים (${d.projects.length})`],['setup','⚙ חיבור']];
+      const tabs=[['codes',`👩‍🔬 חברות מאושרות (${d.codes.length})`],['requests',`📨 פניות (${d.requests.filter(r=>!r.handled).length})`],['projects',`🌱 מיזמים (${d.projects.length})`],['setup','⚙ חיבור']];
       let html=`<h2>🌱 ניהול נבט</h2><nav class="nv-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
-      if(t==='codes')html+=`<form class="nv-form nv-card" data-aform="create" style="margin-top:8px"><label>שם*<input name="name" required></label><label>מייל<input name="email" type="email" dir="ltr"></label><label>מספר פעולות<input name="credits" type="number" min="1" value="20"></label><label>בתוקף עד<input name="expires" type="date"></label><label class="wide">הערה (למשל: שולם)<input name="note"></label><input type="hidden" name="requestId"><div class="wide"><button class="nv-btn primary">יצירת קוד</button></div></form>
+      if(t==='codes')html+=`<form class="nv-form nv-card" data-aform="create" style="margin-top:8px"><label>שם*<input name="name" required></label><label>מייל<input name="email" type="email" dir="ltr"></label><label>מספר פעולות<input name="credits" type="number" min="1" value="20"></label><label>בתוקף עד<input name="expires" type="date"></label><label class="wide">הערה (למשל: שולם)<input name="note"></label><input type="hidden" name="requestId"><div class="wide"><button class="nv-btn primary">✓ אישור ושליחת קישור כניסה</button></div></form>
         <p class="nv-status">ניתוח מאמר: ${d.cost.analyze} פעולות · מדריך: ${d.cost.guide} · שיחה עם מיזי: ${d.cost.mizi} · תעודה: ${d.cost.certificate}. מיזם שלם צורך בדרך כלל 15–30 פעולות.</p>
-        <table class="nv-table"><tr><th>שם</th><th>קוד</th><th>נוצלו</th><th>נותרו</th><th>תוקף</th><th></th></tr>${d.codes.map(c=>`<tr style="${c.active?'':'opacity:.5'}"><td>${h(c.name)}<br><span class="nv-status">${h(c.email)}${c.note?' · '+h(c.note):''}</span></td><td dir="ltr"><code>${h(c.code)}</code></td><td>${c.used}</td><td>${c.left}</td><td>${c.expires?fmt(c.expires):'—'}</td>
-          <td><div class="nv-row"><button type="button" class="nv-btn small" data-act="add" data-code="${h(c.code)}">＋10</button><button type="button" class="nv-btn small" data-act="send" data-code="${h(c.code)}">✉ שליחה</button><button type="button" class="nv-btn small${c.active?' danger':''}" data-act="toggle" data-code="${h(c.code)}" data-active="${c.active?'0':'1'}">${c.active?'השבתה':'הפעלה'}</button></div></td></tr>`).join('')||'<tr><td colspan="6" class="nv-status">עוד אין קודים.</td></tr>'}</table>`;
-      if(t==='requests')html+=d.requests.length?d.requests.map(r=>`<div class="nv-card" style="${r.handled?'opacity:.6':''}"><strong>${h(r.name)}</strong>${r.institution?` · ${h(r.institution)}`:''} · <span dir="ltr">${h(r.email)}</span> · ${fmt(r.at)}${r.note?`<p>${h(r.note)}</p>`:''}<div class="nv-row">${r.handled?'<span class="nv-badge green">טופל</span>':`<button type="button" class="nv-btn small primary" data-act="from-request" data-id="${h(r.id)}">יצירת קוד עבורה</button><button type="button" class="nv-btn small" data-act="handled" data-id="${h(r.id)}">סימון כטופל</button>`}</div></div>`).join(''):'<p class="nv-status">אין פניות.</p>';
+        <table class="nv-table"><tr><th>שם</th><th>נוצלו</th><th>נותרו</th><th>תוקף</th><th></th></tr>${d.codes.map(c=>`<tr style="${c.active?'':'opacity:.5'}"><td>${h(c.name)}<br><span class="nv-status">${h(c.email)}${c.note?' · '+h(c.note):''}</span></td><td>${c.used}</td><td>${c.left}</td><td>${c.expires?fmt(c.expires):'—'}</td>
+          <td><div class="nv-row"><button type="button" class="nv-btn small" data-act="add" data-code="${h(c.code)}">＋10</button><button type="button" class="nv-btn small" data-act="send" data-code="${h(c.code)}">✉ קישור כניסה</button><button type="button" class="nv-btn small${c.active?' danger':''}" data-act="toggle" data-code="${h(c.code)}" data-active="${c.active?'0':'1'}">${c.active?'השהיה':'הפעלה'}</button></div></td></tr>`).join('')||'<tr><td colspan="5" class="nv-status">עוד אין חברות מאושרות.</td></tr>'}</table>`;
+      if(t==='requests')html+=d.requests.length?d.requests.map(r=>`<div class="nv-card" style="${r.handled?'opacity:.6':''}"><strong>${h(r.name)}</strong>${r.institution?` · ${h(r.institution)}`:''} · <span dir="ltr">${h(r.email)}</span> · ${fmt(r.at)}${r.note?`<p>${h(r.note)}</p>`:''}<div class="nv-row">${r.handled?'<span class="nv-badge green">טופל</span>':`<button type="button" class="nv-btn small primary" data-act="from-request" data-id="${h(r.id)}">אישור</button><button type="button" class="nv-btn small" data-act="handled" data-id="${h(r.id)}">סימון כטופל</button>`}</div></div>`).join(''):'<p class="nv-status">אין פניות.</p>';
       if(t==='projects')html+=`<table class="nv-table"><tr><th>מיזם</th><th>יוזמת</th><th>שלב</th><th>פעילות אחרונה</th><th>רשומות</th></tr>${d.projects.map(p=>`<tr><td>${h(p.title)}</td><td>${h(p.ownerName)}</td><td>${h({ideas:'רעיונות',guide:'מדריך',active:'בליווי מיזי',done:'הושלם'}[p.status])}</td><td>${fmt(p.lastActivityAt)}</td><td>${p.journal}</td></tr>`).join('')||'<tr><td colspan="5" class="nv-status">עוד אין מיזמים.</td></tr>'}</table>`;
       if(t==='setup')html+=`<div class="nv-card"><h3>${d.ai.configured?'✅ נבט מחובר למודל השפה':'⏳ נבט עוד לא מחובר למודל השפה'}</h3>
         <p>נבט ומיזי משתמשים במודל השפה Claude של Anthropic. החיבור דורש מפתח, והתשלום הוא לפי שימוש: ניתוח מאמר עולה בערך 15–30 סנט, ומיזם שלם בערך ‎$1–3.</p>
@@ -2965,17 +2965,24 @@ html[data-page="apps"] #apps{display:block!important}
         if(act==='toggle'){await call({action:'code-update',code:b.dataset.code,active:b.dataset.active==='1'});await reload();render2()}
         if(act==='handled'){await call({action:'request-handled',id:b.dataset.id});await reload();render2()}
         if(act==='from-request'){const r=A.d.requests.find(x=>x.id===b.dataset.id);A.tab='codes';A.msg=null;render2();const f=m.querySelector('[data-aform=create]');f.elements.name.value=r.name;f.elements.email.value=r.email;f.elements.requestId.value=r.id;f.elements.name.focus()}
-        if(act==='send'){const c=A.d.codes.find(x=>x.code===b.dataset.code);
-          const body=`שלום ${c.name},\n\nשמחה שהצטרפת לנבט 🌱\n\nהקוד האישי שלך: ${c.code}\nהוא כולל ${c.credits} פעולות${c.expires?` ובתוקף עד ${fmt(c.expires)}`:''}.\n\nנכנסים כאן: ${location.origin}/apps\nמעלים מאמר, ונבט מציע רעיונות ליישום. אחר כך מיזי מלווה אותך שלב אחר שלב.\n\nבהצלחה!\nד״ר יעל שדה`;
-          window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(c.email||'')+'&su='+encodeURIComponent('הקוד שלך לנבט 🌱')+'&body='+encodeURIComponent(body),'_blank','noopener');amsg('נפתחה טיוטה ב-Gmail עם הקוד.','ok')}
+        if(act==='send'){const c=A.d.codes.find(x=>x.code===b.dataset.code);const j=await call({action:'send-link',code:c.code});
+          if(j.mailed)amsg(`קישור כניסה נשלח ל-${c.email} ✓`,'ok');else composeLink(c,j.link)}
       }catch(err){amsg(err.message,'err')}
     });
     m.addEventListener('submit',async e=>{const f=e.target.closest('[data-aform]');if(!f)return;e.preventDefault();
-      try{const d=Object.fromEntries(new FormData(f));const j=await call({action:'code-create',...d});await reload();render2();amsg(`הקוד נוצר: ${j.code.code} — אפשר לשלוח אותו בכפתור "✉ שליחה".`,'ok')}catch(err){amsg(err.message,'err')}});
+      try{const d=Object.fromEntries(new FormData(f));const j=await call({action:'code-create',...d});await reload();render2();
+        if(j.mailed)amsg(`${j.code.name} אושרה ✓ קישור כניסה אישי נשלח אליה למייל.`,'ok');else{amsg(`${j.code.name} אושרה ✓ החיבור למייל לא פעיל — נפתחה טיוטה ב-Gmail עם הקישור.`,'ok');composeLink(j.code,j.link)}}catch(err){amsg(err.message,'err')}});
+    function composeLink(c,link){
+      const body=`שלום ${c.name},\n\nהפנייה שלך לנבט אושרה 🌱\nיש לך ${c.credits} פעולות.\n\nזה הקישור האישי שלך לכניסה (כדאי לשמור את המייל):\n${link}\n\nבהצלחה!\nד״ר יעל שדה`;
+      window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(c.email||'')+'&su='+encodeURIComponent('הפנייה שלך לנבט אושרה 🌱')+'&body='+encodeURIComponent(body),'_blank','noopener');
+    }
     try{await reload();render2()}catch(e){m.querySelector('[data-adm]').innerHTML=`<h2>ניהול נבט</h2><p class="nv-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`}
   }
 
   async function handleHash(){
+    const lg=location.hash.match(/^#login=(NEVET-[A-Z0-9]{4}-[A-Z0-9]{4})$/i);
+    if(lg){S.code=lg[1].toUpperCase();ls.set('hosen.nevet.code',S.code);history.replaceState(null,'',location.pathname);
+      try{await loadMe();render();const el=root().querySelector('.nv-card');if(el)el.insertAdjacentHTML('beforeend','<p class="nv-status ok">נכנסת לנבט 🌱 בדפדפן הזה תישארי מחוברת.</p>')}catch(e){}return}
     const p=location.hash.match(/^#project=([\w-]+)\.([\w-]+)$/);
     if(p){ls.set('hosen.nevet.key.'+p[1],p[2]);history.replaceState(null,'',location.pathname);return openProject(p[1])}
     const c=location.hash.match(/^#cert=([\w-]+)\.([A-Z0-9]+)$/);
@@ -3291,7 +3298,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
   // ---------- חלונות ----------
   function modal(html,wide){
     const m=document.createElement('div');
-    m.className='ch-modal';
+    m.className='ch-modal';m.dataset.opened=Date.now();
     m.innerHTML=`<div class="ch-dialog${wide?' wide':''}" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="ch-x" aria-label="סגירה">×</button>${html}</div>`;
     const close=()=>{m.remove();document.removeEventListener('keydown',esc)};
     const esc=e=>{if(e.key==='Escape')close()};
@@ -3302,12 +3309,13 @@ html[data-page="calls"] #resourceArea{display:none!important}
     m.close=close;
     return m;
   }
-  const codeField=()=>`<label>קוד הקהילה*<input name="communityCode" required autocomplete="off"><span class="hint">הקוד שחברות הקהילה מקבלות. הוא שומר על האתר מספאם.</span></label><input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
-  function formData(form){return Object.fromEntries(new FormData(form))}
+  // בלי קוד: שדה מלכודת לבוטים (נסתר), וזמן המילוי נשלח עם הטופס.
+  const codeField=()=>`<input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
+  function formData(form){const d=Object.fromEntries(new FormData(form));const m=form.closest('.ch-modal');if(m)d.elapsed=Date.now()-Number(m.dataset.opened||0);return d}
   function setStatus(el,msg,kind){el.className='ch-status'+(kind?' '+kind:'');el.textContent=msg}
 
   function openSuggest(){
-    const m=modal(`<h2>מצאתי קול קורא</h2><p class="ch-credit">הקול הקורא יגיע לאישור, ויפורסם עם קרדיט לך. אחרי הפרסום הוא יישלח לחוקרות שהוא מתאים להן.</p>
+    const m=modal(`<h2>מצאתי קול קורא</h2><p class="ch-credit">הקול הקורא יגיע לאישור של ד״ר יעל שדה, ויפורסם עם קרדיט לך. אחרי הפרסום הוא יישלח לחוקרות שהוא מתאים להן.</p>
       <form class="ch-form">
         <label class="wide">שם הקול הקורא*<input name="title" required dir="auto"></label>
         <label class="wide">קישור*<input name="url" required type="url" dir="ltr" placeholder="https://"></label>
@@ -3340,7 +3348,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <label data-internal>גוף מממן<input name="funder" dir="auto"></label>
         <label data-internal>מועד הגשה<input name="deadline" type="date"></label>
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
-        <label>מייל (לקבלת הקישור לסביבת העבודה)<input name="email" type="email" dir="ltr"></label>
+        <label>מייל*<span class="hint">לשם יישלח הקישור לסביבת העבודה</span><input name="email" type="email" dir="ltr" required></label>
         ${codeField()}
         <div class="wide"><button class="ch-btn primary">הקמת הקבוצה</button><div class="ch-status"></div></div>
       </form>`);
@@ -3372,7 +3380,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const m=modal(`<h2>בקשת הצטרפות</h2><p><strong>${h(t.title)}</strong>${t.need?`<br><span class="ch-credit">מחפשות: ${h(t.need)}</span>`:''}</p>
       <form class="ch-form">
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
-        <label>מייל (לקבלת הקישור אחרי האישור)<input name="email" type="email" dir="ltr"></label>
+        <label>מייל*<span class="hint">לשם יישלח הקישור אחרי האישור</span><input name="email" type="email" dir="ltr" required></label>
         <label class="wide">מה את מביאה לקבוצה?<textarea name="note" rows="3" dir="auto"></textarea></label>
         ${codeField()}
         <div class="wide"><button class="ch-btn primary">שליחת הבקשה</button><div class="ch-status"></div></div>

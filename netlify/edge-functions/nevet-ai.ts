@@ -41,10 +41,10 @@ export default async (req: Request) => {
     });
   } catch (e) {
     await forward({ action: "refund", ticket }).catch(() => {});
-    let message = "נבט לא הצליח להתחבר למודל השפה. הפעולות הוחזרו לקוד. אפשר לנסות שוב בעוד כמה דקות.";
-    if (e instanceof Anthropic.AuthenticationError) message = "המפתח של מודל השפה (ANTHROPIC_API_KEY) לא תקין. הפעולות הוחזרו לקוד.";
-    else if (e instanceof Anthropic.RateLimitError) message = "יש כרגע עומס, או שהגעתם לתקרת ההוצאה החודשית. הפעולות הוחזרו לקוד. אפשר לנסות שוב מאוחר יותר.";
-    else if (e instanceof Anthropic.BadRequestError) message = "הבקשה למודל נדחתה (ייתכן שהמאמר ארוך מדי). הפעולות הוחזרו לקוד.";
+    let message = "נבט לא הצליח להתחבר למודל השפה. הפעולות הוחזרו לחשבון שלך. אפשר לנסות שוב בעוד כמה דקות.";
+    if (e instanceof Anthropic.AuthenticationError) message = "המפתח של מודל השפה (ANTHROPIC_API_KEY) לא תקין. הפעולות הוחזרו לחשבון שלך.";
+    else if (e instanceof Anthropic.RateLimitError) message = "יש כרגע עומס, או שהגעתם לתקרת ההוצאה החודשית. הפעולות הוחזרו לחשבון שלך. אפשר לנסות שוב מאוחר יותר.";
+    else if (e instanceof Anthropic.BadRequestError) message = "הבקשה למודל נדחתה (ייתכן שהמאמר ארוך מדי). הפעולות הוחזרו לחשבון שלך.";
     console.error("nevet-ai", e instanceof Anthropic.APIError ? `${e.status} ${e.message}` : String(e));
     return json({ error: "nevet", message }, 502);
   }

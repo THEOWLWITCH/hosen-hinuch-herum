@@ -1,15 +1,11 @@
 import type { Config } from "@netlify/functions";
-import { json, validToken } from "../lib/shared.mts";
+import { json, looksHuman, validToken } from "../lib/shared.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, listTeams, newItemId, newKey,
   openTeam, publicTeam, saveTeam, workspaceTeam,
 } from "../lib/teams.mts";
 
-function communityCodeOK(code: unknown) {
-  const expected = Netlify.env.get("BOARD_CODE") || "";
-  return !!expected && String(code || "") === expected;
-}
 
 function workspaceLink(site: string, t: Team, key: string) {
   return `${site}/calls#team=${t.id}.${key}`;
@@ -55,11 +51,10 @@ export default async (req: Request) => {
 
   // ----- הקמת קבוצה ובקשת הצטרפות: בקוד הקהילה -----
   if (action === "create" || action === "join") {
-    if (body.website) return json({ ok: true });
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    if (!looksHuman(body)) return json({ ok: true });
     const name = clip(body.name, 160);
-    if (!name) return json({ error: "missing_fields", message: "נא למלא שם." }, 400);
     const email = clip(body.email, 240);
+    if (!name || !email.includes("@")) return json({ error: "missing_fields", message: "נא למלא שם ומייל." }, 400);
 
     if (action === "create") {
       let callTitle = "", funder = clip(body.funder, 200), deadline = clip(body.deadline, 10);

@@ -69,6 +69,14 @@ export async function validToken(req: Request, allowed: AccessRole | AccessRole[
   return roles.includes(role);
 }
 
+// טפסים פתוחים לכולן (בלי קוד): הגנה שקטה מספאם — שדה מלכודת שאדם לא רואה,
+// ומינימום זמן מילוי. בנוסף יש מגבלת קצב בכל נקודת קצה.
+export function looksHuman(body: any): boolean {
+  if (body?.website) return false;
+  const elapsed = Number(body?.elapsed);
+  return Number.isFinite(elapsed) && elapsed >= 2500;
+}
+
 export function id() {
   return crypto.randomUUID();
 }

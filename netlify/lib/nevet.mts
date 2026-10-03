@@ -57,9 +57,9 @@ export async function listCodes(): Promise<AccessCode[]> {
 }
 
 export function codeUsable(c: AccessCode | null, today = israelToday()): string {
-  if (!c) return "הקוד לא נמצא. בדקי שהעתקת אותו במלואו.";
-  if (!c.active) return "הקוד הזה הושבת. אפשר לפנות לד״ר יעל שדה.";
-  if (c.expires && c.expires < today) return "תוקף הקוד הסתיים. אפשר לפנות לד״ר יעל שדה לחידוש.";
+  if (!c) return "הקישור לא תקין או שכבר אינו בתוקף. אפשר לבקש קישור כניסה חדש במייל.";
+  if (!c.active) return "הגישה לנבט הושהתה. אפשר לפנות לד״ר יעל שדה.";
+  if (c.expires && c.expires < today) return "תקופת הגישה לנבט הסתיימה. אפשר לפנות לד״ר יעל שדה לחידוש.";
   return "";
 }
 
@@ -197,8 +197,8 @@ export type Ticket = { id: string; op: Op; cost: number; codeHash: string; proje
 export async function charge(c: (AccessCode & { hash: string }) | null, admin: boolean, op: Op, projectId: string): Promise<Ticket> {
   const cost = admin ? 0 : COST[op];
   if (!admin) {
-    if (!c) throw new Error("נדרש קוד גישה.");
-    if (creditsLeft(c) < cost) throw new Error(`לפעולה הזו נדרשות ${cost} פעולות, ובקוד נותרו ${creditsLeft(c)}. אפשר לפנות לד״ר יעל שדה להוספת פעולות.`);
+    if (!c) throw new Error("צריך להיכנס לנבט דרך הקישור האישי.");
+    if (creditsLeft(c) < cost) throw new Error(`לפעולה הזו נדרשות ${cost} פעולות, ונותרו לך ${creditsLeft(c)}. אפשר לפנות לד״ר יעל שדה להוספת פעולות.`);
     const { hash, ...rec } = c;
     await saveCode({ ...rec, used: rec.used + cost, lastUsedAt: now() });
   }
@@ -216,7 +216,7 @@ export async function settleTicket(t: Ticket) {
   await data().setJSON(`nevet/tickets/${t.id}.json`, { ...t, settled: true });
 }
 
-// אם הקריאה למודל נכשלה — מחזירים את הפעולות לקוד.
+// אם הקריאה למודל נכשלה — מחזירים את הפעולות לחשבון.
 export async function refundTicket(t: Ticket) {
   if (t.refunded || t.settled) return;
   await data().setJSON(`nevet/tickets/${t.id}.json`, { ...t, refunded: true });

@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { id, json, validToken } from "../lib/shared.mts";
+import { id, json, looksHuman, validToken } from "../lib/shared.mts";
 import { mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   COST, type Op, type Project, type Stage, addRequest, analyzePrompt, certificatePrompt, charge, clip, codeUsable, createProject,
@@ -24,6 +24,20 @@ async function auth(req: Request) {
   const codeStr = normCode(req.headers.get("x-nevet-code"));
   const code = codeStr ? await getCode(codeStr) : null;
   return { admin, codeStr, code, key: clip(req.headers.get("x-project-key"), 200) };
+}
+
+// קישור כניסה אישי: הקוד הפנימי נמצא בקישור, והחוקרת לא צריכה לזכור או להקליד אותו.
+const entryLink = (site: string, code: string) => `${site}/apps#login=${code}`;
+
+async function mailEntryLink(site: string, c: { name: string; email: string; code: string; credits: number; expires: string }, welcome: boolean) {
+  if (!c.email.includes("@") || !mailConfigured()) return false;
+  const first = c.name.replace(/^(ד״ר|ד"ר|פרופ׳|פרופ')\s*/, "").split(/\s+/)[0];
+  const link = entryLink(site, c.code);
+  const lines = welcome
+    ? [`שלום ${first},`, "הפנייה שלך לנבט אושרה 🌱", `יש לך ${c.credits} פעולות${c.expires ? `, בתוקף עד ${c.expires.split("-").reverse().join(".")}` : ""}. נבט קורא מאמר, מציע רעיונות ליישום ומפיק מדריך פיתוח — ומיזי מלווה אותך שלב אחר שלב.`, "זה הקישור האישי שלך לכניסה. כדאי לשמור את המייל הזה."]
+    : [`שלום ${first},`, "ביקשת קישור כניסה לנבט. הנה הוא:"];
+  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;line-height:1.7;color:#1d3445">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none;font-weight:700">כניסה לנבט 🌱</a></p><p style="font-size:12px;color:#6b7d88">הקישור אישי — לא להעביר אותו הלאה.<br>קהילת חוסן · חינוך · חרום</p></div>`;
+  try { await sendMail(c.email, welcome ? "הפנייה שלך לנבט אושרה 🌱" : "קישור כניסה לנבט 🌱", html, lines.join("\n\n") + `\n\nכניסה: ${link}`); return true; } catch { return false; }
 }
 
 function err(message: string, status = 400) {
@@ -85,8 +99,19 @@ export default async (req: Request) => {
   const a = await auth(req);
 
   // ----- בקשת גישה: כל אחת יכולה לפנות -----
+  if (action === "login-link") {
+    if (!looksHuman(body)) return json({ ok: true });
+    const email = clip(body.email, 240).toLowerCase();
+    if (!email.includes("@")) return err("נא להקליד כתובת מייל.");
+    if (!mailConfigured()) return err("שליחת קישורים במייל עוד לא פעילה. אפשר לפנות לד״ר יעל שדה.", 503);
+    const c = (await listCodes()).find(x => x.active && x.email.trim().toLowerCase() === email);
+    if (c) await mailEntryLink(site, c, false);
+    // אותה תשובה בכל מקרה, כדי לא לחשוף אילו כתובות רשומות.
+    return json({ ok: true, message: "אם הכתובת מאושרת בנבט, נשלח אליה עכשיו קישור כניסה. כדאי לבדוק גם בתיקיית הספאם." });
+  }
+
   if (action === "request-access") {
-    if (body.website) return json({ ok: true });
+    if (!looksHuman(body)) return json({ ok: true });
     const name = clip(body.name, 160), email = clip(body.email, 240);
     if (!name || !email.includes("@")) return err("נא למלא שם ומייל.");
     const r = await addRequest({ name, email, institution: clip(body.institution, 200), note: clip(body.note, 1500) });
@@ -265,7 +290,8 @@ export default async (req: Request) => {
       expires: /^\d{4}-\d{2}-\d{2}$/.test(String(body.expires)) ? String(body.expires) : "", active: true, note: clip(body.note, 500), createdAt: new Date().toISOString(),
     });
     if (body.requestId) await setRequestHandled(clip(body.requestId, 80));
-    return json({ ok: true, code: c });
+    const mailed = await mailEntryLink(site, c, true);
+    return json({ ok: true, code: c, mailed, link: entryLink(site, c.code) });
   }
   if (action === "code-update") {
     const c = await getCode(clip(body.code, 40));
@@ -275,6 +301,12 @@ export default async (req: Request) => {
     if (body.active !== undefined) rec.active = !!body.active;
     if (body.expires !== undefined) rec.expires = /^\d{4}-\d{2}-\d{2}$/.test(String(body.expires)) ? String(body.expires) : "";
     return json({ ok: true, code: await saveCode(rec) });
+  }
+  if (action === "send-link") {
+    const c = await getCode(clip(body.code, 40));
+    if (!c) return err("לא נמצא.", 404);
+    const mailed = await mailEntryLink(site, c, true);
+    return json({ ok: true, mailed, link: entryLink(site, c.code) });
   }
   if (action === "request-handled") { await setRequestHandled(clip(body.id, 80)); return json({ ok: true }); }
 

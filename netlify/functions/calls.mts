@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { json, validToken } from "../lib/shared.mts";
+import { json, looksHuman, validToken } from "../lib/shared.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
   cleanCallFields, collectFromSources, sendAll, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
@@ -8,10 +8,6 @@ import {
 } from "../lib/calls.mts";
 import { listTeams } from "../lib/teams.mts";
 
-function communityCodeOK(code: unknown) {
-  const expected = Netlify.env.get("BOARD_CODE") || "";
-  return !!expected && String(code || "") === expected;
-}
 
 const t = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 
@@ -89,8 +85,7 @@ export default async (req: Request) => {
 
   // ----- הצעת קול קורא מחברת קהילה (בקוד קהילה) -----
   if (action === "suggest") {
-    if (body.website) return json({ ok: true }); // מלכודת לבוטים
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    if (!looksHuman(body)) return json({ ok: true }); // מלכודת לבוטים
     const name = t(body.name, 160);
     if (!name) return json({ error: "missing_fields", message: "נא למלא שם." }, 400);
 
