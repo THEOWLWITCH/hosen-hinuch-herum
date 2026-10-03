@@ -2588,7 +2588,8 @@ html[data-page="apps"] #apps{display:block!important}
       .box{padding:8pt 10pt;border-right:3pt solid #2f6e4f;background:#f1f8f4;margin:6pt 0}
       .cert{border:6pt double #2f6e4f;border-radius:10pt;padding:22mm 18mm;text-align:center;min-height:220mm;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:8pt}
       .cert h1{font-size:28pt}.cert .name{font-size:22pt;font-weight:700;color:#173b5d}.cert .sig{display:flex;justify-content:space-around;margin-top:18pt;font-size:10.5pt}.cert .verify{font-size:9pt;color:#6b7d88;margin-top:10pt}
-    </style></head><body>${body}<script>setTimeout(()=>print(),350)<\/script><script id="compass-start-v2-js">
+    </style></head><body>${body}<script>setTimeout(()=>print(),350)<\/script>
+<script id="compass-start-v2-js">
 async function startCompass(event){
 event.preventDefault();
 const q=document.getElementById('compassQuestion')?.value.trim(),status=document.getElementById('compassStatus'),result=document.getElementById('compassResult');
