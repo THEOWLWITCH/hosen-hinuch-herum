@@ -472,8 +472,13 @@ export function mailConfigured(): boolean {
 // הסבר בעברית לשגיאת שליחה, כדי שאפשר יהיה לתקן בלי לנחש.
 export function mailErrorHint(e: unknown): string {
   const m = String((e as Error)?.message || e || "");
-  if (/535|534|Username and Password not accepted|Invalid login|BadCredentials|Application-specific password required/i.test(m))
-    return "Gmail דחה את הכניסה: הכתובת ב-GMAIL_USER או סיסמת האפליקציה ב-GMAIL_APP_PASSWORD שגויות. צריך סיסמת אפליקציה (16 אותיות), לא הסיסמה הרגילה.";
+  const code = (m.match(/\b5\d\d[- ]\d\.\d\.\d+\b/) || [""])[0];
+  if (/534|Application-specific password required/i.test(m))
+    return `Gmail מבקש סיסמת אפליקציה: ב-GMAIL_APP_PASSWORD נשמרה כנראה הסיסמה הרגילה. (קוד ${code || "534"})`;
+  if (/535|Username and Password not accepted|Invalid login|BadCredentials/i.test(m))
+    return `Gmail דחה את הכניסה: הכתובת ב-GMAIL_USER לא תואמת לחשבון שבו נוצרה סיסמת האפליקציה, או שהסיסמה הועתקה עם טעות. (קוד ${code || "535"})`;
+  if (/Missing credentials|EAUTH/i.test(m) && !/535|534/.test(m))
+    return "חסרה כתובת ב-GMAIL_USER או סיסמה ב-GMAIL_APP_PASSWORD (ייתכן שהשדה של Production ריק).";
   if (/Cannot find (module|package)|ERR_MODULE_NOT_FOUND/i.test(m)) return "רכיב השליחה לא נטען בשרת. צריך פריסה מחדש.";
   if (/ETIMEDOUT|ECONNREFUSED|ESOCKET|ECONNECTION|timeout/i.test(m)) return "אין חיבור לשרת של Gmail. כדאי לנסות שוב בעוד כמה דקות.";
   if (/Daily user sending limit|limit exceeded|5\.4\.5/i.test(m)) return "הגעת למכסת השליחה היומית של Gmail. אפשר לשלוח שוב מחר.";
