@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { communityCodeOK, json, looksHuman, validToken } from "../lib/shared.mts";
+import { json, looksHuman, validToken } from "../lib/shared.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
   cleanCallFields, collectFromSources, sendAll, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
@@ -85,8 +85,8 @@ export default async (req: Request) => {
 
   // ----- הצעת קול קורא מחברת קהילה (בקוד קהילה) -----
   if (action === "suggest") {
+    // בלי קוד: הקול הקורא מגיע לתיבת האישור לפני פרסום.
     if (!looksHuman(body)) return json({ ok: true }); // מלכודת לבוטים
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
     const name = t(body.name, 160);
     if (!name) return json({ error: "missing_fields", message: "נא למלא שם." }, 400);
 

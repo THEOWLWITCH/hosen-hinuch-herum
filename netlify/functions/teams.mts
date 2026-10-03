@@ -52,7 +52,8 @@ export default async (req: Request) => {
   // ----- הקמת קבוצה ובקשת הצטרפות: בקוד הקהילה -----
   if (action === "create" || action === "join") {
     if (!looksHuman(body)) return json({ ok: true });
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    // הקמת קבוצה מתפרסמת מיד — בקוד הקהילה. בקשת הצטרפות מגיעה לאישור המובילה — בלי קוד.
+    if (action === "create" && !communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
     const name = clip(body.name, 160);
     const email = clip(body.email, 240);
     if (!name || !email.includes("@")) return json({ error: "missing_fields", message: "נא למלא שם ומייל." }, 400);

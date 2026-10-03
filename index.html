@@ -3309,7 +3309,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
     m.close=close;
     return m;
   }
-  const codeField=()=>`<label>קוד הקהילה*<input name="communityCode" required autocomplete="off"><span class="hint">הקוד של חברות הקהילה.</span></label><input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
+  const botField=()=>`<input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
+  const codeField=()=>`<label>קוד הקהילה*<input name="communityCode" required autocomplete="off"><span class="hint">הקוד של חברות הקהילה.</span></label>${botField()}`;
   function formData(form){const d=Object.fromEntries(new FormData(form));const m=form.closest('.ch-modal');if(m)d.elapsed=Date.now()-Number(m.dataset.opened||0);return d}
   function setStatus(el,msg,kind){el.className='ch-status'+(kind?' '+kind:'');el.textContent=msg}
 
@@ -3323,7 +3324,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <label class="wide">כמה מילים על הקול הקורא<textarea name="description" rows="3" dir="auto"></textarea></label>
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
         <label>מייל (לא יפורסם)<input name="email" type="email" dir="ltr"></label>
-        ${codeField()}
+        ${botField()}
         <div class="wide"><button class="ch-btn primary">שליחה לאישור</button><div class="ch-status"></div></div>
       </form>`);
     m.querySelector('form').addEventListener('submit',async e=>{
@@ -3381,7 +3382,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
         <label>מייל*<span class="hint">לשם יישלח הקישור אחרי האישור</span><input name="email" type="email" dir="ltr" required></label>
         <label class="wide">מה את מביאה לקבוצה?<textarea name="note" rows="3" dir="auto"></textarea></label>
-        ${codeField()}
+        ${botField()}
         <div class="wide"><button class="ch-btn primary">שליחת הבקשה</button><div class="ch-status"></div></div>
       </form>`);
     m.querySelector('form').addEventListener('submit',async e=>{
