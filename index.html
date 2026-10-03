@@ -2186,6 +2186,8 @@ body:has(.feedback-modal.open){
 .library-hub-actions{display:flex;gap:8px;margin:15px 0 0}.library-hub-action{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 15px;border:1px solid #9bbac6;border-radius:5px;background:#fff;color:#315d71;font:inherit;font-size:13px;font-weight:650;text-decoration:none;cursor:pointer}.library-hub-action.compass{background:#2d617a;color:#fff;border-color:#2d617a}.library-role-search{margin-top:14px;padding-top:14px;border-top:1px solid #dbe6e9}.library-explorer-results{display:block!important;margin:12px 0 16px!important}.library-explorer-results .lib-item,.research-library-results .lib-item{padding:10px 0!important;border:0!important;border-bottom:1px solid #e1e8ea!important;border-radius:0!important;background:transparent!important}.library-explorer-results .lib-item h3,.research-library-results .lib-item h3{display:none!important}.library-explorer-results .lib-item p,.research-library-results .lib-item p{margin:3px 0!important;font-size:12px!important;line-height:1.55!important;color:#526a76!important}.library-explorer-results .lib-item .apa-citation,.research-library-results .lib-item .apa-citation{color:#264d60!important}.library-explorer-results .lib-item .relevance,.research-library-results .lib-item .relevance{color:#60747d!important}.library-explorer-results .lib-item a,.research-library-results .lib-item a{font-size:11px!important}.library-explorer-results .lib-meta,.research-library-results .lib-meta{display:none!important}@media(max-width:800px){.library-hub-actions{flex-direction:column}.library-hub-action{width:100%}}</style>
 <style id="compass-start-v2">
 .compass-workspace{margin-top:22px;padding:22px 24px;background:#fff;border:1px solid #d6e4e8;border-radius:10px}.compass-workspace-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;border-bottom:1px solid #e0eaed;padding-bottom:10px}.compass-workspace-head span{font-size:11px;color:#6f8d99}.compass-workspace-head h2{margin:2px 0 0;font-size:22px}.compass-workspace-head a{font-size:12px;color:#2b667e}.compass-start-form{margin:0}.compass-how{margin-top:14px;padding:12px 14px;background:#f6fafb;border-right:3px solid #86aeba;color:#506975}.compass-how summary{cursor:pointer;color:#315d71;font-weight:650}.compass-how p{margin:9px 0 0;font-size:13px;line-height:1.65}.compass-result{margin-top:18px}.compass-result .compass-source{padding:11px 0}.compass-result .compass-source .apa-citation{margin:0 0 3px;color:#294f62;font-size:12px;line-height:1.55}.compass-result .compass-source .relevance{margin:0;color:#60747d;font-size:12px;line-height:1.55}.compass-next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.compass-next-grid article{padding:10px;background:#f7fafb;border-right:3px solid #8cb1bc}.compass-next-grid h4{margin:0 0 4px;color:#31576a;font-size:13px}.compass-next-grid p{margin:0;font-size:12px;line-height:1.55;color:#5c737e}@media(max-width:700px){.compass-workspace{padding:17px}.compass-workspace-head{align-items:flex-start;flex-direction:column}.compass-next-grid{grid-template-columns:1fr}}</style>
+<style id="compass-library-modal-v1">
+.compass-library-modal{position:fixed;inset:0;z-index:11000;display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;background:rgba(25,45,57,.48);overflow:auto}.compass-library-modal.open{display:flex}.compass-library-dialog{position:relative;width:min(100%,1080px);margin:auto;background:#fbfcfc;border-radius:12px;box-shadow:0 22px 64px rgba(16,42,57,.3);overflow:hidden}.compass-library-close{position:sticky;top:10px;z-index:1;float:left;margin:10px;border:0;border-radius:50%;width:36px;height:36px;background:#fff;color:#315d71;font-size:23px;cursor:pointer;box-shadow:0 2px 8px rgba(20,50,65,.18)}.compass-library-dialog #compass{display:block!important;padding:0 0 28px!important}.compass-library-dialog #compass .wrap{width:min(100%,980px)!important;padding:28px 24px 0!important}.compass-library-dialog .compass-hero{margin-top:0!important}@media(max-width:700px){.compass-library-modal{padding:0}.compass-library-dialog{min-height:100vh;border-radius:0}.compass-library-dialog #compass .wrap{padding:20px 16px 0!important}}</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2205,8 +2207,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
     <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
-    <a class="site-tab compass-tab" data-route="compass" href="/compass">מצפן המחקר</a>
-    <a class="site-tab" data-route="apps" href="/apps">🌱 יישומים</a>
+        <a class="site-tab" data-route="apps" href="/apps">🌱 יישומים</a>
   </div>
 </nav>
 <main>
@@ -2346,7 +2347,7 @@ body:has(.feedback-modal.open){
   <p>בחרו מסלול קריאה או חפשו במאגר לפי מאפייני המקור. כל פריט מוצג עם ציטוט APA7 לפי הפרטים הזמינים וקישור למקור המקורי.</p>
   <div class="library-hub-actions" aria-label="פעולות בספרייה">
     <button type="button" class="library-hub-action" aria-expanded="false" aria-controls="libraryRoleSearch" onclick="toggleLibraryRoleSearch()">חיפוש לפי תפקיד</button>
-    <a class="library-hub-action compass" href="/compass">מצפן המחקר</a>
+    <button type="button" class="library-hub-action compass" onclick="openCompassFromLibrary()">מצפן המחקר</button>
   </div>
   <div id="libraryRoleSearch" class="library-role-search" hidden>
   <div class="library-reading-paths" aria-label="מסלולי קריאה לפי קהל">
@@ -5181,5 +5182,20 @@ result.innerHTML='<h3>מיפוי ראשון: '+esc(q)+'</h3><p>נמצאו '+scor
 result.classList.add('show');if(status)status.textContent='המיפוי הושלם.';
 }catch(e){if(status){status.textContent='לא ניתן להשלים את המיפוי כעת. נסו שוב.';status.classList.add('error')}}
 }
+</script>
+<div id="compassLibraryModal" class="compass-library-modal" role="dialog" aria-modal="true" aria-label="מצפן המחקר"><div class="compass-library-dialog"><button type="button" class="compass-library-close" aria-label="סגירת מצפן המחקר" onclick="closeCompassLibrary()">×</button><div id="compassLibraryMount"></div></div></div>
+<script id="compass-library-modal-v1-js">
+function openCompassFromLibrary(){
+ const modal=document.getElementById('compassLibraryModal'),mount=document.getElementById('compassLibraryMount'),compass=document.getElementById('compass');
+ if(!modal||!mount||!compass)return;
+ mount.appendChild(compass);modal.classList.add('open');document.body.style.overflow='hidden';document.getElementById('compassQuestion')?.focus();
+}
+function closeCompassLibrary(){
+ const modal=document.getElementById('compassLibraryModal'),compass=document.getElementById('compass'),main=document.querySelector('main');
+ if(!modal||!compass||!main)return;
+ main.insertBefore(compass,main.firstChild);modal.classList.remove('open');document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCompassLibrary()});
+document.addEventListener('click',e=>{const modal=document.getElementById('compassLibraryModal');if(e.target===modal)closeCompassLibrary()});
 </script>
 </body></html>
