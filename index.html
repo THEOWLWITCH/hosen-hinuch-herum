@@ -2470,12 +2470,21 @@ html[data-page="calls"] #resourceArea{display:none!important}
 </style>
 <script id="calls-hub-v66-js">
 (function(){
-  document.addEventListener('DOMContentLoaded',()=>{
+  // לשונית "קולות קוראים" בחלון הניהול. החלון בונה את שורת הלשוניות מחדש בכל פתיחה,
+  // ולכן מוסיפים אותה שוב בכל פעם שהשורה מתחלפת — רק למנהלת המערכת.
+  function addCallsTab(){
     const tabs=document.getElementById('adminTabs');
     if(!tabs||document.getElementById('tabCalls'))return;
+    if(typeof currentAccessRole!=='undefined'&&currentAccessRole!=='admin')return;
     const b=document.createElement('button');b.id='tabCalls';b.type='button';b.textContent='קולות קוראים';
     b.onclick=()=>{if(document.documentElement.dataset.page==='calls'){if(typeof closeAdmin==='function')closeAdmin();window.hosenCallsAdmin?.()}else location.href='/calls#calls-admin'};
     tabs.appendChild(b);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const tabs=document.getElementById('adminTabs');
+    if(!tabs)return;
+    addCallsTab();
+    new MutationObserver(addCallsTab).observe(tabs,{childList:true});
   });
   // סוג העמוד נקבע בסקריפט שרץ אחרי זה, ולכן בודקים אותו רק כשהעמוד נטען.
   const isCalls=()=>document.documentElement.dataset.page==='calls';
