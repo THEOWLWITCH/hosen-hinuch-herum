@@ -2988,7 +2988,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const already=new Set((c.notified||[]).map(n=>n.email.toLowerCase()));
       return `<div class="ch-note" style="margin-top:10px"><strong>שליחה לחוקרות הרלוונטיות</strong> ${(c.notified||[]).length?`<span class="ch-credit">· כבר נשלח ל־${new Set((c.notified||[]).map(n=>n.email)).size}</span>`:''}
         <div class="ch-people-pick" data-notify="${h(c.id)}">${c.matches.length?c.matches.map(x=>`<label title="${h(x.shared.map(k=>A.d.themes[k]).join(', '))}"><input type="checkbox" value="${h(x.id)}"${x.hasEmail&&x.score>=min&&!already.has(x.email.toLowerCase())?' checked':''}${x.hasEmail?'':' disabled'}>${h(x.name)} <span class="ch-credit">(${x.score})${x.hasEmail?'':' · אין מייל'}</span></label>`).join(''):'<span class="ch-credit">לא נמצאו חוקרות שהנושאים שלהן תואמים. אפשר לסמן נושאים לקול הקורא.</span>'}</div>
-        ${c.matches.length?`<button type="button" class="ch-btn small primary" data-act="notify" data-id="${h(c.id)}">${A.d.mail.configured?'✉ שליחת מייל אישי לכל אחת':'✉ פתיחת טיוטה ב-Gmail'}</button>`:''}</div>`;
+        ${c.matches.length?`<button type="button" class="ch-btn small primary" data-act="notify" data-id="${h(c.id)}">${A.d.mail.configured?'✉ שליחת מייל אישי לכל אחת':'✉ פתיחת טיוטה ב-Gmail'}</button>${A.d.mail.configured?`<button type="button" class="ch-btn small" data-act="notify" data-mode="compose" data-id="${h(c.id)}">פתיחה כטיוטה ב-Gmail</button>`:''}`:''}</div>`;
     }
     function render(){
       const d=A.d,t=A.tab;
@@ -3030,9 +3030,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
         if(a==='reject'){await call('reject',{id:b.dataset.key});await reload();render();amsg('הוסר מהתיבה. הוא לא יחזור באיסוף הבא.','ok')}
         if(a==='notify'){
           const ids=[...m.querySelectorAll(`[data-notify="${CSS.escape(b.dataset.id)}"] input:checked`)].map(i=>i.value);
-          const j=await call('notify',{callId:b.dataset.id,personIds:ids});
+          const j=await call('notify',{callId:b.dataset.id,personIds:ids,mode:b.dataset.mode||''});
           if(j.mode==='compose'){window.open(j.href,'_blank','noopener');amsg(`נפתחה טיוטה ב-Gmail ל־${j.count} חוקרות (בעותק מוסתר). נשאר רק ללחוץ "שליחה".`,'ok')}
-          else amsg(`נשלחו ${j.sent} מיילים אישיים.${j.failed.length?' לא נשלח ל: '+j.failed.join(', '):''}`,j.failed.length?'err':'ok');
+          else amsg(`נשלחו ${j.sent} מיילים אישיים.${j.failed.length?' לא נשלח ל: '+j.failed.join(', ')+'.'+(j.reason?' הסיבה: '+j.reason:'')+' אפשר בינתיים לשלוח בכפתור "פתיחה כטיוטה ב-Gmail".':''}`,j.failed.length?'err':'ok');
           await reload();render();
         }
         if(a==='src-add'){m.querySelector('#chSrcRows').insertAdjacentHTML('beforeend',srcRow({name:'',url:'',filter:true,enabled:true}))}
@@ -3046,7 +3046,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         if(a==='digest'){const j=await call('digest',{send:true});
           if(j.mode==='empty')amsg('אין השבוע מה לשלוח: אין קולות קוראים פתוחים או קבוצות שמחפשות שותפות.');
           else if(j.mode==='compose'){window.open(j.href,'_blank','noopener');amsg('הסיכום נפתח כטיוטה ב-Gmail.','ok')}
-          else amsg(`הסיכום נשלח ל־${j.sent} חוקרות.${j.failed?` ${j.failed} נכשלו.`:''}`,j.failed?'err':'ok')}
+          else amsg(`הסיכום נשלח ל־${j.sent} חוקרות.${j.failed?` ${j.failed} נכשלו.${j.reason?' הסיבה: '+j.reason:''}`:''}`,j.failed?'err':'ok')}
         if(a==='optout'){await call('optout',{optout:m.querySelector('#chOptout').value.split(/\s+/)});amsg('נשמר.','ok')}
         if(a==='rekey'){const j=await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-rekey',id:b.dataset.id})});
           m.querySelector(`[data-rekey="${CSS.escape(b.dataset.id)}"]`).innerHTML=`<div class="ch-linkbox"><input readonly value="${h(j.link)}"></div><p class="ch-credit">הקישור הישן כבר לא פותח את סביבת העבודה. שלחי את החדש לחברות הקבוצה.</p>`}

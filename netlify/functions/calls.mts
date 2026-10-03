@@ -2,7 +2,7 @@ import type { Config } from "@netlify/functions";
 import { json, validToken } from "../lib/shared.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
-  cleanCallFields, collectFromSources, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
+  cleanCallFields, collectFromSources, sendAll, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
   listInbox, loadPeople, mailConfigured, matchPeople, newCall, personTopics, saveCall, saveOptOut, saveSources, sendMail,
   sendWeeklyDigests, setInboxStatus, siteUrl, weeklyDigest,
 } from "../lib/calls.mts";
@@ -160,23 +160,17 @@ export default async (req: Request) => {
       return json({ ok: true, mode: "compose", href, count: chosen.length });
     }
 
-    let sent = 0;
-    const failed: string[] = [];
     const notified = [...(c.notified || [])];
     const byId = new Map(matchPeople({ ...c, topics: callTopics(c) }, people).map(m => [m.id, m]));
-    for (const p of chosen) {
+    const r = await sendAll(chosen, async p => {
       const m = byId.get(p.id) || { id: p.id, name: p.name, email: String(p.email), score: 0, shared: [] };
       const mail = callEmail(c, m, site, today);
-      try {
-        await sendMail(String(p.email), mail.subject, mail.html, mail.text);
-        notified.push({ email: String(p.email), at: new Date().toISOString() });
-        sent++;
-      } catch {
-        failed.push(p.name);
-      }
-    }
+      await sendMail(String(p.email), mail.subject, mail.html, mail.text);
+    });
+    for (const p of r.ok) notified.push({ email: String(p.email), at: new Date().toISOString() });
+    const sent = r.ok.length, failed = r.failed.map(p => p.name), reason = r.reason;
     await saveCall({ ...c, notified });
-    return json({ ok: true, mode: "sent", sent, failed });
+    return json({ ok: true, mode: "sent", sent, failed, reason });
   }
 
   if (action === "digest") {

@@ -469,11 +469,45 @@ export function mailConfigured(): boolean {
   return !!(Netlify.env.get("GMAIL_USER") && Netlify.env.get("GMAIL_APP_PASSWORD"));
 }
 
+// הסבר בעברית לשגיאת שליחה, כדי שאפשר יהיה לתקן בלי לנחש.
+export function mailErrorHint(e: unknown): string {
+  const m = String((e as Error)?.message || e || "");
+  if (/535|534|Username and Password not accepted|Invalid login|BadCredentials|Application-specific password required/i.test(m))
+    return "Gmail דחה את הכניסה: הכתובת ב-GMAIL_USER או סיסמת האפליקציה ב-GMAIL_APP_PASSWORD שגויות. צריך סיסמת אפליקציה (16 אותיות), לא הסיסמה הרגילה.";
+  if (/Cannot find (module|package)|ERR_MODULE_NOT_FOUND/i.test(m)) return "רכיב השליחה לא נטען בשרת. צריך פריסה מחדש.";
+  if (/ETIMEDOUT|ECONNREFUSED|ESOCKET|ECONNECTION|timeout/i.test(m)) return "אין חיבור לשרת של Gmail. כדאי לנסות שוב בעוד כמה דקות.";
+  if (/Daily user sending limit|limit exceeded|5\.4\.5/i.test(m)) return "הגעת למכסת השליחה היומית של Gmail. אפשר לשלוח שוב מחר.";
+  if (/recipient|5\.1\.1|No recipients/i.test(m)) return "כתובת הנמענת לא תקינה.";
+  return "שגיאה בשליחה: " + m.slice(0, 200);
+}
+
+// חיבור אחד ל-Gmail שנשמר לכל השליחות באותה ריצה, עם זמני המתנה קצרים:
+// פונקציה ב-Netlify נקטעת אחרי כמה שניות, ולכן אסור לחכות לשרת שלא עונה.
+let transportPromise: Promise<any> | null = null;
+function transport() {
+  transportPromise ??= import("nodemailer").then(m => m.default.createTransport({
+    service: "gmail", pool: true, maxConnections: 3,
+    connectionTimeout: 7000, greetingTimeout: 7000, socketTimeout: 9000,
+    auth: { user: Netlify.env.get("GMAIL_USER") || "", pass: (Netlify.env.get("GMAIL_APP_PASSWORD") || "").replace(/\s+/g, "") },
+  }));
+  return transportPromise;
+}
+
 export async function sendMail(to: string, subject: string, html: string, text: string) {
-  const nodemailer = (await import("nodemailer")).default;
-  const user = Netlify.env.get("GMAIL_USER") || "";
-  const transport = nodemailer.createTransport({ service: "gmail", auth: { user, pass: (Netlify.env.get("GMAIL_APP_PASSWORD") || "").replace(/\s+/g, "") } });
-  await transport.sendMail({ from: { name: "קהילת חוסן חינוך חרום", address: user }, to, subject, html, text });
+  const user = (Netlify.env.get("GMAIL_USER") || "").trim();
+  await (await transport()).sendMail({ from: { name: "קהילת חוסן חינוך חרום", address: user }, to, subject, html, text });
+}
+
+// שליחה במקביל (עד שלוש בכל רגע, דרך אותו חיבור).
+export async function sendAll<T>(rows: T[], send: (x: T) => Promise<void>): Promise<{ ok: T[]; failed: T[]; reason: string }> {
+  const results = await Promise.allSettled(rows.map(send));
+  const ok: T[] = [], failed: T[] = [];
+  let reason = "";
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled") ok.push(rows[i]);
+    else { failed.push(rows[i]); reason ||= mailErrorHint(r.reason); console.error("mail failed", String((r.reason as Error)?.message || r.reason)); }
+  });
+  return { ok, failed, reason };
 }
 
 function escHtml(s: string) {
@@ -566,18 +600,21 @@ ${sec("✨ מתאימים לתחום שלך", mine)}${sec("⏳ נסגרים בש
   return { subject, html, text, count };
 }
 
-export async function sendWeeklyDigests(site: string): Promise<{ sent: number; skipped: number; failed: number }> {
+export async function sendWeeklyDigests(site: string): Promise<{ sent: number; skipped: number; failed: number; reason: string }> {
   const [calls, people, optout, teams] = [await listCalls(), await loadPeople(site), new Set(await getOptOut()), await listTeams()];
-  let sent = 0, skipped = 0, failed = 0;
+  let skipped = 0;
+  const jobs: { email: string; d: Digest }[] = [];
   for (const p of people) {
     const email = String(p.email || "").trim();
     if (!email.includes("@") || optout.has(email.toLowerCase())) { skipped++; continue; }
     const d = weeklyDigest(p, calls, site, israelToday(), teams);
     if (!d) { skipped++; continue; }
-    try { await sendMail(email, d.subject, d.html, d.text); sent++; } catch { failed++; }
+    jobs.push({ email, d });
   }
-  await data().setJSON("call-mail/last-digest.json", { at: new Date().toISOString(), sent, skipped, failed });
-  return { sent, skipped, failed };
+  const r = await sendAll(jobs, j => sendMail(j.email, j.d.subject, j.d.html, j.d.text));
+  const sent = r.ok.length, failed = r.failed.length, reason = r.reason;
+  await data().setJSON("call-mail/last-digest.json", { at: new Date().toISOString(), sent, skipped, failed, reason });
+  return { sent, skipped, failed, reason };
 }
 
 export function siteUrl(fallback?: string): string {
