@@ -2589,26 +2589,7 @@ html[data-page="apps"] #apps{display:block!important}
       .cert{border:6pt double #2f6e4f;border-radius:10pt;padding:22mm 18mm;text-align:center;min-height:220mm;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:8pt}
       .cert h1{font-size:28pt}.cert .name{font-size:22pt;font-weight:700;color:#173b5d}.cert .sig{display:flex;justify-content:space-around;margin-top:18pt;font-size:10.5pt}.cert .verify{font-size:9pt;color:#6b7d88;margin-top:10pt}
     </style></head><body>${body}<script>setTimeout(()=>print(),350)<\/script>
-<script id="compass-start-v2-js">
-async function startCompass(event){
-event.preventDefault();
-const q=document.getElementById('compassQuestion')?.value.trim(),status=document.getElementById('compassStatus'),result=document.getElementById('compassResult');
-if(!q||!result)return;
-if(status)status.textContent='ממפה את מאגר המקורות…';
-try{
-if(!Array.isArray(libraryCache)||!libraryCache.length)await loadLibrary(false);
-const normalise=v=>String(v||'').toLowerCase().replace(/[״"',.:;!?()־–—]/g,' ').replace(/\s+/g,' ').trim();
-const terms=[...new Set(normalise(q).split(' ').filter(w=>w.length>2&&!['של','עם','על','את','או','גם','בין','לפי','האם'].includes(w)))];
-const scored=(Array.isArray(libraryCache)?libraryCache:[]).map(x=>{const hay=normalise([x.title,x.abstract,x.subject,x.journal,x.authors].join(' '));return {x,score:terms.reduce((n,w)=>n+(hay.includes(w)?1:0),0)}}).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||libraryPublicationTime(b.x)-libraryPublicationTime(a.x)).slice(0,8);
-const type=document.getElementById('compassUserType')?.value||'חוקרת או חוקר',population=document.getElementById('compassPopulation')?.value||'אוכלוסיית היעד',method=document.getElementById('compassMethod')?.value||'משולב',context=document.getElementById('compassContext')?.value.trim();
-const cite=x=>typeof apa7Citation==='function'?apa7Citation(x):[x.authors,'('+ (x.year||'ללא תאריך') +').',x.title,x.journal,x.doi].filter(Boolean).join(' ');
-const sources=scored.length?scored.map(({x})=>'<article class="compass-source"><p class="apa-citation"><strong>APA7:</strong> '+esc(cite(x))+'</p><p class="relevance"><strong>רלוונטיות:</strong> '+esc(x.abstract||'המקור תואם למונחי החיפוש ולתחום שנבחר.')+'</p>'+(x.doi?'<a href="'+escAttr(x.doi)+'" target="_blank" rel="noopener">למקור</a>':'')+'</article>').join(''):'<p class="compass-note">לא נמצאו במאגר האתר מקורות תואמים במידה מספקת. זהו פער במאגר המקומי, ולא הוכחה לכך שאין מחקר בעולם.</p>';
-const where=context?' בהקשר של '+context:' בישראל';
-result.innerHTML='<h3>מיפוי ראשון: '+esc(q)+'</h3><p>נמצאו '+scored.length+' מקורות רלוונטיים במאגר הקהילה. להלן נקודת פתיחה עבור '+esc(type)+'; המיפוי המקומי קודם לחיפוש חיצוני.</p><h4>מקורות מהמאגר</h4>'+sources+'<h4>שלוש דרכים לדייק את הסבב הבא</h4><div class="compass-next-grid"><article><h4>איכותני</h4><p>כיצד '+esc(population)+' מתארות ומתארים את ההתנסות ב־'+esc(q)+esc(where)+'?</p></article><article><h4>כמותי</h4><p>באיזו מידה '+esc(q)+' קשור למדדי חוסן, רציפות למידה או מוכנות בקרב '+esc(population)+esc(where)+'?</p></article><article><h4>משולב</h4><p>אילו דפוסים ניתנים למדידה, וכיצד '+esc(population)+' מסבירות ומסבירים אותם? זהו המסלול שנבחר כעת: '+esc(method)+'.</p></article></div><p class="compass-note"><strong>הצעד הבא:</strong> בחרי או בחרו מסלול, צמצמו אוכלוסייה ותוצא רצוי, והוסיפו את מספר המוסדות והמשתתפות או המשתתפים הזמינים.</p>';
-result.classList.add('show');if(status)status.textContent='המיפוי הושלם.';
-}catch(e){if(status){status.textContent='לא ניתן להשלים את המיפוי כעת. נסו שוב.';status.classList.add('error')}}
-}
-</script>
+
 </body></html>`);
     w.document.close();
   }
@@ -5181,4 +5162,24 @@ async function submitResearchSuggestion(event){
 }
 </script>
 <!-- deploy-refresh-2026-09-29 -->
+<script id="compass-start-v2-js">
+async function startCompass(event){
+event.preventDefault();
+const q=document.getElementById('compassQuestion')?.value.trim(),status=document.getElementById('compassStatus'),result=document.getElementById('compassResult');
+if(!q||!result)return;
+if(status)status.textContent='ממפה את מאגר המקורות…';
+try{
+if(!Array.isArray(libraryCache)||!libraryCache.length)await loadLibrary(false);
+const normalise=v=>String(v||'').toLowerCase().replace(/[״"',.:;!?()־–—]/g,' ').replace(/\s+/g,' ').trim();
+const terms=[...new Set(normalise(q).split(' ').filter(w=>w.length>2&&!['של','עם','על','את','או','גם','בין','לפי','האם'].includes(w)))];
+const scored=(Array.isArray(libraryCache)?libraryCache:[]).map(x=>{const hay=normalise([x.title,x.abstract,x.subject,x.journal,x.authors].join(' '));return {x,score:terms.reduce((n,w)=>n+(hay.includes(w)?1:0),0)}}).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||libraryPublicationTime(b.x)-libraryPublicationTime(a.x)).slice(0,8);
+const type=document.getElementById('compassUserType')?.value||'חוקרת או חוקר',population=document.getElementById('compassPopulation')?.value||'אוכלוסיית היעד',method=document.getElementById('compassMethod')?.value||'משולב',context=document.getElementById('compassContext')?.value.trim();
+const cite=x=>typeof apa7Citation==='function'?apa7Citation(x):[x.authors,'('+ (x.year||'ללא תאריך') +').',x.title,x.journal,x.doi].filter(Boolean).join(' ');
+const sources=scored.length?scored.map(({x})=>'<article class="compass-source"><p class="apa-citation"><strong>APA7:</strong> '+esc(cite(x))+'</p><p class="relevance"><strong>רלוונטיות:</strong> '+esc(x.abstract||'המקור תואם למונחי החיפוש ולתחום שנבחר.')+'</p>'+(x.doi?'<a href="'+escAttr(x.doi)+'" target="_blank" rel="noopener">למקור</a>':'')+'</article>').join(''):'<p class="compass-note">לא נמצאו במאגר האתר מקורות תואמים במידה מספקת. זהו פער במאגר המקומי, ולא הוכחה לכך שאין מחקר בעולם.</p>';
+const where=context?' בהקשר של '+context:' בישראל';
+result.innerHTML='<h3>מיפוי ראשון: '+esc(q)+'</h3><p>נמצאו '+scored.length+' מקורות רלוונטיים במאגר הקהילה. להלן נקודת פתיחה עבור '+esc(type)+'; המיפוי המקומי קודם לחיפוש חיצוני.</p><h4>מקורות מהמאגר</h4>'+sources+'<h4>שלוש דרכים לדייק את הסבב הבא</h4><div class="compass-next-grid"><article><h4>איכותני</h4><p>כיצד '+esc(population)+' מתארות ומתארים את ההתנסות ב־'+esc(q)+esc(where)+'?</p></article><article><h4>כמותי</h4><p>באיזו מידה '+esc(q)+' קשור למדדי חוסן, רציפות למידה או מוכנות בקרב '+esc(population)+esc(where)+'?</p></article><article><h4>משולב</h4><p>אילו דפוסים ניתנים למדידה, וכיצד '+esc(population)+' מסבירות ומסבירים אותם? זהו המסלול שנבחר כעת: '+esc(method)+'.</p></article></div><p class="compass-note"><strong>הצעד הבא:</strong> בחרי או בחרו מסלול, צמצמו אוכלוסייה ותוצא רצוי, והוסיפו את מספר המוסדות והמשתתפות או המשתתפים הזמינים.</p>';
+result.classList.add('show');if(status)status.textContent='המיפוי הושלם.';
+}catch(e){if(status){status.textContent='לא ניתן להשלים את המיפוי כעת. נסו שוב.';status.classList.add('error')}}
+}
+</script>
 </body></html>
