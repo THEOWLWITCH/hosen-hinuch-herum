@@ -39,7 +39,7 @@ const defaults: Person[] = [
     "name": "ד״ר שרי גנון-שילון",
     "institution": "האקדמית אחוה",
     "description": "תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך.",
-    "email": "",
+    "email": "sherryshilon@gmail.com",
     "phone": "",
     "order": 2,
     "createdAt": "2026-09-27T00:00:00.000Z",
@@ -160,7 +160,7 @@ const defaults: Person[] = [
     "name": "ד״ר אמל עאמר",
     "institution": "המכללה האקדמית הערבית לחינוך בחיפה / הקריה האקדמית אונו",
     "description": "חוקר ומרצה בתחומי מדיניות חינוך ומנהיגות בית־ספרית, בעל רקע במשפטים ובגישור וניסיון בהוראה, הדרכה וניהול במערכת החינוך. עוסק במדיניות חינוך, מנהיגות, שילוב קבוצות שונות במערכת החינוך והקשר שבין מדיניות, ניהול וחברה; בעבר פעל גם במסגרת בר־אילן.",
-    "email": "",
+    "email": "Amlamer10@gmail.com",
     "phone": "050-3077000",
     "order": 13,
     "createdAt": "2026-09-27T00:00:00.000Z",
@@ -202,6 +202,12 @@ const defaults: Person[] = [
 ];
 
 const dataStore = () => store("hosen-data");
+
+// כתובות שנוספו אחרי שהכרטיס כבר נשמר במסך הניהול: ממלאות רק שדה מייל ריק.
+const EMAIL_BACKFILL: Record<string,string> = {
+  "seed-02": "sherryshilon@gmail.com",
+  "seed-13": "Amlamer10@gmail.com",
+};
 
 function cleanUrl(v:any): string {
   const raw=String(v||"").trim();
@@ -249,7 +255,7 @@ async function listAll(): Promise<Person[]> {
   for(const b of blobs){
     const v=await st.get(b.key,{type:"json"}) as Person | null;
     if(!v?.id) continue;
-    if(v.deleted) map.delete(v.id); else map.set(v.id,v);
+    if(v.deleted) map.delete(v.id); else map.set(v.id,{...v,email:String(v.email||"").trim()||EMAIL_BACKFILL[v.id]||""});
   }
   return [...map.values()]
     .filter(x=>!x.deleted)

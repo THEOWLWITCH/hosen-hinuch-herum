@@ -472,7 +472,7 @@ export function mailConfigured(): boolean {
 export async function sendMail(to: string, subject: string, html: string, text: string) {
   const nodemailer = (await import("nodemailer")).default;
   const user = Netlify.env.get("GMAIL_USER") || "";
-  const transport = nodemailer.createTransport({ service: "gmail", auth: { user, pass: Netlify.env.get("GMAIL_APP_PASSWORD") || "" } });
+  const transport = nodemailer.createTransport({ service: "gmail", auth: { user, pass: (Netlify.env.get("GMAIL_APP_PASSWORD") || "").replace(/\s+/g, "") } });
   await transport.sendMail({ from: { name: "קהילת חוסן חינוך חרום", address: user }, to, subject, html, text });
 }
 
