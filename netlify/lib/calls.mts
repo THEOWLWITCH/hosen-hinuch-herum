@@ -1,6 +1,6 @@
 // מרכז קולות קוראים: איסוף ממקורות, תיבת אישור, התאמה לחוקרות, יומן ומיילים.
 // מקור אמת יחיד לנושאים ולהתאמה — גם המסך הציבורי וגם המיילים נשענים עליו.
-import { id, store } from "./shared.mts";
+import { id, issueToken, store } from "./shared.mts";
 import { type Team, listTeams } from "./teams.mts";
 
 export type Call = {
@@ -81,7 +81,8 @@ export function matchPeople(c: Partial<Call>, people: Person[]): Match[] {
 
 export async function loadPeople(origin: string): Promise<Person[]> {
   try {
-    const r = await fetch(new URL("/api/people", origin));
+    // כאן צריך גם את כתובות המייל, ולכן הפנייה נעשית בהרשאת ניהול שנוצרת בשרת.
+    const r = await fetch(new URL("/api/people?admin=1", origin), { headers: { authorization: "Bearer " + (await issueToken("admin")) } });
     if (!r.ok) return [];
     const rows = await r.json();
     return Array.isArray(rows) ? rows : [];
@@ -232,9 +233,32 @@ async function fetchText(url: string, ms = 8000): Promise<string> {
   }
 }
 
+// רשימת פתיחה מומלצת. נטענת רק כל עוד מנהלת המערכת לא שמרה רשימה משלה;
+// אחרי השמירה הראשונה הרשימה כולה בידיה. בסטטוס של כל מקור רואים אם הוא עובד.
+const gnews = (q: string, lang: "he" | "en") => lang === "he"
+  ? `https://news.google.com/rss/search?q=${encodeURIComponent(q + " when:30d")}&hl=he&gl=IL&ceid=IL:he`
+  : `https://news.google.com/rss/search?q=${encodeURIComponent(q + " when:30d")}&hl=en-US&gl=US&ceid=US:en`;
+
+export const DEFAULT_SOURCES: Source[] = [
+  { name: "חדשות Google: קול קורא + חינוך", url: gnews('"קול קורא" חינוך', "he"), filter: true, enabled: true },
+  { name: "חדשות Google: קול קורא + חוסן", url: gnews('"קול קורא" חוסן', "he"), filter: true, enabled: true },
+  { name: "חדשות Google: הצעות מחקר בחינוך", url: gnews('"הצעות מחקר" חינוך', "he"), filter: true, enabled: true },
+  { name: "חדשות Google: מענק מחקר חינוך חירום", url: gnews("מענק מחקר חינוך חירום", "he"), filter: true, enabled: true },
+  { name: "Google News: education in emergencies calls", url: gnews('"call for proposals" "education in emergencies"', "en"), filter: true, enabled: true },
+  { name: "Google News: education resilience grants", url: gnews('"research grant" education resilience', "en"), filter: true, enabled: true },
+  { name: "Google News: education call for papers", url: gnews('"call for papers" education crisis OR emergency OR resilience', "en"), filter: true, enabled: true },
+  { name: "Google News: AI in education calls", url: gnews('"call for proposals" "artificial intelligence" education', "en"), filter: true, enabled: true },
+  { name: "הקרן הלאומית למדע (ISF)", url: "https://www.isf.org.il/", filter: true, enabled: true },
+  { name: "מכון מופ\"ת", url: "https://mofet.macam.ac.il/", filter: true, enabled: true },
+  { name: "מוסד שמואל נאמן", url: "https://www.neaman.org.il/", filter: true, enabled: true },
+  { name: "ISERD — הורייזן אירופה", url: "https://www.iserd.org.il/", filter: true, enabled: true },
+  { name: "יד הנדיב", url: "https://www.yadhanadiv.org.il/", filter: true, enabled: true },
+  { name: "Spencer Foundation", url: "https://www.spencer.org/", filter: true, enabled: true },
+];
+
 export async function getSources(): Promise<Source[]> {
   const v = await data().get("call-sources/list.json", { type: "json" }) as Source[] | null;
-  return Array.isArray(v) ? v : [];
+  return Array.isArray(v) ? v : DEFAULT_SOURCES;
 }
 
 export async function saveSources(rows: unknown): Promise<Source[]> {
