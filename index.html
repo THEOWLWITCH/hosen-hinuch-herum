@@ -2470,6 +2470,8 @@ html[data-page="apps"] #apps{display:block!important}
 .nv-form label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:650;color:#456071}
 .nv-form .wide{grid-column:1/-1}
 .nv-form .hint{font-weight:400;color:#7b8d98}
+.nv-form input,.nv-form select,.nv-form textarea{font-weight:400!important}
+.nv-form .nv-checks label{flex-direction:row;align-items:center;font-weight:400;color:inherit}
 #nevetRoot input:not([type=checkbox]):not([type=radio]),#nevetRoot select,#nevetRoot textarea,.nv-modal input:not([type=checkbox]):not([type=radio]),.nv-modal select,.nv-modal textarea{width:100%;box-sizing:border-box;min-height:36px;padding:7px 10px;border:1px solid var(--nv-line);border-radius:7px;background:#fff;font:inherit;color:inherit}
 #nevetRoot textarea,.nv-modal textarea{line-height:1.6;resize:vertical}
 .nv-hp{position:absolute!important;left:-9999px!important}
@@ -3013,6 +3015,128 @@ html[data-page="apps"] #apps{display:block!important}
 })();
 </script>
 </main>
+<script id="community-mail-v2-js">
+/* "שליחת עדכון לקהילה": מייל אישי לכל אחת ואחד, נשלח מהאתר (כשחיבור Gmail פעיל). */
+(function(){
+  const DEFAULT_SUBJECT='מה חדש באתר הקהילה: קולות קוראים, קבוצות משימה, מצפן המחקר — ובקרוב נבט 🌱';
+  const DEFAULT_BODY=`שלום לחברות ולחברי הקהילה,
+
+באתר "חוסן · חינוך · חרום" נוספו בשבועות האחרונים כמה כלים חדשים. כולם נבנו כדי לעזור לנו לעבוד יחד, להגיש יחד וליישם יחד.
+
+📢 **קולות קוראים — מגיעים אליכם**
+- האתר אוסף כל בוקר קולות קוראים, מענקים וכנסים בתחום, ממקורות בארץ ובעולם.
+- הם מוצגים לפי המועד האחרון להגשה, עם סימון של מה שנסגר בקרוב.
+- ליד כל קול קורא מופיעות החוקרות והחוקרים שהוא מתאים לתחום שלהם.
+- כשמתפרסם קול קורא שמתאים לכם, יגיע אליכם מייל אישי.
+- בכל יום ראשון בבוקר יגיע סיכום שבועי: מה מתאים לכם, מה נסגר בקרוב ומה חדש.
+- אפשר להירשם ליומן של כל המועדים (כפתור "כל המועדים ביומן").
+- מצאתם קול קורא? כפתור "מצאתי קול קורא" — והוא יפורסם עם קרדיט לכם.
+https://hosen-hinuch-herum.netlify.app/calls
+
+🤝 **קבוצות משימה — מגישים יחד**
+- רוצים להגיש הצעת מחקר? אפשר להקים קבוצת משימה סביב קול קורא, או סביב רעיון משלכם.
+- כותבים מי דרוש לקבוצה, וחברי הקהילה יכולים לבקש להצטרף.
+- לכל קבוצה יש סביבת עבודה משותפת: כתיבת ההצעה לפי סעיפים, משימות, דיון, קישורים והדפסה.
+- כל הקבוצות שמחפשות שותפים מופיעות בעמוד "שיתופי פעולה".
+- להקמת קבוצה צריך את קוד הקהילה.
+https://hosen-hinuch-herum.netlify.app/match
+
+🧭 **מצפן המחקר — מה כדאי לחקור עכשיו בישראל?**
+- כלי עזר למחקר אחראי בחוסן, חינוך וחירום — לחוקרות וחוקרים, לבתי ספר, לרשויות, לעמותות ולקהילות.
+- מגדירים נושא, אוכלוסייה, סוג חירום ומטרה, והמצפן ממפה מקורות: קודם מישראל, ואחר כך מהעולם.
+- הוא נועד להציע עד עשר שאלות מחקר מדורגות לפי הפער בידע, הרלוונטיות לישראל וההיתכנות.
+- כל מקור מוצג בנוסח APA7, עם הסבר קצר בעברית למה הוא רלוונטי.
+- ובהמשך: עוזר שעונה על שאלות בשפה טבעית מתוך מאגר האתר בלבד, דו״ח מסכם עם המלצות, ותיק מחקר אישי.
+- המצפן לא מחליף שיפוט אקדמי או ועדת אתיקה. כשאין מספיק ראיות — הוא אומר זאת במפורש.
+https://hosen-hinuch-herum.netlify.app/compass
+
+🌱 **בקרוב: נבט ומיזי — מהמאמר אל השטח**
+- נבט קורא מאמר מחקר ומציע רעיונות ליישום בחינוך: איך, למי, ומה צריך.
+- לרעיון שבחרתם, נבט כותב מדריך פיתוח מפורט, כולל הצוות המגוון שכדאי לגייס.
+- אחר כך מיזי, העוזרת האישית של המיזם, מלווה אתכם שלב אחר שלב, ושומרת את סיפור הדרך.
+- בסיום — תעודה לכל חברי הצוות.
+- נבט כרוך בעלות. מי שמעוניינים יכולים כבר עכשיו לשלוח פנייה בעמוד "יישומים", ואחזור אליכם.
+https://hosen-hinuch-herum.netlify.app/apps
+
+אשמח לשמוע מה חושבים, מה חסר ומה לא עובד. בתחתית האתר יש כפתור "בקשות / תיקונים / רעיונות / תקלות".
+
+בברכה,
+ד״ר יעל שדה
+קהילת חוסן · חינוך · חרום`;
+  const KEY='hosen.communityMail.draft';
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  const draft={get(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}},set(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}}};
+  async function api(method,body){
+    const r=await fetch('/api/community-mail',{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
+    const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה.');e.status=r.status;throw e}return j;
+  }
+
+  let legacy=null;
+  async function openPersonal(){
+    if(typeof closeAdmin==='function')closeAdmin();
+    const m=document.createElement('div');m.className='nv-modal';
+    m.innerHTML='<div class="nv-dialog wide" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><div data-cm><p class="nv-status">טוען…</p></div></div>';
+    const close=()=>{if(m.dataset.busy)return;m.remove()};
+    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('nv-x'))close()});
+    document.body.appendChild(m);
+    const root=m.querySelector('[data-cm]');
+    let d;
+    try{d=await api('GET')}catch(e){root.innerHTML=`<h2>עדכון לקהילה</h2><p class="nv-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`;return}
+    if(!d.configured){
+      root.innerHTML=`<h2>✉ עדכון לקהילה</h2><p>חיבור Gmail לא פעיל, ולכן אי אפשר לשלוח מכאן מיילים אישיים. אפשר לפתוח את Gmail עם כל הכתובות בעותק מוסתר, כמו קודם.</p><button type="button" class="nv-btn primary" data-legacy>פתיחה ב-Gmail</button>`;
+      root.querySelector('[data-legacy]').onclick=()=>{m.remove();legacy&&legacy()};return}
+    const saved=draft.get()||{subject:DEFAULT_SUBJECT,body:DEFAULT_BODY};
+    const people=d.people;
+    root.innerHTML=`<h2>✉ עדכון אישי לקהילה</h2>
+      <p class="nv-status">כל אחת ואחד יקבלו מייל אישי, שנפתח ב"שלום" ובשם הפרטי שלהם. המיילים יוצאים מ-${h(d.from)}, ותשובות יגיעו אלייך.</p>
+      <form class="nv-form" data-f>
+        <label class="wide">נושא<input name="subject" value="${h(saved.subject)}" required></label>
+        <label class="wide">הטקסט<span class="hint">השורה הראשונה "שלום…" תוחלף ב"שלום" + שם פרטי · שורה שמתחילה ב-"- " היא תבליט · **מילה** מודגשת · קישורים יהיו לחיצים. הטיוטה נשמרת אוטומטית.</span><textarea name="body" rows="16" required>${h(saved.body)}</textarea></label>
+        <div class="wide"><div class="nv-row" style="justify-content:space-between"><strong>נמענים: <span data-count></span></strong><span class="nv-row"><button type="button" class="nv-btn small" data-all="1">כולם</button><button type="button" class="nv-btn small" data-all="0">אף אחד</button></span></div>
+          <div class="nv-checks" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr));display:grid;margin-top:6px">${people.map(p=>`<label title="${h(p.email)}"><input type="checkbox" value="${h(p.id)}"${p.hasEmail&&!p.optedOut?' checked':''}${p.hasEmail?'':' disabled'}> ${h(p.name)}${p.hasEmail?(p.optedOut?' <span class="nv-status">(ביקשה הסרה מהתראות)</span>':''):' <span class="nv-status">· אין מייל</span>'}</label>`).join('')}</div></div>
+        <div class="wide nv-row"><button type="button" class="nv-btn" data-preview>👁 תצוגה מקדימה</button><button type="button" class="nv-btn" data-test>🧪 שליחת בדיקה אליי</button><button class="nv-btn primary" data-send>✉ שליחה</button><button type="button" class="nv-btn small" data-reset>החזרת הטקסט המוכן</button></div>
+        <div class="wide"><div class="nv-progress" hidden><i></i></div><div class="nv-status" data-st></div></div>
+      </form>
+      <div data-prev></div>
+      ${d.log.length?`<h4 style="margin:16px 0 4px">שליחות אחרונות</h4><table class="nv-table">${d.log.map(l=>`<tr><td>${new Date(l.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</td><td>${h(l.subject)}</td><td>${l.test?'בדיקה':`נשלח ל־${l.sent}${l.failed.length?` · לא נשלח: ${l.failed.map(h).join(', ')}`:''}`}</td></tr>`).join('')}</table>`:''}`;
+    const f=root.querySelector('[data-f]'),st=root.querySelector('[data-st]'),bar=root.querySelector('.nv-progress');
+    const msg=(t,k)=>{st.className='nv-status'+(k?' '+k:'');st.textContent=t};
+    const chosen=()=>[...f.querySelectorAll('.nv-checks input:checked')].map(i=>i.value);
+    const count=()=>{const n=chosen().length;root.querySelector('[data-count]').textContent=n;f.querySelector('[data-send]').textContent=`✉ שליחה ל־${n}`};
+    const save=()=>draft.set({subject:f.elements.subject.value,body:f.elements.body.value});
+    f.addEventListener('input',save);f.addEventListener('change',count);count();
+    root.querySelectorAll('[data-all]').forEach(b=>b.onclick=()=>{f.querySelectorAll('.nv-checks input:not(:disabled)').forEach(i=>i.checked=b.dataset.all==='1');count()});
+    root.querySelector('[data-reset]').onclick=()=>{if(!confirm('להחליף את הטקסט הנוכחי בטקסט המוכן?'))return;f.elements.subject.value=DEFAULT_SUBJECT;f.elements.body.value=DEFAULT_BODY;save()};
+    root.querySelector('[data-preview]').onclick=async()=>{
+      const first=people.find(p=>chosen().includes(p.id));
+      try{const j=await api('POST',{action:'preview',subject:f.elements.subject.value,body:f.elements.body.value,name:first?.name});
+        root.querySelector('[data-prev]').innerHTML=`<h4 style="margin:16px 0 4px">כך זה ייראה אצל ${h(first?.name||'נמענת')} · נושא: ${h(f.elements.subject.value)}</h4><iframe title="תצוגה מקדימה" style="width:100%;height:520px;border:1px solid #d7e3e7;border-radius:8px;background:#fff"></iframe>`;
+        root.querySelector('[data-prev] iframe').srcdoc=j.html;root.querySelector('[data-prev]').scrollIntoView({behavior:'smooth'})}
+      catch(e){msg(e.message,'err')}};
+    root.querySelector('[data-test]').onclick=async()=>{msg('שולחת בדיקה…');try{await api('POST',{action:'send',test:true,subject:f.elements.subject.value,body:f.elements.body.value});msg(`מייל בדיקה נשלח אל ${d.from} ✓ כדאי להציץ לפני השליחה לכולם.`,'ok')}catch(e){msg(e.message,'err')}};
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const ids=chosen();if(!ids.length)return msg('לא נבחרו נמענים.','err');
+      if(!confirm(`לשלוח את "${f.elements.subject.value}" ל־${ids.length} חברות וחברי קהילה?`))return;
+      m.dataset.busy='1';f.querySelectorAll('button').forEach(b=>b.disabled=true);bar.hidden=false;
+      let sent=0,failed=[],reason='';
+      try{
+        for(let i=0;i<ids.length;i+=6){
+          const batch=ids.slice(i,i+6),last=i+6>=ids.length;
+          const j=await api('POST',{action:'send',subject:f.elements.subject.value,body:f.elements.body.value,personIds:batch,logAs:last?{sent,failed}:null});
+          sent+=j.sent;failed=failed.concat(j.failed);reason=reason||j.reason;
+          bar.querySelector('i').style.width=Math.round(Math.min(ids.length,i+6)/ids.length*100)+'%';msg(`נשלחו ${sent} מתוך ${ids.length}…`);
+        }
+        msg(failed.length?`נשלחו ${sent} מיילים. לא נשלח ל: ${failed.join(', ')}.${reason?' הסיבה: '+reason:''}`:`נשלחו ${sent} מיילים אישיים ✓`,failed.length?'err':'ok');
+      }catch(err){msg(`נשלחו ${sent}. השליחה נעצרה: ${err.message}`,'err')}
+      finally{m.dataset.busy='';f.querySelectorAll('button').forEach(b=>b.disabled=false)}
+    });
+  }
+  // הפונקציה הישנה מוגדרת בהמשך העמוד — מחליפים אותה רק אחרי שכל העמוד נטען.
+  document.addEventListener('DOMContentLoaded',()=>{legacy=window.openCommunityMail;window.openCommunityMail=openPersonal});
+})();
+</script>
 <script id="expiry-hide-v65-js">
 /* פריט עם data-expiry="YYYY-MM-DD" מוסר מהעמוד החל מהתאריך הזה (לפי שעון ישראל). */
 (function(){

@@ -524,7 +524,7 @@ export function bareTitle(title: string) {
   return String(title || "").replace(/^\s*(קול קורא|קולות קוראים|call for [a-z]+)\s*[:\-–—]\s*/i, "") || title;
 }
 
-function firstName(name: string) {
+export function firstName(name: string) {
   return String(name || "").replace(/^(ד״ר|ד"ר|פרופ׳|פרופ'|פרופ\.?)\s*/, "").trim().split(/\s+/)[0] || "";
 }
 
