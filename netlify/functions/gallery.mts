@@ -1,10 +1,10 @@
 import type { Config } from "@netlify/functions";
 import { id, json, store, validToken } from "../lib/shared.mts";
 
-type Media = { key:string; name:string; type?:string; title:string; credit:string; date:string };
+type Media = { key:string; name:string; type?:string; title?:string; credit?:string; date?:string };
 type GalleryItem = {
   id:string; title:string; date:string; description?:string; media:Media[];
-  active?:boolean; createdAt?:string; updatedAt?:string;
+  uploadMode?:"single"|"album"; active?:boolean; createdAt?:string; updatedAt?:string;
 };
 
 function dataStore(){ return store("hosen-data"); }
@@ -17,7 +17,7 @@ async function listAll():Promise<GalleryItem[]> {
 function decorate(x:GalleryItem){
   return {...x, media:(x.media||[]).map(m=>({...m,url:`/api/file?key=${encodeURIComponent(m.key)}`}))};
 }
-function validMediaMetadata(media:Media[]){ return Array.isArray(media)&&media.length>0&&media.every(m=>!!m?.key&&!!String(m.title||'').trim()&&!!String(m.credit||'').trim()&&!!String(m.date||'').trim()); }
+function validMedia(media:Media[]){ return Array.isArray(media)&&media.length>0&&media.every(m=>!!m?.key); }
 
 export default async (req:Request) => {
   const st=dataStore();
@@ -32,7 +32,7 @@ export default async (req:Request) => {
     const body=await req.json(); const now=new Date().toISOString();
     const x:GalleryItem={...body,id:id(),active:body.active!==false,createdAt:now,updatedAt:now,media:Array.isArray(body.media)?body.media:[]};
     if(!x.title||!x.date||!x.media.length) return json({error:"missing_fields",message:"חסרים כותרת, תאריך או תמונות."},400);
-    if(!validMediaMetadata(x.media)) return json({error:"media_metadata",message:"לכל תמונה חובה להזין כותרת, קרדיט ותאריך צילום."},400);
+    if(!validMedia(x.media)) return json({error:"media",message:"נבחרה תמונה לא תקינה."},400);
     await st.setJSON(`gallery/${x.id}.json`,x); return json(decorate(x),201);
   }
   if(req.method==="PUT"){
@@ -45,7 +45,7 @@ export default async (req:Request) => {
     for(const m of old.media||[]){ if(m.key&&!keep.has(m.key)) await fileStore().delete(m.key); }
     const x:GalleryItem={...old,...body,id:body.id,media:nextMedia,updatedAt:new Date().toISOString()};
     if(!x.title||!x.date||!x.media.length) return json({error:"missing_fields",message:"חסרים כותרת, תאריך או תמונות."},400);
-    if(!validMediaMetadata(x.media)) return json({error:"media_metadata",message:"לכל תמונה חובה להזין כותרת, קרדיט ותאריך צילום."},400);
+    if(!validMedia(x.media)) return json({error:"media",message:"נבחרה תמונה לא תקינה."},400);
     await st.setJSON(key,x); return json(decorate(x));
   }
   if(req.method==="DELETE"){
