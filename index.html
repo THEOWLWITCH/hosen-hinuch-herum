@@ -1016,7 +1016,7 @@ section{padding:58px 0!important}
   border-color:rgba(64,104,124,.24)!important;
   color:#244b61!important;
 }
-#now,#match,#gallery,#people,#resources,#researchWorld{display:none!important}
+#now,#match,#gallery,#people,#resources,#researchWorld,#compass{display:none!important}
 html[data-page="now"] #now,
 html[data-page="match"] #match,
 html[data-page="gallery"] #gallery,
@@ -1031,6 +1031,7 @@ html[data-page="lectures"] #resources,
 html[data-page="research-tools"] #resources,
 html[data-page="policy"] #resources,
 html[data-page="professional"] #resources{display:block!important}
+html[data-page="compass"] #compass{display:block!important}
 html[data-resource-page="1"] #resources .topics{display:none!important}
 html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
 html[data-resource-page="1"] #resources .resource-area{
@@ -2171,6 +2172,10 @@ body:has(.feedback-modal.open){
 <style id="research-hub-v64">
 .research-axis-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:15px 0 0}.research-axis-nav a{display:flex;align-items:center;min-height:43px;padding:7px 10px;border:1px solid #d7e3e7;border-radius:7px;background:#fff;color:#2e596f;text-decoration:none;font-size:11.5px;font-weight:650;line-height:1.3}.research-axis-nav a:hover{background:#eef6f7;border-color:#abc5ce}.research-axis-nav small{display:block;margin-top:2px;font-size:9.8px;font-weight:400;color:#71828b}.research-weekly-dossier{margin:0 0 28px;padding:17px 18px;border:1px solid #cadde2;border-radius:10px;background:linear-gradient(135deg,#eef8f8 0%,#fffdf7 100%)}.research-weekly-dossier-head{display:flex;align-items:end;justify-content:space-between;gap:18px;padding-bottom:11px;border-bottom:1px solid rgba(70,112,126,.18)}.research-weekly-dossier-head span{font-size:10px;color:#63828d}.research-weekly-dossier-head h3{margin:2px 0 0;font-size:21px;color:#294d60}.research-weekly-dossier-head p{max-width:500px;margin:0;font-size:11.5px;line-height:1.6;color:#5f7580}.weekly-dossier-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.weekly-dossier-card{padding:12px;border:1px solid rgba(83,123,134,.18);border-radius:8px;background:rgba(255,255,255,.9)}.weekly-dossier-card h4{margin:0 0 6px;font-size:13.2px;line-height:1.4;color:#2b5064;direction:ltr;text-align:left}.weekly-dossier-meta{font-size:10px;color:#6d808a}.weekly-dossier-card p{margin:7px 0;font-size:11.4px;line-height:1.62;color:#536a76}.weekly-dossier-practical{padding:7px 8px;border-right:2px solid #8caeba;background:#f4f8f8;border-radius:4px;font-size:10.9px;line-height:1.55;color:#46606d}.weekly-dossier-card a{display:inline-block;margin-top:7px;font-size:10.6px;color:#23668b;text-decoration:none}.research-dispute-box{grid-column:1/-1;padding:12px 13px;border:1px solid rgba(153,122,77,.23);border-radius:8px;background:#fffdf8}.research-dispute-box h4{margin:0 0 5px;font-size:13px;color:#604e31}.research-dispute-box p{margin:0;font-size:11.4px;line-height:1.65;color:#625e54}.research-discussion{grid-column:1/-1;padding:12px 13px;border-top:1px solid rgba(70,112,126,.17)}.research-discussion summary{cursor:pointer;font-size:12px;font-weight:650;color:#315e73}.research-comment-list{display:grid;gap:7px;margin:10px 0}.research-comment{padding:8px 9px;border-right:2px solid #b2c7cd;background:#f8fafb;font-size:11px;line-height:1.55;color:#4d6572}.research-comment-meta{display:block;margin-bottom:3px;font-size:10px;font-weight:650;color:#31576b}.research-comment-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.research-comment-form label{display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:#576d79}.research-comment-form .wide{grid-column:1/-1}.research-comment-form input,.research-comment-form textarea{font:inherit;font-size:11px;border:1px solid #d4e0e4;border-radius:4px;padding:7px;background:#fff}.research-comment-actions{display:flex;align-items:center;gap:9px}.research-comment-actions button{font:inherit;font-size:11px;border:1px solid #315f77;background:#315f77;color:#fff;border-radius:4px;padding:7px 10px;cursor:pointer}.research-comment-status{font-size:10.5px;color:#58717c}.research-comment-status.error{color:#983e3e}.research-comment-status.success{color:#397158}.library-academic-intro{margin:0 0 17px;padding:15px 16px;border:1px solid #dce6e9;border-radius:9px;background:#f8fbfb}.library-academic-intro h3{margin:0 0 5px;font-size:18px;color:#2b4f62}.library-academic-intro p{margin:0;font-size:12px;line-height:1.6;color:#617681}.library-reading-paths{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:12px 0}.library-reading-path{min-height:76px;padding:9px;border:1px solid #d7e3e7;border-radius:7px;background:#fff;color:#315c71;text-align:right;font:inherit;font-size:12px;font-weight:650;cursor:pointer}.library-reading-path small{display:block;margin-top:5px;font-size:10px;font-weight:400;line-height:1.35;color:#74848d}.library-reading-path:hover,.library-reading-path.active{background:#eef6f7;border-color:#a9c4cc}.library-academic-search{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:7px;margin:13px 0;padding:12px;border:1px solid #dbe5e8;border-radius:8px;background:#fff}.library-academic-search input,.library-academic-search select{width:100%;box-sizing:border-box;font:inherit;font-size:11.5px;border:1px solid #d4dfe3;border-radius:4px;padding:8px;background:#fff}.library-explorer-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 20px}.library-explorer-results .lib-item{border:1px solid #e0e7e9;border-radius:7px;background:#fff;padding:10px}.library-knowledge-section{margin:24px 0 12px;padding-top:18px;border-top:1px solid #dfe7e9}.library-knowledge-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:10px}.library-knowledge-head h3{margin:2px 0 0;font-size:19px;color:#2b4f62}.library-knowledge-head span{font-size:10px;color:#788991}.library-knowledge-head p{max-width:500px;margin:0;font-size:11.5px;line-height:1.55;color:#6b7d86}.knowledge-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.knowledge-state-card{padding:11px 12px;border:1px solid #e0e7e9;border-radius:7px;background:#fff}.knowledge-state-card h4{margin:0 0 8px;font-size:13px;color:#2c5267}.knowledge-state-card p{margin:5px 0;font-size:11px;line-height:1.55;color:#5d717c}.knowledge-state-card strong{color:#365c70}@media(max-width:900px){.library-reading-paths{grid-template-columns:repeat(2,minmax(0,1fr))}.library-academic-search{grid-template-columns:repeat(2,minmax(0,1fr))}.library-explorer-results{grid-template-columns:1fr}.weekly-dossier-grid{grid-template-columns:1fr}}@media(max-width:650px){.research-axis-nav{grid-template-columns:1fr}.research-weekly-dossier-head,.library-knowledge-head{align-items:flex-start;flex-direction:column}.research-comment-form{grid-template-columns:1fr}.research-comment-form .wide{grid-column:auto}.library-academic-search{grid-template-columns:1fr}.knowledge-state-grid{grid-template-columns:1fr}}
 </style>
+<style id="research-compass-v1">
+.compass-tab{background:#2d617a!important;color:#fff!important;border-color:#2d617a!important;font-weight:700!important}.compass-tab:hover{background:#234f65!important}.compass-page{padding:32px 0 54px}.compass-hero{padding:26px 28px;border:1px solid #cddfe4;border-radius:12px;background:linear-gradient(135deg,#edf8f7,#fbfcfd)}.compass-hero h1{margin:4px 0 8px;color:#244c60;font-size:31px}.compass-hero p{max-width:790px;margin:0;color:#4e6875;font-size:15px;line-height:1.75}.compass-eyebrow{font-size:11px;color:#5d8592}.compass-page h2{margin:29px 0 10px;color:#294e61;font-size:21px}.compass-page h3{margin:0 0 6px;color:#30586a;font-size:15px}.compass-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.compass-info-card{padding:15px;border:1px solid #d9e5e8;border-radius:8px;background:#fff}.compass-info-card p,.compass-page li{font-size:13px;line-height:1.65;color:#546c77}.compass-page ul,.compass-page ol{padding-right:22px}.compass-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;counter-reset:compass}.compass-step{position:relative;padding:13px 12px 13px 10px;border-right:3px solid #82aab5;background:#f6fafb}.compass-step:before{counter-increment:compass;content:counter(compass);display:inline-grid;place-items:center;width:20px;height:20px;margin-left:7px;border-radius:50%;background:#325f73;color:#fff;font-size:11px}.compass-step strong{font-size:13px;color:#33576a}.compass-step p{margin:6px 0 0;font-size:11.5px;line-height:1.55;color:#627781}.compass-table{width:100%;border-collapse:collapse;font-size:13px}.compass-table th,.compass-table td{padding:11px;text-align:right;vertical-align:top;border-bottom:1px solid #dfe8ea}.compass-table th{color:#31586b;background:#f4f8f9}.compass-table td{color:#566f7a;line-height:1.55}.compass-callout{margin-top:18px;padding:14px 16px;border-right:4px solid #6fa1af;background:#f2f8f8;color:#48636f;font-size:13px;line-height:1.65}.compass-cta{display:inline-block;margin-top:17px;padding:10px 14px;border-radius:6px;background:#2c647c;color:#fff!important;text-decoration:none;font-weight:650;font-size:13px}@media(max-width:800px){.compass-grid{grid-template-columns:1fr}.compass-flow{grid-template-columns:1fr}.compass-hero{padding:20px}.compass-hero h1{font-size:26px}}
+.compass-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:flex-start;justify-content:center;padding:5vh 18px;background:rgba(25,45,57,.45);overflow:auto}.compass-modal.open{display:flex}.compass-dialog{width:min(100%,980px);margin:auto;background:#fff;border-radius:14px;box-shadow:0 20px 56px rgba(16,42,57,.28);overflow:hidden}.compass-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 16px;background:linear-gradient(135deg,#eff8f7,#f9fcfd);border-bottom:1px solid #dce9ec}.compass-kicker{font-size:11px;color:#537888}.compass-head h2{margin:3px 0 5px;color:#244c60;font-size:25px}.compass-head p{margin:0;max-width:670px;color:#5c727d;font-size:13px;line-height:1.6}.compass-close{border:0;background:transparent;color:#5c747f;font-size:26px;cursor:pointer}.compass-body{padding:20px 24px 26px}.compass-mode{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}.compass-mode button{font:inherit;text-align:right;padding:11px;border:1px solid #d4e3e7;border-radius:7px;background:#fff;color:#345a6c;cursor:pointer}.compass-mode button.active{border-color:#5e92a2;background:#eef7f7}.compass-mode small{display:block;margin-top:3px;color:#74878f;font-size:10px}.compass-form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.compass-form label{display:flex;flex-direction:column;gap:5px;color:#4a6674;font-size:12px}.compass-form .wide{grid-column:1/-1}.compass-form input,.compass-form select,.compass-form textarea{font:inherit;border:1px solid #cfdfe4;border-radius:5px;padding:9px;background:#fff}.compass-form textarea{min-height:76px;resize:vertical}.compass-consent{padding:10px 12px;background:#f7fafb;border:1px solid #e0e9eb;border-radius:6px;font-size:11px;line-height:1.55;color:#607681}.compass-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:14px}.compass-actions button{font:inherit;padding:9px 13px;border:1px solid #2b667e;border-radius:5px;background:#2b667e;color:#fff;cursor:pointer}.compass-actions button.secondary{background:#fff;color:#2b667e}.compass-status{font-size:12px;color:#58717d}.compass-status.error{color:#9a3d3d}.compass-result{display:none;margin-top:18px;padding-top:18px;border-top:1px solid #deeaed}.compass-result.show{display:block}.compass-result h3{margin:0 0 8px;color:#294e61}.compass-result p,.compass-result li{font-size:12px;line-height:1.65;color:#4d6571}.compass-result ol{padding-right:20px}.compass-note{border-right:3px solid #85aeba;background:#f3f8f8;padding:9px 11px}.compass-source{padding:9px 0;border-bottom:1px solid #e6edef}.compass-source p{margin:3px 0}.compass-save-row{display:flex;gap:8px;align-items:center;margin-top:12px}.compass-save-row button{font:inherit;border:1px solid #2b667e;background:#fff;color:#2b667e;border-radius:5px;padding:7px 10px;cursor:pointer}@media(max-width:700px){.compass-modal{padding:0}.compass-dialog{border-radius:0;min-height:100vh}.compass-head,.compass-body{padding:18px}.compass-mode,.compass-form{grid-template-columns:1fr}.compass-form .wide{grid-column:auto}.compass-actions{align-items:flex-start;flex-direction:column}}
+</style>
 <style id="icer-project-card-preview">
 .icer-project-card{display:block;min-height:145px;aspect-ratio:2.4/1;overflow:hidden;border:1px solid #dce8ef;border-radius:8px;background:#f5f9fc;box-shadow:none;transition:transform .2s ease,box-shadow .2s ease}
 .icer-project-card img{display:block;width:100%;height:100%;object-fit:cover}
@@ -2196,6 +2201,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
     <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
+    <a class="site-tab compass-tab" data-route="compass" href="/compass">מצפן המחקר</a>
   </div>
 </nav>
 <main>
@@ -2319,6 +2325,74 @@ body:has(.feedback-modal.open){
       <div class="research-suggest-actions"><button type="submit">שליחת ההצעה לבדיקה</button><span id="researchSuggestionStatus" aria-live="polite"></span></div>
     </form>
   </div>
+</div></section>
+
+<section id="compass" class="compass-page"><div class="wrap">
+  <header class="compass-hero">
+    <div class="compass-eyebrow">כלי עזר למחקר אחראי בחוסן · חינוך · חירום</div>
+    <h1>מצפן המחקר</h1>
+    <p>מצפן המחקר מסייע לחוקרות ולחוקרים, לבתי ספר, לרשויות, לעמותות, למשרדי ממשלה ולקהילות לאתר את שאלת המחקר הבאה שכדאי לבדוק בישראל — ולבנות נקודת פתיחה מבוססת למהלך מחקרי.</p>
+    <p>המצפן אינו מחליף שיפוט אקדמי, ועדת אתיקה או סקירת ספרות מלאה. הוא מציג את הראיות שנבדקו, את גבולות החיפוש ואת הסיבות שבגללן הצעה מסוימת רלוונטית להקשר הישראלי.</p>
+  </header>
+
+  <h2>מה אפשר לעשות עם המצפן?</h2>
+  <div class="compass-grid">
+    <article class="compass-info-card"><h3>לאתר פער מחקרי</h3><p>מזינות תחום מדויק, למשל: בינה מלאכותית, חוסן, חינוך וחירום. המצפן ממפה תחילה מקורות מישראל, אחר כך מקורות בין־לאומיים, ומציע עד עשר שאלות מחקר אפשריות לפי דחיפות, רלוונטיות מקומית והיתכנות.</p></article>
+    <article class="compass-info-card"><h3>להכווין מחקר שדה</h3><p>עמותה, רשות או בית ספר יכולים לתאר את הפעילות, האוכלוסייה והמשאבים הזמינים. המצפן יסייע להבחין בין מה שכבר נבדק ובין מה שנחוץ לבחון בישראל.</p></article>
+    <article class="compass-info-card"><h3>לתכנן מחקר</h3><p>לאחר בחירת כיוון, המצפן יציע חלופות למחקר איכותני, כמותי או משולב; יבהיר אילו נתונים חסרים; ויציע שאלה מדויקת יותר לסבב הבא.</p></article>
+  </div>
+
+  <h2>עוזר מומחה לספריית המאגר</h2>
+  <div class="compass-grid">
+    <article class="compass-info-card"><h3>שאלה טבעית</h3><p>מורות ומורים, קובעות וקובעי מדיניות, חוקרות וחוקרים יוכלו לשאול, למשל: ״מה ידוע על השפעת הפינוי על מוטיבציה ללמידה בקרב תלמידות ותלמידי תיכון?״</p></article>
+    <article class="compass-info-card"><h3>תשובה מבוססת מאגר</h3><p>עוזר ה־RAG יחפש תחילה במאגר המקורות המקומי של האתר, ישווה בין המקורות הרלוונטיים וינסח תשובה רק על בסיס הפריטים שאוחזרו.</p></article>
+    <article class="compass-info-card"><h3>ציטוטים ואימות</h3><p>לכל טענה מרכזית יוצגו המקור המקורי וציטוט APA7. כאשר אין למאגר בסיס מספיק לשאלה, המצפן יציג את הפער ויציע מילות חיפוש או מקור להוספה.</p></article>
+  </div>
+
+  <h2>רשימת מחקרים, דו״ח והמלצות</h2>
+  <div class="compass-grid">
+    <article class="compass-info-card"><h3>מחקרים מישראל ומהעולם</h3><p>כל תשובה תציג תחילה מחקרים ומסמכי מדיניות מישראל, ולאחריהם מחקרים בין־לאומיים. כל פריט יופיע בנוסח APA7, עם קישור והסבר קצר בעברית על הרלוונטיות שלו לשאלה.</p></article>
+    <article class="compass-info-card"><h3>דו״ח מסכם</h3><p>המצפן יפיק סיכום מסודר של מה ידוע, מה עדיין שנוי במחלוקת, מה חסר בהקשר הישראלי ומהם גבולות החיפוש. הדו״ח יישמר בתיק המחקר ויהיה אפשר להוריד או לשתף אותו.</p></article>
+    <article class="compass-info-card"><h3>המלצות להחלטה ולפעולה</h3><p>בסוף הדו״ח יוצגו המלצות מובחנות: שאלות מחקר דחופות, כיווני מחקר שדה אפשריים, אזהרות פרשניות, והצעת צעד הבא לחוקרת, לבית ספר, לרשות או לעמותה.</p></article>
+  </div>
+
+  <h2>כך עובד תהליך העבודה</h2>
+  <div class="compass-flow">
+    <div class="compass-step"><strong>מגדירות את ההקשר</strong><p>נושא, סוג המשתמשת או המשתמש, אוכלוסיית יעד, סוג חירום, מקום בישראל ומטרת המחקר.</p></div>
+    <div class="compass-step"><strong>בודקות ראיות</strong><p>המצפן יציג את המקורות שנבדקו, בסדר עדיפות ישראלי ולאחר מכן בין־לאומי, עם ציטוט APA7 והסבר בעברית.</p></div>
+    <div class="compass-step"><strong>מציעות שאלות</strong><p>עד עשר הצעות מדורגות, לצד הסיבה לפער, תנאי הרלוונטיות לישראל ורמת הוודאות.</p></div>
+    <div class="compass-step"><strong>מעמיקות בסבב הבא</strong><p>המערכת מציעה ניסוחי המשך מדויקים יותר — איכותניים, כמותיים ומשולבים — והמשתמשת או המשתמש בוחרים כיצד לצמצם.</p></div>
+  </div>
+
+  <h2>מה יופיע בכל תשובה?</h2>
+  <table class="compass-table">
+    <thead><tr><th>רכיב</th><th>מה מקבלים</th></tr></thead>
+    <tbody>
+      <tr><td>שאלות מחקר</td><td>עד עשר שאלות אפשריות בישראל, מדורגות לפי פער ראייתי, חשיבות מעשית, התאמה להקשר המקומי והיתכנות.</td></tr>
+      <tr><td>מקורות</td><td>רשימת המקורות שנסקרו בנוסח APA7, קישור למקור המקורי, תאריך, והסבר קצר בעברית: מדוע המקור רלוונטי לשאלה.</td></tr>
+      <tr><td>דו״ח מסכם</td><td>סיכום של הראיות, פערים, מחלוקות והמלצות; תחילה ישראל, אחר כך העולם. אפשר לשמור בתיק המחקר, להוריד למחשב ולשתף.</td></tr>
+      <tr><td>תשובת ספרייה חכמה</td><td>תשובה בעברית לשאלה טבעית, מגובה בציטוטים מתוך מאגר האתר בלבד. היא תבדיל בין ממצא, פרשנות והיעדר ראיות במאגר.</td></tr>
+      <tr><td>שקיפות</td><td>מאגרי המידע ותאריך החיפוש יוצגו בכל סבב. אם אין די ראיות, המצפן יאמר זאת במפורש ולא יציג השערה כעובדה.</td></tr>
+      <tr><td>המשך המחקר</td><td>אפשרויות לסבב הבא: חידוד אוכלוסייה, השוואה בין אזורים, בחירת תוצא, או מעבר למסלול איכותני, כמותי או משולב.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>תכנון מחקר: המידע שהמצפן יבקש</h2>
+  <div class="compass-grid">
+    <article class="compass-info-card"><h3>חובה כדי לקבל הצעה שימושית</h3><ul><li>מטרת המחקר במשפט אחד</li><li>סוג המשתמשת או המשתמש ואוכלוסיית היעד</li><li>מסגרת חינוכית, אזור וסוג החירום</li><li>מספר המוסדות והמשתתפות או המשתתפים הזמינים</li><li>זמן, נתונים קיימים ומגבלות אתיות או מעשיות</li></ul></article>
+    <article class="compass-info-card"><h3>המצפן ימליץ — לא יבקש כנתון</h3><ul><li>כמה מוסדות כדאי לכלול</li><li>איזו שיטת מחקר מתאימה</li><li>האם נדרש מדד לפני ואחרי</li><li>אילו קבוצות להשוות</li><li>אילו משתנים, שאלות ריאיון או מדדים לשקול</li></ul></article>
+    <article class="compass-info-card"><h3>אפשר לשמור בתיק המחקר</h3><p>מקורות, שאלות, פערים, החלטות והצעות לסבב הבא. השמירה היא בחירה: אפשר להשתמש במצפן בלי למסור שם, מייל או מספר נייד.</p></article>
+  </div>
+
+  <h2>תיק מחקר אישי ועדכונים</h2>
+  <p>מי שתבחר לשמור תיק מחקר תוכל לשמור את עבודתה בין סבבים. שם מלא ומייל יידרשו רק אם תרצה לקבל עדכונים; מספר נייד הוא אופציונלי בלבד. ההרשמה לעדכוני מייל ולהודעות נייד תהיה הסכמה נפרדת, ואפשר יהיה להשתמש במצפן ובתיק גם בלי התראות.</p>
+  <p>כשתופעל מערכת העדכונים, היא תתריע על פרסומים חדשים, כנסים, קולות קוראים, מכרזים, כלי מדידה ומדיניות — תמיד עם מקור, הסבר על הרלוונטיות לתיק, והצעה לפעולה. עדכון לא יתווסף לתיק באופן אוטומטי: החוקרת או החוקר יחליטו אם לשמור אותו.</p>
+
+  <h2>קהילה וחכמת המונים</h2>
+  <p>בכל רשימה נפתחת באתר תופיע אפשרות <strong>״הוספת פריט חדש״</strong>. הפריט יישמר תחילה כהצעת קהילה, ייבדק למניעת כפילויות ותוכן בלתי־תקין, ורק לאחר אישור יופיע לרבות ולרבים. גם רעיונות המחקר שהמצפן מציע יישמרו במפת מחקרי המשך לפי תת־תחום, עם קישור למקורות ולרמת הראיות שלהם.</p>
+
+  <div class="compass-callout"><strong>עיקרון יסוד:</strong> המצפן לא יטען שהוא ״סקר את כל המחקר העולמי״ אלא אם יופעלו מאגרי מידע מוגדרים ותוצג רשימת המאגר, תאריך החיפוש וגבולות הכיסוי. לפני חיבור שירות חדש שעלול להיות כרוך בעלות, תוצג לקהילה האפשרות וההחלטה תתקבל מראש.</div>
+  <a class="compass-cta" href="/library">מעבר לספרייה ולמאגר המקורות</a>
 </div></section>
 
 <section id="resources"><div class="wrap">
@@ -4241,7 +4315,7 @@ document.addEventListener('DOMContentLoaded',renderResearchWorld);
   const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
