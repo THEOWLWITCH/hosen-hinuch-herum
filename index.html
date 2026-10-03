@@ -2766,7 +2766,7 @@ html[data-page="apps"] #apps{display:block!important}
         ${rich(t.why)}<p class="nv-status">${h(t.profile)}</p>
         ${t.communityMatches.length?`<p><strong>מהקהילה:</strong> ${t.communityMatches.map(n=>`<a href="/people">${h(n)}</a>`).join(', ')}</p>`:''}
         <form class="nv-row" data-form="fill" data-i="${i}"><input name="name" value="${h(t.filledBy||'')}" placeholder="מי ממלא/ת את התפקיד?" style="flex:1;min-width:200px"><button class="nv-btn small">שמירה</button></form></div>`).join('')}
-      <div class="nv-highlight" style="margin-top:12px"><div class="nv-row" style="justify-content:space-between"><span>רוצה לגייס שותפות מהקהילה? אפשר להקים <strong>קבוצת משימה</strong> בזירה של עמוד הקולות הקוראים — עם הרעיון ועם מה שחסר.</span><button type="button" class="nv-btn primary" data-a="taskforce">🤝 הקמת קבוצת משימה</button></div></div>`;
+      <div class="nv-highlight" style="margin-top:12px"><div class="nv-row" style="justify-content:space-between"><span>רוצה לגייס שותפות מהקהילה? אפשר להקים <strong>קבוצת משימה</strong> — היא תוצג בעמוד "שיתופי פעולה", עם הרעיון ועם מי שחסרה בצוות.</span><button type="button" class="nv-btn primary" data-a="taskforce">🤝 הקמת קבוצת משימה</button></div></div>`;
   }
 
   function miziHtml(){
@@ -2868,8 +2868,8 @@ html[data-page="apps"] #apps{display:block!important}
     if(a==='print-guide'){const p=S.project;printDoc('מדריך פיתוח — '+p.guide.productName,`<h1>${h(p.guide.productName)}</h1><p class="meta">מדריך פיתוח ליישום · מתוך המאמר "${h(p.analysis.article.title)}" · ${h(p.ownerName)} · ${fmt(p.updatedAt)}</p><div class="box"><strong>הצעד הראשון לשבוע הקרוב:</strong> ${h(p.guide.firstStepThisWeek)}</div>${guideBody(p.guide,true)}`);return}
     if(a==='print-story'){const p=S.project;printDoc('סיפור הדרך — '+(p.guide?.productName||p.title),`<h1>סיפור הדרך</h1><p class="meta">${h(p.guide?.productName||p.title)} · ${h(p.ownerName)}</p>${p.journal.map(j=>`<section><h3>${fmtTime(j.at)} · ${h(j.author)} · ${h(KIND[j.kind]||j.kind)}</h3>${rich(j.text)}${j.mizi?.nextActions?.length?`<strong>הצעדים הבאים</strong>${bullets(j.mizi.nextActions)}`:''}</section>`).join('')}`);return}
     if(a==='taskforce'){const p=S.project,g=p.guide;const missing=g.team.filter(t=>!t.filledBy).map(t=>t.role).slice(0,4).join(', ');
-      try{sessionStorage.setItem('hosen.teamDraft',JSON.stringify({title:g.productName,summary:`${g.productDescription.split('\n')[0].slice(0,400)} (מתוך נבט: המאמר "${p.analysis.article.title}")`,need:missing}))}catch(e){}
-      location.href='/calls#team-new';return}
+      try{sessionStorage.setItem('hosen.teamDraft',JSON.stringify({title:g.productName,summary:`${g.productDescription.split('\n')[0].replace(/\*\*/g,'').replace(/^[-•]\s*/,'').slice(0,400)} (מתוך נבט: המאמר "${p.analysis.article.title}")`,need:missing,origin:'nevet'}))}catch(e){}
+      location.href='/match#team-new';return}
   };
 
   root.change=async e=>{
@@ -3180,6 +3180,21 @@ html[data-page="calls"] #resourceArea{display:none!important}
     syncAdmin();setInterval(syncAdmin,2000);
   }
 
+  // בעמוד "שיתופי פעולה": זירת קבוצות המשימה בלבד, מעל הכרטיסים הקיימים.
+  function mountMatch(){
+    const head=document.querySelector('#match .section-head');
+    if(!head||document.getElementById('callsHub'))return;
+    const root=document.createElement('div');
+    root.id='callsHub';
+    root.innerHTML=`<section class="ch-section" id="teams" style="margin-top:0" aria-labelledby="chTeamsTitle">
+        <div class="ch-intro"><div><h3 id="chTeamsTitle">🤝 קבוצות משימה שמחפשות שותפות</h3>
+          <p>הגשות משותפות ומיזמי יישום — סביב קול קורא, קול קורא פנימי או רעיון מנבט 🌱. כל קבוצה עובדת בסביבת עבודה משלה, ומחכה לשותפות.</p></div>
+          <div class="ch-actions"><button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button></div></div>
+        <div class="ch-list" id="chTeams"><p class="ch-empty">טוען…</p></div></section>`;
+    head.after(root);
+    root.addEventListener('click',onClick);
+  }
+
   async function load(){
     try{
       const [calls,teams]=await Promise.all([api('/api/calls?view=public'),api('/api/teams').catch(()=>[])]);
@@ -3189,14 +3204,15 @@ html[data-page="calls"] #resourceArea{display:none!important}
       return;
     }
     const sel=document.getElementById('chMe');
-    sel.innerHTML='<option value="">מתאים לי — בחרי את שמך</option>'+state.people.map(p=>`<option value="${h(p.id)}">${h(p.name)}</option>`).join('');
-    sel.value=state.people.some(p=>p.id===state.me)?state.me:'';
+    if(sel)sel.innerHTML='<option value="">מתאים לי — בחרי את שמך</option>'+state.people.map(p=>`<option value="${h(p.id)}">${h(p.name)}</option>`).join('');
+    if(sel)sel.value=state.people.some(p=>p.id===state.me)?state.me:'';
     renderChips();renderCalls();renderTeams();renderArchive();
     handleHash();
   }
 
   // ---------- קולות קוראים ----------
   function renderChips(){
+    if(!document.getElementById('chChips'))return;
     const used=new Set(state.open.flatMap(c=>c.topics||[]));
     const el=document.getElementById('chChips');
     el.innerHTML=[...used].map(k=>`<button type="button" class="ch-chip${state.topic===k?' active':''}" data-ch="topic" data-k="${h(k)}">${h(state.themes[k]||k)}</button>`).join('');
@@ -3210,7 +3226,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
   function teamRow(t){
     const mine=teamKey(t.id);
-    return `<div class="ch-team"><p><strong>${h(t.title)}</strong> <span class="ch-badge gray">${h(t.statusLabel)}</span>
+    const onMatch=document.documentElement.dataset.page==='match';
+    return `<div class="ch-team"><p><strong>${h(t.title)}</strong> <span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?' <span class="ch-badge green">🌱 מנבט</span>':''}${onMatch&&t.callId?` <a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a>`:''}${onMatch&&t.summary?`<small>${h(t.summary)}</small>`:''}
       <small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
       <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn small" data-ch="join" data-id="${h(t.id)}">בקשת הצטרפות</button>`:'')}</span></div>`;
   }
@@ -3237,6 +3254,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     </article>`;
   }
   function renderCalls(){
+    if(!document.getElementById('chList'))return;
     const q=state.q.trim().toLowerCase();
     const rows=state.open.filter(c=>{
       if(state.topic&&!(c.topics||[]).includes(state.topic))return false;
@@ -3251,6 +3269,12 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
   function renderTeams(){
     const el=document.getElementById('chTeams');
+    if(!el)return;
+    if(document.documentElement.dataset.page==='match'){
+      const rows=state.teams;
+      el.innerHTML=rows.length?`<div class="ch-card">${rows.map(teamRow).join('')}</div>`:'<p class="ch-empty">עדיין אין קבוצות משימה. רוצה להוביל הגשה או מיזם? הקימי קבוצה, וכתבי מי דרושה לך.</p>';
+      return;
+    }
     const rows=state.teams.filter(t=>t.internal||!state.open.some(c=>c.id===t.callId));
     const linked=state.teams.length-rows.length;
     el.innerHTML=(rows.length?`<div class="ch-card"><h3 style="font-size:15px">קולות קוראים פנימיים וקבוצות פתוחות</h3>${rows.map(teamRow).join('')}</div>`:'<p class="ch-empty">עדיין אין קבוצות משימה פנימיות. רוצה להוביל הגשה? הקימי קבוצה, וכתבי מי דרושה לך.</p>')+
@@ -3258,6 +3282,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
   function renderArchive(){
     const wrap=document.getElementById('chArchiveWrap');
+    if(!wrap)return;
     if(!state.archive.length){wrap.hidden=true;return}
     wrap.hidden=false;
     document.getElementById('chArchive').innerHTML=state.archive.map(c=>callCard(c,true)).join('');
@@ -3321,7 +3346,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       </form>`);
     const form=m.querySelector('form'),sel=form.elements.callId;
     // טיוטה מנבט: שם המיזם, הרעיון ומה שחסר בצוות.
-    try{const dr=JSON.parse(sessionStorage.getItem('hosen.teamDraft')||'null');if(dr){sessionStorage.removeItem('hosen.teamDraft');form.elements.title.value=dr.title||'';form.elements.summary.value=dr.summary||'';form.elements.need.value=dr.need||''}}catch(e){}
+    try{const dr=JSON.parse(sessionStorage.getItem('hosen.teamDraft')||'null');if(dr){sessionStorage.removeItem('hosen.teamDraft');form.elements.title.value=dr.title||'';form.elements.summary.value=dr.summary||'';form.elements.need.value=dr.need||'';if(dr.origin){const o=document.createElement('input');o.type='hidden';o.name='origin';o.value=dr.origin;form.appendChild(o)}}}catch(e){}
     const sync=()=>form.querySelectorAll('[data-internal]').forEach(l=>l.hidden=!!sel.value);
     sel.addEventListener('change',sync);sync();
     form.addEventListener('submit',async e=>{
@@ -3655,6 +3680,11 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(location.hash==='#teams')document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});
   }
   document.addEventListener('DOMContentLoaded',()=>{
+    if(document.documentElement.dataset.page==='match'){
+      window.addEventListener('hashchange',handleHash);
+      mountMatch();load();
+      return;
+    }
     if(!isCalls())return;
     window.addEventListener('hashchange',handleHash);
     window.hosenCallsAdmin=openCallsAdmin;

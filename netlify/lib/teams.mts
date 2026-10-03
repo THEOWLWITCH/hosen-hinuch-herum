@@ -20,7 +20,7 @@ export type Message = { id: string; name: string; text: string; at: string };
 export type Link = { id: string; label: string; url: string };
 export type Team = {
   id: string; keyHash: string; title: string; summary: string; need: string;
-  callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean;
+  callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean; origin?: string;
   status: TeamStatus; lead: { name: string; email?: string };
   members: Member[]; requests: JoinRequest[]; sections: Section[]; tasks: Task[]; messages: Message[]; links: Link[];
   createdAt: string; updatedAt: string;
@@ -92,7 +92,7 @@ export async function openTeam(teamId: string, key: string): Promise<Team | null
 export function publicTeam(t: Team) {
   return {
     id: t.id, title: t.title, summary: t.summary, need: t.need, status: t.status, statusLabel: TEAM_STATUS[t.status],
-    callId: t.callId || "", callTitle: t.callTitle || "", funder: t.funder || "", deadline: t.deadline || "", internal: t.internal,
+    callId: t.callId || "", callTitle: t.callTitle || "", funder: t.funder || "", deadline: t.deadline || "", internal: t.internal, origin: t.origin || "",
     lead: t.lead.name, members: t.members.map(m => m.name), requests: t.requests.length, createdAt: t.createdAt,
   };
 }
@@ -105,14 +105,14 @@ export function workspaceTeam(t: Team) {
 
 export function createTeam(input: {
   title: string; summary: string; need: string; callId?: string; callTitle?: string; funder?: string; deadline?: string;
-  leadName: string; leadEmail?: string;
+  leadName: string; leadEmail?: string; origin?: string;
 }, keyHash: string): Team {
   const at = now();
   return {
     id: id(), keyHash, title: input.title, summary: input.summary, need: input.need,
     callId: input.callId || "", callTitle: input.callTitle || "", funder: input.funder || "",
     deadline: /^\d{4}-\d{2}-\d{2}$/.test(input.deadline || "") ? input.deadline : "",
-    internal: !input.callId, status: "recruiting",
+    internal: !input.callId, status: "recruiting", origin: input.origin === "nevet" ? "nevet" : "",
     lead: { name: input.leadName, email: input.leadEmail || "" },
     members: [{ name: input.leadName, email: input.leadEmail || "", role: "מובילה", joinedAt: at }],
     requests: [], tasks: [], messages: [], links: [],

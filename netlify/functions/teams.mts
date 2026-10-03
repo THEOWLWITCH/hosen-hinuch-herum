@@ -72,7 +72,7 @@ export default async (req: Request) => {
       const title = clip(body.title, 200) || (callTitle ? `הגשה משותפת: ${bareTitle(callTitle)}` : "");
       if (!title) return json({ error: "missing_fields", message: "נא לתת שם לקבוצה." }, 400);
       const key = newKey();
-      const t = createTeam({ title, summary: clip(body.summary, 1500), need: clip(body.need, 600), callId, callTitle, funder, deadline, leadName: name, leadEmail: email }, await hashKey(key));
+      const t = createTeam({ title, summary: clip(body.summary, 1500), need: clip(body.need, 600), callId, callTitle, funder, deadline, leadName: name, leadEmail: email, origin: clip(body.origin, 20) }, await hashKey(key));
       await saveTeam(t);
       const link = workspaceLink(site, t, key);
       const mailed = await mail(email, `סביבת העבודה של קבוצת המשימה: ${t.title}`,
