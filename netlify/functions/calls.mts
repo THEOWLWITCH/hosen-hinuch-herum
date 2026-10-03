@@ -3,7 +3,7 @@ import { json, looksHuman, tokenRole, validToken } from "../lib/shared.mts";
 import { addRequest } from "../lib/requests.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
-  cleanCallFields, collectFromSources, sendAll, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
+  cleanCallFields, collectFromSources, sendAll, getCallsManager, saveCallsManager, sendManagerDigest, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
   listInbox, loadPeople, mailConfigured, matchPeople, newCall, personTopics, saveCall, saveOptOut, saveSources, sendMail,
   sendWeeklyDigests, setInboxStatus, siteUrl, weeklyDigest,
 } from "../lib/calls.mts";
@@ -63,7 +63,7 @@ export default async (req: Request) => {
         })),
         people: people.map(p => ({ id: p.id, name: p.name, hasEmail: String(p.email || "").includes("@"), topics: personTopics(p) })),
         sources, sourceStatus, optout,
-        mail: { configured: mailConfigured() }, role,
+        mail: { configured: mailConfigured() }, role, manager: await getCallsManager(),
       });
     }
 
@@ -143,6 +143,12 @@ export default async (req: Request) => {
   if (action === "sources") return json({ ok: true, sources: await saveSources(body.sources) });
   if (action === "fetch") return json({ ok: true, status: await collectFromSources() });
   if (action === "optout") return json({ ok: true, optout: await saveOptOut(body.optout) });
+  if (action === "manager") {
+    const email = t(body.email, 240);
+    if (email && !email.includes("@")) return json({ error: "invalid", message: "כתובת המייל לא תקינה." }, 400);
+    return json({ ok: true, manager: await saveCallsManager({ name: t(body.name, 160), email }) });
+  }
+  if (action === "manager-digest") return json({ ok: true, ...(await sendManagerDigest(site, true)) });
 
   if (action === "notify") {
     const c = await getCall(t(body.callId, 80));

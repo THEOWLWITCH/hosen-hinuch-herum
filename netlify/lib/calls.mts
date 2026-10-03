@@ -418,6 +418,46 @@ export function isOpen(c: Call, today: string): boolean {
   return !c.endDate || c.endDate >= today;
 }
 
+// מנהלת הקולות הקוראים: מקבלת כל בוקר סיכום של מה שמחכה לאישור.
+export type CallsManager = { name: string; email: string; lastDigestAt: string };
+
+export async function getCallsManager(): Promise<CallsManager> {
+  return (await data().get("call-mail/manager.json", { type: "json" }) as CallsManager | null) || { name: "", email: "", lastDigestAt: "" };
+}
+
+export async function saveCallsManager(x: Partial<CallsManager>): Promise<CallsManager> {
+  const cur = await getCallsManager();
+  const next = { ...cur, ...x };
+  await data().setJSON("call-mail/manager.json", next);
+  return next;
+}
+
+// סיכום למנהלת: קולות קוראים חדשים שמחכים לאישור. force — לשליחת בדיקה גם בלי חדשים.
+export async function sendManagerDigest(site: string, force = false): Promise<{ sent: boolean; fresh: number; waiting: number; reason?: string }> {
+  const mgr = await getCallsManager();
+  if (!mgr.email.includes("@")) return { sent: false, fresh: 0, waiting: 0, reason: "לא הוגדר מייל למנהלת הקולות הקוראים." };
+  const inbox = await listInbox();
+  const fresh = inbox.filter(x => x.foundAt > (mgr.lastDigestAt || ""));
+  if (!fresh.length && !force) return { sent: false, fresh: 0, waiting: inbox.length };
+  const today = israelToday();
+  const first = firstName(mgr.name);
+  const row = (x: InboxItem) => `${x.title}${x.endDate ? ` · עד ${formatDate(x.endDate)}${daysBetween(today, x.endDate) <= 14 ? " ⏳" : ""}` : ""} · ${x.source === "member" ? `הוצע על ידי ${x.suggestedBy || "חברת קהילה"}` : x.sourceName}`;
+  const list = (fresh.length ? fresh : inbox).slice(0, 30);
+  const head = fresh.length ? `יש <strong>${fresh.length} קולות קוראים חדשים</strong> שמחכים לאישור, ובסך הכול <strong>${inbox.length}</strong> בתיבה.` : `אין קולות קוראים חדשים מאז הסיכום הקודם. בתיבה מחכים <strong>${inbox.length}</strong>.`;
+  const html = wrapHtml(`<p>בוקר טוב${first ? " " + escHtml(first) : ""},</p><p>${head}</p>
+${list.length ? `<ul style="padding-inline-start:18px">${list.map(x => `<li>${escHtml(row(x))}</li>`).join("")}</ul>` : ""}
+<p><a href="${site}/calls#calls-admin" style="display:inline-block;padding:9px 16px;border-radius:999px;background:#245f82;color:#fff;text-decoration:none;font-weight:700">לתיבת האישור</a></p>
+<p style="font-size:13px;color:#5f7686">הכניסה בקוד הניהול. קול קורא שמסומן ⏳ נסגר בתוך שבועיים — כדאי לטפל בו קודם.</p>`, site);
+  const text = `${fresh.length ? `יש ${fresh.length} קולות קוראים חדשים שמחכים לאישור, ובסך הכול ${inbox.length} בתיבה.` : `בתיבה מחכים ${inbox.length} קולות קוראים.`}\n\n${list.map(x => "- " + row(x)).join("\n")}\n\nלתיבת האישור: ${site}/calls#calls-admin`;
+  try {
+    await sendMail(mgr.email, fresh.length ? `📢 ${fresh.length} קולות קוראים חדשים מחכים לאישור` : `📢 סיכום קולות קוראים (בדיקה)`, html, text);
+  } catch (e) {
+    return { sent: false, fresh: fresh.length, waiting: inbox.length, reason: mailErrorHint(e) };
+  }
+  if (fresh.length) await saveCallsManager({ lastDigestAt: fresh.map(x => x.foundAt).sort().pop()! });
+  return { sent: true, fresh: fresh.length, waiting: inbox.length };
+}
+
 export async function getOptOut(): Promise<string[]> {
   const v = await data().get("call-mail/optout.json", { type: "json" }) as string[] | null;
   return Array.isArray(v) ? v : [];
