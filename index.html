@@ -2362,6 +2362,18 @@ body:has(.feedback-modal.open){
 </div></section>
 
 </main>
+<script id="expiry-hide-v65-js">
+/* פריט עם data-expiry="YYYY-MM-DD" מוסר מהעמוד החל מהתאריך הזה (לפי שעון ישראל). */
+(function(){
+  let today;
+  try{today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jerusalem',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
+  catch(e){const d=new Date();today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  document.querySelectorAll('[data-expiry]').forEach(el=>{
+    const exp=String(el.dataset.expiry||'').trim();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(exp)&&today>=exp)el.remove();
+  });
+})();
+</script>
 <div class="site-credit" dir="rtl">
   <span>עיצוב ובניית האתר: ד"ר יעל שדה</span>
   <a href="tel:+972523969417">052-3969417</a>
