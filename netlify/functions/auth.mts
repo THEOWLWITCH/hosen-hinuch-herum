@@ -4,10 +4,12 @@ import { issueToken, json } from "../lib/shared.mts";
 export default async (req: Request) => {
   if (req.method !== "POST") return json({ error: "method" }, 405);
   const { code, mode } = await req.json().catch(() => ({ code: "", mode: "admin" }));
-  const requested = mode === "upload" ? "uploader" : "admin";
+  const requested = mode === "upload" ? "uploader" : mode === "calls" ? "calls" : "admin";
   const expected = requested === "uploader"
     ? (Netlify.env.get("BOARD_CODE") || "")
-    : (Netlify.env.get("EDITOR_CODE") || "");
+    : requested === "calls"
+      ? (Netlify.env.get("CALLS_CODE") || "")
+      : (Netlify.env.get("EDITOR_CODE") || "");
   if (!expected || String(code) !== expected) return json({ error: "invalid_code" }, 401);
   return json({ token: await issueToken(requested), role: requested });
 };

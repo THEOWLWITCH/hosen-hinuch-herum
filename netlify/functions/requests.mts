@@ -1,0 +1,43 @@
+import type { Config } from "@netlify/functions";
+import { json, looksHuman, validToken } from "../lib/shared.mts";
+import { TYPE_LABELS, addRequest, listRequests, updateRequest } from "../lib/requests.mts";
+
+const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
+
+export default async (req: Request) => {
+  if (req.method === "GET") {
+    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+    return json({ requests: await listRequests(), types: TYPE_LABELS });
+  }
+  if (req.method !== "POST") return json({ error: "method" }, 405);
+  const body = await req.json().catch(() => ({} as any));
+
+  // העתק של טפסי האתר (פידבק, הצעת שיתוף פעולה, הצעת מקור) — כדי שיופיעו גם בתיבת הפניות.
+  if (body.action === "add") {
+    if (!looksHuman(body)) return json({ ok: true });
+    const type = ["feedback", "idea", "source"].includes(body.type) ? body.type : "feedback";
+    const fields = body.fields && typeof body.fields === "object" ? body.fields : {};
+    const pick = (...keys: string[]) => keys.map(k => clip(fields[k], 300)).find(Boolean) || "";
+    const name = pick("name", "submitterName", "fullName", "שם");
+    const email = pick("email", "mail", "מייל");
+    const kind = pick("type", "request_type", "suggestionType", "category");
+    const lead = pick("title", "subject", "topic") || pick("prompt", "details", "message", "offer").slice(0, 90);
+    const subject = [kind, lead].filter(Boolean).join(": ");
+    const text = Object.entries(fields)
+      .filter(([k, v]) => !["name", "email", "submitterName", "communityCode", "bot-field", "form-name", "website"].includes(k) && String(v || "").trim())
+      .map(([k, v]) => `${k}: ${clip(v, 2000)}`).join("\n").slice(0, 6000);
+    await addRequest({ type, name, email, subject, body: text, link: type === "source" ? "/articles" : "" });
+    return json({ ok: true });
+  }
+
+  if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+  if (body.action === "update") {
+    const ids: string[] = Array.isArray(body.ids) ? body.ids.slice(0, 200) : [clip(body.id, 60)];
+    const rows = [];
+    for (const rid of ids) { const r = await updateRequest(clip(rid, 60), { status: body.status, note: body.note }); if (r) rows.push(r); }
+    return json({ ok: true, updated: rows.length });
+  }
+  return json({ error: "unknown_action" }, 400);
+};
+
+export const config: Config = { path: "/api/requests", rateLimit: { windowLimit: 30, windowSize: 60, aggregateBy: ["ip"] } };

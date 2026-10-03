@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
-import { json, looksHuman, validToken } from "../lib/shared.mts";
+import { json, looksHuman, tokenRole, validToken } from "../lib/shared.mts";
+import { addRequest } from "../lib/requests.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
   cleanCallFields, collectFromSources, sendAll, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
@@ -47,7 +48,8 @@ export default async (req: Request) => {
     }
 
     if (u.searchParams.get("admin") === "1") {
-      if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+      const role = await tokenRole(req);
+      if (role !== "admin" && role !== "calls") return json({ error: "unauthorized" }, 401);
       const [inbox, calls, people, sources, sourceStatus, optout] = await Promise.all([
         listInbox(), listCalls(), loadPeople(u.origin), getSources(), getSourceStatus(), getOptOut(),
       ]);
@@ -61,7 +63,7 @@ export default async (req: Request) => {
         })),
         people: people.map(p => ({ id: p.id, name: p.name, hasEmail: String(p.email || "").includes("@"), topics: personTopics(p) })),
         sources, sourceStatus, optout,
-        mail: { configured: mailConfigured() },
+        mail: { configured: mailConfigured() }, role,
       });
     }
 
@@ -94,14 +96,17 @@ export default async (req: Request) => {
     if (!title || !url) return json({ error: "missing_fields", message: "נא למלא כותרת וקישור." }, 400);
     try {
       const r = await addMemberSuggestion({ title, url, endDate: t(body.endDate, 10), funder: t(body.funder, 200), description: t(body.description, 3000), name, email: t(body.email, 240) });
+      if (!r.duplicate) await addRequest({ type: "call", name, email: t(body.email, 240), subject: title, body: [t(body.funder, 200), t(body.endDate, 10) ? `מועד: ${t(body.endDate, 10)}` : "", t(body.description, 3000), url].filter(Boolean).join("\n"), link: "/calls#calls-admin" });
       return json({ ok: true, duplicate: r.duplicate });
     } catch {
       return json({ error: "invalid_url", message: "יש להזין קישור תקין." }, 400);
     }
   }
 
-  // ----- פעולות ניהול -----
-  if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+  // ----- פעולות ניהול: מנהלת המערכת או צוות אישור הקולות הקוראים -----
+  const role = await tokenRole(req);
+  if (role !== "admin" && role !== "calls") return json({ error: "unauthorized" }, 401);
+  if ((action === "optout" || action === "digest") && role !== "admin") return json({ error: "unauthorized" }, 401);
 
   if (action === "approve") {
     const key = t(body.id, 80);

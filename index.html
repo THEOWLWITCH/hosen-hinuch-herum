@@ -2228,11 +2228,7 @@ body:has(.feedback-modal.open){
 <section id="match" class="match"><div class="wrap">
 <div class="section-head"><div><h2>שיתופי פעולה</h2></div>
 <button class="heaven-action" onclick="openSubmit()">יש לי רעיון לשיתוף</button></div>
-<div class="grid">
-<article class="card"><b>יש לי</b><h3>נתונים ממערכת החינוך בזמן חירום</h3><p><b>מחפש/ת:</b> שותף/ה עם מומחיות בניתוח כמותי.</p></article>
-<article class="card"><b>יש לי</b><h3>רעיון למחקר רב־מוסדי</h3><p><b>מחפש/ת:</b> מוסדות שותפים ואוכלוסיות מחקר.</p></article>
-<article class="card"><b>אני מחפש/ת</b><h3>שותפים להגשת מענק</h3><p>חוסן של צוותי הוראה והתאוששות לאחר משבר.</p></article>
-</div></div></section>
+</div></section>
 
 <section id="gallery" class="gallery-section"><div class="wrap">
   <div class="section-head"><div><h2>גלריה</h2></div></div>
@@ -2959,6 +2955,102 @@ html[data-page="apps"] #apps{display:block!important}
 })();
 </script>
 </main>
+<script id="requests-inbox-v1-js">
+/* תיבת הפניות: כל הפניות מהאתר במקום אחד — סטטוס, הערות, השבה ומעקב. */
+(function(){
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  const loadedAt=Date.now();
+  const ST={new:['🔴 חדשה','red'],in_progress:['🟠 בטיפול','amber'],done:['✓ טופלה','green']};
+
+  // העתק לתיבה מטפסי האתר שנשלחים ל-Netlify (הטופס המקורי ממשיך לעבוד כרגיל).
+  function mirror(selector,type){
+    const f=document.querySelector(selector);if(!f||f.dataset.mirrored)return;f.dataset.mirrored='1';
+    f.addEventListener('submit',()=>{
+      const fields={};new FormData(f).forEach((v,k)=>{if(typeof v==='string'&&v.trim()&&!['form-name','bot-field','communityCode'].includes(k))fields[k]=v});
+      const files=[...f.querySelectorAll('input[type=file]')].flatMap(i=>[...(i.files||[])].map(x=>x.name));if(files.length)fields['קבצים מצורפים']=files.join(', ')+' (הקבצים עצמם — בטופסי Netlify)';
+      fetch('/api/requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',type,fields,elapsed:Date.now()-loadedAt})}).catch(()=>{});
+    },true);
+  }
+
+  async function api(method,body){
+    const r=await fetch('/api/requests',{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
+    const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה.');e.status=r.status;throw e}return j;
+  }
+
+  async function openInbox(){
+    if(!token()){if(typeof openManagementAccess==='function')openManagementAccess();return}
+    if(typeof closeAdmin==='function')closeAdmin();
+    const m=document.createElement('div');m.className='nv-modal';
+    m.innerHTML='<div class="nv-dialog wide" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><div data-rq><p class="nv-status">טוען…</p></div></div>';
+    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('nv-x'))m.remove()});
+    document.body.appendChild(m);
+    const root=m.querySelector('[data-rq]');
+    const V={status:'open',type:'',q:'',rows:[],types:{}};
+    async function load(){const j=await api('GET');V.rows=j.requests;V.types=j.types}
+    function render(){
+      const cnt=k=>V.rows.filter(r=>r.status===k).length;
+      const rows=V.rows.filter(r=>(V.status==='all'||(V.status==='open'?r.status!=='done':r.status===V.status))&&(!V.type||r.type===V.type)&&(!V.q||[r.name,r.email,r.subject,r.body,r.note].join(' ').toLowerCase().includes(V.q.toLowerCase())));
+      root.innerHTML=`<h2>📥 תיבת הפניות</h2>
+        <p class="nv-status">כל הפניות מהאתר במקום אחד: בקשות גישה לנבט, הצעות לקולות קוראים, בקשות ותקלות, הצעות לשיתוף פעולה והצעות מקורות. כל בוקר נשלח אלייך סיכום של הפניות החדשות.</p>
+        <div class="nv-row" style="margin:8px 0">
+          ${[['open',`פתוחות (${cnt('new')+cnt('in_progress')})`],['new',`חדשות (${cnt('new')})`],['in_progress',`בטיפול (${cnt('in_progress')})`],['done',`טופלו (${cnt('done')})`],['all',`הכול (${V.rows.length})`]].map(([k,l])=>`<button type="button" class="nv-btn small${V.status===k?' primary':''}" data-f="${k}">${l}</button>`).join('')}
+          <select data-type style="width:auto"><option value="">כל הסוגים</option>${Object.entries(V.types).map(([k,l])=>`<option value="${k}"${V.type===k?' selected':''}>${h(l)}</option>`).join('')}</select>
+          <input data-q placeholder="חיפוש לפי שם, מייל או תוכן" value="${h(V.q)}" style="flex:1;min-width:180px">
+        </div>
+        ${rows.length?`<div class="nv-row" style="margin-bottom:6px"><label class="nv-row"><input type="checkbox" data-allsel> בחירת הכול</label><button type="button" class="nv-btn small" data-bulk="in_progress">סימון הנבחרות: בטיפול</button><button type="button" class="nv-btn small" data-bulk="done">סימון הנבחרות: טופלו</button></div>`:''}
+        <div class="nv-list">${rows.map(r=>`<div class="nv-card" style="margin:0;${r.status==='done'?'opacity:.7':''}">
+          <div class="nv-row" style="justify-content:space-between"><label class="nv-row"><input type="checkbox" data-sel="${h(r.id)}"> <strong>${h(r.subject)}</strong></label><span class="nv-row"><span class="nv-badge">${h(V.types[r.type]||r.type)}</span><span class="nv-badge ${ST[r.status][1]}">${ST[r.status][0]}</span></span></div>
+          <p class="nv-status" style="margin:4px 0">${new Date(r.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})} · ${h(r.name||'ללא שם')}${r.email?` · <span dir="ltr">${h(r.email)}</span>`:''}</p>
+          ${r.body?`<details><summary class="nv-status" style="cursor:pointer">פרטי הפנייה</summary><p style="white-space:pre-wrap;margin:6px 0">${h(r.body)}</p></details>`:''}
+          <div class="nv-row" style="margin-top:6px"><select data-status="${h(r.id)}" style="width:auto">${Object.entries(ST).map(([k,[l]])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}</select>
+            <input data-note="${h(r.id)}" value="${h(r.note)}" placeholder="הערה פנימית (למשל: שולם, חזרתי אליה)" style="flex:1;min-width:200px">
+            ${r.email?`<a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}&body=${encodeURIComponent(`שלום ${r.name||''},\n\n`)}">✉ השבה</a>`:''}
+            ${r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
+        <div class="nv-status" data-st></div>`;
+    }
+    const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
+    async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
+    root.addEventListener('click',async e=>{
+      const f=e.target.closest('[data-f]');if(f){V.status=f.dataset.f;render();return}
+      const b=e.target.closest('[data-bulk]');if(b){const ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו פניות.','err');try{await update(ids,{status:b.dataset.bulk});msg(`עודכנו ${ids.length} פניות ✓`,'ok')}catch(err){msg(err.message,'err')}return}
+      if(e.target.matches('[data-allsel]'))root.querySelectorAll('[data-sel]').forEach(i=>i.checked=e.target.checked);
+    });
+    root.addEventListener('change',async e=>{
+      const t=e.target;
+      try{
+        if(t.dataset.status){await update([t.dataset.status],{status:t.value});return}
+        if(t.dataset.note!==undefined){await api('POST',{action:'update',ids:[t.dataset.note],note:t.value});const r=V.rows.find(x=>x.id===t.dataset.note);if(r)r.note=t.value;msg('ההערה נשמרה ✓','ok');return}
+        if(t.matches('[data-type]')){V.type=t.value;render();return}
+      }catch(err){msg(err.message,'err')}
+    });
+    root.addEventListener('input',e=>{if(e.target.matches('[data-q]')){V.q=e.target.value;const pos=e.target.selectionStart;render();const q=root.querySelector('[data-q]');q.focus();q.setSelectionRange(pos,pos)}});
+    try{await load();render()}catch(e){root.innerHTML=`<h2>📥 תיבת הפניות</h2><p class="nv-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`}
+  }
+
+  let badgeBtn=null;
+  async function refreshBadge(){
+    if(!badgeBtn||!token())return;
+    try{const j=await api('GET');const n=j.requests.filter(r=>r.status==='new').length;badgeBtn.textContent=n?`📥 פניות (${n} חדשות)`:'📥 פניות'}catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    mirror('form[name="site-feedback"]','feedback');
+    mirror('#ideaForm','idea');
+    const mail=document.getElementById('adminCommunityMail');
+    if(mail&&!document.getElementById('adminRequests')){
+      badgeBtn=document.createElement('button');badgeBtn.id='adminRequests';badgeBtn.type='button';badgeBtn.className='admin-community-mail';badgeBtn.textContent='📥 פניות';
+      badgeBtn.onclick=openInbox;mail.after(badgeBtn);
+      // רק למנהלת המערכת — כמו כפתור העדכון לקהילה.
+      const sync=()=>{badgeBtn.hidden=!!mail.hidden;if(!mail.hidden)refreshBadge()};
+      new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
+      // מספר הפניות החדשות מתעדכן בכל פתיחה של חלון הניהול.
+      const adm=document.getElementById('adminModal');if(adm)new MutationObserver(()=>{if(adm.getAttribute('aria-hidden')==='false')sync()}).observe(adm,{attributes:true,attributeFilter:['aria-hidden','style']});
+    }
+    if(location.hash==='#requests'){history.replaceState(null,'',location.pathname);openInbox()}
+  });
+  window.hosenRequestsInbox=openInbox;
+})();
+</script>
 <script id="community-mail-v2-js">
 /* "שליחת עדכון לקהילה": מייל אישי לכל אחת ואחד, נשלח מהאתר (כשחיבור Gmail פעיל). */
 (function(){
@@ -3211,7 +3303,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
   const fmt=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${+m[3]}.${+m[2]}.${m[1]}`:''};
   const store={get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   const state={open:[],archive:[],people:[],themes:{},teams:[],q:'',me:store.get('hosen.calls.me'),topic:'',soon:false};
-  const adminToken=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  // מנהלת המערכת, או צוות אישור הקולות הקוראים (קוד נפרד).
+  const adminToken=()=>{try{return sessionStorage.getItem('hosen_editor_token')||sessionStorage.getItem('hosen_calls_token')||''}catch(e){return ''}};
   const teamKey=id=>store.get('hosen.team.'+id);
   const myName=()=>store.get('hosen.team.myname');
 
@@ -3250,6 +3343,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <p>קבוצות אד־הוק להגשות משותפות — סביב קול קורא מהרשימה, או סביב <strong>קול קורא פנימי</strong> שחוקרת מהקהילה מציעה. כל קבוצה כותבת את ההצעה בסביבת עבודה משלה.</p>
         <div class="ch-list" id="chTeams"></div>
       </section>
+      <p class="ch-credit" style="margin-top:28px;text-align:center"><button type="button" class="ch-btn small" data-ch="admin">⚙ כניסה לצוות אישור הקולות הקוראים</button></p>
       <details class="ch-section ch-archive" id="chArchiveWrap" hidden>
         <summary>קולות קוראים שנסגרו וסיפורי הצלחה</summary>
         <div class="ch-list" id="chArchive" style="margin-top:12px"></div>
@@ -3630,9 +3724,18 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
 
   // ---------- ניהול: תיבת אישור, פרסום, מקורות ומיילים ----------
+  // כניסה לצוות אישור הקולות הקוראים — בקוד נפרד, בלי גישה לשאר מערכת הניהול.
+  function callsTeamLogin(){
+    const m=modal(`<h2>כניסה לאישור קולות קוראים</h2><p class="ch-credit">לצוות שמאשר ומפרסם קולות קוראים. מנהלת המערכת נכנסת דרך "🔒 ניהול מערכת".</p>
+      <form class="ch-form"><label class="wide">קוד צוות הקולות הקוראים<input name="code" type="password" required autocomplete="off"></label><div class="wide"><button class="ch-btn primary">כניסה</button><div class="ch-status"></div></div></form>`);
+    m.querySelector('form').addEventListener('submit',async e=>{e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'בודקת…');
+      try{const j=await api('/api/auth',{method:'POST',body:JSON.stringify({code:e.target.elements.code.value.trim(),mode:'calls'})});
+        sessionStorage.setItem('hosen_calls_token',j.token);m.close();openCallsAdmin()}catch(err){setStatus(st,'הקוד שגוי.','err')}});
+  }
+
   async function openCallsAdmin(){
     const token=adminToken();
-    if(!token){alert('יש להיכנס קודם דרך "🔒 ניהול מערכת" בתחתית העמוד.');return}
+    if(!token)return callsTeamLogin();
     const m=modal('<div id="chAdm"></div>',true);
     const A={tab:'inbox',d:null};
     const call=(action,payload)=>api('/api/calls',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action,...payload})});
@@ -3665,8 +3768,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
     }
     function render(){
       const d=A.d,t=A.tab;
-      const tabs=[['inbox',`📥 לאישור (${d.inbox.length})`],['calls','📢 מפורסמים'],['teams',`🤝 קבוצות (${(A.teams||[]).length})`],['sources','🔎 מקורות לאיסוף'],['mail','✉ מיילים']];
-      let html=`<h2>ניהול קולות קוראים</h2><nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
+      const isAdmin=d.role!=='calls';
+      const tabs=[['inbox',`📥 לאישור (${d.inbox.length})`],['calls','📢 מפורסמים'],...(isAdmin?[['teams',`🤝 קבוצות (${(A.teams||[]).length})`]]:[]),['sources','🔎 מקורות לאיסוף'],...(isAdmin?[['mail','✉ מיילים']]:[])];
+      let html=`<h2>ניהול קולות קוראים</h2>${isAdmin?'':'<p class="ch-credit">נכנסת כצוות אישור הקולות הקוראים. <button type="button" class="ch-btn small" data-act="calls-logout">יציאה</button></p>'}<nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
       if(t==='inbox')html+=d.inbox.length?d.inbox.map(x=>`<div class="ch-admin-item"><h4 dir="auto">${h(x.title)}</h4><p class="ch-credit">${x.source==='member'?`הוצע על ידי ${h(x.suggestedBy||'')}${x.suggestedEmail?' · '+h(x.suggestedEmail):''}`:`נמצא אוטומטית · ${h(x.sourceName)}`} · <a href="${h(x.url)}" target="_blank" rel="noopener">פתיחת המקור לבדיקה</a></p>${editor(x,true)}</div>`).join(''):'<p class="ch-empty">אין קולות קוראים שמחכים לאישור.</p>';
       if(t==='calls'){
         html+=`<details class="ch-admin-item"><summary><strong>＋ הוספת קול קורא ידנית</strong></summary>${editor({},false).replace('data-kind="call"','data-kind="new"').replace('>שמירה<','>פרסום<')}</details>`;
@@ -3700,6 +3804,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const b=e.target.closest('[data-act]');if(!b||b.tagName==='BUTTON'&&b.closest('form')&&!b.type.includes('button'))return;
       const a=b.dataset.act;
       try{
+        if(a==='calls-logout'){sessionStorage.removeItem('hosen_calls_token');m.close();document.getElementById('chAdminBtn').hidden=true;return}
         if(a==='reject'){await call('reject',{id:b.dataset.key});await reload();render();amsg('הוסר מהתיבה. הוא לא יחזור באיסוף הבא.','ok')}
         if(a==='notify'){
           const ids=[...m.querySelectorAll(`[data-notify="${CSS.escape(b.dataset.id)}"] input:checked`)].map(i=>i.value);

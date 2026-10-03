@@ -1,8 +1,9 @@
 import type { Config } from "@netlify/functions";
 import { id, json, looksHuman, validToken } from "../lib/shared.mts";
 import { mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
+import { addRequest } from "../lib/requests.mts";
 import {
-  COST, type Op, type Project, type Stage, addRequest, analyzePrompt, certificatePrompt, charge, clip, codeUsable, createProject,
+  COST, type Op, type Project, type Stage, addRequest as addNevetRequest, analyzePrompt, certificatePrompt, charge, clip, codeUsable, createProject,
   creditsLeft, getCode, getProject, getTicket, guidePrompt, hashKey, listCodes, listProjects, listRequests, miziPrompt,
   newCodeString, newProjectKey, normCode, openProject, publicCode, publicProject, refundTicket, requestParams, saveCode,
   saveProject, setRequestHandled, settleTicket, SYSTEM_MIZI, SYSTEM_NEVET,
@@ -114,7 +115,8 @@ export default async (req: Request) => {
     if (!looksHuman(body)) return json({ ok: true });
     const name = clip(body.name, 160), email = clip(body.email, 240);
     if (!name || !email.includes("@")) return err("נא למלא שם ומייל.");
-    const r = await addRequest({ name, email, institution: clip(body.institution, 200), note: clip(body.note, 1500) });
+    const r = await addNevetRequest({ name, email, institution: clip(body.institution, 200), note: clip(body.note, 1500) });
+    await addRequest({ type: "nevet", name, email, subject: `בקשת גישה לנבט${r.institution ? ` · ${r.institution}` : ""}`, body: r.note, link: "/apps#nevet-admin" });
     const admin = (Netlify.env.get("GMAIL_USER") || "").trim();
     if (admin && mailConfigured()) {
       const lines = [`${r.name}${r.institution ? ` (${r.institution})` : ""} מבקשת קוד גישה לנבט.`, `מייל: ${r.email}`, r.note ? `מה היא כתבה: ${r.note}` : ""].filter(Boolean);

@@ -35,7 +35,8 @@ async function hmac(payload: string) {
   return hex(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload)));
 }
 
-export type AccessRole = "admin" | "uploader";
+// calls — צוות אישור הקולות הקוראים (קוד נפרד, CALLS_CODE): רק ניהול הקולות הקוראים.
+export type AccessRole = "admin" | "uploader" | "calls";
 
 export async function issueToken(role: AccessRole = "admin") {
   const exp = Date.now() + 12 * 60 * 60 * 1000;
@@ -44,14 +45,20 @@ export async function issueToken(role: AccessRole = "admin") {
 }
 
 export async function validToken(req: Request, allowed: AccessRole | AccessRole[] = "admin") {
+  const role = await tokenRole(req);
+  const roles = Array.isArray(allowed) ? allowed : [allowed];
+  return !!role && roles.includes(role);
+}
+
+export async function tokenRole(req: Request): Promise<AccessRole | null> {
   const h = req.headers.get("authorization") || "";
-  if (!h.startsWith("Bearer ")) return false;
+  if (!h.startsWith("Bearer ")) return null;
   const token = h.slice(7);
   const dot = token.lastIndexOf(".");
-  if (dot < 1) return false;
+  if (dot < 1) return null;
   const payload = token.slice(0, dot);
   const sig = token.slice(dot + 1);
-  if (!sig || sig !== (await hmac(payload))) return false;
+  if (!sig || sig !== (await hmac(payload))) return null;
 
   let role: AccessRole = "admin";
   let exp = 0;
@@ -59,14 +66,13 @@ export async function validToken(req: Request, allowed: AccessRole | AccessRole[
     // Backward compatibility for editor tokens issued before role separation.
     exp = Number(payload);
   } else {
-    const m = payload.match(/^(admin|uploader):(\d+)$/);
-    if (!m) return false;
+    const m = payload.match(/^(admin|uploader|calls):(\d+)$/);
+    if (!m) return null;
     role = m[1] as AccessRole;
     exp = Number(m[2]);
   }
-  if (!Number.isFinite(exp) || exp < Date.now()) return false;
-  const roles = Array.isArray(allowed) ? allowed : [allowed];
-  return roles.includes(role);
+  if (!Number.isFinite(exp) || exp < Date.now()) return null;
+  return role;
 }
 
 // טפסים פתוחים לכולן (בלי קוד): הגנה שקטה מספאם — שדה מלכודת שאדם לא רואה,

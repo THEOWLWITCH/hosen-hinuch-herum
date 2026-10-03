@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { json } from "../lib/shared.mts";
+import { addRequest } from "../lib/requests.mts";
 
 function communityCodeOK(code: unknown) {
   const expected = Netlify.env.get("BOARD_CODE") || "";
@@ -63,6 +64,13 @@ export default async (req: Request) => {
   if (!r.ok) {
     return json({ error: "form_submit_failed", message: "שמירת ההצעה נכשלה. נסו שוב." }, 502);
   }
+
+  // גם לתיבת הפניות של מנהלת המערכת.
+  await addRequest({
+    type: "source", name: clean(body.submitterName, 200), email: "", subject: clean(body.title, 300),
+    body: [`סוג: ${clean(body.suggestionType, 80)}`, `לחלק: ${clean(body.targetSection, 120)}`, parsedUrl.toString(), clean(body.mainContribution, 2000), clean(body.whyImportant, 2000)].filter(Boolean).join("\n"),
+    link: "/articles",
+  }).catch(() => {});
 
   return json({ ok: true });
 };
