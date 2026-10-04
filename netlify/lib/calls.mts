@@ -20,7 +20,7 @@ export type InboxItem = {
 };
 export type Source = { name: string; url: string; filter: boolean; enabled: boolean };
 export type SourceStatus = { url: string; at: string; ok: boolean; found: number; added: number; error?: string };
-export type Person = { id: string; name: string; email?: string; description?: string; institution?: string };
+export type Person = { id: string; name: string; email?: string; description?: string; institution?: string; phone?: string; order?: number; topics?: string[] };
 
 export const CALL_CATEGORIES = ["calls", "grants", "conferences"];
 export const CATEGORY_LABELS: Record<string, string> = { calls: "קול קורא", grants: "מענק מחקר", conferences: "כנס" };
@@ -60,7 +60,10 @@ export function callTopics(c: Partial<Call>): string[] {
   return inferTopics([c.title, c.description, c.funder, c.eligibility].join(" "));
 }
 
+// תחומי עניין שחברה בחרה בעצמה גוברים על הזיהוי האוטומטי מהתיאור.
 export function personTopics(p: Person): string[] {
+  const own = Array.isArray((p as any).topics) ? (p as any).topics.filter((k: string) => THEME_LABELS[k]) : [];
+  if (own.length) return own;
   return inferTopics([p.description, p.institution].join(" "));
 }
 

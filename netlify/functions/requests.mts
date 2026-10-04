@@ -1,6 +1,7 @@
 import type { Config } from "@netlify/functions";
-import { json, looksHuman, validToken } from "../lib/shared.mts";
-import { TYPE_LABELS, addRequest, listRequests, updateRequest } from "../lib/requests.mts";
+import { id, json, looksHuman, store, validToken } from "../lib/shared.mts";
+import { loadPeople } from "../lib/calls.mts";
+import { TYPE_LABELS, addRequest, getRequest, listRequests, updateRequest } from "../lib/requests.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 
@@ -31,6 +32,33 @@ export default async (req: Request) => {
   }
 
   if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+  // אישור בקשת הצטרפות: כרטיס חדש בנבחרת, עם המייל — וכך גם בכל רשימות השליחה האוטומטית.
+  if (body.action === "approve-join") {
+    const r = await getRequest(clip(body.id, 60));
+    if (!r || r.type !== "join" || !r.data) return json({ error: "not_found", message: "הבקשה לא נמצאה." }, 404);
+    if (r.status === "done" && r.note.includes("נוסף לנבחרת")) return json({ ok: true, already: true });
+    const d = r.data as any, now = new Date().toISOString();
+    const st = store("hosen-data");
+    const people = await loadPeople(new URL(req.url).origin);
+    const email = clip(d.email, 240), topics: string[] = Array.isArray(d.topics) ? d.topics : [];
+    // כבר בנבחרת עם אותו מייל: לא יוצרים כרטיס כפול — רק מוסיפים את תחומי העניין.
+    const same = people.find(p => String(p.email || "").trim().toLowerCase() === email.toLowerCase());
+    let person: any;
+    if (same) {
+      const { photoUrl, ...stored } = same as any;
+      person = { ...stored, topics: [...new Set([...(stored.topics || []), ...topics])], updatedAt: now };
+    } else {
+      person = {
+        id: id(), name: clip(d.name, 160), institution: clip(d.affiliation, 220), description: clip(d.expertise, 6000),
+        email, phone: clip(d.phone, 80), motto: "", topics,
+        order: people.reduce((m, p) => Math.max(m, Number(p.order || 0)), 0) + 1, createdAt: now, updatedAt: now, deleted: false,
+      };
+    }
+    await st.setJSON(`people/${person.id}.json`, person);
+    await updateRequest(r.id, { status: "done", note: `נוסף לנבחרת ${new Date().toLocaleDateString("he-IL")}${r.note ? " · " + r.note : ""}` });
+    return json({ ok: true, merged: !!same, person: { id: person.id, name: person.name } });
+  }
+
   if (body.action === "update") {
     const ids: string[] = Array.isArray(body.ids) ? body.ids.slice(0, 200) : [clip(body.id, 60)];
     const rows = [];

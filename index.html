@@ -2223,6 +2223,7 @@ body:has(.feedback-modal.open){
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
 </div>
+<div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyTopics()">🎯 כבר בנבחרת? בחירת תחומי העניין שלי</button></div>
 </div>
 </div></section>
 <section id="match" class="match"><div class="wrap">
@@ -2235,7 +2236,7 @@ body:has(.feedback-modal.open){
   <div id="galleryGrid" class="gallery-grid"><p class="muted">טוען גלריה...</p></div>
 </div></section>
 
-<section id="people" style="background:#f3f8fa"><div class="wrap"><div class="section-head"><div><h2>הנבחרת</h2></div></div><input class="search" id="search" placeholder="חיפוש לפי שם, מוסד או תחום..." oninput="filterPeople()"><div class="people" id="peopleGrid">
+<section id="people" style="background:#f3f8fa"><div class="wrap"><div class="section-head"><div><h2>הנבחרת</h2></div><div class="join-strip" style="margin:0"><button type="button" class="join-topics" onclick="hosenMyTopics()">🎯 בחירת תחומי העניין שלי</button><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות</button></div></div><input class="search" id="search" placeholder="חיפוש לפי שם, מוסד או תחום..." oninput="filterPeople()"><div class="people" id="peopleGrid">
 <div class="person" data-search="ד״ר איבנה רטנר האקדמית גורדון / משרד החינוך אוריינות מדיה קולנוע ומדיה PISA 2029 מנהלת תחום (מפמ״ר) קולנוע ומדיה באגף אמנויות, משרד החינוך; מרצה ורכזת פדגוגית בחוג להוראת תקשורת ומדיה באקדמית גורדון. עוסקת באוריינות מדיה, אזרחות דיגיטלית, דיאלוג דרך קולנוע ומדיה, חינוך רב־תרבותי ובינה מלאכותית בחינוך; מובילה חשיבה לקראת PISA 2029. מייל: ratnere@gmail.com • טלפון: 0507156711" data-name="ד״ר איבנה רטנר" data-inst="האקדמית גורדון / משרד החינוך" data-detail="מנהלת תחום (מפמ״ר) קולנוע ומדיה באגף אמנויות, משרד החינוך; מרצה ורכזת פדגוגית בחוג להוראת תקשורת ומדיה באקדמית גורדון. עוסקת באוריינות מדיה, אזרחות דיגיטלית, דיאלוג דרך קולנוע ומדיה, חינוך רב־תרבותי ובינה מלאכותית בחינוך; מובילה חשיבה לקראת PISA 2029. מייל: ratnere@gmail.com • טלפון: 0507156711" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר איבנה רטנר</h3><div class="muted">האקדמית גורדון / משרד החינוך</div></div>
 <div class="person" data-search="ד״ר שרי גנון-שילון האקדמית אחוה חדשנות טכנולוגית ניהול בתי ספר תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך." data-name="ד״ר שרי גנון-שילון" data-inst="האקדמית אחוה" data-detail="תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך." onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר שרי גנון-שילון</h3><div class="muted">האקדמית אחוה</div></div>
 <div class="person" data-search="ד״ר מאירה לוי שנקר / מכללת רמת גן חשיבה עיצובית ניהול ידע למידה מרחוק חוקרת ומרצה בתחומי מנהל עסקים, עיצוב ומערכות מידע. תחומי מחקר כוללים חשיבה עיצובית (Design Thinking), Service Design, ניהול ידע, למידה מרחוק והיברידית ורשתות חברתיות; עוסקת גם בחיבורים בין עיצוב, טכנולוגיה והיבטים רפואיים. מייל: levysiis@iac.ac.il • טלפון: 0545783305" data-name="ד״ר מאירה לוי" data-inst="שנקר / מכללת רמת גן" data-detail="חוקרת ומרצה בתחומי מנהל עסקים, עיצוב ומערכות מידע. תחומי מחקר כוללים חשיבה עיצובית (Design Thinking), Service Design, ניהול ידע, למידה מרחוק והיברידית ורשתות חברתיות; עוסקת גם בחיבורים בין עיצוב, טכנולוגיה והיבטים רפואיים. מייל: levysiis@iac.ac.il • טלפון: 0545783305" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר מאירה לוי</h3><div class="muted">שנקר / מכללת רמת גן</div></div>
@@ -3177,13 +3178,14 @@ html[data-page="apps"] #apps{display:block!important}
           <div class="nv-row" style="margin-top:6px"><select data-status="${h(r.id)}" style="width:auto">${Object.entries(ST).map(([k,[l]])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}</select>
             <input data-note="${h(r.id)}" value="${h(r.note)}" placeholder="הערה פנימית (למשל: שולם, חזרתי אליה)" style="flex:1;min-width:200px">
             ${r.email?`<a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}&body=${encodeURIComponent(`שלום ${r.name||''},\n\n`)}">✉ השבה</a>`:''}
-            ${r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
+            ${r.type==='join'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-approve-join="${h(r.id)}">✓ אישור והוספה לנבחרת</button>`:r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
         <div class="nv-status" data-st></div>`;
     }
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
     async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
     root.addEventListener('click',async e=>{
       const f=e.target.closest('[data-f]');if(f){V.status=f.dataset.f;render();return}
+      const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg(j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת — תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`,'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
       const b=e.target.closest('[data-bulk]');if(b){const ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו פניות.','err');try{await update(ids,{status:b.dataset.bulk});msg(`עודכנו ${ids.length} פניות ✓`,'ok')}catch(err){msg(err.message,'err')}return}
       if(e.target.matches('[data-allsel]'))root.querySelectorAll('[data-sel]').forEach(i=>i.checked=e.target.checked);
     });
@@ -5489,5 +5491,132 @@ function closeCompassLibrary(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCompassLibrary()});
 document.addEventListener('click',e=>{const modal=document.getElementById('compassLibraryModal');if(e.target===modal)closeCompassLibrary()});
+</script>
+<style id="join-topics-v1-css">
+.join-strip{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.join-strip button{min-height:42px;padding:9px 18px;border-radius:999px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer}
+.join-strip .join-main{border:1px solid #2f6e4f;background:#2f6e4f;color:#fff}
+.join-strip .join-topics{border:1px solid #9fc2b0;background:#fff;color:#2a6048}
+.join-strip button:hover{filter:brightness(1.06);box-shadow:0 4px 14px rgba(47,110,79,.18)}
+.jt-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.jt-topics label,.nv-form .jt-topics label{display:flex;flex-direction:row;gap:8px;align-items:flex-start;font-size:13.5px;font-weight:400;color:inherit;cursor:pointer;padding:4px 2px}
+.nv-form .jt-topics input{width:17px!important;min-height:0!important}
+.jt-topics input{margin-top:4px;width:17px;height:17px;flex:none}
+.jt-hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0}
+@media(max-width:640px){.jt-topics{grid-template-columns:1fr}.join-strip button{flex:1 1 100%}}
+</style>
+<script id="join-topics-v1-js">
+/* הצטרפות לקהילה (לאישור מנהלת המערכת) ובחירת תחומי עניין לחברות הנבחרת (קישור אישי במייל). */
+(function(){
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  let meta=null;
+  async function getMeta(){if(meta)return meta;const r=await fetch('/api/join');meta=await r.json();return meta}
+  function modal(html){
+    const m=document.createElement('div');m.className='nv-modal';
+    m.innerHTML=`<div class="nv-dialog" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><div data-body>${html}</div></div>`;
+    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('nv-x'))m.remove()});
+    document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){m.remove();document.removeEventListener('keydown',esc)}});
+    document.body.appendChild(m);return m.querySelector('[data-body]');
+  }
+  async function post(url,body,headers){
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...(headers||{})},body:JSON.stringify(body)});
+    const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||'הפעולה לא הצליחה. אפשר לנסות שוב.');return j;
+  }
+  const checks=(themes,on)=>`<div class="jt-topics">${themes.map(t=>`<label><input type="checkbox" name="topics" value="${h(t.key)}"${on.includes(t.key)?' checked':''}> ${h(t.label)}</label>`).join('')}</div>`;
+
+  // ----- בקשת הצטרפות -----
+  async function openJoin(){
+    const root=modal('<p class="nv-status">טוען…</p>');const opened=Date.now();
+    let m;try{m=await getMeta()}catch(e){root.innerHTML='<p class="nv-status err">הטופס לא נטען. אפשר לנסות שוב.</p>';return}
+    root.innerHTML=`<h2>🙋 הצטרפות לקהילה</h2>
+      <p class="nv-status">אחרי אישור של מנהלת הקהילה ייפתח לך כרטיס בעמוד הנבחרת, ויגיעו אלייך קולות קוראים, מענקים וכנסים לפי תחומי העניין שבחרת, וגם הסיכום השבועי ועדכוני הקהילה. כל השדות חובה.</p>
+      <form class="nv-form" novalidate>
+        <label>תואר<select name="title" required><option value="">בחירה</option>${m.titles.map(t=>`<option>${h(t)}</option>`).join('')}</select></label>
+        <label>שם מלא<input name="fullName" required autocomplete="name"></label>
+        <label class="wide">שייכות: מוסד אקדמי או ארגון<input name="affiliation" required autocomplete="organization"></label>
+        <label>נייד<input name="phone" type="tel" dir="ltr" required autocomplete="tel"></label>
+        <label>מייל<input name="email" type="email" dir="ltr" required autocomplete="email"></label>
+        <label class="wide">תחומי עיסוק ומחקר <span class="hint">(יופיעו בכרטיס שלך)</span><textarea name="expertise" rows="3" required></textarea></label>
+        <div class="wide"><strong style="font-size:13px">תחומי העניין שלך</strong> <span class="nv-status">— יש לסמן V בכל תחום שמעניין אותך. לפיהם נשלח אלייך קולות קוראים.</span>${checks(m.themes,[])}</div>
+        <label class="wide" style="flex-direction:row;gap:8px;font-weight:400;align-items:flex-start"><input type="checkbox" name="consent" style="width:auto;min-height:0;margin-top:4px"> אני מסכים/ה שהשם, התואר, המוסד, תחומי העיסוק, המייל והנייד יוצגו בכרטיס שלי בעמוד הנבחרת, ושאקבל מיילים מהקהילה.</label>
+        <input name="website" class="jt-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="wide nv-row"><button type="submit" class="nv-btn primary">שליחת הבקשה</button></div>
+      </form><div class="nv-status" data-st></div>`;
+    const f=root.querySelector('form'),st=root.querySelector('[data-st]');
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const v=k=>(f.elements[k].value||'').trim();
+      const topics=[...f.querySelectorAll('[name=topics]:checked')].map(i=>i.value);
+      const miss=[!v('title')&&'תואר',!v('fullName')&&'שם מלא',!v('affiliation')&&'מוסד או ארגון',!v('phone')&&'נייד',!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))&&'מייל תקין',v('expertise').length<10&&'תחומי עיסוק ומחקר',!topics.length&&'לפחות תחום עניין אחד'].filter(Boolean);
+      if(miss.length){st.className='nv-status err';st.textContent='חסר: '+miss.join(', ')+'.';return}
+      if(!f.elements.consent.checked){st.className='nv-status err';st.textContent='נדרש אישור להצגת הפרטים בכרטיס.';return}
+      const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='שולחת…';
+      try{
+        await post('/api/join',{title:v('title'),fullName:v('fullName'),affiliation:v('affiliation'),phone:v('phone'),email:v('email'),expertise:v('expertise'),topics,consent:true,website:f.elements.website.value,elapsed:Date.now()-opened});
+        root.innerHTML='<h2>🙏 תודה!</h2><p>הבקשה התקבלה. אחרי אישור של מנהלת הקהילה ייפתח לך כרטיס בעמוד הנבחרת, ויתחילו להגיע אלייך עדכונים לפי תחומי העניין שבחרת.</p>';
+      }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
+    });
+  }
+
+  // ----- בחירת תחומי עניין (חברות הנבחרת) -----
+  async function openMyTopics(tok){
+    const root=modal('<p class="nv-status">טוען…</p>');const opened=Date.now();
+    if(!tok){
+      root.innerHTML=`<h2>🎯 בחירת תחומי העניין שלי</h2>
+        <p>לחברות ולחברי הנבחרת. כתבו את המייל שמופיע בכרטיס שלכם, ויישלח אליכם קישור אישי לבחירה.</p>
+        <p class="nv-status">לפי הבחירה יישלחו אליכם קולות קוראים, מענקים וכנסים, וגם הסיכום השבועי יותאם. הבחירה נשמרת בכרטיס, ואפשר לשנות אותה בכל עת.</p>
+        <form class="nv-row" novalidate><input name="email" type="email" dir="ltr" placeholder="name@example.com" autocomplete="email" style="flex:1;min-width:220px"><input name="website" class="jt-hp" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="submit" class="nv-btn primary">שליחת קישור</button></form>
+        <div class="nv-status" data-st></div>`;
+      const f=root.querySelector('form'),st=root.querySelector('[data-st]');
+      f.addEventListener('submit',async e=>{
+        e.preventDefault();const btn=f.querySelector('button');btn.disabled=true;st.className='nv-status';st.textContent='שולחת…';
+        try{await post('/api/member',{action:'link',email:f.elements.email.value,website:f.elements.website.value,elapsed:Math.max(Date.now()-opened,0)});st.className='nv-status ok';st.textContent='✓ נשלח קישור אישי למייל. אם הוא לא מגיע תוך כמה דקות, כדאי לבדוק גם בתיקיית הספאם.'}
+        catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
+      });
+      return;
+    }
+    try{
+      const r=await fetch('/api/member',{headers:{'x-member-token':tok}});const d=await r.json();if(!r.ok)throw new Error(d.message||'הקישור לא תקין.');
+      root.innerHTML=`<h2>🎯 תחומי העניין שלי</h2>
+        <p>שלום ${h(d.name)}${d.institution?` · <span class="nv-status">${h(d.institution)}</span>`:''}</p>
+        <p class="nv-status">${d.chosen?'זו הבחירה השמורה בכרטיס שלך. אפשר לשנות ולשמור.':'סימנו מראש תחומים לפי מה שכתוב בכרטיס שלך. אפשר להוסיף, להוריד ולשמור.'} לפי התחומים האלה יישלחו אלייך קולות קוראים, מענקים וכנסים, וגם הסיכום השבועי יותאם.</p>
+        <form novalidate>${checks(d.themes,d.topics)}<div class="nv-row" style="margin-top:12px"><button type="submit" class="nv-btn primary">שמירה בכרטיס</button></div></form><div class="nv-status" data-st></div>`;
+      const f=root.querySelector('form'),st=root.querySelector('[data-st]');
+      f.addEventListener('submit',async e=>{
+        e.preventDefault();const topics=[...f.querySelectorAll('[name=topics]:checked')].map(i=>i.value);
+        if(!topics.length){st.className='nv-status err';st.textContent='נא לבחור לפחות תחום אחד.';return}
+        try{await post('/api/member',{action:'save',topics},{'x-member-token':tok});st.className='nv-status ok';st.textContent=`✓ נשמר בכרטיס (${topics.length===1?"תחום אחד":topics.length+" תחומים"}). אפשר לחזור לקישור הזה ולשנות בכל עת.`}
+        catch(err){st.className='nv-status err';st.textContent=err.message}
+      });
+    }catch(err){
+      root.innerHTML=`<h2>🎯 תחומי העניין שלי</h2><p class="nv-status err">${h(err.message)}</p><button type="button" class="nv-btn primary" data-new>בקשת קישור חדש</button>`;
+      root.querySelector('[data-new]').onclick=()=>{root.closest('.nv-modal').remove();openMyTopics()};
+    }
+  }
+
+  // ----- מנהלת המערכת: קישור אישי לכל הנבחרת -----
+  async function inviteAll(){
+    const onlyNew=confirm('לשלוח קישור אישי לבחירת תחומי עניין?\n\nאישור = רק למי שעוד לא בחר/ה.\nביטול = לבחור שוב (לכולם).');
+    if(!onlyNew&&!confirm('לשלוח לכל חברות וחברי הנבחרת שיש להם מייל, גם למי שכבר בחר/ה?'))return;
+    try{
+      const j=await post('/api/member',{action:'invite-all',onlyNew},{Authorization:'Bearer '+token()});
+      alert(`נשלחו ${j.sent} מתוך ${j.total} מיילים.${j.failed.length?`\nלא נשלח אל: ${j.failed.join(', ')}${j.reason?`\n${j.reason}`:''}`:''}`);
+    }catch(err){alert(err.message)}
+  }
+
+  window.hosenJoin=openJoin;window.hosenMyTopics=()=>openMyTopics();
+  document.addEventListener('DOMContentLoaded',()=>{
+    const m=location.hash.match(/^#my-topics=(.+)$/);
+    if(m){const tok=decodeURIComponent(m[1]);history.replaceState(null,'',location.pathname);openMyTopics(tok)}
+    if(location.hash==='#join'){history.replaceState(null,'',location.pathname);openJoin()}
+    const mail=document.getElementById('adminCommunityMail');
+    if(mail&&!document.getElementById('adminTopicsInvite')){
+      const b=document.createElement('button');b.id='adminTopicsInvite';b.type='button';b.className='admin-community-mail';b.textContent='🎯 קישור לבחירת נושאים לנבחרת';b.onclick=inviteAll;
+      (document.getElementById('adminRequests')||mail).after(b);
+      const sync=()=>{b.hidden=!!mail.hidden};new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
+    }
+  });
+})();
 </script>
 </body></html>

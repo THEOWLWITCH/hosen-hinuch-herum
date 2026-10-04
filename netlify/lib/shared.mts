@@ -75,6 +75,21 @@ export async function tokenRole(req: Request): Promise<AccessRole | null> {
   return role;
 }
 
+// קישור אישי לחברת נבחרת (בחירת תחומי עניין): חתום, בתוקף 60 יום, בלי קוד.
+export async function issueMemberToken(personId: string, days = 60) {
+  const payload = `member:${personId}:${Date.now() + days * 86400000}`;
+  return `${payload}.${await hmac(payload)}`;
+}
+
+export async function memberFromToken(token: string): Promise<string | null> {
+  const dot = String(token || "").lastIndexOf(".");
+  if (dot < 1) return null;
+  const payload = token.slice(0, dot), sig = token.slice(dot + 1);
+  const m = payload.match(/^member:([\w-]{1,80}):(\d+)$/);
+  if (!m || !sig || sig !== (await hmac(payload)) || Number(m[2]) < Date.now()) return null;
+  return m[1];
+}
+
 // טפסים פתוחים לכולן (בלי קוד): הגנה שקטה מספאם — שדה מלכודת שאדם לא רואה,
 // ומינימום זמן מילוי. בנוסף יש מגבלת קצב בכל נקודת קצה.
 // קוד הקהילה: לפעולות של חברות הקהילה באתר (הודעות, קבוצות משימה, הצעת קול קורא).
