@@ -3400,6 +3400,13 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const txt=d===0?'נסגר היום':d===1?'נסגר מחר':`נשארו ${d} ימים`;
     return `<span class="ch-badge ${cls}">${d<=7?'⏳ ':''}${txt} · עד ${fmt(c.endDate)}</span>`;
   }
+  // מועד אחרון כאירוע של יום שלם ביומן Google — בלי להוריד קובץ.
+  function googleEventLink(c){
+    const d=String(c.endDate).replace(/-/g,'');
+    const next=new Date(Date.parse(c.endDate+'T00:00:00Z')+86400000).toISOString().slice(0,10).replace(/-/g,'');
+    const details=[c.funder?'גוף מממן: '+c.funder:'',c.url?'לפרטים ולהגשה: '+c.url:'',location.origin+'/calls#call-'+c.id].filter(Boolean).join('\n');
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('מועד אחרון: '+c.title)+'&dates='+d+'/'+next+'&details='+encodeURIComponent(details);
+  }
   function teamRow(t){
     const mine=teamKey(t.id);
     const onMatch=document.documentElement.dataset.page==='match';
@@ -3424,7 +3431,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${archived?'':`<div class="ch-card-actions">
         ${c.url||c.fileUrl?`<a class="ch-btn small primary" href="${h(c.url||c.fileUrl)}" target="_blank" rel="noopener">לפרטים ולהגשה</a>`:''}
         <button type="button" class="ch-btn small" data-ch="team-new" data-call="${h(c.id)}">🤝 הקמת קבוצה להגשה</button>
-        ${c.endDate?`<a class="ch-btn small" href="/api/calls?format=ics&id=${encodeURIComponent(c.id)}">📅 ליומן</a>`:''}
+        ${c.endDate?`<a class="ch-btn small" href="${h(googleEventLink(c))}" target="_blank" rel="noopener">📅 ליומן Google</a><a class="ch-btn small" href="/api/calls?format=ics&id=${encodeURIComponent(c.id)}" title="קובץ יומן ל-Outlook או ל-Apple">📅 Outlook / Apple</a>`:''}
       </div>`}
       ${credit?`<div class="ch-credit">${credit}</div>`:''}
     </article>`;
@@ -3564,13 +3571,17 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
 
   function openCalendar(){
-    const url=location.origin+'/api/calls?format=ics';
+    const url=location.origin+'/calls.ics',webcal=url.replace(/^https?:/,'webcal:');
     const m=modal(`<h2>כל המועדים ביומן</h2>
       <p>אפשר <strong>להירשם ליומן</strong> של הקולות הקוראים. כל קול קורא חדש יופיע בו מעצמו, עם המועד האחרון להגשה.</p>
-      <div class="ch-linkbox"><input readonly value="${h(url)}"><button type="button" class="ch-btn small" data-copy>העתקה</button></div>
-      <div class="ch-note"><strong>ביומן Google:</strong><ol><li>בצד שמאל, ליד "יומנים אחרים", לוחצים על ＋.</li><li>בוחרים "מכתובת URL" ומדביקים את הכתובת.</li></ol></div>
-      <p style="margin-top:12px"><a class="ch-btn" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(url.replace(/^https?:/,'webcal:'))}" target="_blank" rel="noopener">הוספה ליומן Google</a>
-      <a class="ch-btn" href="${h(url.replace(/^https?:/,'webcal:'))}">יומן Apple / Outlook</a></p>`);
+      <p><a class="ch-btn primary" href="https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener">📅 הוספה ליומן Google</a>
+      <a class="ch-btn" href="https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent(url)}&name=${encodeURIComponent('קולות קוראים')}" target="_blank" rel="noopener">📅 Outlook באינטרנט</a>
+      <a class="ch-btn" href="${h(webcal)}">📅 Apple / Outlook במחשב</a></p>
+      <div class="ch-note"><strong>אם הכפתור לא עבד — הוספה ידנית עם הכתובת:</strong>
+        <div class="ch-linkbox"><input readonly value="${h(url)}" dir="ltr"><button type="button" class="ch-btn small" data-copy>העתקה</button></div>
+        <ol><li><strong>Google:</strong> ביומן, בצד שמאל ליד "יומנים אחרים" ← ＋ ← "מכתובת URL" ← מדביקים.</li>
+        <li><strong>Outlook:</strong> "הוספת לוח שנה" ← "הירשם מהאינטרנט" ← מדביקים.</li></ol>
+        <p class="ch-credit">יומן Google מתעדכן מעצמו, לפעמים באיחור של כמה שעות.</p></div>`);
     m.querySelector('[data-copy]').onclick=ev=>copy(url,ev.target);
   }
 

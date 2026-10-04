@@ -34,7 +34,8 @@ export default async (req: Request) => {
 
   if (req.method === "GET") {
     // יומן: כל המועדים הפתוחים, או קול קורא אחד (?id=).
-    if (u.searchParams.get("format") === "ics") {
+    // כתובת יומן נקייה (/calls.ics) — יומן Google לא תמיד מקבל כתובת עם פרמטרים.
+    if (u.searchParams.get("format") === "ics" || u.pathname.endsWith(".ics")) {
       const one = u.searchParams.get("id");
       let rows = (await listCalls()).filter(c => isOpen(c, today) && c.category === "calls");
       if (one) rows = rows.filter(c => c.id === one);
@@ -197,6 +198,6 @@ export default async (req: Request) => {
 };
 
 export const config: Config = {
-  path: "/api/calls",
+  path: ["/api/calls", "/calls.ics"],
   rateLimit: { windowLimit: 40, windowSize: 60, aggregateBy: ["ip"] },
 };
