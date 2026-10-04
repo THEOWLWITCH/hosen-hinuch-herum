@@ -2960,12 +2960,102 @@ html[data-page="apps"] #apps{display:block!important}
 })();
 </script>
 </main>
+<script id="library-admin-v1-js">
+/* ניהול הספרייה המתחדשת: מקורות חדשים לאישור, ומקורות לאיסוף. */
+(function(){
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  async function api(method,body){
+    const r=await fetch('/api/library-feed',{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
+    const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה.');e.status=r.status;throw e}return j;
+  }
+  // לשונית "📚 ספרייה" בחלון הניהול של האתר.
+  function addTab(){
+    const tabs=document.getElementById('adminTabs');if(!tabs||document.getElementById('tabLibraryFeed'))return;
+    if(typeof currentAccessRole!=='undefined'&&currentAccessRole!=='admin')return;
+    const b=document.createElement('button');b.id='tabLibraryFeed';b.type='button';b.textContent='📚 ספרייה מתחדשת';
+    b.onclick=()=>{if(document.documentElement.dataset.page==='library'){if(typeof closeAdmin==='function')closeAdmin();openLibraryAdmin()}else location.href='/library#library-admin'};
+    tabs.appendChild(b);
+  }
+
+  async function openLibraryAdmin(){
+    if(!token()){if(typeof openManagementAccess==='function')openManagementAccess();return}
+    const m=document.createElement('div');m.className='nv-modal';
+    m.innerHTML='<div class="nv-dialog wide" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><div data-la><p class="nv-status">טוען…</p></div></div>';
+    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('nv-x'))m.remove()});
+    document.body.appendChild(m);
+    const root=m.querySelector('[data-la]');const V={tab:'inbox',d:null,msg:null};
+    const reload=async()=>{V.d=await api('GET')};
+    function render(){
+      const d=V.d;
+      let html=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status">כל בוקר נאספים מקורות חדשים בנושאי הקהילה מ-OpenAlex ומ-ERIC (ומפידים שתוסיפי). כל מקור מגיע עם ציטוט APA7 ומדור מוצע — ונכנס לספרייה רק אחרי אישור.</p>
+        <nav class="nv-tabs"><button type="button" data-t="inbox" class="${V.tab==='inbox'?'active':''}">📥 לאישור (${d.inbox.length})</button><button type="button" data-t="sources" class="${V.tab==='sources'?'active':''}">🔎 מקורות לאיסוף</button></nav>`;
+      if(V.tab==='inbox'){
+        html+=d.inbox.length?`<div class="nv-row" style="margin:8px 0"><label class="nv-row"><input type="checkbox" data-all> בחירת הכול</label><button type="button" class="nv-btn small primary" data-bulk="approve">✓ אישור הנבחרים</button><button type="button" class="nv-btn small danger" data-bulk="reject">לא רלוונטיים</button></div>
+          <div class="nv-list">${d.inbox.map(x=>`<div class="nv-card" style="margin:0" data-k="${h(x.key)}">
+            <div class="nv-row" style="justify-content:space-between;align-items:flex-start"><label class="nv-row" style="align-items:flex-start;flex:1"><input type="checkbox" data-sel="${h(x.key)}" style="margin-top:5px"> <strong dir="auto">${h(x.title)}</strong></label><span class="nv-badge">${h(x.sourceName)}</span></div>
+            <p class="nv-status" style="margin:4px 0" dir="auto">${h(x.authors.slice(0,4).join(', '))}${x.authors.length>4?' ועוד':''} · ${h(x.date||x.year)} · ${h(x.journal)} · <a href="${h(x.url)}" target="_blank" rel="noopener">למקור</a></p>
+            ${x.abstract?`<details><summary class="nv-status" style="cursor:pointer">תקציר</summary><p dir="auto" style="margin:6px 0">${h(x.abstract)}</p></details>`:''}
+            <div class="nv-row" style="margin-top:6px"><span class="nv-status">מדור:</span><select data-section style="width:auto">${Object.entries(d.sections).map(([k,l])=>`<option value="${k}"${x.section===k?' selected':''}>${h(l)}</option>`).join('')}</select>
+              <button type="button" class="nv-btn small primary" data-one="approve">✓ אישור לספרייה</button><button type="button" class="nv-btn small danger" data-one="reject">לא רלוונטי</button></div></div>`).join('')}</div>`
+          :'<p class="nv-status">אין מקורות חדשים שמחכים לאישור. אפשר להריץ איסוף בלשונית "מקורות לאיסוף".</p>';
+      }else{
+        html+=`<div class="nv-card"><h3>הנושאים שהספרייה עוקבת אחריהם</h3><div>${d.topics.map(t=>`<span class="nv-tag">${h(t.label)}</span>`).join('')}</div><p class="nv-status">בכל נושא נאספים מחקרים מ־4 החודשים האחרונים, מ-OpenAlex (מאגר מחקר עולמי) ומ-ERIC (מאגר מחקר החינוך). רק מקורות שעוסקים בחינוך, ושעוד לא קיימים בספרייה.</p>
+          <button type="button" class="nv-btn primary" data-fetch>🔎 איסוף עכשיו</button></div>
+          <div class="nv-card"><h3>פידים נוספים (RSS)</h3><p class="nv-status">למשל דפי פרסומים של ארגונים ומכונים. לכל פיד בוחרים מדור.</p>
+          <div class="nv-list" data-feeds>${(d.feeds.length?d.feeds:[{name:'',url:'',section:'professional',enabled:true}]).map(feedRow).join('')}</div>
+          <div class="nv-row" style="margin-top:8px"><button type="button" class="nv-btn small" data-addfeed>＋ פיד</button><button type="button" class="nv-btn small primary" data-savefeeds>שמירת הפידים</button></div></div>
+          ${d.status.length?`<div class="nv-card"><h3>האיסוף האחרון</h3><table class="nv-table"><tr><th>מקור</th><th>תוצאה</th></tr>${d.status.map(s=>`<tr><td>${h(s.name)}</td><td>${s.ok?`✓ ${s.found} בתחום · ${s.added} חדשים`:'✗ '+h(s.error||'שגיאה')} · ${new Date(s.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</td></tr>`).join('')}</table></div>`:''}`;
+      }
+      root.innerHTML=html+'<div class="nv-status" data-st></div>';
+      if(V.msg)msg(...V.msg);
+    }
+    const feedRow=f=>`<div class="nv-row" data-feed><input name="name" value="${h(f.name)}" placeholder="שם" style="max-width:180px"><input name="url" value="${h(f.url)}" placeholder="https://… (פיד RSS)" dir="ltr" style="flex:1;min-width:200px"><select name="section" style="width:auto">${Object.entries(V.d.sections).map(([k,l])=>`<option value="${k}"${f.section===k?' selected':''}>${h(l)}</option>`).join('')}</select><label class="nv-row"><input type="checkbox" name="enabled"${f.enabled!==false?' checked':''}> פעיל</label><button type="button" class="nv-btn small danger" data-rmfeed>✕</button></div>`;
+    const msg=(t,k)=>{V.msg=[t,k];const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t;el.scrollIntoView({block:'nearest'})}};
+    const refreshLibrary=()=>{if(typeof loadLibrary==='function')loadLibrary(false).catch(()=>{})};
+    root.addEventListener('click',async e=>{
+      const t=e.target;
+      try{
+        const tb=t.closest('[data-t]');if(tb){V.tab=tb.dataset.t;V.msg=null;render();return}
+        if(t.matches('[data-all]')){root.querySelectorAll('[data-sel]').forEach(i=>i.checked=t.checked);return}
+        const one=t.closest('[data-one]');
+        if(one){const card=one.closest('[data-k]'),key=card.dataset.k;
+          if(one.dataset.one==='approve'){await api('POST',{action:'approve',keys:[key],edits:{section:card.querySelector('[data-section]').value}});msg('נוסף לספרייה ✓','ok')}
+          else{await api('POST',{action:'reject',keys:[key]});msg('הוסר. הוא לא יחזור באיסוף הבא.','ok')}
+          await reload();render();refreshLibrary();return}
+        const bulk=t.closest('[data-bulk]');
+        if(bulk){const keys=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!keys.length)return msg('לא נבחרו מקורות.','err');
+          if(bulk.dataset.bulk==='approve'){const j=await api('POST',{action:'approve',keys});msg(`נוספו לספרייה ${j.approved} מקורות ✓`,'ok')}else{const j=await api('POST',{action:'reject',keys});msg(`הוסרו ${j.rejected} מקורות.`,'ok')}
+          await reload();render();refreshLibrary();return}
+        if(t.matches('[data-fetch]')){msg('אוסף… (עד חצי דקה)');const j=await api('POST',{action:'fetch'});const added=j.status.reduce((a,s)=>a+s.added,0);await reload();V.tab=added?'inbox':'sources';render();msg(`האיסוף הסתיים: ${added} מקורות חדשים מחכים לאישור.`,'ok');return}
+        if(t.matches('[data-addfeed]')){root.querySelector('[data-feeds]').insertAdjacentHTML('beforeend',feedRow({name:'',url:'',section:'professional',enabled:true}));return}
+        if(t.matches('[data-rmfeed]')){t.closest('[data-feed]').remove();return}
+        if(t.matches('[data-savefeeds]')){const feeds=[...root.querySelectorAll('[data-feed]')].map(r=>({name:r.querySelector('[name=name]').value,url:r.querySelector('[name=url]').value,section:r.querySelector('[name=section]').value,enabled:r.querySelector('[name=enabled]').checked}));await api('POST',{action:'feeds',feeds});await reload();render();msg('הפידים נשמרו ✓','ok');return}
+      }catch(err){msg(err.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':err.message,'err')}
+    });
+    try{await reload();render()}catch(e){root.innerHTML=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`}
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const tabs=document.getElementById('adminTabs');if(tabs){addTab();new MutationObserver(addTab).observe(tabs,{childList:true})}
+    if(document.documentElement.dataset.page!=='library')return;
+    // כפתור לניהול — רק למנהלת המערכת, ליד כפתורי הספרייה.
+    const bar=document.querySelector('.library-hub-actions');
+    if(bar){const b=document.createElement('button');b.type='button';b.className='library-hub-action';b.id='libraryAdminBtn';b.textContent='⚙ מקורות חדשים לאישור';b.onclick=openLibraryAdmin;bar.appendChild(b);
+      const sync=async()=>{b.hidden=!token();if(!token())return;try{const d=await api('GET');b.textContent=d.inbox.length?`⚙ מקורות חדשים לאישור (${d.inbox.length})`:'⚙ ניהול הספרייה המתחדשת'}catch(e){}};
+      sync();let last=token();setInterval(()=>{if(token()!==last){last=token();sync()}},2000)}
+    if(location.hash==='#library-admin'){history.replaceState(null,'',location.pathname);openLibraryAdmin()}
+  });
+  window.hosenLibraryAdmin=openLibraryAdmin;
+})();
+</script>
 <style id="library-sections-v1">
 .lib-section-sources{margin-top:16px}
 .lib-section-sources h4{margin:0 0 6px;font-size:14px;color:#244b61}
 .lib-section-sources .lib-item{padding:10px 0;border-bottom:1px solid #e1e8ea}
 .lib-section-sources .lib-item h3{margin:0 0 4px;font-size:14px;color:#274f64}
 .lib-section-sources .lib-date{font-size:11.5px;color:#6e818b}
+.lib-remove{margin-inline-start:8px;padding:2px 9px;border:1px solid #e3b9b9;border-radius:999px;background:#fff;color:#a23b3b;font:inherit;font-size:11.5px;cursor:pointer}
 .library-topics .topic .lib-count{display:inline-block;margin-inline-start:6px;padding:0 7px;border-radius:999px;background:#e6eff3;color:#456071;font-size:11px;font-weight:700}
 </style>
 <script id="library-sections-v1-js">
@@ -2974,6 +3064,7 @@ html[data-page="apps"] #apps{display:block!important}
   const CATS={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const practicalIds=()=>new Set((typeof researchPracticalSources!=='undefined'?researchPracticalSources:[]).map(x=>'research-'+x.id));
   function sectionOf(x,practical){
+    if(x.section&&CATS[x.section])return x.section;
     const t=String(x.type||'');
     if(t==='מדיניות'||t==='דוח')return 'policy';
     if(practical.has(x.id))return 'professional';
@@ -2987,6 +3078,21 @@ html[data-page="apps"] #apps{display:block!important}
     const practical=practicalIds();
     return libraryCache.filter(x=>sectionOf(x,practical)===cat).sort((a,b)=>dateKey(b).localeCompare(dateKey(a)));
   }
+  // מקורות שמנהלת המערכת הסירה — לא מוצגים בשום מקום בספרייה.
+  let hidden=null;
+  async function dropHidden(){
+    try{if(!hidden)hidden=new Set(await (await fetch('/api/library-feed?hidden=1')).json())}catch(e){hidden=new Set()}
+    if(typeof libraryCache!=='undefined'&&hidden.size){const before=libraryCache.length;libraryCache=libraryCache.filter(x=>!hidden.has(x.id));if(libraryCache.length!==before&&typeof renderLibraryExplorer==='function')renderLibraryExplorer()}
+  }
+  const isAdmin=()=>{try{return !!sessionStorage.getItem('hosen_editor_token')}catch(e){return false}};
+  async function removeSource(sid){
+    if(!confirm('להסיר את המקור מהספרייה?'))return;
+    const r=await fetch('/api/library-feed',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+sessionStorage.getItem('hosen_editor_token')},body:JSON.stringify({action:'delete',id:sid})});
+    if(!r.ok)return alert('ההסרה לא הצליחה. ייתכן שפג תוקף הכניסה לניהול.');
+    (hidden||(hidden=new Set())).add(sid);libraryCache=libraryCache.filter(x=>x.id!==sid);
+    if(typeof renderLibraryExplorer==='function')renderLibraryExplorer();render();updateCounts();
+  }
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-lib-remove]');if(b)removeSource(b.dataset.libRemove)});
   function updateCounts(){
     document.querySelectorAll('[data-library-category]').forEach(b=>{
       const n=rows(b.dataset.libraryCategory).length;let el=b.querySelector('.lib-count');
@@ -3008,13 +3114,14 @@ html[data-page="apps"] #apps{display:block!important}
     const esc2=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     box.innerHTML=`<h4>מקורות מהמאגר ומ"חידושים במחקר" (${list.length}) · מהחדש לישן</h4>`+list.map(x=>{
       const html=typeof sourceHtml==='function'?sourceHtml(x):'';
-      return html.replace('<article class="lib-item">',`<article class="lib-item"><h3 dir="auto">${esc2(x.title||'')}</h3>${dateKey(x)?`<div class="lib-date">${esc2(dateKey(x))}${x.journal?' · '+esc2(x.journal):''}</div>`:''}`);
+      const del=isAdmin()?` <button type="button" class="lib-remove" data-lib-remove="${esc2(x.id)}" title="הסרה מהספרייה">🗑 הסרה</button>`:'';
+      return html.replace('<article class="lib-item">',`<article class="lib-item"><h3 dir="auto">${esc2(x.title||'')}</h3>${dateKey(x)?`<div class="lib-date">${esc2(dateKey(x))}${x.journal?' · '+esc2(x.journal):''}</div>`:''}`).replace(/<\/article>$/,del+'</article>');
     }).join('');
     updateCounts();
   }
   document.addEventListener('DOMContentLoaded',()=>{
     if(typeof renderResourceCards==='function'){const orig=renderResourceCards;window.renderResourceCards=function(r){orig(r);render()};}
-    if(typeof loadLibrary==='function'){const orig=loadLibrary;window.loadLibrary=async function(a){const out=await orig(a);if(!a){render();updateCounts()}return out}}
+    if(typeof loadLibrary==='function'){const orig=loadLibrary;window.loadLibrary=async function(a){const out=await orig(a);if(!a){await dropHidden();render();updateCounts()}return out}}
     if(typeof openReadingPath==='function'){const orig=openReadingPath;window.openReadingPath=function(p){const role=document.getElementById('libraryRoleSearch');if(role&&role.hidden&&typeof setLibraryMode==='function')setLibraryMode('role');return orig(p)}}
   });
 })();
