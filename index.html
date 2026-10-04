@@ -2342,7 +2342,8 @@ body:has(.feedback-modal.open){
   <h3>ספריית ידע יישומית ואקדמית</h3>
   <p>בחרו מסלול קריאה או חפשו במאגר לפי מאפייני המקור. כל פריט מוצג עם ציטוט APA7 לפי הפרטים הזמינים וקישור למקור המקורי.</p>
   <div class="library-hub-actions" aria-label="פעולות בספרייה">
-    <button type="button" class="library-hub-action" aria-expanded="false" aria-controls="libraryRoleSearch" onclick="toggleLibraryRoleSearch()">חיפוש לפי תפקיד</button>
+    <button type="button" class="library-hub-action" aria-expanded="false" aria-controls="libraryRoleSearch" onclick="setLibraryMode('role')">חיפוש לפי תפקיד</button>
+    <button type="button" class="library-hub-action" aria-expanded="false" aria-controls="libraryAcademicSearch" onclick="setLibraryMode('academic')">חיפוש אקדמי</button>
     <button type="button" class="library-hub-action compass" onclick="openCompassFromLibrary()">מצפן המחקר</button>
   </div>
   <div id="libraryRoleSearch" class="library-role-search" hidden>
@@ -2353,6 +2354,8 @@ body:has(.feedback-modal.open){
     <button type="button" class="library-reading-path" data-reading-path="teacher" onclick="openReadingPath('teacher')">אני מורה<small>כלים, צוותים ו‑AI אחראי</small></button>
     <button type="button" class="library-reading-path" data-reading-path="community" onclick="openReadingPath('community')">אני מוביל/ת קהילה<small>שייכות, אמון ומנגנוני פעולה</small></button>
   </div>
+  </div>
+  <div id="libraryAcademicSearch" class="library-role-search" hidden>
   <div class="library-academic-search" aria-label="חיפוש אקדמי במאגר">
     <input id="librarySubject" placeholder="נושא, כותרת או מילת מפתח" oninput="renderLibraryExplorer()" aria-label="חיפוש לפי נושא">
     <input id="libraryYear" placeholder="שנת פרסום" inputmode="numeric" oninput="renderLibraryExplorer()" aria-label="חיפוש לפי שנת פרסום">
@@ -2362,6 +2365,8 @@ body:has(.feedback-modal.open){
     <select id="libraryEmergency" onchange="renderLibraryExplorer()" aria-label="חיפוש לפי מצב חירום"><option value="">כל מצבי החירום</option><option>מלחמה וסכסוך</option><option>פינוי ועקירה</option><option>אסון ואקלים</option><option>חירום מתמשך</option><option>שגרה והיערכות</option></select>
     <select id="libraryApplication" onchange="renderLibraryExplorer()" aria-label="חיפוש לפי רמת יישום"><option value="">כל רמות היישום</option><option>מחקר יסוד</option><option>מדיניות מערכתית</option><option>יישום ארגוני</option><option>כלי לצוותים</option></select>
   </div>
+  </div>
+  <div id="libraryResultsWrap" hidden>
   <div id="libraryExplorerStatus" class="field-hint"></div>
   <div id="libraryExplorerResults" class="library-explorer-results"><p class="muted">טוען את מאגר המקורות…</p></div>
   </div>
@@ -2955,6 +2960,65 @@ html[data-page="apps"] #apps{display:block!important}
 })();
 </script>
 </main>
+<style id="library-sections-v1">
+.lib-section-sources{margin-top:16px}
+.lib-section-sources h4{margin:0 0 6px;font-size:14px;color:#244b61}
+.lib-section-sources .lib-item{padding:10px 0;border-bottom:1px solid #e1e8ea}
+.lib-section-sources .lib-item h3{margin:0 0 4px;font-size:14px;color:#274f64}
+.lib-section-sources .lib-date{font-size:11.5px;color:#6e818b}
+.library-topics .topic .lib-count{display:inline-block;margin-inline-start:6px;padding:0 7px;border-radius:999px;background:#e6eff3;color:#456071;font-size:11px;font-weight:700}
+</style>
+<script id="library-sections-v1-js">
+/* מקורות מ"חידושים במחקר" ומהמאגר מוצגים גם בארבעת מדורי הספרייה, כל מקור במדור שלו, מהחדש לישן. */
+(function(){
+  const CATS={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
+  const practicalIds=()=>new Set((typeof researchPracticalSources!=='undefined'?researchPracticalSources:[]).map(x=>'research-'+x.id));
+  function sectionOf(x,practical){
+    const t=String(x.type||'');
+    if(t==='מדיניות'||t==='דוח')return 'policy';
+    if(practical.has(x.id))return 'professional';
+    if(t==='כלי')return 'research-tools';
+    if(t==='מאמר'||t==='ספר'||t==='כנס')return 'publications';
+    return 'professional';
+  }
+  const dateKey=x=>{const d=String(x.publicationDate||x.year||'');const m=d.match(/\d{4}(-\d{2})?(-\d{2})?/);return m?m[0]:''};
+  function rows(cat){
+    if(typeof libraryCache==='undefined')return [];
+    const practical=practicalIds();
+    return libraryCache.filter(x=>sectionOf(x,practical)===cat).sort((a,b)=>dateKey(b).localeCompare(dateKey(a)));
+  }
+  function updateCounts(){
+    document.querySelectorAll('[data-library-category]').forEach(b=>{
+      const n=rows(b.dataset.libraryCategory).length;let el=b.querySelector('.lib-count');
+      if(!n){el?.remove();return}
+      if(!el){el=document.createElement('span');el.className='lib-count';b.appendChild(el)}el.textContent=n;
+    });
+  }
+  function render(){
+    if(document.documentElement.dataset.page!=='library')return;
+    const cat=typeof currentCategory!=='undefined'?currentCategory:'';
+    const cards=document.getElementById('resourceCards');if(!cards)return;
+    let box=document.getElementById('librarySectionSources');
+    if(!CATS[cat]){box?.remove();return}
+    const list=rows(cat);
+    if(!box){box=document.createElement('div');box.id='librarySectionSources';box.className='lib-section-sources';cards.after(box)}
+    if(!list.length){box.innerHTML='';return}
+    // אם אין משאבים שהועלו למדור — לא מציגים "אין פריטים", כי יש מקורות מהמאגר.
+    if(/אין כרגע פריטים להצגה/.test(cards.textContent))cards.innerHTML='';
+    const esc2=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    box.innerHTML=`<h4>מקורות מהמאגר ומ"חידושים במחקר" (${list.length}) · מהחדש לישן</h4>`+list.map(x=>{
+      const html=typeof sourceHtml==='function'?sourceHtml(x):'';
+      return html.replace('<article class="lib-item">',`<article class="lib-item"><h3 dir="auto">${esc2(x.title||'')}</h3>${dateKey(x)?`<div class="lib-date">${esc2(dateKey(x))}${x.journal?' · '+esc2(x.journal):''}</div>`:''}`);
+    }).join('');
+    updateCounts();
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(typeof renderResourceCards==='function'){const orig=renderResourceCards;window.renderResourceCards=function(r){orig(r);render()};}
+    if(typeof loadLibrary==='function'){const orig=loadLibrary;window.loadLibrary=async function(a){const out=await orig(a);if(!a){render();updateCounts()}return out}}
+    if(typeof openReadingPath==='function'){const orig=openReadingPath;window.openReadingPath=function(p){const role=document.getElementById('libraryRoleSearch');if(role&&role.hidden&&typeof setLibraryMode==='function')setLibraryMode('role');return orig(p)}}
+  });
+})();
+</script>
 <script id="requests-inbox-v1-js">
 /* תיבת הפניות: כל הפניות מהאתר במקום אחד — סטטוס, הערות, השבה ומעקב. */
 (function(){
@@ -4355,7 +4419,9 @@ function renderKnowledgeStates(){const root=document.getElementById('knowledgeSt
 async function loadLibrary(admin){const r=await fetch('/api/library');const stored=await r.json();if(admin){libraryCache=stored;renderAdminLibrary();return}const allResearch=[...(typeof researchWorldItems!=='undefined'?researchWorldItems:[]),...(typeof researchPracticalSources!=='undefined'?researchPracticalSources:[]),...(typeof uploadedResearchItems!=='undefined'?uploadedResearchItems:[])];const researchRows=allResearch.map(researchLibraryRow);const seen=new Set();libraryCache=[...researchRows,...stored].filter(x=>{const k=String(x.doi||x.title||x.apa||'').trim().toLowerCase();if(!k||seen.has(k))return false;seen.add(k);return true});renderPublicLibrary();renderLibraryExplorer();renderKnowledgeStates()}
 function renderPublicLibrary(){const qEl=document.getElementById('libSearch'),aEl=document.getElementById('libAuthors'),yEl=document.getElementById('libYear'),tEl=document.getElementById('libType'),out=document.getElementById('libResults');if(!qEl||!aEl||!yEl||!tEl||!out)return;const q=(qEl.value||'').trim().toLowerCase(),author=(aEl.value||'').trim().toLowerCase(),year=(yEl.value||'').trim(),t=tEl.value||'';const rows=libraryCache.filter(x=>{const general=[x.title,x.journal,x.doi,x.apa,x.abstract].filter(Boolean).join(' ').toLowerCase();const authors=String(x.authors||'').toLowerCase();const yr=String(x.year||'');return(!t||x.type===t)&&(!q||general.includes(q))&&(!author||authors.includes(author))&&(!year||yr.includes(year))}).slice(0,25);out.innerHTML=rows.length?rows.map(sourceHtml).join(''):'<p class="muted">לא נמצאו מקורות.</p>'}
 function sourceHtml(x){const apa=apa7Citation(x);return `<article class="lib-item">${apa?`<p class="apa-citation"><strong>APA7:</strong> ${esc(apa)}</p>`:''}${x.abstract?`<p class="relevance"><strong>רלוונטיות:</strong> ${esc(x.abstract)}</p>`:''}${x.doi?`<a href="${escAttr(x.doi)}" target="_blank" rel="noopener">למקור</a>`:''}${x.fileUrl?` · <a href="${escAttr(x.fileUrl)}" target="_blank">לקובץ</a>`:''}</article>`}
-function toggleLibraryRoleSearch(){const panel=document.getElementById('libraryRoleSearch'),button=document.querySelector('[aria-controls="libraryRoleSearch"]');if(!panel)return;const open=panel.hidden;panel.hidden=!open;if(button)button.setAttribute('aria-expanded',String(open));if(open)panel.querySelector('button,input,select')?.focus()}
+// שלושה כפתורים בספרייה: חיפוש לפי תפקיד, חיפוש אקדמי ומצפן המחקר. רק פאנל אחד פתוח בכל פעם.
+function setLibraryMode(mode){const panels={role:'libraryRoleSearch',academic:'libraryAcademicSearch'};const target=document.getElementById(panels[mode]);if(!target)return;const closing=!target.hidden;Object.values(panels).forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=true;document.querySelector(`[aria-controls="${id}"]`)?.setAttribute('aria-expanded','false')});const wrap=document.getElementById('libraryResultsWrap');if(closing){if(wrap)wrap.hidden=true;return}target.hidden=false;if(wrap)wrap.hidden=false;document.querySelector(`[aria-controls="${panels[mode]}"]`)?.setAttribute('aria-expanded','true');if(mode==='academic'&&typeof activeReadingPath!=='undefined'){activeReadingPath='';document.querySelectorAll('[data-reading-path]').forEach(b=>b.classList.remove('active'))}if(typeof renderLibraryExplorer==='function')renderLibraryExplorer();target.querySelector('button,input,select')?.focus()}
+function toggleLibraryRoleSearch(){setLibraryMode('role')}
 async function saveSource(){try{let f=null;if(sourceFile.files[0])f=await uploadInput(sourceFile);const old=libraryCache.find(x=>x.id===sourceId.value)||{};const body={id:sourceId.value||undefined,title:sourceTitle.value.trim(),authors:sourceAuthors.value.trim(),year:sourceYear.value.trim(),journal:sourceJournal.value.trim(),doi:sourceDoi.value.trim(),type:sourceType.value,country:sourceCountry.value.trim(),population:sourcePopulation.value.trim(),emergency:sourceEmergency.value.trim(),application:sourceApplication.value,subject:sourceSubject.value.trim(),apa:sourceApa.value.trim(),abstract:sourceAbstract.value.trim(),fileKey:f?.key||old.fileKey||'',fileName:f?.name||old.fileName||''};const r=await fetch('/api/library',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok)throw 0;clearSourceForm();await loadLibrary(true)}catch(e){alert('שמירת המקור נכשלה')}}
 function clearSourceForm(){sourceId.value='';sourceTitle.value='';sourceAuthors.value='';sourceYear.value='';sourceJournal.value='';sourceDoi.value='';sourceCountry.value='';sourcePopulation.value='';sourceEmergency.value='';sourceApplication.value='';sourceSubject.value='';sourceApa.value='';sourceAbstract.value='';sourceFile.value=''}
 async function importSourceList(){const rows=sourceBulk.value.split(/\n+/).map(x=>x.trim()).filter(Boolean);if(!rows.length)return;await fetch('/api/library',{method:'POST',headers:apiHeaders(),body:JSON.stringify({bulk:rows})});sourceBulk.value='';await loadLibrary(true)}
