@@ -2308,24 +2308,24 @@ body:has(.feedback-modal.open){
   </div>
 
   <div id="research-suggest" class="research-suggest-wrap research-anchor">
-    <div class="research-suggest-head"><div><span>עזרו לנו לאתר ידע חשוב</span><h3>שליחת מאמר או מכון מחקר להוספה</h3></div><p>ההצעה מגיעה למנהלת הקהילה, ומתפרסמת באתר אחרי אישורה. נדרש קוד הקהילה.</p></div>
+    <div class="research-suggest-head"><div><span>עזרו לנו לאתר ידע חשוב</span><h3>הוספת מאמר או מכון מחקר</h3></div><p>המקור מתפרסם באתר מיד. נדרש קוד הקהילה.</p></div>
     <form id="researchSuggestionForm" name="research-suggestions" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitResearchSuggestion(event)">
       <input type="hidden" name="form-name" value="research-suggestions">
       <p class="research-honeypot"><label>לא למלא<input name="bot-field"></label></p>
       <div class="research-suggest-grid">
         <label>סוג ההצעה<select name="suggestionType" id="rsType" required><option value="מאמר">מאמר / מחקר</option><option value="מכון">מכון / מרכז מחקר</option></select></label>
-        <label>לאיזה חלק בעמוד להוסיף<select name="targetSection" id="rsSection" required><option>מחקרים חדשים בישראל ובעולם</option><option>בסיס מחקרי איתן</option><option>מוכנות</option><option>חוסן נפשי</option><option>רציפות למידה</option><option>צוותי חינוך ומנהיגות</option><option>טכנולוגיה AI וסימולציה בחירום</option><option>מכוני מחקר מובילים</option></select></label>
+        <label>מדור <span style="font-weight:400">(מאמר מופיע גם ב"מחקרים חדשים")</span><select name="targetSection" id="rsSection" required><option value="">בחירה</option><option>מוכנות</option><option>חוסן נפשי</option><option>רציפות למידה</option><option>צוותי חינוך ומנהיגות</option><option>טכנולוגיה AI וסימולציה בחירום</option><option>מכוני מחקר מובילים</option></select></label>
         <label class="wide">קישור למקור<input name="url" id="rsUrl" type="url" placeholder="https://..." required></label>
-        <label class="wide">כותרת המאמר / שם המכון<input name="title" id="rsTitle" required></label>
-        <label>מחברים<input name="authors" id="rsAuthors" placeholder="אם מדובר במאמר"></label>
+        <label class="wide">כותרת המאמר / שם המכון<input name="title" id="rsTitle" dir="auto" required></label>
+        <label>מחברים<input name="authors" id="rsAuthors" dir="auto" placeholder="למשל: Hazzan, O., & Levi, D."></label>
         <label>שנת פרסום<input name="year" id="rsYear" inputmode="numeric" placeholder="2026"></label>
-        <label class="wide">כתב עת / מוסד / מקור<input name="source" id="rsSource"></label>
+        <label class="wide">כתב עת / מוסד / מקור<input name="source" id="rsSource" dir="auto"></label>
         <label class="wide">מה הממצא או התרומה המרכזית?<textarea name="mainContribution" id="rsContribution" rows="3"></textarea></label>
         <label class="wide">למה חשוב להוסיף לקהילה?<textarea name="whyImportant" id="rsWhy" rows="3"></textarea></label>
         <label>שם המציע/ה<input name="submitterName" id="rsName"></label>
         <label>קוד הקהילה<input name="communityCode" id="rsCode" type="password" inputmode="numeric" autocomplete="off" required></label>
       </div>
-      <div class="research-suggest-actions"><button type="submit">שליחת ההצעה לבדיקה</button><span id="researchSuggestionStatus" aria-live="polite"></span></div>
+      <div class="research-suggest-actions"><button type="submit">פרסום באתר</button><span id="researchSuggestionStatus" aria-live="polite"></span></div>
     </form>
   </div>
 </div></section>
@@ -3185,8 +3185,8 @@ html[data-page="apps"] #apps{display:block!important}
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
     async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
     // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
-    const SRC_CATS=[['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
-    const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','מכוני מחקר מובילים':'professional'};
+    const SRC_CATS=[['research-institute','חידושי מחקר / מכוני מחקר מובילים'],['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
+    const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','מכוני מחקר מובילים':'research-institute'};
     function sourceFields(r){
       if(r.data)return r.data;
       // פניות ישנות (לפני שנשמרו השדות בנפרד): מחלצים מתוך הטקסט.
@@ -3199,7 +3199,7 @@ html[data-page="apps"] #apps{display:block!important}
     function openPublish(btn){
       const card=btn.closest('.nv-card');const old=card.querySelector('[data-pub]');if(old){old.remove();return}
       const r=V.rows.find(x=>x.id===btn.dataset.publishSource);const d=sourceFields(r);
-      const cat=SECTION_CAT[d.targetSection]||(d.suggestionType==='מכון'?'professional':'publications');
+      const cat=d.suggestionType==='מכון'?'research-institute':SECTION_CAT[d.targetSection]||'publications';
       const f=document.createElement('form');f.dataset.pub=r.id;f.className='nv-form';f.style.cssText='margin-top:10px;padding:12px;border:1px dashed #9fc2b0;border-radius:9px;background:#fbfdfb';
       f.innerHTML=`<label class="wide">לאן לפרסם<select name="category">${SRC_CATS.map(([k,l])=>`<option value="${k}"${k===cat?' selected':''}>${h(l)}</option>`).join('')}</select><span class="hint">ביקשו: ${h(d.targetSection||'—')} · ${h(d.suggestionType||'')}</span></label>
         <label class="wide">כותרת<input name="title" dir="auto" value="${h(d.title)}"></label>
@@ -3211,7 +3211,7 @@ html[data-page="apps"] #apps{display:block!important}
         <div class="wide nv-row"><button type="submit" class="nv-btn small primary">פרסום עכשיו</button><button type="button" class="nv-btn small" data-pub-cancel>ביטול</button><span class="nv-status" data-pub-st></span></div>`;
       f.addEventListener('submit',async ev=>{
         ev.preventDefault();const st=f.querySelector('[data-pub-st]');const item=Object.fromEntries(new FormData(f));
-        if(item.category.startsWith('research-')&&(!item.authors.trim()||!item.year.trim()||!item.source.trim())){st.className='nv-status err';st.textContent='במדורי חידושי המחקר צריך מחברים, שנה ומקור. אפשר להשלים, או לפרסם בספרייה.';return}
+        if(item.category.startsWith('research-')&&item.category!=='research-institute'&&(!item.authors.trim()||!item.year.trim()||!item.source.trim())){st.className='nv-status err';st.textContent='במדורי חידושי המחקר צריך מחברים, שנה ומקור. אפשר להשלים, או לפרסם בספרייה.';return}
         st.className='nv-status';st.textContent='מפרסמת…';
         try{const j=await api('POST',{action:'publish-source',id:r.id,item});await load();render();refreshBadge();msg(`"${j.resource.title}" פורסם באתר ✓`,'ok')}catch(err){st.className='nv-status err';st.textContent=err.message}
       });
@@ -4416,6 +4416,7 @@ const catLabels={
   'research-continuity':'מחקרים / רציפות למידה',
   'research-teachers':'מחקרים / צוותי חינוך ומנהיגות',
   'research-tech':'מחקרים / טכנולוגיה AI וסימולציה בחירום',
+  'research-institute':'מחקרים / מכוני מחקר מובילים',
   'community-activity':'מה שקורה עכשיו / פעילות חדשה בקהילה',
   'active-project':'מה שקורה עכשיו / פרויקט פעיל'
 };
@@ -5312,7 +5313,8 @@ async function renderResearchWorld(){
  await loadUploadedResearch();
  const insights=document.getElementById('researchInsights'),institutes=document.getElementById('researchInstitutes'),foundation=document.getElementById('researchFoundation');
  if(foundation)foundation.innerHTML=researchFoundationData.map(x=>`<article class="research-foundation-item${x.featured?' featured':''}">${x.label?`<div class="research-foundation-origin">${esc(x.label)}</div>`:''}<h4>${esc(x.title)}</h4><p>${esc(x.body)}</p>${x.source?`<div class="research-foundation-evidence"><strong>מקור המושג:</strong> <a href="${escAttr(x.source[1])}" target="_blank" rel="noopener">${esc(x.source[0])}</a></div>`:''}${x.support?.length?`<div class="research-foundation-evidence"><strong>ספרות תומכת ברכיבי המסגרת:</strong> ${x.support.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div>`:''}${x.evidence?.length?`<div class="research-foundation-evidence"><strong>מקורות מבססים:</strong> ${x.evidence.map(e=>`<a href="${escAttr(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(' · ')}</div>`:''}</article>`).join('');
- if(institutes)institutes.innerHTML=researchInstitutesData.map(x=>`<article class="research-institute"><h4>${esc(x.name)}</h4><div class="research-institute-type">${esc(x.type)}</div><p><strong>התרומה:</strong> ${esc(x.contribution)}</p><p><strong>הרלוונטיות לקהילה:</strong> ${esc(x.relevance)}</p><a href="${escAttr(x.url)}" target="_blank" rel="noopener">לאתר / מרכז המחקר</a></article>`).join('');
+ let addedInstitutes=[];try{const r=await fetch('/api/resources?category=research-institute');if(r.ok)addedInstitutes=(await r.json()).map(x=>({name:x.title,type:x.source||'מכון / מרכז מחקר',contribution:x.description||'',relevance:x.whyImportant||'',url:x.url||x.fileUrl||'',by:x.suggestedBy||''}))}catch(e){}
+ if(institutes)institutes.innerHTML=[...addedInstitutes,...researchInstitutesData].map(x=>`<article class="research-institute"><h4>${esc(x.name)}</h4><div class="research-institute-type">${esc(x.type)}</div><p><strong>התרומה:</strong> ${esc(x.contribution)}</p>${x.relevance?`<p><strong>הרלוונטיות לקהילה:</strong> ${esc(x.relevance)}</p>`:''}${x.by?`<p class="muted" style="font-size:11.5px">הוסיף/ה: ${esc(x.by)}</p>`:''}<a href="${escAttr(x.url)}" target="_blank" rel="noopener">לאתר / מרכז המחקר</a></article>`).join('');
  renderWeeklyDossier();
  renderResearchStudies();
  renderResearchPracticeSources();
@@ -5479,6 +5481,8 @@ async function openCommunityMail(){
 }
 </script>
 <script id="research-suggestions-v60">
+// מכון מחקר → המדור "מכוני מחקר מובילים"; מאמר → אחד מחמשת המדורים.
+document.addEventListener('change',e=>{if(e.target.id!=='rsType')return;const sec=document.getElementById('rsSection');if(e.target.value==='מכון')sec.value='מכוני מחקר מובילים';else if(sec.value==='מכוני מחקר מובילים')sec.value=''});
 async function submitResearchSuggestion(event){
  event.preventDefault();
  const form=event.currentTarget,status=document.getElementById('researchSuggestionStatus');
@@ -5488,7 +5492,8 @@ async function submitResearchSuggestion(event){
    const r=await fetch('/api/research-suggestions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
    const j=await r.json().catch(()=>({}));
    if(!r.ok)throw new Error(j.message||'השליחה נכשלה');
-   form.reset();status.className='success';status.textContent='תודה! ההצעה נשמרה, ותתפרסם באתר אחרי אישור של מנהלת הקהילה.';
+   form.reset();status.className='success';status.textContent='✓ פורסם! תודה. המקור מופיע עכשיו בעמוד.';
+   if(typeof renderResearchWorld==='function')renderResearchWorld().catch(()=>{});
  }catch(e){status.className='error';status.textContent=e.message||'השליחה נכשלה';}
 }
 </script>

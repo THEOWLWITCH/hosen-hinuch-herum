@@ -4,7 +4,7 @@ import { loadPeople } from "../lib/calls.mts";
 import { TYPE_LABELS, addRequest, getRequest, listRequests, updateRequest } from "../lib/requests.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
-const SOURCE_CATEGORIES = ["research-preparedness", "research-resilience", "research-continuity", "research-teachers", "research-tech", "publications", "professional", "policy", "research-tools"];
+const SOURCE_CATEGORIES = ["research-institute", "research-preparedness", "research-resilience", "research-continuity", "research-teachers", "research-tech", "publications", "professional", "policy", "research-tools"];
 
 export default async (req: Request) => {
   if (req.method === "GET") {
@@ -73,7 +73,7 @@ export default async (req: Request) => {
     };
     if (!item.title) return json({ error: "missing", message: "חסרה כותרת." }, 400);
     if (!/^https?:\/\//i.test(item.url)) return json({ error: "missing", message: "חסר קישור תקין." }, 400);
-    if (category.startsWith("research-") && (!item.authors || !item.year || !item.source))
+    if (category.startsWith("research-") && category !== "research-institute" && (!item.authors || !item.year || !item.source))
       return json({ error: "missing", message: "במדורי המחקר צריך מחברים, שנה ומקור." }, 400);
     const now = new Date().toISOString();
     const res = { ...item, id: id(), category, type: "link", active: true, gallery: [], suggestedBy: r.name || "", createdAt: now, updatedAt: now };
