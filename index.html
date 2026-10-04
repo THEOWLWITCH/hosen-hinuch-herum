@@ -2308,7 +2308,7 @@ body:has(.feedback-modal.open){
   </div>
 
   <div id="research-suggest" class="research-suggest-wrap research-anchor">
-    <div class="research-suggest-head"><div><span>עזרו לנו לאתר ידע חשוב</span><h3>שליחת מאמר או מכון מחקר להוספה</h3></div><p>ההצעה נשמרת לבדיקה ואינה מתפרסמת אוטומטית. נדרש קוד הקהילה.</p></div>
+    <div class="research-suggest-head"><div><span>עזרו לנו לאתר ידע חשוב</span><h3>שליחת מאמר או מכון מחקר להוספה</h3></div><p>ההצעה מגיעה למנהלת הקהילה, ומתפרסמת באתר אחרי אישורה. נדרש קוד הקהילה.</p></div>
     <form id="researchSuggestionForm" name="research-suggestions" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitResearchSuggestion(event)">
       <input type="hidden" name="form-name" value="research-suggestions">
       <p class="research-honeypot"><label>לא למלא<input name="bot-field"></label></p>
@@ -3178,13 +3178,49 @@ html[data-page="apps"] #apps{display:block!important}
           <div class="nv-row" style="margin-top:6px"><select data-status="${h(r.id)}" style="width:auto">${Object.entries(ST).map(([k,[l]])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}</select>
             <input data-note="${h(r.id)}" value="${h(r.note)}" placeholder="הערה פנימית (למשל: שולם, חזרתי אליה)" style="flex:1;min-width:200px">
             ${r.email?`<a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}&body=${encodeURIComponent(`שלום ${r.name||''},\n\n`)}">✉ השבה</a>`:''}
+            ${r.type==='source'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-publish-source="${h(r.id)}">✓ פרסום באתר</button>`:''}
             ${r.type==='join'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-approve-join="${h(r.id)}">✓ אישור והוספה לנבחרת</button>`:r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
         <div class="nv-status" data-st></div>`;
     }
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
     async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
+    // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
+    const SRC_CATS=[['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
+    const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','מכוני מחקר מובילים':'professional'};
+    function sourceFields(r){
+      if(r.data)return r.data;
+      // פניות ישנות (לפני שנשמרו השדות בנפרד): מחלצים מתוך הטקסט.
+      const lines=String(r.body||'').split('\n'),d={title:r.subject,submitterName:r.name};const rest=[];
+      const KEYS=['suggestionType','targetSection','url','title','authors','year','source','mainContribution','whyImportant'];
+      for(const l of lines){const kv=l.match(/^(\w+): ([\s\S]*)$/);if(kv&&KEYS.includes(kv[1])){d[kv[1]]=kv[2].trim();continue}
+        if(l.startsWith('סוג: '))d.suggestionType=l.slice(5);else if(l.startsWith('לחלק: '))d.targetSection=l.slice(6);else if(!d.url&&/^https?:\/\//.test(l))d.url=l.trim();else if(l.trim())rest.push(l)}
+      d.mainContribution=d.mainContribution||rest[0]||'';d.whyImportant=d.whyImportant||rest.slice(1).join('\n');return d;
+    }
+    function openPublish(btn){
+      const card=btn.closest('.nv-card');const old=card.querySelector('[data-pub]');if(old){old.remove();return}
+      const r=V.rows.find(x=>x.id===btn.dataset.publishSource);const d=sourceFields(r);
+      const cat=SECTION_CAT[d.targetSection]||(d.suggestionType==='מכון'?'professional':'publications');
+      const f=document.createElement('form');f.dataset.pub=r.id;f.className='nv-form';f.style.cssText='margin-top:10px;padding:12px;border:1px dashed #9fc2b0;border-radius:9px;background:#fbfdfb';
+      f.innerHTML=`<label class="wide">לאן לפרסם<select name="category">${SRC_CATS.map(([k,l])=>`<option value="${k}"${k===cat?' selected':''}>${h(l)}</option>`).join('')}</select><span class="hint">ביקשו: ${h(d.targetSection||'—')} · ${h(d.suggestionType||'')}</span></label>
+        <label class="wide">כותרת<input name="title" dir="auto" value="${h(d.title)}"></label>
+        <label>מחברים<input name="authors" dir="auto" value="${h(d.authors)}"></label><label>שנה<input name="year" value="${h(d.year)}" inputmode="numeric"></label>
+        <label class="wide">כתב עת / מוסד / מקור<input name="source" dir="auto" value="${h(d.source)}"></label>
+        <label class="wide">קישור<input name="url" dir="ltr" value="${h(d.url)}"></label>
+        <label class="wide">הממצא או התרומה המרכזית<textarea name="description" rows="3">${h(d.mainContribution)}</textarea></label>
+        <label class="wide">למה חשוב לקהילה<textarea name="whyImportant" rows="2">${h(d.whyImportant)}</textarea></label>
+        <div class="wide nv-row"><button type="submit" class="nv-btn small primary">פרסום עכשיו</button><button type="button" class="nv-btn small" data-pub-cancel>ביטול</button><span class="nv-status" data-pub-st></span></div>`;
+      f.addEventListener('submit',async ev=>{
+        ev.preventDefault();const st=f.querySelector('[data-pub-st]');const item=Object.fromEntries(new FormData(f));
+        if(item.category.startsWith('research-')&&(!item.authors.trim()||!item.year.trim()||!item.source.trim())){st.className='nv-status err';st.textContent='במדורי חידושי המחקר צריך מחברים, שנה ומקור. אפשר להשלים, או לפרסם בספרייה.';return}
+        st.className='nv-status';st.textContent='מפרסמת…';
+        try{const j=await api('POST',{action:'publish-source',id:r.id,item});await load();render();refreshBadge();msg(`"${j.resource.title}" פורסם באתר ✓`,'ok')}catch(err){st.className='nv-status err';st.textContent=err.message}
+      });
+      card.appendChild(f);f.querySelector('[name=title]').focus();
+    }
     root.addEventListener('click',async e=>{
       const f=e.target.closest('[data-f]');if(f){V.status=f.dataset.f;render();return}
+      const ps=e.target.closest('[data-publish-source]');if(ps){openPublish(ps);return}
+      const pc=e.target.closest('[data-pub-cancel]');if(pc){pc.closest('[data-pub]').remove();return}
       const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg(j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת — תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`,'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
       const b=e.target.closest('[data-bulk]');if(b){const ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו פניות.','err');try{await update(ids,{status:b.dataset.bulk});msg(`עודכנו ${ids.length} פניות ✓`,'ok')}catch(err){msg(err.message,'err')}return}
       if(e.target.matches('[data-allsel]'))root.querySelectorAll('[data-sel]').forEach(i=>i.checked=e.target.checked);
@@ -5452,7 +5488,7 @@ async function submitResearchSuggestion(event){
    const r=await fetch('/api/research-suggestions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
    const j=await r.json().catch(()=>({}));
    if(!r.ok)throw new Error(j.message||'השליחה נכשלה');
-   form.reset();status.className='success';status.textContent='ההצעה נשמרה לבדיקה. תודה.';
+   form.reset();status.className='success';status.textContent='תודה! ההצעה נשמרה, ותתפרסם באתר אחרי אישור של מנהלת הקהילה.';
  }catch(e){status.className='error';status.textContent=e.message||'השליחה נכשלה';}
 }
 </script>

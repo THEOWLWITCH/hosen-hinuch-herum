@@ -4,6 +4,7 @@ import { loadPeople } from "../lib/calls.mts";
 import { TYPE_LABELS, addRequest, getRequest, listRequests, updateRequest } from "../lib/requests.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
+const SOURCE_CATEGORIES = ["research-preparedness", "research-resilience", "research-continuity", "research-teachers", "research-tech", "publications", "professional", "policy", "research-tools"];
 
 export default async (req: Request) => {
   if (req.method === "GET") {
@@ -57,6 +58,28 @@ export default async (req: Request) => {
     await st.setJSON(`people/${person.id}.json`, person);
     await updateRequest(r.id, { status: "done", note: `נוסף לנבחרת ${new Date().toLocaleDateString("he-IL")}${r.note ? " · " + r.note : ""}` });
     return json({ ok: true, merged: !!same, person: { id: person.id, name: person.name } });
+  }
+
+  // פרסום מקור שהוצע ("שליחת מאמר או מכון מחקר"): המקור עולה לאתר, והפנייה מסומנת כטופלה.
+  if (body.action === "publish-source") {
+    const r = await getRequest(clip(body.id, 60));
+    if (!r || r.type !== "source") return json({ error: "not_found", message: "הפנייה לא נמצאה." }, 404);
+    const it = body.item || {};
+    const category = clip(it.category, 60);
+    if (!SOURCE_CATEGORIES.includes(category)) return json({ error: "invalid", message: "נא לבחור לאן לפרסם." }, 400);
+    const item = {
+      title: clip(it.title, 500), authors: clip(it.authors, 700), year: clip(it.year, 20), source: clip(it.source, 500),
+      url: clip(it.url, 1200), description: clip(it.description, 5000), whyImportant: clip(it.whyImportant, 5000),
+    };
+    if (!item.title) return json({ error: "missing", message: "חסרה כותרת." }, 400);
+    if (!/^https?:\/\//i.test(item.url)) return json({ error: "missing", message: "חסר קישור תקין." }, 400);
+    if (category.startsWith("research-") && (!item.authors || !item.year || !item.source))
+      return json({ error: "missing", message: "במדורי המחקר צריך מחברים, שנה ומקור." }, 400);
+    const now = new Date().toISOString();
+    const res = { ...item, id: id(), category, type: "link", active: true, gallery: [], suggestedBy: r.name || "", createdAt: now, updatedAt: now };
+    await store("hosen-data").setJSON(`resources/${res.id}.json`, res);
+    await updateRequest(r.id, { status: "done", note: `פורסם באתר ${new Date().toLocaleDateString("he-IL")}${r.note ? " · " + r.note : ""}` });
+    return json({ ok: true, resource: { id: res.id, title: res.title, category } });
   }
 
   if (body.action === "update") {

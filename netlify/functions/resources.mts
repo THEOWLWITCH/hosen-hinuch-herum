@@ -23,7 +23,8 @@ async function listAll(): Promise<Resource[]> {
 }
 
 function publicVisible(x: Resource) {
-  const today = new Date().toISOString().slice(0,10);
+  // התאריך בישראל (ולא UTC): פריט שהועלה אחרי חצות לא ייעלם עד 03:00.
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
   if (x.active === false) return false;
   if (x.startDate && x.startDate > today) return false;
   if (x.endDate && x.endDate < today) return false;

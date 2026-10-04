@@ -70,6 +70,11 @@ export default async (req: Request) => {
     type: "source", name: clean(body.submitterName, 200), email: "", subject: clean(body.title, 300),
     body: [`סוג: ${clean(body.suggestionType, 80)}`, `לחלק: ${clean(body.targetSection, 120)}`, parsedUrl.toString(), clean(body.mainContribution, 2000), clean(body.whyImportant, 2000)].filter(Boolean).join("\n"),
     link: "/articles",
+    data: {
+      suggestionType: clean(body.suggestionType, 80), targetSection: clean(body.targetSection, 120), url: parsedUrl.toString(),
+      title: clean(body.title, 500), authors: clean(body.authors, 700), year: clean(body.year, 20), source: clean(body.source, 500),
+      mainContribution: clean(body.mainContribution, 5000), whyImportant: clean(body.whyImportant, 5000), submitterName: clean(body.submitterName, 200),
+    },
   }).catch(() => {});
 
   return json({ ok: true });
