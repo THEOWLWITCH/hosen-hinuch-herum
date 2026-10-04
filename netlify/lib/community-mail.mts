@@ -36,7 +36,7 @@ export function renderHtml(text: string, site: string): string {
   }
   close();
   return `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:620px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${html}
-<div style="margin-top:18px"><img src="${site}/assets/community-logo-email.jpg" alt="בינה מלאכותית: חוסן-חינוך-חרום" width="190" style="display:block;width:190px;max-width:190px;height:auto;border:0"></div></div>`;
+<div style="margin-top:18px"><img src="${site}/assets/community-logo-email.jpg" alt="בינה מלאכותית: חוסן-חינוך-חרום" width="360" style="display:block;width:360px;max-width:100%;height:auto;border:0"></div></div>`;
 }
 
 export function plainText(text: string): string {

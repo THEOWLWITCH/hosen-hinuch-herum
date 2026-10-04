@@ -5385,7 +5385,7 @@ function collectCommunityEmails(){
 }
 async function copyCommunityEmailLogo(){
   const logoUrl='https://hosen-hinuch-herum.netlify.app/assets/community-logo-email.jpg';
-  const html='<div style="margin-top:16px;"><img src="'+logoUrl+'" alt="בינה מלאכותית: חוסן-חינוך-חרום" width="190" style="display:block;width:190px;max-width:190px;height:auto;border:0;"></div>';
+  const html='<div style="margin-top:16px;"><img src="'+logoUrl+'" alt="בינה מלאכותית: חוסן-חינוך-חרום" width="360" style="display:block;width:360px;max-width:100%;height:auto;border:0;"></div>';
   try{
     if(navigator.clipboard && window.ClipboardItem){
       const item=new ClipboardItem({
