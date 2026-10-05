@@ -254,12 +254,13 @@ async function listAll(): Promise<Person[]> {
   const { blobs }=await st.list({prefix:"people/"});
   for(const b of blobs){
     const v=await st.get(b.key,{type:"json"}) as Person | null;
-    if(!v?.id) continue;
+    if(!v?.id || typeof v!=="object") continue;
     if(v.deleted) map.delete(v.id); else map.set(v.id,{...v,email:String(v.email||"").trim()||EMAIL_BACKFILL[v.id]||""});
   }
   return [...map.values()]
     .filter(x=>!x.deleted)
-    .sort((a,b)=>(a.order||0)-(b.order||0) || a.name.localeCompare(b.name,"he"))
+    .filter(x=>String(x.name||"").trim())
+    .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0) || String(a.name||"").localeCompare(String(b.name||""),"he"))
     .map(x=>({...x,photoUrl:x.photoKey?`/api/file?key=${encodeURIComponent(x.photoKey)}`:""}));
 }
 

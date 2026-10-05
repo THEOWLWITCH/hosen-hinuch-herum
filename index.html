@@ -4290,7 +4290,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
     <div id="adminGalleryList" class="admin-list"></div>
   </section>
   <section id="adminPeople" hidden>
-    <h3>הוספה / עריכת חבר/ת הנבחרת</h3>
+    <h3 id="adminPeopleHead">חברות וחברי הנבחרת</h3>
+    <p class="admin-note" style="margin-top:0">עריכה, מחיקה והסרה מרשימות הדיוור. להוספת חבר/ה חדש/ה — הטופס מתחת לרשימה.</p>
+    <div id="adminPeopleList" class="admin-list"></div>
+    <h3 id="adminPersonFormHead" style="margin-top:22px">הוספה / עריכת חבר/ת הנבחרת</h3>
     <input type="hidden" id="personId">
     <div class="admin-grid">
       <label>שם מלא*<input id="personName" dir="auto"></label>
@@ -4313,7 +4316,6 @@ html[data-page="calls"] #resourceArea{display:none!important}
     </div>
     <div class="admin-actions"><button type="button" onclick="savePerson()">שמירה</button><button type="button" class="secondary" onclick="clearPersonForm()">ניקוי</button></div>
     <div id="peopleSaveStatus" class="inline-status" role="status" aria-live="polite"></div>
-    <div id="adminPeopleList" class="admin-list"></div>
   </section>
   <section id="adminMessages" hidden>
     <h3>הודעות קהילה</h3>
@@ -4855,10 +4857,14 @@ async function loadAdminPeople(){
   if(box)box.innerHTML='<p class="muted">טוען...</p>';
   const r=await fetch('/api/people?admin=1',{headers:{Authorization:'Bearer '+editorToken}});
   if(r.status===401){logoutEditor();return}
-  adminPeopleCache=await r.json();
+  adminPeopleCache=await r.json().catch(()=>null);
+  if(!Array.isArray(adminPeopleCache)){adminPeopleCache=[];if(box)box.innerHTML=`<p class="muted">רשימת הנבחרת לא נטענה (שגיאה ${r.status}). אפשר לרענן ולנסות שוב.</p>`;return}
   try{const o=await fetch('/api/calls?optout=1',{headers:{Authorization:'Bearer '+editorToken}});adminMailOff=new Set(o.ok?(await o.json()).optout||[]:[])}catch(e){adminMailOff=new Set()}
   if(!box)return;
+  const ph=document.getElementById('adminPeopleHead');if(ph)ph.textContent=`חברות וחברי הנבחרת (${adminPeopleCache.length})`;
+  try{
   box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div class="admin-person-summary">${personPhotoMarkup(x)}<div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>סדר: ${esc(String(x.order||''))}${x.institution?' · '+esc(x.institution):''}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small>${x.email&&adminMailOff.has(String(x.email).trim().toLowerCase())?'<div class="admin-mail-off">📭 הוסר/ה מרשימות הדיוור — נשאר/ת בנבחרת ובאתר</div>':''}${x.motto?`<div class="admin-person-motto" dir="auto">${esc(x.motto)}</div>`:''}</div></div><div class="admin-row-actions">${x.email?(adminMailOff.has(String(x.email).trim().toLowerCase())?`<button type="button" onclick="setPersonMail('${escAttr(x.id)}',false)">📬 החזרה לדיוור</button>`:`<button type="button" onclick="setPersonMail('${escAttr(x.id)}',true)">📭 הסרה מהדיוור</button>`):''}<button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
+  }catch(e){box.innerHTML=`<p class="muted">הצגת הרשימה נכשלה: ${esc(e.message||String(e))}</p>`}
 }
 function clearPersonForm(){
   document.getElementById('personId').value='';
@@ -4895,7 +4901,7 @@ function editPerson(id){
   document.getElementById('personPhoto').value='';
   personExistingPhoto=x.photoKey?{key:x.photoKey,name:x.photoName||'',url:x.photoUrl||''}:null;
   renderPersonPhotoPreview();
-  document.getElementById('adminPeople').scrollIntoView({behavior:'smooth',block:'start'});
+  (document.getElementById('adminPersonFormHead')||document.getElementById('adminPeople')).scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function savePerson(){
   const st=document.getElementById('peopleSaveStatus');
