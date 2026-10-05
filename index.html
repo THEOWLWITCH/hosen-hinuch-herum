@@ -3153,10 +3153,10 @@ html[data-page="apps"] #apps{display:block!important}
 
   async function openInbox(){
     if(!token()){if(typeof openManagementAccess==='function')openManagementAccess();return}
-    if(typeof closeAdmin==='function')closeAdmin();
+    if(window.hosenDock)hosenDock.minimizeAdmin(true);else if(typeof closeAdmin==='function')closeAdmin();
     const m=document.createElement('div');m.className='nv-modal';
-    m.innerHTML='<div class="nv-dialog wide" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><div data-rq><p class="nv-status">טוען…</p></div></div>';
-    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('nv-x'))m.remove()});
+    m.innerHTML='<div class="nv-dialog wide" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><button type="button" class="nv-min" title="הקטנה" aria-label="הקטנה">▁</button><div data-rq><p class="nv-status">טוען…</p></div></div>';
+    m.addEventListener('click',e=>{if(e.target.classList.contains('nv-min')){m.style.display='none';if(window.hosenDock)hosenDock.add('📥 תיבת הפניות',()=>{m.style.display='flex'},m);return}if(e.target===m||e.target.classList.contains('nv-x')){m.remove();if(window.hosenDock)hosenDock.drop(m)}});
     document.body.appendChild(m);
     const root=m.querySelector('[data-rq]');
     const V={status:'open',type:'',q:'',rows:[],types:{}};
@@ -3175,16 +3175,36 @@ html[data-page="apps"] #apps{display:block!important}
         <div class="nv-list">${rows.map(r=>`<div class="nv-card" style="margin:0;${r.status==='done'?'opacity:.7':''}">
           <div class="nv-row" style="justify-content:space-between"><label class="nv-row"><input type="checkbox" data-sel="${h(r.id)}"> <strong>${h(r.subject)}</strong></label><span class="nv-row"><span class="nv-badge">${h(V.types[r.type]||r.type)}</span><span class="nv-badge ${ST[r.status][1]}">${ST[r.status][0]}</span></span></div>
           <p class="nv-status" style="margin:4px 0">${new Date(r.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})} · ${h(r.name||'ללא שם')}${r.email?` · <span dir="ltr">${h(r.email)}</span>`:''}</p>
+          ${(r.replies||[]).length?`<details><summary class="nv-status" style="cursor:pointer">✉ ${r.replies.length===1?'נשלחה תשובה אחת':'נשלחו '+r.replies.length+' תשובות'} · אחרונה ${new Date(r.replies[r.replies.length-1].at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</summary>${r.replies.map(x=>`<div class="rq-reply"><div class="nv-status" style="margin:0">${new Date(x.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})} · ${h(x.subject)}</div><p style="white-space:pre-wrap;margin:4px 0 0">${h(x.text)}</p></div>`).join('')}</details>`:''}
           ${r.body?`<details><summary class="nv-status" style="cursor:pointer">פרטי הפנייה</summary><p style="white-space:pre-wrap;margin:6px 0">${h(r.body)}</p></details>`:''}
           <div class="nv-row" style="margin-top:6px"><select data-status="${h(r.id)}" style="width:auto">${Object.entries(ST).map(([k,[l]])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}</select>
             <input data-note="${h(r.id)}" value="${h(r.note)}" placeholder="הערה פנימית (למשל: שולם, חזרתי אליה)" style="flex:1;min-width:200px">
-            ${r.email?`<a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}&body=${encodeURIComponent(`שלום ${r.name||''},\n\n`)}">✉ השבה</a>`:''}
+            ${r.email?`<button type="button" class="nv-btn small primary" data-reply="${h(r.id)}">✉ כתיבת תשובה</button>`:''}
             ${r.type==='source'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-publish-source="${h(r.id)}">✓ פרסום באתר</button>`:''}
             ${r.type==='join'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-approve-join="${h(r.id)}">✓ אישור והוספה לנבחרת</button>`:r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
         <div class="nv-status" data-st></div>`;
     }
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
     async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
+    // תשובה במייל מתוך התיבה: נשלחת מהאתר ונשמרת בהיסטוריה של הפנייה.
+    function openReply(btn){
+      const card=btn.closest('.nv-card');const old=card.querySelector('[data-reply-form]');if(old){old.remove();return}
+      const r=V.rows.find(x=>x.id===btn.dataset.reply);
+      const f=document.createElement('form');f.dataset.replyForm=r.id;f.className='nv-form';f.style.cssText='margin-top:10px;padding:12px;border:1px dashed #9fc2b0;border-radius:9px;background:#fbfdfb';
+      f.innerHTML=`<label class="wide">אל<input value="${h(r.name?r.name+' <'+r.email+'>':r.email)}" dir="auto" disabled></label>
+        <label class="wide">נושא<input name="subject" dir="auto" value="${h('בעניין: '+r.subject)}"></label>
+        <label class="wide">התשובה<textarea name="text" rows="8" dir="auto">${h(`שלום ${r.name||''},\n\n\n\nבברכה,\nד״ר יעל שדה\nבינה מלאכותית: חוסן-חינוך-חרום`)}</textarea></label>
+        <label>אחרי השליחה, הפנייה<select name="status"><option value="">${r.status==='new'?'תעבור ל"בטיפול"':'תישאר '+ST[r.status][0]}</option><option value="in_progress">🟠 בטיפול</option><option value="done">✓ טופלה</option></select></label>
+        <div class="wide nv-row"><button type="submit" class="nv-btn small primary">שליחה</button><button type="button" class="nv-btn small" data-reply-cancel>ביטול</button><a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}">או לכתוב ב-Gmail</a><span class="nv-status" data-reply-st></span></div>`;
+      f.addEventListener('submit',async ev=>{
+        ev.preventDefault();const st=f.querySelector('[data-reply-st]');const d=Object.fromEntries(new FormData(f));
+        if(String(d.text||'').trim().length<2){st.className='nv-status err';st.textContent='צריך לכתוב תשובה.';return}
+        const b=f.querySelector('[type=submit]');b.disabled=true;st.className='nv-status';st.textContent='שולחת…';
+        try{await api('POST',{action:'reply',id:r.id,subject:d.subject,text:d.text,status:d.status});await load();render();refreshBadge();msg(`התשובה נשלחה אל ${r.name||r.email} ✓`,'ok')}
+        catch(err){b.disabled=false;st.className='nv-status err';st.textContent=err.message}
+      });
+      card.appendChild(f);const ta=f.querySelector('textarea');ta.focus();const pos=ta.value.indexOf('\n\n')+2;ta.setSelectionRange(pos,pos);
+    }
     // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
     const SRC_CATS=[['research-institute','חידושי מחקר / מכוני מחקר מובילים'],['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
     const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','מכוני מחקר מובילים':'research-institute'};
@@ -3220,6 +3240,8 @@ html[data-page="apps"] #apps{display:block!important}
     }
     root.addEventListener('click',async e=>{
       const f=e.target.closest('[data-f]');if(f){V.status=f.dataset.f;render();return}
+      const rp=e.target.closest('[data-reply]');if(rp){openReply(rp);return}
+      const rc=e.target.closest('[data-reply-cancel]');if(rc){rc.closest('[data-reply-form]').remove();return}
       const ps=e.target.closest('[data-publish-source]');if(ps){openPublish(ps);return}
       const pc=e.target.closest('[data-pub-cancel]');if(pc){pc.closest('[data-pub]').remove();return}
       const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg(j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת — תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`,'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
@@ -4176,7 +4198,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
 <div id="adminModal" class="modal" aria-hidden="true">
  <div class="modal-card admin-card" dir="rtl">
   <button type="button" class="close" onclick="closeAdmin()">×</button>
-  <div class="admin-head"><h2 id="adminPanelTitle">ניהול מערכת</h2><div class="admin-head-actions"><button id="adminCommunityMail" type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
+  <div class="admin-head"><h2 id="adminPanelTitle">ניהול מערכת</h2><div class="admin-head-actions"><button id="adminCommunityMail" type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-min" onclick="hosenDock&&hosenDock.minimizeAdmin()" title="הקטנה — חוזרים בלחיצה על הלשונית למטה, בלי לצאת">▁ הקטנה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
   <div class="admin-tabs" id="adminTabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">כל החומרים</button><button id="tabLib" onclick="showAdminTab('library')">מאגר מקורות</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
   <section id="adminResources">
    <h3 id="adminResourcesTitle">ניהול כל החומרים באתר</h3>
@@ -5707,6 +5729,25 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       const sync=()=>{b.hidden=!!mail.hidden};new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
     }
   });
+})();
+</script>
+<style id="dock-v1-css">
+.admin-min{border:1px solid #c8d8e0;background:#fff;color:#2a5068;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.nv-min{position:absolute;top:10px;left:44px;border:0;background:transparent;font-size:18px;font-weight:700;color:#7d898f;cursor:pointer;line-height:1}
+.hosen-dock{position:fixed;bottom:14px;left:14px;z-index:23000;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.hosen-dock button{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border:1px solid #2f6e4f;border-radius:999px;background:#2f6e4f;color:#fff;font:inherit;font-size:14px;font-weight:700;box-shadow:0 8px 22px rgba(25,42,51,.22);cursor:pointer}
+.rq-reply{margin:6px 0 0;padding:8px 10px;border-right:3px solid #9fc2b0;background:#f7fbf8;border-radius:6px}
+</style>
+<script id="dock-v1-js">
+/* הקטנת מסכי הניהול: המסך נשאר פתוח (עם כל מה שמולא בו) ומופיע כלשונית בפינה — בלי לצאת. */
+(function(){
+  const items=new Map();let dock=null;
+  function ensure(){if(!dock){dock=document.createElement('div');dock.className='hosen-dock';dock.setAttribute('aria-label','מסכים מוקטנים');document.body.appendChild(dock)}return dock}
+  function add(label,restore,key){key=key||label;drop(key);const b=document.createElement('button');b.type='button';b.textContent='▲ '+label;b.title='פתיחה מחדש';b.onclick=()=>{drop(key);restore()};ensure().appendChild(b);items.set(key,b)}
+  function drop(key){const b=items.get(key);if(b){b.remove();items.delete(key)}}
+  function minimizeAdmin(onlyIfOpen){const m=document.getElementById('adminModal');if(!m||m.style.display!=='flex')return;m.style.display='none';add('🔒 ניהול מערכת',()=>{m.style.display='flex';m.setAttribute('aria-hidden','false')},'admin')}
+  window.hosenDock={add,drop,minimizeAdmin};
+  document.addEventListener('DOMContentLoaded',()=>{const m=document.getElementById('adminModal');if(m)new MutationObserver(()=>{if(m.style.display==='flex')drop('admin')}).observe(m,{attributes:true,attributeFilter:['style']})});
 })();
 </script>
 </body></html>

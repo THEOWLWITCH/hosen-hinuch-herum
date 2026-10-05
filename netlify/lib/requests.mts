@@ -6,6 +6,7 @@ export type RequestStatus = "new" | "in_progress" | "done";
 export type InboxRequest = {
   id: string; type: RequestType; name: string; email: string; subject: string; body: string; link: string;
   at: string; status: RequestStatus; note: string; updatedAt: string; data?: Record<string, unknown>;
+  replies?: { at: string; subject: string; text: string }[];
 };
 
 export const TYPE_LABELS: Record<RequestType, string> = {
@@ -42,6 +43,19 @@ export async function updateRequest(rid: string, patch: { status?: string; note?
   if (patch.status && ["new", "in_progress", "done"].includes(patch.status)) v.status = patch.status as RequestStatus;
   if (patch.note !== undefined) v.note = clip(patch.note, 2000);
   v.updatedAt = new Date().toISOString();
+  await data().setJSON(`requests/${rid}.json`, v);
+  return v;
+}
+
+// תשובה שנשלחה מתוך תיבת הפניות — נשמרת בהיסטוריה של הפנייה.
+export async function addReply(rid: string, reply: { subject: string; text: string }, status?: string) {
+  const v = await getRequest(rid);
+  if (!v) return null;
+  const at = new Date().toISOString();
+  v.replies = [...(v.replies || []), { at, subject: clip(reply.subject, 300), text: clip(reply.text, 8000) }].slice(-20);
+  if (status && ["new", "in_progress", "done"].includes(status)) v.status = status as RequestStatus;
+  else if (v.status === "new") v.status = "in_progress";
+  v.updatedAt = at;
   await data().setJSON(`requests/${rid}.json`, v);
   return v;
 }

@@ -1,7 +1,8 @@
 import type { Config } from "@netlify/functions";
 import { id, json, looksHuman, store, validToken } from "../lib/shared.mts";
 import { loadPeople } from "../lib/calls.mts";
-import { TYPE_LABELS, addRequest, getRequest, listRequests, updateRequest } from "../lib/requests.mts";
+import { mailConfigured, mailErrorHint, sendMail, siteUrl } from "../lib/calls.mts";
+import { TYPE_LABELS, addReply, addRequest, getRequest, listRequests, updateRequest } from "../lib/requests.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 const SOURCE_CATEGORIES = ["research-institute", "research-preparedness", "research-resilience", "research-continuity", "research-teachers", "research-tech", "publications", "professional", "policy", "research-tools"];
@@ -80,6 +81,23 @@ export default async (req: Request) => {
     await store("hosen-data").setJSON(`resources/${res.id}.json`, res);
     await updateRequest(r.id, { status: "done", note: `פורסם באתר ${new Date().toLocaleDateString("he-IL")}${r.note ? " · " + r.note : ""}` });
     return json({ ok: true, resource: { id: res.id, title: res.title, category } });
+  }
+
+  // תשובה במייל למי שפנה/תה — נשלחת מהאתר (Gmail) ונשמרת בהיסטוריית הפנייה.
+  if (body.action === "reply") {
+    const r = await getRequest(clip(body.id, 60));
+    if (!r) return json({ error: "not_found", message: "הפנייה לא נמצאה." }, 404);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.email || "")) return json({ error: "no_email", message: "אין לפנייה הזו כתובת מייל." }, 400);
+    const subject = clip(body.subject, 300), text = String(body.text ?? "").trim().slice(0, 8000);
+    if (!subject || text.length < 2) return json({ error: "missing", message: "חסרים נושא או טקסט." }, 400);
+    if (!mailConfigured()) return json({ error: "mail", message: "שליחת המיילים מהאתר לא פעילה (חיבור Gmail)." }, 503);
+    const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] || c));
+    const site = siteUrl(new URL(req.url).origin);
+    const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${text.split(/\n{2,}/).map(p => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("")}<p style="margin-top:22px"><img src="${site}/assets/community-logo-email.jpg" alt="בינה מלאכותית: חוסן-חינוך-חרום" width="300" style="display:block;width:300px;max-width:100%;height:auto;border:0"></p></div>`;
+    try { await sendMail(r.email.trim(), subject, html, text); }
+    catch (e) { return json({ error: "mail", message: "השליחה לא הצליחה. " + mailErrorHint(e) }, 502); }
+    const v = await addReply(r.id, { subject, text }, clip(body.status, 20));
+    return json({ ok: true, request: v });
   }
 
   if (body.action === "update") {
