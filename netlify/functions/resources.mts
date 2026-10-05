@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { id, json, store, validToken } from "../lib/shared.mts";
+import { cleanLinks, id, json, store, validToken } from "../lib/shared.mts";
 
 type ResourceImage = { key:string; name:string; type?:string };
 type Resource = {
@@ -62,7 +62,7 @@ export default async (req: Request) => {
       if (!uploaderCategories.has(String(body.category || ""))) return json({ error: "forbidden_category" }, 403);
     }
     const now = new Date().toISOString();
-    const x: Resource = { ...body, gallery:Array.isArray(body.gallery)?body.gallery:[], id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
+    const x: Resource = { ...body, links: cleanLinks(body.links), gallery:Array.isArray(body.gallery)?body.gallery:[], id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
     if (!x.title || !x.category) return json({ error: "missing_fields" }, 400);
     await st.setJSON(`resources/${x.id}.json`, x);
     return json(decorate(x), 201);
@@ -74,7 +74,7 @@ export default async (req: Request) => {
     const key = `resources/${body.id}.json`;
     const old = await st.get(key, { type: "json" });
     if (!old) return json({ error: "not_found" }, 404);
-    const x = { ...old, ...body, gallery:Array.isArray(body.gallery)?body.gallery:(old as Resource).gallery||[], id: body.id, updatedAt: new Date().toISOString() };
+    const x = { ...old, ...body, links: body.links === undefined ? ((old as any).links || []) : cleanLinks(body.links), gallery:Array.isArray(body.gallery)?body.gallery:(old as Resource).gallery||[], id: body.id, updatedAt: new Date().toISOString() };
     await st.setJSON(key, x);
     return json(decorate(x));
   }

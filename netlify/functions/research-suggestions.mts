@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { communityCodeOK, id, json, store } from "../lib/shared.mts";
+import { cleanLinks, communityCodeOK, id, json, store } from "../lib/shared.mts";
 import { addRequest, updateRequest } from "../lib/requests.mts";
 
 function clean(v: unknown, max = 4000) {
@@ -51,7 +51,7 @@ export default async (req: Request) => {
   }
 
   const now = new Date().toISOString();
-  const res = { id: id(), ...f, url, category, type: "link", active: true, gallery: [], createdAt: now, updatedAt: now };
+  const res = { id: id(), ...f, url, links: cleanLinks(body.links), category, type: "link", active: true, gallery: [], createdAt: now, updatedAt: now };
   await store("hosen-data").setJSON(`resources/${res.id}.json`, res);
 
   // תיעוד בתיבת הפניות (כבר מסומן כטופל — לא צריך אישור), כדי שיהיה קל למצוא ולמחוק אם צריך.

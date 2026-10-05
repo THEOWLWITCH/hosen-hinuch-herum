@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { id, json, store, validToken } from "../lib/shared.mts";
+import { id, json, store, validToken, cleanLinks } from "../lib/shared.mts";
 
 type Media = { key:string; name:string; type?:string; title?:string; credit?:string; date?:string };
 type GalleryItem = {
@@ -30,7 +30,7 @@ export default async (req:Request) => {
   if(req.method==="POST"){
     if(!(await validToken(req,["admin","uploader"]))) return json({error:"unauthorized"},401);
     const body=await req.json(); const now=new Date().toISOString();
-    const x:GalleryItem={...body,id:id(),active:body.active!==false,createdAt:now,updatedAt:now,media:Array.isArray(body.media)?body.media:[]};
+    const x:GalleryItem={...body,links:cleanLinks(body.links),id:id(),active:body.active!==false,createdAt:now,updatedAt:now,media:Array.isArray(body.media)?body.media:[]};
     if(!x.title||!x.date||!x.media.length) return json({error:"missing_fields",message:"חסרים כותרת, תאריך או תמונות."},400);
     if(!validMedia(x.media)) return json({error:"media",message:"נבחרה תמונה לא תקינה."},400);
     await st.setJSON(`gallery/${x.id}.json`,x); return json(decorate(x),201);
@@ -43,7 +43,7 @@ export default async (req:Request) => {
     const nextMedia=Array.isArray(body.media)?body.media:old.media||[];
     const keep=new Set(nextMedia.map((m:Media)=>m.key));
     for(const m of old.media||[]){ if(m.key&&!keep.has(m.key)) await fileStore().delete(m.key); }
-    const x:GalleryItem={...old,...body,id:body.id,media:nextMedia,updatedAt:new Date().toISOString()};
+    const x:GalleryItem={...old,...body,links:body.links===undefined?((old as any).links||[]):cleanLinks(body.links),id:body.id,media:nextMedia,updatedAt:new Date().toISOString()};
     if(!x.title||!x.date||!x.media.length) return json({error:"missing_fields",message:"חסרים כותרת, תאריך או תמונות."},400);
     if(!validMedia(x.media)) return json({error:"media",message:"נבחרה תמונה לא תקינה."},400);
     await st.setJSON(key,x); return json(decorate(x));

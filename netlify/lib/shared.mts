@@ -104,6 +104,23 @@ export function looksHuman(body: any): boolean {
   return Number.isFinite(elapsed) && elapsed >= 2500;
 }
 
+// קישורים מצורפים (חומרים, הודעות, גלריה): עד 12, רק http/https, עם כותרת לא חובה.
+export type LinkItem = { label: string; url: string };
+export function cleanLinks(v: unknown): LinkItem[] {
+  if (!Array.isArray(v)) return [];
+  const out: LinkItem[] = [];
+  for (const x of v.slice(0, 12)) {
+    const raw = String((x as any)?.url ?? x ?? "").trim();
+    if (!raw) continue;
+    try {
+      const u = new URL(/^https?:\/\//i.test(raw) ? raw : "https://" + raw);
+      if (u.protocol !== "http:" && u.protocol !== "https:") continue;
+      out.push({ label: String((x as any)?.label ?? "").trim().slice(0, 120), url: u.toString().slice(0, 1200) });
+    } catch {}
+  }
+  return out;
+}
+
 export function id() {
   return crypto.randomUUID();
 }

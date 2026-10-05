@@ -1,10 +1,10 @@
 import type { Config } from "@netlify/functions";
-import { id, json, store, validToken } from "../lib/shared.mts";
+import { cleanLinks, id, json, store, validToken, type LinkItem } from "../lib/shared.mts";
 
 type Attachment = { key:string; name:string; type?:string; size?:number };
 type Message = {
   id:string; title?:string; degree:string; name:string; institution:string; message:string;
-  createdAt:string; expiresAt?:string | null; attachments:Attachment[]; coverAttachment?:Attachment | null;
+  createdAt:string; expiresAt?:string | null; attachments:Attachment[]; coverAttachment?:Attachment | null; links?:LinkItem[];
 };
 
 function cleanAttachment(a: any): Attachment | null {
@@ -110,7 +110,8 @@ export default async (req: Request) => {
       createdAt:now.toISOString(),
       expiresAt:expires ? expires.toISOString() : null,
       attachments:cleanAttachments(body.attachments),
-      coverAttachment:cleanAttachment(body.coverAttachment)
+      coverAttachment:cleanAttachment(body.coverAttachment),
+      links:cleanLinks(body.links)
     };
 
     await st.setJSON(`messages/${x.id}.json`, x);
@@ -158,6 +159,7 @@ export default async (req: Request) => {
       institution:String(body.institution).slice(0,180),
       message:String(body.message).slice(0,5000),
       expiresAt:expires ? expires.toISOString() : null,
+      links:body.links===undefined ? (old.links || []) : cleanLinks(body.links),
       attachments,
       coverAttachment
     };
