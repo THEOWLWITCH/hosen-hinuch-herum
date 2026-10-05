@@ -4847,14 +4847,18 @@ async function loadPeople(){
     // Keep the hard-coded cards already on the page as a safe fallback.
   }
 }
+// הסרה מרשימות הדיוור בלבד: הכרטיס נשאר בנבחרת ובאתר, ושום מייל אוטומטי או עדכון לקהילה לא נשלח אליו.
+let adminMailOff=new Set();
+async function setPersonMail(id,off){const x=adminPeopleCache.find(a=>a.id===id);if(!x||!x.email)return;if(off&&!confirm(`להסיר את ${x.name} מכל רשימות הדיוור?\nהכרטיס יישאר בנבחרת ובאתר, אבל לא יישלחו אליו/ה מיילים: קולות קוראים, סיכום שבועי, עדכונים לקהילה וקישורים לבחירת נושאים.`))return;try{const r=await fetch('/api/calls',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+editorToken},body:JSON.stringify({action:'optout-set',email:x.email,off})});if(r.status===401){logoutEditor();return}const j=await r.json();if(!r.ok)throw new Error(j.message||'השמירה לא הצליחה.');adminMailOff=new Set(j.optout||[]);await loadAdminPeople()}catch(e){alert(e.message)}}
 async function loadAdminPeople(){
   const box=document.getElementById('adminPeopleList');
   if(box)box.innerHTML='<p class="muted">טוען...</p>';
   const r=await fetch('/api/people?admin=1',{headers:{Authorization:'Bearer '+editorToken}});
   if(r.status===401){logoutEditor();return}
   adminPeopleCache=await r.json();
+  try{const o=await fetch('/api/calls?optout=1',{headers:{Authorization:'Bearer '+editorToken}});adminMailOff=new Set(o.ok?(await o.json()).optout||[]:[])}catch(e){adminMailOff=new Set()}
   if(!box)return;
-  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div class="admin-person-summary">${personPhotoMarkup(x)}<div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>סדר: ${esc(String(x.order||''))}${x.institution?' · '+esc(x.institution):''}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small>${x.motto?`<div class="admin-person-motto" dir="auto">${esc(x.motto)}</div>`:''}</div></div><div class="admin-row-actions"><button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
+  box.innerHTML=adminPeopleCache.length?adminPeopleCache.map(x=>`<div class="admin-row"><div class="admin-person-summary">${personPhotoMarkup(x)}<div><h4 dir="auto" class="auto-dir">${esc(x.name||'')}</h4><small>סדר: ${esc(String(x.order||''))}${x.institution?' · '+esc(x.institution):''}${x.email?' · '+esc(x.email):''}${x.phone?' · '+esc(x.phone):''}</small>${x.email&&adminMailOff.has(String(x.email).trim().toLowerCase())?'<div class="admin-mail-off">📭 הוסר/ה מרשימות הדיוור — נשאר/ת בנבחרת ובאתר</div>':''}${x.motto?`<div class="admin-person-motto" dir="auto">${esc(x.motto)}</div>`:''}</div></div><div class="admin-row-actions">${x.email?(adminMailOff.has(String(x.email).trim().toLowerCase())?`<button type="button" onclick="setPersonMail('${escAttr(x.id)}',false)">📬 החזרה לדיוור</button>`:`<button type="button" onclick="setPersonMail('${escAttr(x.id)}',true)">📭 הסרה מהדיוור</button>`):''}<button type="button" onclick="editPerson('${escAttr(x.id)}')">עריכה</button><button type="button" class="danger" onclick="deletePerson('${escAttr(x.id)}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין חברים בנבחרת.</p>';
 }
 function clearPersonForm(){
   document.getElementById('personId').value='';
@@ -5559,6 +5563,7 @@ function closeCompassLibrary(){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCompassLibrary()});
 document.addEventListener('click',e=>{const modal=document.getElementById('compassLibraryModal');if(e.target===modal)closeCompassLibrary()});
 </script>
+<style id="mail-off-v1-css">.admin-mail-off{margin-top:4px;font-size:12.5px;font-weight:700;color:#9a6a12}</style>
 <style id="links-v1-css">
 .lk-field{display:flex;flex-direction:column;gap:5px}
 .lk-title{font-size:13px;font-weight:700;color:#456071}

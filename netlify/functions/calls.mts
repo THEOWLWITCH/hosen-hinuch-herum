@@ -48,6 +48,12 @@ export default async (req: Request) => {
       });
     }
 
+    // רשימת ההסרה מהדיוור (מנהלת המערכת): מי שלא מקבל/ת מיילים, אבל נשאר/ת בנבחרת ובאתר.
+    if (u.searchParams.get("optout") === "1") {
+      if ((await tokenRole(req)) !== "admin") return json({ error: "unauthorized" }, 401);
+      return json({ optout: await getOptOut() });
+    }
+
     if (u.searchParams.get("admin") === "1") {
       const role = await tokenRole(req);
       if (role !== "admin" && role !== "calls") return json({ error: "unauthorized" }, 401);
@@ -107,7 +113,7 @@ export default async (req: Request) => {
   // ----- פעולות ניהול: מנהלת המערכת או צוות אישור הקולות הקוראים -----
   const role = await tokenRole(req);
   if (role !== "admin" && role !== "calls") return json({ error: "unauthorized" }, 401);
-  if ((action === "optout" || action === "digest") && role !== "admin") return json({ error: "unauthorized" }, 401);
+  if ((action === "optout" || action === "optout-set" || action === "digest") && role !== "admin") return json({ error: "unauthorized" }, 401);
 
   if (action === "approve") {
     const key = t(body.id, 80);
@@ -144,6 +150,13 @@ export default async (req: Request) => {
   if (action === "sources") return json({ ok: true, sources: await saveSources(body.sources) });
   if (action === "fetch") return json({ ok: true, status: await collectFromSources() });
   if (action === "optout") return json({ ok: true, optout: await saveOptOut(body.optout) });
+  if (action === "optout-set") {
+    const email = t(body.email, 240).toLowerCase();
+    if (!email.includes("@")) return json({ error: "invalid", message: "אין כתובת מייל בכרטיס." }, 400);
+    const cur = new Set(await getOptOut());
+    if (body.off) cur.add(email); else cur.delete(email);
+    return json({ ok: true, optout: await saveOptOut([...cur]) });
+  }
   if (action === "manager") {
     const email = t(body.email, 240);
     if (email && !email.includes("@")) return json({ error: "invalid", message: "כתובת המייל לא תקינה." }, 400);

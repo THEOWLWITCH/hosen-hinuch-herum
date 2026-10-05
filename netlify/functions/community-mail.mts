@@ -43,7 +43,8 @@ export default async (req: Request) => {
     }
     // נשלח בקבוצות קטנות מהדפדפן, כדי שכל קריאה תסתיים מהר.
     const ids = new Set((Array.isArray(body.personIds) ? body.personIds : []).slice(0, 12).map(String));
-    const people = (await loadPeople(u.origin)).filter(p => ids.has(p.id) && String(p.email || "").includes("@"));
+    const off = new Set(await getOptOut());
+    const people = (await loadPeople(u.origin)).filter(p => ids.has(p.id) && String(p.email || "").includes("@") && !off.has(String(p.email).trim().toLowerCase()));
     const r = await sendAll(people, p => {
       const t = personalize(text, p.name);
       return sendMail(String(p.email).trim(), subject, renderHtml(t, site), plainText(t));
