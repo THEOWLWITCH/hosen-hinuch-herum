@@ -2198,7 +2198,7 @@ body:has(.feedback-modal.open){
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
     <a class="site-tab" data-route="now" href="/now">עמוד ראשי</a>
-    <a class="site-tab" data-route="match" href="/match">הצעות לשיתופי פעולה</a>
+    <a class="site-tab" data-route="match" href="/match">שיתופי פעולה</a>
     <a class="site-tab" data-route="gallery" href="/gallery">גלריה</a>
     <a class="site-tab" data-route="people" href="/people">הנבחרת</a>
     <a class="site-tab" data-route="calls" href="/calls">קולות קוראים</a>
@@ -5763,6 +5763,10 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .cb-btn:hover{filter:brightness(1.05);box-shadow:0 3px 10px rgba(47,110,79,.15)}
 .cb-btn[disabled]{opacity:.55;cursor:default;box-shadow:none}
 .cb-btn[hidden]{display:none}
+.cb-rs{border-right-color:#7a5fb0}.cb-rs.draft{border-right-style:dashed;background:#fcfbfe}.cb-rs.team{border-right-color:#7aa6c2}
+.cb-ol,.cb-ul{margin:4px 0 8px;padding-inline-start:20px;font-size:13.5px;line-height:1.6}.cb-ul li,.cb-ol li{margin-bottom:3px}
+.cb-arts a{display:block;color:#17649a;font-weight:600;text-decoration:none;overflow-wrap:anywhere}.cb-arts li{margin-bottom:8px}.cb-note{font-size:12.5px;color:#1f4256}.cb-arts a:hover{text-decoration:underline}
+.cb-admin{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:0 0 14px;padding:10px 14px;border:1px dashed #b9a6dc;border-radius:10px;background:#faf8fd;font-size:13px}
 .cb-how{margin:12px 0 0;font-size:13.5px}.cb-how summary{cursor:pointer;font-weight:700;color:#2a6048}.cb-how ol{margin:8px 0 0;padding-inline-start:20px;line-height:1.7}.cb-how li{margin-bottom:4px}
 .cb-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 14px;border-bottom:1px solid var(--cb-line)}
 .cb-tab{border:0;border-bottom:3px solid transparent;background:none;padding:8px 12px;font:inherit;font-size:14.5px;font-weight:700;color:var(--cb-soft);cursor:pointer}
@@ -5810,7 +5814,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   // כניסת הניהול בתוקף 12 שעות: אסימון שפג תוקפו לא נחשב כניסה (התוקף כתוב באסימון עצמו).
   const adminToken=()=>{try{const t=sessionStorage.getItem('hosen_editor_token')||'';const m=t.match(/^(?:admin:)?(\d+)\./);return m&&Number(m[1])>Date.now()?t:''}catch(e){return ''}};
   const ls={get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-  const S={kinds:[],themes:{},people:[],requests:[],tab:'',kind:'',me:ls.get('hosen.collab.me'),want:[],loaded:false};
+  const S={kinds:[],themes:{},people:[],requests:[],research:[],tab:'',kind:'',me:ls.get('hosen.collab.me'),want:[],loaded:false};
   const fmt=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+m[3]}.${+m[2]}.${m[1]}`:''};
   const K=k=>S.kinds.find(x=>x.key===k)||{key:k,label:k,icon:''};
   const tag=(k,hit)=>`<span class="cb-tag${hit?' hit':''}">${h(K(k).icon)} ${h(K(k).label)}</span>`;
@@ -5868,9 +5872,9 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const r=await fetch('/api/collab'+(tok?'?admin=1':''),{headers:tok?{Authorization:'Bearer '+tok}:{}});
     if(!r.ok)throw new Error('load');
     const d=await r.json();
-    Object.assign(S,{kinds:d.kinds||[],themes:d.themes||{},people:d.people||[],requests:d.requests||[],loaded:true});
+    Object.assign(S,{kinds:d.kinds||[],themes:d.themes||{},people:d.people||[],requests:d.requests||[],research:d.research||[],loaded:true});
     if(S.me&&!person(S.me))S.me='';
-    if(!S.tab)S.tab=S.requests.some(x=>x.status==='open')?'requests':'who';
+    if(!S.tab)S.tab=S.research.length||adminToken()?'research':S.requests.some(x=>x.status==='open')?'requests':'who';
     render();decoratePeople();
   }
   function mount(){
@@ -5881,6 +5885,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         <p>מי מקדמת מה, מי יכולה לעבוד עם מי, ובקשות פתוחות לשיתוף פעולה. אפשר לבקש שותפות לרעיון, להצטרף לבקשה של אחרת, או לעדכן מה את יכולה לקדם.</p></div>
       <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכולה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
+        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים ולפתוח מרחב עבודה בעמוד "שיתופי פעולה".</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
         <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
@@ -5900,10 +5905,46 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   function render(){
     const root=document.getElementById('collabHub');if(!root||!S.loaded)return;
     const open=S.requests.filter(x=>x.status==='open').length;
-    const tabs=[['requests',`📣 בקשות לשיתוף פעולה${open?` (${open})`:''}`],['who','🧭 מי מקדמת מה'],['me','💞 מי מתאימה לי?']];
+    const ideas=S.research.filter(x=>x.status==='open').length;
+    const tabs=[['research',`🔬 רעיונות למחקר${ideas?` (${ideas})`:''}`],['requests',`📣 בקשות לשיתוף פעולה${open?` (${open})`:''}`],['who','🧭 מי מקדמת מה'],['me','💞 מי מתאימה לי?']];
     root.querySelector('.cb-tabs').innerHTML=tabs.map(([k,l])=>`<button type="button" role="tab" class="cb-tab" data-cb="tab" data-k="${k}" aria-selected="${S.tab===k}">${l}</button>`).join('');
     const p=root.querySelector('[data-panel]');
-    p.innerHTML=S.tab==='requests'?renderRequests():S.tab==='me'?renderMe():renderWho();
+    p.innerHTML=S.tab==='research'?renderResearch():S.tab==='requests'?renderRequests():S.tab==='me'?renderMe():renderWho();
+  }
+
+  // ---------- רעיונות למחקר ----------
+  function researchCard(r){
+    const admin=!!adminToken();
+    const draft=r.status==='draft';
+    return `<article class="cb-card cb-req cb-rs ${h(r.status)}" id="research-${h(r.id)}">
+      <div><span class="cb-badge ${draft?'closed':r.status==='team'?'matched':''}">${h(r.statusLabel)}</span>${r.status!=='draft'&&r.notified?` <span class="cb-meta">· נשלחה הודעה ל-${r.notified}</span>`:''}</div>
+      <h4 dir="auto" style="margin-top:6px">${h(r.title)}</h4>
+      <p dir="auto"><strong>🕳 הנישה במחקר:</strong> ${h(r.gap)}</p>
+      <p dir="auto"><strong>💡 הרעיון:</strong> ${h(r.idea)}</p>
+      ${r.questions.length?`<div><strong style="font-size:13.5px">❓ שאלות מחקר</strong><ol class="cb-ol">${r.questions.map(q=>`<li dir="auto">${h(q)}</li>`).join('')}</ol></div>`:''}
+      ${r.approach?`<p dir="auto"><strong>🧪 איך אפשר לחקור:</strong> ${h(r.approach)}</p>`:''}
+      <div><strong style="font-size:13.5px">👥 הצוות המוצע</strong><ul class="cb-ul">${r.researchers.map(x=>`<li><strong>${h(x.name)}</strong>${x.why?`: ${h(x.why)}`:''}</li>`).join('')}</ul></div>
+      <div><strong style="font-size:13.5px">📚 מאמרים עדכניים בתחום</strong><ul class="cb-ul cb-arts">${r.articles.map(a=>`<li><a href="${h(a.url)}" target="_blank" rel="noopener" dir="auto">${h(a.title)}</a><div class="cb-meta" dir="auto">${h([a.authors,a.year,a.source].filter(Boolean).join(' · '))}</div>${a.note?`<div class="cb-note" dir="auto">${h(a.note)}</div>`:''}</li>`).join('')}</ul></div>
+      ${r.firstStep?`<p dir="auto" class="cb-why"><strong>👣 צעד ראשון:</strong> ${h(r.firstStep)}</p>`:''}
+      ${r.initiators.length?`<p class="cb-meta"><strong>🙋 ברשימת היוזמים:</strong> ${r.initiators.map(h).join(', ')}</p>`:(r.status==='open'?'<p class="cb-meta">עדיין אין יוזמים. אפשר להיות הראשונים.</p>':'')}
+      <div class="cb-row">
+        ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="rs-join" data-id="${h(r.id)}">🙋 הצטרפות לרשימת היוזמים</button><button type="button" class="cb-btn small" data-cb="rs-team" data-id="${h(r.id)}">🤝 פתיחת מרחב עבודה</button>`:''}
+        ${r.status==='team'?`<a class="cb-btn small primary" href="/match">🤝 למרחב העבודה בשיתופי פעולה</a>`:''}
+        ${draft?'':`<button type="button" class="cb-btn small" data-cb="rs-share" data-id="${h(r.id)}">🔗 העתקת קישור</button>`}
+        ${admin&&draft?`<button type="button" class="cb-btn small primary" data-cb="rs-publish" data-id="${h(r.id)}">📨 פרסום ושליחה לצוות המוצע</button><button type="button" class="cb-btn small" data-cb="rs-publish-quiet" data-id="${h(r.id)}">פרסום בלי מייל</button>`:''}
+        ${admin&&r.status==='open'?`<button type="button" class="cb-btn small" data-cb="rs-close" data-id="${h(r.id)}">סגירה</button>`:''}
+        ${admin?`<button type="button" class="cb-btn small danger" data-cb="rs-del" data-id="${h(r.id)}">🗑 מחיקה</button>`:''}
+      </div></article>`;
+  }
+  function renderResearch(){
+    const admin=!!adminToken();
+    const drafts=S.research.filter(r=>r.status==='draft');
+    const live=S.research.filter(r=>r.status!=='draft');
+    const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><button type="button" class="cb-btn primary" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div>`:'';
+    const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים, ומשם לפתוח מרחב עבודה לצוות.</p>';
+    return bar+intro+
+      (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-grid">${drafts.map(researchCard).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
+      (live.length?`<div class="cb-grid">${live.map(researchCard).join('')}</div>`:'<div class="cb-empty">עדיין אין רעיונות למחקר. בקרוב יופיעו כאן הצעות לשידוכים סביב נישות במחקר.</div>');
   }
 
   // מי מתאימה לבקשה: מי שמקדמת לפחות אחד מסוגי הפעילות שלה, ועוד לא בפנים.
@@ -6004,6 +6045,22 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(a==='tab'){S.tab=t.dataset.k;render();return}
     if(a==='kind'){S.kind=t.dataset.k;render();return}
     if(a==='new')return openNew();
+    if(a==='rs-gen')return openGenerate();
+    if(a==='rs-join')return openResearchJoin(t.dataset.id);
+    if(a==='rs-team')return openResearchTeam(t.dataset.id);
+    if(a==='rs-share'){const link=`${site()}/people#research-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לרעיון:',link)}return}
+    if(a==='rs-publish'||a==='rs-publish-quiet'||a==='rs-close'||a==='rs-del'){
+      const r=S.research.find(x=>x.id===t.dataset.id);if(!r)return;
+      const ask={'rs-publish':`לפרסם את "${r.title}" ולשלוח הודעה ל-${r.researchers.length} החברים שהוצעו לצוות (${r.researchers.map(x=>x.name).join(', ')})?`,'rs-publish-quiet':`לפרסם את "${r.title}" בלי לשלוח מייל?`,'rs-close':`לסגור את "${r.title}"? הוא יוסתר מהעמוד.`,'rs-del':`למחוק את "${r.title}"?`}[a];
+      if(!confirm(ask))return;
+      const action={'rs-publish':'research-publish','rs-publish-quiet':'research-publish','rs-close':'research-close','rs-del':'research-delete'}[a];
+      t.disabled=true;
+      try{const j=await post({action,id:r.id,notify:a==='rs-publish'},{Authorization:'Bearer '+adminToken()});
+        if(a==='rs-publish')alert(j.mailConfigured===false?'פורסם. שליחת המיילים מהאתר עוד לא פעילה, ולכן לא נשלחה הודעה.':`פורסם. נשלחה הודעה ל-${j.mailed} מתוך ${j.total}.`);
+        await load()}
+      catch(err){t.disabled=false;alert(err.message)}
+      return;
+    }
     if(a==='offer')return openOffer();
     if(a==='invite-all'){
       const n=S.people.filter(p=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p.email||'')).length;
@@ -6052,6 +6109,115 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
           <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">לניהול הבקשה</a></div>`;
         root.querySelector('[data-copy]').onclick=async ev=>{try{await navigator.clipboard.writeText(j.link);ev.target.textContent='✓ הועתק'}catch(err){root.querySelector('.cb-copy input').select()}};
         S.tab='requests';S.kind='';await load();
+      }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
+    });
+  }
+
+  // יצירת רעיונות (מנהלת המערכת): ההזרמה מגיעה מ-/api/collab-ai, והתוצאה נשמרת כטיוטות.
+  function articlesFromPage(){
+    try{if(typeof researchWorldItems!=='undefined'&&Array.isArray(researchWorldItems))return researchWorldItems.map(x=>({title:x.title,authors:x.authors,year:x.year,source:x.source,url:x.url,summary:[x.summary,x.why].filter(Boolean).join(' ')}))}catch(e){}
+    return [];
+  }
+  function openGenerate(){
+    const root=modal('');
+    root.innerHTML=`<h2>✨ רעיונות חדשים למחקר</h2>
+      <p class="nv-status">המודל קורא את כרטיסי הנבחרת (תחומי עיסוק ומה כל אחד יכול לקדם) ואת המאמרים העדכניים באתר (חידושים במחקר והספרייה). הוא מחפש נישות שהמחקר עוד לא ענה עליהן, ומציע לכל אחת רעיון, צוות מתוך הנבחרת ומאמרים. הקישורים הם רק למאמרים מהאתר. ההצעות נשמרות כטיוטה, ואת מחליטה מה לפרסם.</p>
+      <form class="nv-form" novalidate>
+        <label>כמה רעיונות?<select name="count"><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+        <label class="wide">כיוון מסוים? <span class="nv-status" style="display:inline">(לא חובה)</span><input name="focus" dir="auto" placeholder="למשל: בינה מלאכותית ומורים בחירום, החברה הערבית, רציפות למידה"></label>
+        <div class="wide nv-row"><button type="submit" class="nv-btn primary">יצירת רעיונות</button></div>
+      </form><div class="nv-status" data-st></div>`;
+    const f=root.querySelector('form'),st=root.querySelector('[data-st]');
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();
+      if(!adminToken()){st.className='nv-status err';st.textContent='כניסת הניהול הסתיימה. כתבי את קוד הניהול, והיצירה תתחיל.';root.insertAdjacentHTML('beforeend','<div data-login></div>');adminLogin(root.querySelector('[data-login]'),()=>f.requestSubmit());return}
+      const btn=f.querySelector('[type=submit]');btn.disabled=true;
+      st.className='nv-status';st.innerHTML='<div class="nv-progress"><i></i></div><span data-tick>מתחברים…</span>';
+      const tick=st.querySelector('[data-tick]'),bar=st.querySelector('.nv-progress i');
+      const t0=Date.now();let chars=0,phase='אוספים את הכרטיסים והמאמרים…';
+      const timer=setInterval(()=>{const sec=Math.round((Date.now()-t0)/1000);tick.textContent=`${phase} · ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')} · זה לוקח בדרך כלל שתיים עד חמש דקות`;bar.style.width=Math.min(92,chars?25+chars/160:Math.min(22,sec/4))+'%'},500);
+      try{
+        const r=await fetch('/api/collab-ai',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+adminToken()},body:JSON.stringify({count:Number(f.elements.count.value),focus:f.elements.focus.value.trim(),articles:articlesFromPage()})});
+        if(!r.ok){const j=await r.json().catch(()=>({}));const err=new Error(j.message||`היצירה לא הצליחה (שגיאה ${r.status}). אפשר לנסות שוב.`);err.code=j.error;throw err}
+        const runId=r.headers.get('x-run-id');
+        let meta={};try{meta=JSON.parse(decodeURIComponent(r.headers.get('x-run-meta')||'%7B%7D'))}catch(e){}
+        phase=`קורא ${meta.articles||''} מאמרים ו-${meta.people||''} כרטיסים, וחושב…`;
+        const reader=r.body.getReader(),dec=new TextDecoder();let buf='',text='',stop='',apiErr='';
+        for(;;){const {value,done}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});
+          let i;while((i=buf.indexOf('\n\n'))>=0){const chunk=buf.slice(0,i);buf=buf.slice(i+2);
+            const data=chunk.split('\n').filter(l=>l.startsWith('data:')).map(l=>l.slice(5).trim()).join('');
+            if(!data)continue;let ev;try{ev=JSON.parse(data)}catch(e){continue}
+            if(ev.type==='content_block_start'&&ev.content_block?.type==='fallback'){text='';chars=0}
+            else if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){text+=ev.delta.text;chars=text.length;phase='כותב את הרעיונות…'}
+            else if(ev.type==='message_delta'&&ev.delta?.stop_reason)stop=ev.delta.stop_reason;
+            else if(ev.type==='error')apiErr=ev.error?.message||'שגיאה';}}
+        if(apiErr)throw new Error('המודל עצר באמצע: '+apiErr+'. אפשר לנסות שוב.');
+        if(stop==='refusal')throw new Error('המודל לא השלים את הבקשה. אפשר לנסח כיוון אחר ולנסות שוב.');
+        if(stop==='max_tokens')throw new Error('התשובה נקטעה כי הייתה ארוכה מדי. אפשר לנסות שוב עם פחות רעיונות.');
+        let result;try{result=JSON.parse(text)}catch(e){throw new Error('התשובה לא התקבלה במלואה. אפשר לנסות שוב.')}
+        phase='שומרת טיוטות…';bar.style.width='96%';
+        const j=await post({action:'research-save',runId,result},{Authorization:'Bearer '+adminToken()});
+        clearInterval(timer);
+        st.className='nv-status ok';st.textContent=`✓ נשמרו ${j.saved} רעיונות כטיוטה. אפשר לקרוא אותם בלשונית "רעיונות למחקר", ולפרסם את מה שמתאים.`;
+        S.tab='research';await load().catch(()=>{});
+        setTimeout(()=>root.close(),1800);
+      }catch(err){
+        clearInterval(timer);btn.disabled=false;st.className='nv-status err';st.textContent=err.message;
+        if(err.code==='admin_expired'){root.insertAdjacentHTML('beforeend','<div data-login></div>');adminLogin(root.querySelector('[data-login]'),()=>f.requestSubmit())}
+      }
+    });
+  }
+
+  function openResearchJoin(rid){
+    const r=S.research.find(x=>x.id===rid);if(!r)return;
+    const root=modal('');const opened=Date.now();
+    root.innerHTML=`<h2>🙋 רשימת היוזמים: ${h(r.title)}</h2>
+      <p class="nv-status">הרשימה פתוחה לכל חברי הקהילה, גם למי שלא הוצע לצוות. השם יופיע בכרטיס. כשנפתח מרחב עבודה לרעיון, כל מי שברשימה מקבל אליו קישור במייל.</p>
+      <form class="nv-form" novalidate>${whoFields()}
+        <label class="wide">מה תרצו להביא? <span class="nv-status" style="display:inline">(לא חובה)</span><textarea name="note" rows="3" dir="auto" placeholder="למשל: ניסיון, גישה לשדה, שיטת מחקר, קשר לשותפים נוספים."></textarea></label>
+        <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="wide nv-row"><button type="submit" class="nv-btn primary">הצטרפות</button></div>
+      </form><div class="nv-status" data-st></div>`;
+    const f=root.querySelector('form'),st=root.querySelector('[data-st]');bindWho(f);
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();const v=k=>(f.elements[k].value||'').trim();
+      if(!v('name')||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))){st.className='nv-status err';st.textContent='כדי להצטרף, נשמח לשם ולמייל תקין.';return}
+      const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='שולחת…';
+      try{
+        const who=f.elements.who.value;
+        const j=await post({action:'research-join',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),note:v('note'),website:f.elements.website.value,elapsed:Date.now()-opened});
+        root.innerHTML=j.already?'<h2>✓ כבר ברשימה</h2><p>השם שלך כבר ברשימת היוזמים של הרעיון הזה.</p>':`<h2>✓ הצטרפת לרשימת היוזמים</h2><p>השם שלך מופיע עכשיו בכרטיס. כשנפתח מרחב עבודה לרעיון, יגיע אלייך קישור במייל. רוצה להתחיל כבר עכשיו? אפשר ללחוץ בכרטיס "פתיחת מרחב עבודה".</p>`;
+        await load().catch(()=>{});
+      }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
+    });
+  }
+
+  function openResearchTeam(rid){
+    const r=S.research.find(x=>x.id===rid);if(!r)return;
+    const root=modal('');const opened=Date.now();
+    root.innerHTML=`<h2>🤝 פתיחת מרחב עבודה: ${h(r.title)}</h2>
+      <p class="nv-status">נפתחת קבוצת משימה בעמוד "שיתופי פעולה", עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
+      <form class="nv-form" novalidate>${whoFields()}
+        <label class="wide">קוד הקהילה<input name="communityCode" type="password" inputmode="numeric" autocomplete="off" required></label>
+        <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="wide nv-row"><button type="submit" class="nv-btn primary">פתיחת מרחב העבודה</button></div>
+      </form><div class="nv-status" data-st></div>`;
+    const f=root.querySelector('form'),st=root.querySelector('[data-st]');bindWho(f);
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();const v=k=>(f.elements[k].value||'').trim();
+      const miss=[!v('name')&&'שם',!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))&&'מייל תקין',!v('communityCode')&&'קוד הקהילה'].filter(Boolean);
+      if(miss.length){st.className='nv-status err';st.textContent='כדי לפתוח, נשמח ל: '+miss.join(', ')+'.';return}
+      const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='פותחת…';
+      try{
+        const who=f.elements.who.value;
+        const j=await post({action:'research-team',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),communityCode:v('communityCode'),website:f.elements.website.value,elapsed:Date.now()-opened});
+        root.innerHTML=`<h2>✓ מרחב העבודה נפתח</h2>
+          <p>הקבוצה מופיעה עכשיו בעמוד "שיתופי פעולה"${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
+          <p><strong>הקישור למרחב העבודה</strong> (כדאי לשמור אותו${j.mailed?'':' ולשלוח אותו לחברי הצוות'}: רק איתו נכנסים):</p>
+          <div class="cb-copy"><input readonly value="${h(j.link)}"><button type="button" class="nv-btn" data-copy>העתקה</button></div>
+          <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">כניסה למרחב העבודה</a></div>`;
+        root.querySelector('[data-copy]').onclick=async ev=>{try{await navigator.clipboard.writeText(j.link);ev.target.textContent='✓ הועתק'}catch(err){root.querySelector('.cb-copy input').select()}};
+        await load().catch(()=>{});
       }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
     });
   }
@@ -6145,7 +6311,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${c.joiners.length?c.joiners.map(j=>`<div class="cb-joiner"><div><strong>${h(j.name)}</strong> · <a href="mailto:${h(j.email)}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}" dir="ltr">${h(j.email)}</a> <span class="cb-meta">· ${fmt(j.at)}</span>${j.note?`<div class="cb-meta" dir="auto">${h(j.note)}</div>`:''}</div><button type="button" class="cb-btn small danger" data-rm="${h(j.id)}">הסרה</button></div>`).join(''):'<p class="cb-meta">עדיין אין מצטרפות. אפשר להעתיק את הקישור לבקשה ולשלוח אותו למי שמתאימה.</p>'}
         ${c.joiners.length?`<div class="nv-row" style="margin:8px 0"><a class="nv-btn" href="mailto:${h(c.joiners.map(j=>j.email).join(','))}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}">✉️ מייל לכל המצטרפות</a></div>`:''}
         <div style="margin:14px 0;padding:12px 14px;border-radius:10px;background:#f4f9f6">
-          ${c.teamId?'<strong>🤝 נפתחה קבוצת משימה.</strong> <span class="nv-status">הקישור לסביבת העבודה נשלח במייל לכל החברות.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע בעמוד "הצעות לשיתופי פעולה".</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
+          ${c.teamId?'<strong>🤝 נפתחה קבוצת משימה.</strong> <span class="nv-status">הקישור לסביבת העבודה נשלח במייל לכל החברות.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע בעמוד "שיתופי פעולה".</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
           <div data-teamst class="nv-status"></div></div>
         <h3 style="font-size:16px;margin:12px 0 6px">✏️ עדכון הבקשה</h3>
         <form class="nv-form" novalidate>
@@ -6194,6 +6360,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(o){history.replaceState(null,'',location.pathname);openOffer(decodeURIComponent(o[1]));return}
     const r=location.hash.match(/^#collab-req-([\w-]+)$/);
     if(r)focusRequest(r[1]);
+    const rs=location.hash.match(/^#research-([\w-]+)$/);
+    if(rs){S.tab='research';render();const el=document.getElementById('research-'+rs[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2600)}}
   }
 
   window.hosenCollab={open:openNew,offer:()=>openOffer()};
