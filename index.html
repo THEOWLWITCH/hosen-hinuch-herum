@@ -5765,7 +5765,17 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .cb-btn:hover{filter:brightness(1.05);box-shadow:0 3px 10px rgba(47,110,79,.15)}
 .cb-btn[disabled]{opacity:.55;cursor:default;box-shadow:none}
 .cb-btn[hidden]{display:none}
-.cb-rs{border-right-color:#7a5fb0}.cb-rs.draft{border-right-style:dashed;background:#fcfbfe}.cb-rs.team{border-right-color:#7aa6c2}
+.cb-rs{border-right-color:#7a5fb0}
+.cb-rlist{display:grid;gap:8px}
+.cb-rrow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:11px 14px;border:1px solid var(--cb-line);border-right:4px solid #7a5fb0;border-radius:10px;background:#fff;color:var(--cb-ink);font:inherit;text-align:right;cursor:pointer}
+.cb-rrow:hover{background:#faf8fd;box-shadow:0 3px 10px rgba(60,40,110,.08)}
+.cb-rrow.draft{border-right-style:dashed;background:#fcfbfe}.cb-rrow.team{border-right-color:#7aa6c2}
+.cb-rrow.flash{box-shadow:0 0 0 3px #b9a6dc}
+.cb-rrow-main{display:flex;flex-direction:column;gap:3px;min-width:0}.cb-rrow-main strong{font-size:15px}
+.cb-rrow-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.cb-rrow-open{font-size:12.5px;font-weight:700;color:#5b3f99}
+.cb-in-modal{border:0;padding:0;border-right:0!important;background:transparent!important}
+@media(max-width:640px){.cb-rrow{flex-direction:column;align-items:stretch}.cb-rrow-side{flex-direction:row;justify-content:space-between;align-items:center}}.cb-rs.draft{border-right-style:dashed;background:#fcfbfe}.cb-rs.team{border-right-color:#7aa6c2}
 .cb-ol,.cb-ul{margin:4px 0 8px;padding-inline-start:20px;font-size:13.5px;line-height:1.6}.cb-ul li,.cb-ol li{margin-bottom:3px}
 .cb-arts a{display:block;color:#17649a;font-weight:600;text-decoration:none;overflow-wrap:anywhere}.cb-arts li{margin-bottom:8px}.cb-note{font-size:12.5px;color:#1f4256}.cb-arts a:hover{text-decoration:underline}
 .cb-admin{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:0 0 14px;padding:10px 14px;border:1px dashed #b9a6dc;border-radius:10px;background:#faf8fd;font-size:13px}
@@ -5899,7 +5909,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         <li><strong>✏️ מה אני יכולה לקדם:</strong> כותבים את המייל שבכרטיס שלך, ומקבלים קישור אישי לעדכון.</li>
       </ol></details>
       <div class="cb-tabs" role="tablist"></div><div data-panel><p class="cb-empty">טוען…</p></div>`;
-    head.after(root);
+    (document.getElementById('callsHub')||head).after(root); // קבוצות המשימה קודם, השידוכים אחריהן
     const inv=root.querySelector('[data-cb="invite-all"]');const sync=()=>{inv.hidden=!adminToken()};sync();setInterval(sync,2000);
     root.addEventListener('click',onClick);
     root.addEventListener('change',e=>{
@@ -5942,6 +5952,19 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${admin?`<button type="button" class="cb-btn small danger" data-cb="rs-del" data-id="${h(r.id)}">🗑 מחיקה</button>`:''}
       </div></article>`;
   }
+  // שורה מקופלת לכל רעיון: כותרת, מצב וצוות. הלחיצה פותחת את כל הרעיון בחלון צף.
+  function researchRow(r){
+    const draft=r.status==='draft';
+    return `<button type="button" class="cb-rrow ${h(r.status)}" data-cb="rs-open" data-id="${h(r.id)}" id="research-${h(r.id)}">
+      <span class="cb-rrow-main"><strong dir="auto">${h(r.title)}</strong><span class="cb-meta">👥 ${h(r.researchers.map(x=>x.name).join(', '))}${r.initiators.length?` · 🙋 ${r.initiators.length} ברשימת היוזמים`:''}</span></span>
+      <span class="cb-rrow-side"><span class="cb-badge ${draft?'closed':r.status==='team'?'matched':''}">${h(r.statusLabel)}</span><span class="cb-rrow-open">לפרטים ›</span></span></button>`;
+  }
+  function openResearch(rid){
+    const r=S.research.find(x=>x.id===rid);if(!r)return;
+    const root=modal(researchCard(r).replace(`id="research-${h(r.id)}"`,'').replace('class="cb-card cb-req cb-rs','class="cb-card cb-req cb-rs cb-in-modal'));
+    // כפתורי הפעולה בחלון: אותן פעולות כמו בעמוד. החלון נסגר כדי שלא יישאר עם פרטים ישנים.
+    root.addEventListener('click',e=>{const t=e.target.closest('[data-cb]');if(!t)return;if(t.dataset.cb!=='rs-share')root.close();onClick(e)});
+  }
   function renderResearch(){
     const admin=!!adminToken();
     const drafts=S.research.filter(r=>r.status==='draft');
@@ -5949,8 +5972,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><div class="cb-actions">${drafts.length?`<button type="button" class="cb-btn primary" data-cb="rs-publish-all">📨 פרסום כל הטיוטות ושליחה לצוותים (${drafts.length})</button>`:''}<button type="button" class="cb-btn${drafts.length?'':' primary'}" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div></div>`:'';
     const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים בקוד הקהילה, ומשם לפתוח מרחב עבודה לצוות.</p>';
     return bar+intro+
-      (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-grid">${drafts.map(researchCard).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
-      (live.length?`<div class="cb-grid">${live.map(researchCard).join('')}</div>`:'<div class="cb-empty">עדיין אין רעיונות למחקר. בקרוב יופיעו כאן הצעות לשידוכים סביב נישות במחקר.</div>');
+      (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-rlist">${drafts.map(researchRow).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
+      (live.length?`<div class="cb-rlist">${live.map(researchRow).join('')}</div>`:'<div class="cb-empty">עדיין אין רעיונות למחקר. בקרוב יופיעו כאן הצעות לשידוכים סביב נישות במחקר.</div>');
   }
 
   // מי מתאימה לבקשה: מי שמקדמת לפחות אחד מסוגי הפעילות שלה, ועוד לא בפנים.
@@ -6052,6 +6075,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(a==='kind'){S.kind=t.dataset.k;render();return}
     if(a==='new')return openNew();
     if(a==='rs-gen')return openGenerate();
+    if(a==='rs-open')return openResearch(t.dataset.id);
     if(a==='rs-publish-all'){
       const drafts=S.research.filter(x=>x.status==='draft');
       const people=new Set(drafts.flatMap(r=>r.researchers.map(x=>x.name)));
@@ -6379,7 +6403,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(r)focusRequest(r[1]);
     if(location.hash==='#research'){S.tab='research';render();document.getElementById('collabHub')?.scrollIntoView({behavior:'smooth'});return}
     const rs=location.hash.match(/^#research-([\w-]+)$/);
-    if(rs){S.tab='research';render();const el=document.getElementById('research-'+rs[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2600)}}
+    if(rs){S.tab='research';render();const el=document.getElementById('research-'+rs[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2600)}openResearch(rs[1])}
   }
 
   // בחלון "ניהול מערכת": כפתור לרעיונות המחקר, עם מספר הטיוטות שמחכות לפרסום. הרעיונות עצמם בעמוד הנבחרת.
