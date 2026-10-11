@@ -5770,6 +5770,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .cb-rrow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:11px 14px;border:1px solid var(--cb-line);border-right:4px solid #7a5fb0;border-radius:10px;background:#fff;color:var(--cb-ink);font:inherit;text-align:right;cursor:pointer}
 .cb-rrow:hover{background:#faf8fd;box-shadow:0 3px 10px rgba(60,40,110,.08)}
 .cb-rrow.draft{border-right-style:dashed;background:#fcfbfe}.cb-rrow.team{border-right-color:#7aa6c2}
+.cb-qrow{border-right-color:var(--cb-green)}.cb-qrow:hover{background:#f6fbf8}.cb-qrow.matched{border-right-color:#7aa6c2}.cb-qrow.closed{opacity:.7;border-right-color:#b9c4c9}.cb-qrow .cb-rrow-open{color:#2a6048}
 .cb-rrow.flash{box-shadow:0 0 0 3px #b9a6dc}
 .cb-rrow-main{display:flex;flex-direction:column;gap:3px;min-width:0}.cb-rrow-main strong{font-size:15px}
 .cb-rrow-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
@@ -6001,12 +6002,23 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${admin?`<button type="button" class="cb-btn small danger" data-cb="del" data-id="${h(r.id)}">🗑 מחיקה</button>`:''}
       </div></article>`;
   }
+  // בקשה מקופלת לשורה: כותרת, מבקשת, סוגי פעילות ומצטרפות. הלחיצה פותחת את כל הבקשה בחלון צף.
+  function requestRow(r){
+    return `<button type="button" class="cb-rrow cb-qrow ${h(r.status)}" data-cb="rq-open" data-id="${h(r.id)}" id="collab-req-${h(r.id)}">
+      <span class="cb-rrow-main"><strong dir="auto">${h(r.title)}</strong><span class="cb-meta">${h(r.requester)} · ${r.kinds.map(k=>h(K(k).icon)+' '+h(K(k).label)).join(' · ')}${r.joiners.length?` · 🙋 ${r.joiners.length} הצטרפו`:''}${r.deadline?` · עד ${fmt(r.deadline)}`:''}</span></span>
+      <span class="cb-rrow-side"><span class="cb-badge ${h(r.status)}">${h(r.statusLabel)}</span><span class="cb-rrow-open">לפרטים ›</span></span></button>`;
+  }
+  function openRequest(rid){
+    const r=S.requests.find(x=>x.id===rid);if(!r)return;
+    const root=modal(requestCard(r).replace(`id="collab-req-${h(r.id)}"`,'').replace('class="cb-card cb-req','class="cb-card cb-req cb-in-modal'));
+    root.addEventListener('click',e=>{const t=e.target.closest('[data-cb]');if(!t)return;if(t.dataset.cb!=='share')root.close();onClick(e)});
+  }
   function renderRequests(){
     const rows=S.requests.filter(r=>!S.kind||r.kinds.includes(S.kind));
     const used=new Set(S.requests.flatMap(r=>r.kinds));
     const chips=used.size>1?`<div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול</button>${[...used].map(k=>`<button type="button" class="cb-chip${S.kind===k?' on':''}" data-cb="kind" data-k="${h(k)}">${h(K(k).icon)} ${h(K(k).label)}</button>`).join('')}</div>`:'';
     if(!S.requests.length)return `<div class="cb-empty">עדיין אין בקשות לשיתוף פעולה. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם בקשה, ומי שמקדמת את אותו סוג פעילות תוכל להצטרף.<div style="margin-top:12px"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button></div></div>`;
-    return chips+(rows.length?`<div class="cb-grid">${rows.map(requestCard).join('')}</div>`:'<div class="cb-empty">אין בקשות בסוג הפעילות הזה.</div>');
+    return chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין בקשות בסוג הפעילות הזה.</div>');
   }
   function offerCard(p,why){
     const subject=S.kind?`שידוך מאתר הקהילה: ${K(S.kind).label}`:'שידוך מאתר הקהילה';
@@ -6046,7 +6058,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const noOffer=me&&!me.kinds.length&&!S.want.length?`<p class="cb-why">✏️ עוד לא כתבת מה את יכולה לקדם, ולכן ההתאמה לפי תחומי העניין שבכרטיס. <a href="#" data-cb="offer">לעדכון</a></p>`:'';
     return head+noOffer+
       `<h4 class="cb-sub">💞 מי מתאימה לעבודה משותפת</h4>`+(scored.length?`<div class="cb-grid">${scored.map(x=>offerCard(x.p,why(x))).join('')}</div>`:'<div class="cb-empty">עדיין לא נמצאה התאמה. אפשר לבחור עוד סוגי פעילות, או לפרסם בקשה לשיתוף פעולה.</div>')+
-      (reqs.length?`<h4 class="cb-sub">📣 בקשות פתוחות שמתאימות לך</h4><div class="cb-grid">${reqs.map(requestCard).join('')}</div>`:'');
+      (reqs.length?`<h4 class="cb-sub">📣 בקשות פתוחות שמתאימות לך</h4><div class="cb-rlist">${reqs.map(requestRow).join('')}</div>`:'');
   }
 
   // בכרטיסי הנבחרת: מה כל אחת יכולה לקדם (גם בחיפוש ובחלון הכרטיס).
@@ -6076,6 +6088,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(a==='new')return openNew();
     if(a==='rs-gen')return openGenerate();
     if(a==='rs-open')return openResearch(t.dataset.id);
+    if(a==='rq-open')return openRequest(t.dataset.id);
     if(a==='rs-publish-all'){
       const drafts=S.research.filter(x=>x.status==='draft');
       const people=new Set(drafts.flatMap(r=>r.researchers.map(x=>x.name)));
@@ -6393,6 +6406,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     S.tab='requests';S.kind='';render();
     const el=document.getElementById('collab-req-'+rid);
     if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2600)}
+    openRequest(rid);
   }
   function handleHash(){
     const m=location.hash.match(/^#collab=([\w-]+)\.([\w-]+)$/);
