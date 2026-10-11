@@ -309,9 +309,10 @@ export default async (req: Request) => {
     return json({ ok: true, mailed, total: r.researchers.length, mailConfigured: mailConfigured() });
   }
 
-  // הצטרפות לרשימת היוזמים: לכל חברי הקהילה, בלי קוד, עם הגנה מספאם.
+  // הצטרפות לרשימת היוזמים: לחברי הקהילה בלבד, בקוד הקהילה (ועם הגנה מספאם).
   if (action === "research-join") {
     if (!looksHuman(body)) return json({ ok: true });
+    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה לא תואם. אפשר לבדוק ולנסות שוב." }, 401);
     const name = clip(body.name, 160), email = clip(body.email, 240), note = clip(body.note, 800);
     if (!name || !validEmail(email)) return json({ error: "missing", message: "כדי להצטרף, נשמח לשם ולמייל." }, 400);
     const r = await getResearch(clip(body.id, 80));

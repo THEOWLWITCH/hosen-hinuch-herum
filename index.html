@@ -5885,7 +5885,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         <p>מי מקדמת מה, מי יכולה לעבוד עם מי, ובקשות פתוחות לשיתוף פעולה. אפשר לבקש שותפות לרעיון, להצטרף לבקשה של אחרת, או לעדכן מה את יכולה לקדם.</p></div>
       <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכולה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
-        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים ולפתוח מרחב עבודה בעמוד "שיתופי פעולה".</li>
+        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה בעמוד "שיתופי פעולה".</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
         <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
@@ -5941,7 +5941,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const drafts=S.research.filter(r=>r.status==='draft');
     const live=S.research.filter(r=>r.status!=='draft');
     const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><button type="button" class="cb-btn primary" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div>`:'';
-    const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים, ומשם לפתוח מרחב עבודה לצוות.</p>';
+    const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים בקוד הקהילה, ומשם לפתוח מרחב עבודה לצוות.</p>';
     return bar+intro+
       (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-grid">${drafts.map(researchCard).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
       (live.length?`<div class="cb-grid">${live.map(researchCard).join('')}</div>`:'<div class="cb-empty">עדיין אין רעיונות למחקר. בקרוב יופיעו כאן הצעות לשידוכים סביב נישות במחקר.</div>');
@@ -6172,20 +6172,22 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const r=S.research.find(x=>x.id===rid);if(!r)return;
     const root=modal('');const opened=Date.now();
     root.innerHTML=`<h2>🙋 רשימת היוזמים: ${h(r.title)}</h2>
-      <p class="nv-status">הרשימה פתוחה לכל חברי הקהילה, גם למי שלא הוצע לצוות. השם יופיע בכרטיס. כשנפתח מרחב עבודה לרעיון, כל מי שברשימה מקבל אליו קישור במייל.</p>
+      <p class="nv-status">הרשימה פתוחה לכל חברי הקהילה, גם למי שלא הוצע לצוות, בקוד הקהילה. השם יופיע בכרטיס. כשנפתח מרחב עבודה לרעיון, כל מי שברשימה מקבל אליו קישור במייל.</p>
       <form class="nv-form" novalidate>${whoFields()}
         <label class="wide">מה תרצו להביא? <span class="nv-status" style="display:inline">(לא חובה)</span><textarea name="note" rows="3" dir="auto" placeholder="למשל: ניסיון, גישה לשדה, שיטת מחקר, קשר לשותפים נוספים."></textarea></label>
+        <label class="wide">קוד הקהילה<input name="communityCode" type="password" inputmode="numeric" autocomplete="off" required></label>
         <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="wide nv-row"><button type="submit" class="nv-btn primary">הצטרפות</button></div>
       </form><div class="nv-status" data-st></div>`;
     const f=root.querySelector('form'),st=root.querySelector('[data-st]');bindWho(f);
     f.addEventListener('submit',async e=>{
       e.preventDefault();const v=k=>(f.elements[k].value||'').trim();
-      if(!v('name')||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))){st.className='nv-status err';st.textContent='כדי להצטרף, נשמח לשם ולמייל תקין.';return}
+      const miss=[!v('name')&&'שם',!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))&&'מייל תקין',!v('communityCode')&&'קוד הקהילה'].filter(Boolean);
+      if(miss.length){st.className='nv-status err';st.textContent='כדי להצטרף, נשמח ל: '+miss.join(', ')+'.';return}
       const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='שולחת…';
       try{
         const who=f.elements.who.value;
-        const j=await post({action:'research-join',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),note:v('note'),website:f.elements.website.value,elapsed:Date.now()-opened});
+        const j=await post({action:'research-join',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),note:v('note'),communityCode:v('communityCode'),website:f.elements.website.value,elapsed:Date.now()-opened});
         root.innerHTML=j.already?'<h2>✓ כבר ברשימה</h2><p>השם שלך כבר ברשימת היוזמים של הרעיון הזה.</p>':`<h2>✓ הצטרפת לרשימת היוזמים</h2><p>השם שלך מופיע עכשיו בכרטיס. כשנפתח מרחב עבודה לרעיון, יגיע אלייך קישור במייל. רוצה להתחיל כבר עכשיו? אפשר ללחוץ בכרטיס "פתיחת מרחב עבודה".</p>`;
         await load().catch(()=>{});
       }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
