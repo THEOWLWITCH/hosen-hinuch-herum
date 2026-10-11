@@ -105,7 +105,7 @@ const defaults: Person[] = [
     "name": "עוודה גנאים חוסין",
     "institution": "הקריה האקדמית אונו",
     "description": "עובדת סוציאלית ומרצה בקריה האקדמית אונו. מלווה צוותים חינוכיים בהתערבויות בחירום ועוסקת בילדים ונוער בסיכון, שיטות התערבות, מוגנות, חוסן ובריאות נפשית במציאות משתנה. עוסקת בחוסן בזמן מלחמה ובחברה הערבית, ובקשרים בין הקשר חברתי, טיפולי ופוליטי; עבודת הדוקטורט מתמקדת בחוסן בקרב אנשי טיפול, בדגש על החברה הערבית. קשורה גם לפעילות עמותת משאבים.",
-    "email": "awda.al@lgmail.com",
+    "email": "awda.al@gmail.com",
     "phone": "0503955440",
     "order": 8,
     "createdAt": "2026-09-27T00:00:00.000Z",
@@ -209,6 +209,12 @@ const EMAIL_BACKFILL: Record<string,string> = {
   "seed-13": "Amlamer10@gmail.com",
 };
 
+// תיקון כתובות שגויות שנשמרו בכרטיסים (גם בעותק השמור בשרת): הכתובת השגויה מוחלפת בנכונה בכל קריאה.
+const EMAIL_FIX: Record<string,string> = {
+  "awda.al@lgmail.com": "awda.al@gmail.com",
+};
+const fixEmail = (e: unknown) => { const v = String(e || "").trim(); return EMAIL_FIX[v.toLowerCase()] || v; };
+
 function cleanUrl(v:any): string {
   const raw=String(v||"").trim();
   if(!raw) return "";
@@ -232,7 +238,7 @@ function clean(body:any, base:Partial<Person> = {}): Person {
     name:String(body.name || "").trim().slice(0,160),
     institution:String(body.institution || "").trim().slice(0,220),
     description:String(body.description || "").trim().slice(0,6000),
-    email:String(body.email || "").trim().slice(0,240),
+    email:fixEmail(body.email).slice(0,240),
     phone:String(body.phone || "").trim().slice(0,80),
     motto:String(body.motto || "").trim().slice(0,600),
     websiteUrl:body.websiteUrl===undefined ? String(base.websiteUrl || "") : cleanUrl(body.websiteUrl),
@@ -255,7 +261,7 @@ async function listAll(): Promise<Person[]> {
   for(const b of blobs){
     const v=await st.get(b.key,{type:"json"}) as Person | null;
     if(!v?.id || typeof v!=="object") continue;
-    if(v.deleted) map.delete(v.id); else map.set(v.id,{...v,email:String(v.email||"").trim()||EMAIL_BACKFILL[v.id]||""});
+    if(v.deleted) map.delete(v.id); else map.set(v.id,{...v,email:fixEmail(v.email)||EMAIL_BACKFILL[v.id]||""});
   }
   return [...map.values()]
     .filter(x=>!x.deleted)

@@ -3,6 +3,7 @@
 // והפעילות, הרעיון או הנושא שאוכל לקדם).
 // אין באתר חשבונות, ולכן ניהול בקשה נעשה בקישור סודי (מפתח), כמו בקבוצות המשימה. בשרת נשמר רק גיבוב.
 import { id, store } from "./shared.mts";
+import { RESEARCH_SEED } from "./research-seed.mts";
 
 // סוגי הפעילות: הרשימה מהטבלה, ועוד כמה סוגים שעלו בתשובות של חברות הקבוצה.
 export const KINDS: { key: string; label: string; icon: string }[] = [
@@ -128,4 +129,127 @@ export function publicCollab(c: Collab) {
 export function ownerCollab(c: Collab) {
   const { keyHash, ...rest } = c;
   return { ...rest, statusLabel: STATUS_LABELS[c.status], statuses: STATUS_LABELS };
+}
+
+// ---------- רעיונות למחקר: שידוך חוקרות סביב נישה ריקה במחקר ----------
+// המודל מקבל את כרטיסי הנבחרת ורשימת מאמרים עדכניים מהאתר, ומציע רעיונות. הוא יכול להפנות רק למאמרים מהרשימה
+// (לפי מזהה), ולכן כל קישור בכרטיס הוא קישור אמיתי מהאתר. ההצעות נשמרות כטיוטה, ומנהלת המערכת מפרסמת.
+export const RESEARCH_MODEL = "claude-opus-5-5";
+
+export type ResearchStatus = "draft" | "open" | "team" | "closed";
+export const RESEARCH_STATUS: Record<ResearchStatus, string> = { draft: "טיוטה (רק את רואה)", open: "מחפש יוזמות ויוזמים", team: "נפתח מרחב עבודה", closed: "נסגר" };
+
+export type ArticleRef = { title: string; authors: string; year: string; source: string; url: string; note: string };
+export type Initiator = { id: string; name: string; email: string; note: string; at: string; personId: string };
+export type Research = {
+  id: string; status: ResearchStatus; title: string; gap: string; idea: string; questions: string[]; approach: string; firstStep: string;
+  researchers: { personId: string; name: string; why: string }[]; articles: ArticleRef[]; initiators: Initiator[];
+  teamId: string; notified: number; createdAt: string; publishedAt: string; updatedAt: string;
+};
+export type RunArticle = { ref: string; title: string; authors: string; year: string; source: string; url: string; summary: string };
+export type Run = { id: string; at: string; articles: RunArticle[]; people: { id: string; name: string }[] };
+
+// הרעיונות הראשונים (research-seed.mts): טיוטה עד שמפרסמים. מה שנשמר בשרת גובר, ומחיקה נשמרת כסימון.
+const SEED_AT = "2026-10-11T09:00:00.000Z";
+function seedResearch(x: typeof RESEARCH_SEED[number]): Research {
+  return {
+    ...JSON.parse(JSON.stringify(x)), status: "draft", initiators: [], teamId: "", notified: 0,
+    createdAt: SEED_AT, publishedAt: "", updatedAt: SEED_AT,
+  };
+}
+
+export async function getResearch(rid: string): Promise<Research | null> {
+  if (!/^[\w-]{6,80}$/.test(rid)) return null;
+  const v = await data().get(`research/${rid}.json`, { type: "json" }) as (Research & { deleted?: boolean }) | null;
+  if (v) return v.deleted ? null : v;
+  const seed = RESEARCH_SEED.find(x => x.id === rid);
+  return seed ? seedResearch(seed) : null;
+}
+export async function saveResearch(r: Research): Promise<Research> {
+  const x = { ...r, updatedAt: new Date().toISOString() };
+  await data().setJSON(`research/${x.id}.json`, x);
+  return x;
+}
+export async function deleteResearch(rid: string) {
+  if (RESEARCH_SEED.some(x => x.id === rid)) await data().setJSON(`research/${rid}.json`, { id: rid, deleted: true });
+  else await data().delete(`research/${rid}.json`);
+}
+export async function listResearch(): Promise<Research[]> {
+  const st = data();
+  const { blobs } = await st.list({ prefix: "research/" });
+  const rows: Research[] = [];
+  const stored = new Set<string>();
+  for (const b of blobs) {
+    const v = await st.get(b.key, { type: "json" }) as (Research & { deleted?: boolean }) | null;
+    if (!v?.id) continue;
+    stored.add(v.id);
+    if (!v.deleted) rows.push(v);
+  }
+  for (const x of RESEARCH_SEED) if (!stored.has(x.id)) rows.push(seedResearch(x));
+  return rows.sort((a, b) => (b.publishedAt || b.createdAt).localeCompare(a.publishedAt || a.createdAt));
+}
+export async function saveRun(run: Run) {
+  await data().setJSON(`research-runs/${run.id}.json`, run);
+}
+export async function getRun(runId: string): Promise<Run | null> {
+  if (!/^[\w-]{6,80}$/.test(runId)) return null;
+  return await data().get(`research-runs/${runId}.json`, { type: "json" }) as Run | null;
+}
+
+export function publicResearch(r: Research) {
+  return {
+    id: r.id, status: r.status, statusLabel: RESEARCH_STATUS[r.status], title: r.title, gap: r.gap, idea: r.idea, questions: r.questions,
+    approach: r.approach, firstStep: r.firstStep, researchers: r.researchers, articles: r.articles,
+    initiators: r.initiators.map(i => i.name), hasTeam: !!r.teamId, notified: r.notified, createdAt: r.createdAt, publishedAt: r.publishedAt,
+  };
+}
+
+const str = { type: "string" } as const;
+const obj = (props: Record<string, unknown>) => ({ type: "object", additionalProperties: false, required: Object.keys(props), properties: props });
+export const RESEARCH_SCHEMA = obj({
+  proposals: {
+    type: "array",
+    items: obj({
+      title: str, gap: str, idea: str, questions: { type: "array", items: str }, approach: str, firstStep: str,
+      researchers: { type: "array", items: obj({ id: str, why: str }) },
+      articles: { type: "array", items: obj({ ref: str, note: str }) },
+    }),
+  },
+});
+
+export const RESEARCH_SYSTEM = `את/ה עוזר/ת מחקר של קהילה אקדמית מקצועית בישראל: "בינה מלאכותית: חוסן-חינוך-חרום". בקהילה חוקרות וחוקרים, מרצות ואנשי שטח בתחומי חוסן, חינוך בחירום, רציפות למידה, צוותי חינוך ומנהיגות, ובינה מלאכותית וסימולציות בחינוך.
+
+המשימה: להציע "שידוכים למחקר". כל הצעה היא רעיון למחקר משותף שנשען על נישה ריקה במחקר העדכני, וצוות מוצע מתוך חברי הקהילה.
+
+מה זו נישה ריקה:
+- שאלה שהמחקרים העדכניים ברשימה עוד לא עונים עליה: הקשר שלא נבדק (למשל ישראל, החברה הערבית, הפריפריה, גיל מסוים, צוותי חינוך ולא תלמידים), שיטה שלא נוסתה, חיבור בין שני תחומים שנחקרו כל אחד לחוד, או ממצא שעוד לא נבחן בשטח.
+- הנישה מנוסחת מתוך המאמרים: מה הם כבר מראים, ומה חסר. לא ממציאים ממצאים ולא מייחסים למאמר דבר שלא כתוב בתקציר שלו.
+
+הצוות:
+- 2 עד 4 חברי קהילה לכל הצעה, רק מהרשימה, לפי המזהה (id).
+- משלבים מומחיות משלימה: למשל מי שמכירה את השטח עם מי שמובילה מחקר הערכה, או מי שמפתחת כלים עם מי שמכירה מדיניות.
+- נשענים על מה שכל אחד כתב שהוא יכול לקדם ועל תחומי העיסוק שלו. ב-why כותבים בקצרה מה הוא או היא מביאים לרעיון הזה.
+- מפזרים: כל חבר/ה בקהילה מופיע/ה לכל היותר בשתי הצעות, וכדאי שכמה שיותר אנשים יקבלו הצעה.
+
+המאמרים:
+- 2 עד 4 מאמרים לכל הצעה, רק מהרשימה, לפי ה-ref. אסור להמציא מאמרים או קישורים.
+- ב-note: משפט אחד, מה המאמר מראה ולמה הוא רלוונטי לנישה.
+
+הכתיבה:
+- עברית פשוטה, ישירה וברורה, משפטים מלאים. בלי מקף ארוך (—).
+- title: כותרת קצרה שעומדת בפני עצמה.
+- gap: שניים או שלושה משפטים: מה ידוע ומה חסר.
+- idea: שניים או שלושה משפטים: מה חוקרים, עם מי ואיפה.
+- questions: שאלת מחקר אחת עד שלוש, כל אחת מובנת בלי הסבר.
+- approach: איך אפשר לחקור, בשניים או שלושה משפטים (אוכלוסייה, שיטה, כלים).
+- firstStep: צעד ראשון קטן לצוות, שאפשר לעשות השבוע.
+- כל רעיון שונה מהאחרים ומהרעיונות שכבר הוצעו בקהילה.`;
+
+export function researchPrompt(input: {
+  people: { id: string; name: string; institution: string; description: string; offer: string; topics: string }[];
+  articles: RunArticle[]; existing: string[]; count: number; focus: string;
+}) {
+  const people = input.people.map(p => `<person id="${p.id}">\nשם: ${p.name}\nמוסד: ${p.institution}\nתחומי עיסוק: ${p.description}\nמה אני יכול/ה לקדם: ${p.offer || "לא נכתב"}\nתחומי עניין: ${p.topics}\n</person>`).join("\n");
+  const articles = input.articles.map(a => `<article ref="${a.ref}">\n${a.title} (${a.year || "שנה לא ידועה"})${a.authors ? `\nמחברים: ${a.authors}` : ""}${a.source ? `\nמקור: ${a.source}` : ""}\nתקציר: ${a.summary || "אין תקציר"}\n</article>`).join("\n");
+  return `<members>\n${people}\n</members>\n\n<recent_articles>\n${articles}\n</recent_articles>\n\n${input.existing.length ? `<existing_ideas>\n${input.existing.join("\n")}\n</existing_ideas>\n\n` : ""}הציעו ${input.count} שידוכים למחקר.${input.focus ? `\nכיוון שמנהלת הקהילה ביקשה להתמקד בו: ${input.focus}` : ""}`;
 }
