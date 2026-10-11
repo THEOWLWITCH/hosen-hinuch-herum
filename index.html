@@ -6388,4 +6388,58 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   });
 })();
 </script>
+<style id="date-il-v1-css">
+/* תאריכים כמקובל בישראל: יום/חודש/שנה בכל שדות התאריך באתר. */
+.dil{position:relative;display:flex;gap:6px;align-items:stretch;width:100%}
+.dil>input.dil-text{flex:1;min-width:0;direction:ltr;text-align:right}
+.dil>input.dil-text:invalid,.dil>input.dil-text.bad{border-color:#c98b8b}
+.dil-btn{flex:none;min-width:38px;border:1px solid #cddbe3;border-radius:7px;background:#fff;cursor:pointer;font-size:16px;line-height:1}
+.dil>input[type=date]{position:absolute!important;left:0;bottom:0;width:1px!important;height:1px!important;min-height:0!important;padding:0!important;border:0!important;opacity:0;pointer-events:none}
+</style>
+<script id="date-il-v1-js">
+/* כל שדה תאריך באתר מוצג כיום/חודש/שנה (11/10/2026), עם כפתור 📅 ללוח השנה.
+   השדה המקורי נשאר בטופס עם הערך yyyy-mm-dd, כך שהקוד הקיים ממשיך לעבוד בלי שינוי. */
+(function(){
+  const pad=n=>String(n).padStart(2,'0');
+  const toIL=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}/${m[2]}/${m[1]}`:''};
+  function toISO(txt){
+    const m=String(txt||'').trim().match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})$/);if(!m)return null;
+    const d=+m[1],mo=+m[2];let y=+m[3];if(m[3].length===2)y+=2000;
+    const dt=new Date(Date.UTC(y,mo-1,d));
+    return dt.getUTCFullYear()===y&&dt.getUTCMonth()===mo-1&&dt.getUTCDate()===d?`${y}-${pad(mo)}-${pad(d)}`:null;
+  }
+  const desc=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+  function enhance(el){
+    if(el.dataset.dil||el.closest('[data-native-date]'))return;el.dataset.dil='1';
+    const wrap=document.createElement('span');wrap.className='dil';
+    const txt=document.createElement('input');txt.type='text';txt.className=(el.className?el.className+' ':'')+'dil-text';
+    txt.inputMode='numeric';txt.placeholder='יי/חח/שששש';txt.autocomplete='off';txt.setAttribute('aria-label',(el.closest('label')?.firstChild?.textContent||'תאריך').trim()+' (יום/חודש/שנה)');
+    if(el.style.cssText)txt.style.cssText=el.style.cssText;
+    if(el.required){txt.required=true;el.required=false}
+    const btn=document.createElement('button');btn.type='button';btn.className='dil-btn';btn.textContent='📅';btn.title='לוח שנה';btn.setAttribute('aria-label','בחירה בלוח השנה');
+    el.parentNode.insertBefore(wrap,el);wrap.append(txt,btn,el);
+    const sync=()=>{txt.value=toIL(desc.get.call(el));txt.classList.remove('bad');txt.setCustomValidity('')};
+    // גם כשהקוד הקיים קובע ערך (למשל בעריכה), השדה המוצג מתעדכן.
+    Object.defineProperty(el,'value',{configurable:true,get(){return desc.get.call(el)},set(v){desc.set.call(el,v);sync()}});
+    sync();
+    const commit=()=>{
+      const v=txt.value.trim();
+      if(!v){desc.set.call(el,'');txt.setCustomValidity('');txt.classList.remove('bad')}
+      else{const iso=toISO(v);if(!iso){txt.classList.add('bad');txt.setCustomValidity('תאריך כמו 11/10/2026 (יום/חודש/שנה)');return}
+        desc.set.call(el,iso);txt.value=toIL(iso);txt.classList.remove('bad');txt.setCustomValidity('')}
+      el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));
+    };
+    txt.addEventListener('change',commit);txt.addEventListener('blur',()=>{if(txt.value.trim()&&!toISO(txt.value))commit()});
+    el.addEventListener('change',e=>{if(e.isTrusted)sync()});el.addEventListener('input',e=>{if(e.isTrusted)sync()});
+    btn.addEventListener('click',()=>{try{el.showPicker()}catch(e){el.style.pointerEvents='auto';el.focus();el.click();el.style.pointerEvents=''}});
+    el.form?.addEventListener('reset',()=>setTimeout(sync));
+  }
+  const scan=root=>{(root.querySelectorAll?root:document).querySelectorAll('input[type=date]').forEach(enhance);if(root.matches?.('input[type=date]'))enhance(root)};
+  document.addEventListener('DOMContentLoaded',()=>{
+    scan(document);
+    new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n.nodeType===1)scan(n)}).observe(document.body,{childList:true,subtree:true});
+  });
+  window.hosenDateIL={toIL,toISO};
+})();
+</script>
 </body></html>
