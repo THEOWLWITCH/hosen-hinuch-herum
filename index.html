@@ -6398,7 +6398,27 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     let last=adminToken();setInterval(()=>{const t=adminToken();if(t!==last){last=t;draw()}},2000);
   }
 
+  // בחלון "ניהול מערכת": כפתור לרעיונות המחקר, עם מספר הטיוטות שמחכות לפרסום. הרעיונות עצמם בעמוד הנבחרת.
+  function mountAdminButton(){
+    const mail=document.getElementById('adminCommunityMail');if(!mail||document.getElementById('adminResearch'))return;
+    const b=document.createElement('button');b.id='adminResearch';b.type='button';b.className='admin-community-mail';b.textContent='🔬 רעיונות למחקר';
+    b.onclick=()=>{
+      if(typeof closeAdmin==='function')closeAdmin();
+      if(document.documentElement.dataset.page==='people'){S.tab='research';load().catch(()=>{}).then(()=>{render();document.getElementById('collabHub')?.scrollIntoView({behavior:'smooth'})})}
+      else location.href='/people#research';
+    };
+    (document.getElementById('adminTopicsInvite')||document.getElementById('adminRequests')||mail).after(b);
+    const count=async()=>{
+      const tok=adminToken();if(!tok)return;
+      try{const r=await fetch('/api/collab?admin=1',{headers:{Authorization:'Bearer '+tok}});const d=await r.json();const n=(d.research||[]).filter(x=>x.status==='draft').length;b.textContent=n?`🔬 רעיונות למחקר (${n} ממתינים לפרסום)`:'🔬 רעיונות למחקר'}catch(e){}
+    };
+    const sync=()=>{b.hidden=!!mail.hidden;if(!mail.hidden)count()};
+    new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
+    const adm=document.getElementById('adminModal');if(adm)new MutationObserver(()=>{if(adm.getAttribute('aria-hidden')==='false')sync()}).observe(adm,{attributes:true,attributeFilter:['aria-hidden','style']});
+  }
+
   window.hosenCollab={open:openNew,offer:()=>openOffer()};
+  document.addEventListener('DOMContentLoaded',mountAdminButton);
   document.addEventListener('DOMContentLoaded',async()=>{
     if(document.documentElement.dataset.page==='match'){mountMatchIdeas();return}
     if(document.documentElement.dataset.page!=='people')return;
@@ -6406,6 +6426,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     try{await load()}catch(e){const p=document.querySelector('#collabHub [data-panel]');if(p)p.innerHTML='<p class="cb-empty">לא ניתן לטעון כרגע את השידוכים. אפשר לרענן את העמוד.</p>'}
     handleHash();
     window.addEventListener('hashchange',handleHash);
+    // כניסה או יציאה מהניהול אחרי שהעמוד נטען: טוענים מחדש, כדי שהטיוטות יופיעו (או ייעלמו).
+    let lastTok=adminToken();setInterval(()=>{const t=adminToken();if(t!==lastTok){lastTok=t;load().catch(()=>{})}},2000);
   });
 })();
 </script>
