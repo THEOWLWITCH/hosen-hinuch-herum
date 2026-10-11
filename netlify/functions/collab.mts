@@ -32,14 +32,14 @@ async function mail(to: string | undefined, subject: string, lines: string[], li
 
 // קישור אישי לעדכון "מה אני יכולה לקדם" (60 יום). זורק שגיאה אם השליחה נכשלה.
 async function offerMail(p: { id: string; name: string; email?: string }, site: string) {
-  const link = `${site}/people#my-offer=${await issueMemberToken(p.id)}`;
+  const link = `${site}/match#my-offer=${await issueMemberToken(p.id)}`;
   const lines = [
     `שלום ${p.name},`,
-    "בעמוד הנבחרת באתר הקהילה נפתח אזור חדש: 🤝 שידוכים בקהילה. רואים בו מי מקדמת מה, מי מתאימה לעבודה משותפת, ובקשות פתוחות לשיתוף פעולה שאפשר להצטרף אליהן.",
+    "בעמוד שיתופי פעולה באתר הקהילה נפתח אזור חדש: 🤝 שידוכים בקהילה. רואים בו מי מקדמת מה, מי מתאימה לעבודה משותפת, ובקשות פתוחות לשיתוף פעולה שאפשר להצטרף אליהן.",
     "התשובות מהטבלה של קבוצת העניין כבר נמצאות שם. בקישור הזה אפשר לבדוק, לעדכן ולהוסיף: לבחור את סוגי הפעילות שתרצי לקדם ולכתוב כמה מילים על הרעיון או הנושא.",
     "הקישור אישי ובתוקף 60 יום. כדאי לא להעביר אותו הלאה.",
   ];
-  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>✏️ לעדכון מה שאני יכולה לקדם</strong></a></p><p><a href="${esc(site)}/people" style="color:#17649a">לשידוכים בעמוד הנבחרת</a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
+  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>✏️ לעדכון מה שאני יכולה לקדם</strong></a></p><p><a href="${esc(site)}/match" style="color:#17649a">לשידוכים בעמוד שיתופי פעולה</a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
   await sendMail(String(p.email), "מה אני יכולה לקדם: שידוכים בקהילה", html, lines.join("\n\n") + `\n\nלעדכון: ${link}`);
 }
 
@@ -49,7 +49,7 @@ const hasBearer = (req: Request) => /^Bearer\b/i.test(req.headers.get("authoriza
 
 // קריאה פנימית מפונקציית הקצה (collab-ai), כמו בנבט.
 const internalOK = (req: Request) => { const s = Netlify.env.get("EDITOR_SECRET") || ""; return !!s && req.headers.get("x-internal") === s; };
-const researchLink = (site: string, rid: string) => `${site}/people#research-${rid}`;
+const researchLink = (site: string, rid: string) => `${site}/match#research-${rid}`;
 
 // מאמרים לרעיונות: מה שהדפדפן שלח (חידושים במחקר) ומה שבספרייה בשרת, עדכניים, בלי כפילויות.
 async function collectArticles(fromClient: unknown): Promise<RunArticle[]> {
@@ -91,7 +91,7 @@ async function researchMail(site: string, r: Research, p: { name: string; email?
   ].filter(Boolean), ["לכרטיס הרעיון", researchLink(site, r.id)]);
 }
 
-const manageLink = (site: string, cid: string, key: string) => `${site}/people#collab=${cid}.${key}`;
+const manageLink = (site: string, cid: string, key: string) => `${site}/match#collab=${cid}.${key}`;
 const kindLabels = (kinds: string[]) => kinds.map(k => KINDS.find(x => x.key === k)?.label || k).join(", ");
 
 export default async (req: Request) => {
@@ -152,12 +152,12 @@ export default async (req: Request) => {
     const c = await saveCollab(createCollab(f, await hashKey(key)));
     const link = manageLink(site, c.id, key);
     const mailed = await mail(f.email, `הבקשה שלך לשיתוף פעולה פורסמה: ${c.title}`,
-      [`שלום ${f.name},`, `הבקשה "${c.title}" פורסמה בעמוד הנבחרת, בלשונית השידוכים.`, "כשמישהי מצטרפת, יגיע אלייך מייל עם הפרטים שלה.", "בקישור הזה אפשר לראות מי הצטרפה, לעדכן את הבקשה, לסגור אותה, או לפתוח קבוצת משימה עם סביבת עבודה משותפת. כדאי לשמור אותו."],
+      [`שלום ${f.name},`, `הבקשה "${c.title}" פורסמה בעמוד שיתופי פעולה, בשידוכים בקהילה.`, "כשמישהי מצטרפת, יגיע אלייך מייל עם הפרטים שלה.", "בקישור הזה אפשר לראות מי הצטרפה, לעדכן את הבקשה, לסגור אותה, או לפתוח קבוצת משימה עם סביבת עבודה משותפת. כדאי לשמור אותו."],
       ["ניהול הבקשה", link]);
     await addRequest({
       type: "idea", name: f.name, email: f.email, subject: `🤝 בקשה לשיתוף פעולה: ${c.title}`,
       body: [`סוג הפעילות: ${kindLabels(c.kinds)}`, `הרעיון: ${c.description}`, c.need ? `את מי מחפשות: ${c.need}` : "", c.deadline ? `עד: ${c.deadline}` : ""].filter(Boolean).join("\n"),
-      link: `/people#collab-req-${c.id}`, data: { collabId: c.id },
+      link: `/match#collab-req-${c.id}`, data: { collabId: c.id },
     }).catch(() => {});
     return json({ ok: true, id: c.id, key, link, mailed });
   }

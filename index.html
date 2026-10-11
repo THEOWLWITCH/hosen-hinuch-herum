@@ -5810,7 +5810,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 @media print{.cb-actions,.cb-tabs,.cb-row{display:none!important}.cb-card{break-inside:avoid}}
 </style>
 <script id="collab-v1-js">
-/* שידוכים בקהילה: בעמוד הנבחרת. הנתונים: /api/collab. */
+/* שידוכים בקהילה: בעמוד שיתופי פעולה (/match), מעל קבוצות המשימה. בכרטיסי הנבחרת רק סוגי הפעילות. הנתונים: /api/collab. */
 (function(){
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   // כניסת הניהול בתוקף 12 שעות: אסימון שפג תוקפו לא נחשב כניסה (התוקף כתוב באסימון עצמו).
@@ -5880,17 +5880,18 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     Object.assign(S,{kinds:d.kinds||[],themes:d.themes||{},people:d.people||[],requests:d.requests||[],research:d.research||[],loaded:true});
     if(S.me&&!person(S.me))S.me='';
     if(!S.tab)S.tab=S.research.length||adminToken()?'research':S.requests.some(x=>x.status==='open')?'requests':'who';
+    if(!document.getElementById('collabHub')){decoratePeople();return}
     render();decoratePeople();
   }
   function mount(){
-    const head=document.querySelector('#people .section-head');
+    const head=document.querySelector('#match .section-head');
     if(!head||document.getElementById('collabHub'))return null;
     const root=document.createElement('section');root.id='collabHub';root.className='cb';root.setAttribute('aria-labelledby','cbTitle');
     root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle">🤝 שידוכים בקהילה</h3>
         <p>מי מקדמת מה, מי יכולה לעבוד עם מי, ובקשות פתוחות לשיתוף פעולה. אפשר לבקש שותפות לרעיון, להצטרף לבקשה של אחרת, או לעדכן מה את יכולה לקדם.</p></div>
       <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכולה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
-        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה בעמוד "שיתופי פעולה".</li>
+        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה: קבוצת משימה, למטה בעמוד הזה.</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
         <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
@@ -5934,7 +5935,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       ${r.initiators.length?`<p class="cb-meta"><strong>🙋 ברשימת היוזמים:</strong> ${r.initiators.map(h).join(', ')}</p>`:(r.status==='open'?'<p class="cb-meta">עדיין אין יוזמים. אפשר להיות הראשונים.</p>':'')}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="rs-join" data-id="${h(r.id)}">🙋 הצטרפות לרשימת היוזמים</button><button type="button" class="cb-btn small" data-cb="rs-team" data-id="${h(r.id)}">🤝 פתיחת מרחב עבודה</button>`:''}
-        ${r.status==='team'?`<a class="cb-btn small primary" href="/match">🤝 למרחב העבודה בשיתופי פעולה</a>`:''}
+        ${r.status==='team'?`<a class="cb-btn small primary" href="#teams" onclick="document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});return false">🤝 לקבוצת המשימה, למטה בעמוד</a>`:''}
         ${draft?'':`<button type="button" class="cb-btn small" data-cb="rs-share" data-id="${h(r.id)}">🔗 העתקת קישור</button>`}
         ${admin&&draft?`<button type="button" class="cb-btn small primary" data-cb="rs-publish" data-id="${h(r.id)}">📨 פרסום ושליחה לצוות המוצע</button><button type="button" class="cb-btn small" data-cb="rs-publish-quiet" data-id="${h(r.id)}">פרסום בלי מייל</button>`:''}
         ${admin&&r.status==='open'?`<button type="button" class="cb-btn small" data-cb="rs-close" data-id="${h(r.id)}">סגירה</button>`:''}
@@ -5961,7 +5962,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   function requestCard(r){
     const admin=!!adminToken();
     const fits=r.status==='open'?fitsFor(r):[];
-    const link=`${site()}/people#collab-req-${r.id}`;
+    const link=`${site()}/match#collab-req-${r.id}`;
     return `<article class="cb-card cb-req ${h(r.status)}" id="collab-req-${h(r.id)}">
       <div><span class="cb-badge ${h(r.status)}">${h(r.statusLabel)}</span>${r.deadline?` <span class="cb-meta">· עד ${fmt(r.deadline)}</span>`:''}</div>
       <h4 dir="auto" style="margin-top:6px">${h(r.title)}</h4>
@@ -5970,7 +5971,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       <p dir="auto">${h(r.description)}</p>
       ${r.need?`<p dir="auto"><strong>את מי מחפשות:</strong> ${h(r.need)}</p>`:''}
       ${r.joiners.length?`<p class="cb-meta"><strong>הצטרפו:</strong> ${r.joiners.map(h).join(', ')}</p>`:''}
-      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד הנבחרת יש בקשה לשיתוף פעולה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
+      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד שיתופי פעולה באתר הקהילה יש בקשה לשיתוף פעולה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="join" data-id="${h(r.id)}">🙋 אני רוצה להצטרף</button>`:''}
         <button type="button" class="cb-btn small" data-cb="share" data-id="${h(r.id)}">🔗 העתקת קישור</button>
@@ -5990,7 +5991,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       ${why||''}
       ${p.kinds.length?`<div class="cb-tags">${p.kinds.map(k=>tag(k,k===S.kind||S.want.includes(k))).join('')}</div>`:''}
       ${p.text?`<p dir="auto">${h(p.text)}</p>`:''}
-      <div class="cb-row">${p.email?`<a class="cb-btn small" href="${h(mailto(p,subject,`שלום ${p.name},\n\nראיתי בעמוד הנבחרת מה את יכולה לקדם, ואשמח לבדוק איתך שיתוף פעולה.\n\n`))}">✉️ פנייה במייל</a>`:''}${p.phone?`<a class="cb-btn small" href="tel:${h(p.phone.replace(/[^\d+]/g,''))}" dir="ltr">📞 ${h(p.phone)}</a>`:''}</div></article>`;
+      <div class="cb-row">${p.email?`<a class="cb-btn small" href="${h(mailto(p,subject,`שלום ${p.name},\n\nראיתי באתר הקהילה מה את יכולה לקדם, ואשמח לבדוק איתך שיתוף פעולה.\n\n`))}">✉️ פנייה במייל</a>`:''}${p.phone?`<a class="cb-btn small" href="tel:${h(p.phone.replace(/[^\d+]/g,''))}" dir="ltr">📞 ${h(p.phone)}</a>`:''}</div></article>`;
   }
   function renderWho(){
     const withOffer=S.people.filter(p=>p.kinds.length||p.text);
@@ -6062,7 +6063,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     }
     if(a==='rs-join')return openResearchJoin(t.dataset.id);
     if(a==='rs-team')return openResearchTeam(t.dataset.id);
-    if(a==='rs-share'){const link=`${site()}/people#research-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לרעיון:',link)}return}
+    if(a==='rs-share'){const link=`${site()}/match#research-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לרעיון:',link)}return}
     if(a==='rs-publish'||a==='rs-publish-quiet'||a==='rs-close'||a==='rs-del'){
       const r=S.research.find(x=>x.id===t.dataset.id);if(!r)return;
       const ask={'rs-publish':`לפרסם את "${r.title}" ולשלוח הודעה ל-${r.researchers.length} החברים שהוצעו לצוות (${r.researchers.map(x=>x.name).join(', ')})?`,'rs-publish-quiet':`לפרסם את "${r.title}" בלי לשלוח מייל?`,'rs-close':`לסגור את "${r.title}"? הוא יוסתר מהעמוד.`,'rs-del':`למחוק את "${r.title}"?`}[a];
@@ -6085,7 +6086,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       t.disabled=false;t.textContent=label;return;
     }
     if(a==='join')return openJoin(t.dataset.id);
-    if(a==='share'){const link=`${site()}/people#collab-req-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לבקשה:',link)}return}
+    if(a==='share'){const link=`${site()}/match#collab-req-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לבקשה:',link)}return}
     if(a==='del'){
       const r=S.requests.find(x=>x.id===t.dataset.id);if(!r||!confirm(`למחוק את הבקשה "${r.title}"?`))return;
       try{await post({action:'admin-delete',id:r.id},{Authorization:'Bearer '+adminToken()});await load()}catch(err){alert(err.message)}
@@ -6212,7 +6213,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const r=S.research.find(x=>x.id===rid);if(!r)return;
     const root=modal('');const opened=Date.now();
     root.innerHTML=`<h2>🤝 פתיחת מרחב עבודה: ${h(r.title)}</h2>
-      <p class="nv-status">נפתחת קבוצת משימה בעמוד "שיתופי פעולה", עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
+      <p class="nv-status">נפתחת קבוצת משימה (ברשימה למטה בעמוד הזה), עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
       <form class="nv-form" novalidate>${whoFields()}
         <label class="wide">קוד הקהילה<input name="communityCode" type="password" inputmode="numeric" autocomplete="off" required></label>
         <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -6228,7 +6229,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         const who=f.elements.who.value;
         const j=await post({action:'research-team',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),communityCode:v('communityCode'),website:f.elements.website.value,elapsed:Date.now()-opened});
         root.innerHTML=`<h2>✓ מרחב העבודה נפתח</h2>
-          <p>הקבוצה מופיעה עכשיו בעמוד "שיתופי פעולה"${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
+          <p>הקבוצה מופיעה עכשיו ברשימת קבוצות המשימה, למטה בעמוד${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
           <p><strong>הקישור למרחב העבודה</strong> (כדאי לשמור אותו${j.mailed?'':' ולשלוח אותו לחברי הצוות'}: רק איתו נכנסים):</p>
           <div class="cb-copy"><input readonly value="${h(j.link)}"><button type="button" class="nv-btn" data-copy>העתקה</button></div>
           <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">כניסה למרחב העבודה</a></div>`;
@@ -6327,7 +6328,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${c.joiners.length?c.joiners.map(j=>`<div class="cb-joiner"><div><strong>${h(j.name)}</strong> · <a href="mailto:${h(j.email)}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}" dir="ltr">${h(j.email)}</a> <span class="cb-meta">· ${fmt(j.at)}</span>${j.note?`<div class="cb-meta" dir="auto">${h(j.note)}</div>`:''}</div><button type="button" class="cb-btn small danger" data-rm="${h(j.id)}">הסרה</button></div>`).join(''):'<p class="cb-meta">עדיין אין מצטרפות. אפשר להעתיק את הקישור לבקשה ולשלוח אותו למי שמתאימה.</p>'}
         ${c.joiners.length?`<div class="nv-row" style="margin:8px 0"><a class="nv-btn" href="mailto:${h(c.joiners.map(j=>j.email).join(','))}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}">✉️ מייל לכל המצטרפות</a></div>`:''}
         <div style="margin:14px 0;padding:12px 14px;border-radius:10px;background:#f4f9f6">
-          ${c.teamId?'<strong>🤝 נפתחה קבוצת משימה.</strong> <span class="nv-status">הקישור לסביבת העבודה נשלח במייל לכל החברות.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע בעמוד "שיתופי פעולה".</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
+          ${c.teamId?'<strong>🤝 נפתחה קבוצת משימה.</strong> <span class="nv-status">הקישור לסביבת העבודה נשלח במייל לכל החברות.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע ברשימת קבוצות המשימה, למטה בעמוד.</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
           <div data-teamst class="nv-status"></div></div>
         <h3 style="font-size:16px;margin:12px 0 6px">✏️ עדכון הבקשה</h3>
         <form class="nv-form" novalidate>
@@ -6337,7 +6338,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
           <div class="wide"><strong style="font-size:13px">סוג הפעילות</strong>${kindChecks(c.kinds)}</div>
           <label class="wide">מה הרעיון?<textarea name="description" rows="3" dir="auto">${h(c.description)}</textarea></label>
           <label class="wide">את מי את מחפשת?<textarea name="need" rows="2" dir="auto">${h(c.need)}</textarea></label>
-          <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירה</button><a class="nv-btn" href="/people#collab-req-${h(c.id)}" data-view>לבקשה בעמוד</a></div>
+          <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירה</button><a class="nv-btn" href="/match#collab-req-${h(c.id)}" data-view>לבקשה בעמוד</a></div>
         </form><div class="nv-status" data-st></div>`;
       const f=root.querySelector('form'),st=root.querySelector('[data-st]');
       f.addEventListener('submit',async e=>{
@@ -6381,31 +6382,14 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(rs){S.tab='research';render();const el=document.getElementById('research-'+rs[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2600)}}
   }
 
-  // בעמוד "שיתופי פעולה": רעיונות המחקר מהשידוכים (והטיוטות שמחכות לפרסום, למנהלת המערכת), עם קישור לעמוד הנבחרת.
-  async function mountMatchIdeas(){
-    const head=document.querySelector('#match .section-head');if(!head||document.getElementById('cbMatchIdeas'))return;
-    const box=document.createElement('section');box.id='cbMatchIdeas';box.className='cb';box.style.margin='0 0 18px';
-    head.after(box);
-    const draw=async()=>{
-      const tok=adminToken();
-      let d;try{const r=await fetch('/api/collab'+(tok?'?admin=1':''),{headers:tok?{Authorization:'Bearer '+tok}:{}});d=await r.json()}catch(e){box.remove();return}
-      const all=d.research||[];const live=all.filter(r=>r.status==='open'||r.status==='team');const drafts=all.filter(r=>r.status==='draft');
-      box.innerHTML=`<div class="cb-top"><div><h3>🔬 רעיונות למחקר מהשידוכים</h3><p>רעיונות למחקרים משותפים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים, ומשם לפתוח כאן מרחב עבודה.</p></div><div class="cb-actions"><a class="cb-btn primary" href="/people#research">לכל הרעיונות${live.length?` (${live.length})`:''}</a></div></div>
-        ${tok&&drafts.length?`<p class="cb-why" style="margin-top:12px">📝 <strong>${drafts.length} רעיונות ממתינים לבדיקה ולפרסום שלך.</strong> הם גלויים רק לך עד הפרסום. <a href="/people#research">לבדיקה ולפרסום</a></p>`:''}
-        ${live.length?`<ul class="cb-ul" style="margin-top:10px">${live.slice(0,6).map(r=>`<li><a href="/people#research-${h(r.id)}" style="color:#17649a;font-weight:600">${h(r.title)}</a> <span class="cb-meta">· ${h(r.researchers.map(x=>x.name).join(', '))}${r.status==='team'?' · נפתח מרחב עבודה':''}</span></li>`).join('')}</ul>`:(tok?'':'<p class="cb-meta" style="margin-top:10px">רעיונות ראשונים יתפרסמו כאן בקרוב.</p>')}`;
-    };
-    await draw();
-    let last=adminToken();setInterval(()=>{const t=adminToken();if(t!==last){last=t;draw()}},2000);
-  }
-
   // בחלון "ניהול מערכת": כפתור לרעיונות המחקר, עם מספר הטיוטות שמחכות לפרסום. הרעיונות עצמם בעמוד הנבחרת.
   function mountAdminButton(){
     const mail=document.getElementById('adminCommunityMail');if(!mail||document.getElementById('adminResearch'))return;
     const b=document.createElement('button');b.id='adminResearch';b.type='button';b.className='admin-community-mail';b.textContent='🔬 רעיונות למחקר';
     b.onclick=()=>{
       if(typeof closeAdmin==='function')closeAdmin();
-      if(document.documentElement.dataset.page==='people'){S.tab='research';load().catch(()=>{}).then(()=>{render();document.getElementById('collabHub')?.scrollIntoView({behavior:'smooth'})})}
-      else location.href='/people#research';
+      if(document.documentElement.dataset.page==='match'){S.tab='research';load().catch(()=>{}).then(()=>{render();document.getElementById('collabHub')?.scrollIntoView({behavior:'smooth'})})}
+      else location.href='/match#research';
     };
     (document.getElementById('adminTopicsInvite')||document.getElementById('adminRequests')||mail).after(b);
     const count=async()=>{
@@ -6420,8 +6404,15 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   window.hosenCollab={open:openNew,offer:()=>openOffer()};
   document.addEventListener('DOMContentLoaded',mountAdminButton);
   document.addEventListener('DOMContentLoaded',async()=>{
-    if(document.documentElement.dataset.page==='match'){mountMatchIdeas();return}
-    if(document.documentElement.dataset.page!=='people')return;
+    const page=document.documentElement.dataset.page;
+    if(page==='people'){
+      // קישורים ישנים (מיילים שכבר נשלחו) הובילו לעמוד הנבחרת: עוברים לשיתופי פעולה עם אותו קישור.
+      const moved=()=>{if(/^#(research|research-[\w-]+|collab=.+|collab-req-[\w-]+|my-offer=.+)$/.test(location.hash)){location.replace('/match'+location.hash);return true}return false};
+      if(moved())return;
+      window.addEventListener('hashchange',moved);
+      load().catch(()=>{});return; // בכרטיסי הנבחרת: סוגי הפעילות בלבד
+    }
+    if(page!=='match')return;
     if(!mount())return;
     try{await load()}catch(e){const p=document.querySelector('#collabHub [data-panel]');if(p)p.innerHTML='<p class="cb-empty">לא ניתן לטעון כרגע את השידוכים. אפשר לרענן את העמוד.</p>'}
     handleHash();
