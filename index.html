@@ -5858,10 +5858,13 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   const peopleOptions=sel=>`<option value="">בחירה מהנבחרת</option>${S.people.map(p=>`<option value="${h(p.id)}"${p.id===sel?' selected':''}>${h(p.name)}</option>`).join('')}<option value="other">אני לא ברשימה</option>`;
   // שם ומייל: בחירה מהנבחרת ממלאת אותם, ואפשר לשנות.
   function whoFields(){return `<label>מי את/ה?<select name="who">${peopleOptions(S.me)}</select></label>
-    <label>שם<input name="name" required autocomplete="name"></label>
-    <label class="wide">מייל <span class="nv-status" style="display:inline">(לתיאום ההמשך)</span><input name="email" type="email" dir="ltr" required autocomplete="email"></label>`}
+    <label data-name-wrap>שם<input name="name" required autocomplete="name"></label>
+    <label class="wide">מייל לתיאום ההמשך<input name="email" type="email" dir="ltr" required autocomplete="email"></label>`}
   function bindWho(f){
-    const fill=()=>{const p=person(f.elements.who.value);if(p){f.elements.name.value=p.name;if(p.email)f.elements.email.value=p.email}};
+    // בחירה מהנבחרת ממלאת שם ומייל, ושדה השם מוסתר כדי שהשם לא יופיע פעמיים. "אני לא ברשימה" פותח אותו.
+    const wrap=f.querySelector('[data-name-wrap]');
+    const fill=()=>{const p=person(f.elements.who.value);if(p){f.elements.name.value=p.name;if(p.email)f.elements.email.value=p.email}else if(f.elements.who.value==='other'&&S.people.some(x=>x.name===f.elements.name.value))f.elements.name.value='';
+      if(wrap)wrap.style.display=p?'none':'';f.elements.who.closest('label')?.classList.toggle('wide',!!p);if(!p&&f.elements.who.value==='other')f.elements.name.focus()};
     f.elements.who.addEventListener('change',()=>{if(f.elements.who.value&&f.elements.who.value!=='other'){S.me=f.elements.who.value;ls.set('hosen.collab.me',S.me)}fill()});fill();
   }
   function mailto(p,subject,body){return `mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}
