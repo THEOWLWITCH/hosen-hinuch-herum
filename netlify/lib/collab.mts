@@ -3,6 +3,7 @@
 // והפעילות, הרעיון או הנושא שאוכל לקדם).
 // אין באתר חשבונות, ולכן ניהול בקשה נעשה בקישור סודי (מפתח), כמו בקבוצות המשימה. בשרת נשמר רק גיבוב.
 import { id, store } from "./shared.mts";
+import { RESEARCH_SEED } from "./research-seed.mts";
 
 // סוגי הפעילות: הרשימה מהטבלה, ועוד כמה סוגים שעלו בתשובות של חברות הקבוצה.
 export const KINDS: { key: string; label: string; icon: string }[] = [
@@ -148,9 +149,21 @@ export type Research = {
 export type RunArticle = { ref: string; title: string; authors: string; year: string; source: string; url: string; summary: string };
 export type Run = { id: string; at: string; articles: RunArticle[]; people: { id: string; name: string }[] };
 
+// הרעיונות הראשונים (research-seed.mts): טיוטה עד שמפרסמים. מה שנשמר בשרת גובר, ומחיקה נשמרת כסימון.
+const SEED_AT = "2026-10-11T09:00:00.000Z";
+function seedResearch(x: typeof RESEARCH_SEED[number]): Research {
+  return {
+    ...JSON.parse(JSON.stringify(x)), status: "draft", initiators: [], teamId: "", notified: 0,
+    createdAt: SEED_AT, publishedAt: "", updatedAt: SEED_AT,
+  };
+}
+
 export async function getResearch(rid: string): Promise<Research | null> {
   if (!/^[\w-]{6,80}$/.test(rid)) return null;
-  return await data().get(`research/${rid}.json`, { type: "json" }) as Research | null;
+  const v = await data().get(`research/${rid}.json`, { type: "json" }) as (Research & { deleted?: boolean }) | null;
+  if (v) return v.deleted ? null : v;
+  const seed = RESEARCH_SEED.find(x => x.id === rid);
+  return seed ? seedResearch(seed) : null;
 }
 export async function saveResearch(r: Research): Promise<Research> {
   const x = { ...r, updatedAt: new Date().toISOString() };
@@ -158,16 +171,21 @@ export async function saveResearch(r: Research): Promise<Research> {
   return x;
 }
 export async function deleteResearch(rid: string) {
-  await data().delete(`research/${rid}.json`);
+  if (RESEARCH_SEED.some(x => x.id === rid)) await data().setJSON(`research/${rid}.json`, { id: rid, deleted: true });
+  else await data().delete(`research/${rid}.json`);
 }
 export async function listResearch(): Promise<Research[]> {
   const st = data();
   const { blobs } = await st.list({ prefix: "research/" });
   const rows: Research[] = [];
+  const stored = new Set<string>();
   for (const b of blobs) {
-    const v = await st.get(b.key, { type: "json" }) as Research | null;
-    if (v?.id) rows.push(v);
+    const v = await st.get(b.key, { type: "json" }) as (Research & { deleted?: boolean }) | null;
+    if (!v?.id) continue;
+    stored.add(v.id);
+    if (!v.deleted) rows.push(v);
   }
+  for (const x of RESEARCH_SEED) if (!stored.has(x.id)) rows.push(seedResearch(x));
   return rows.sort((a, b) => (b.publishedAt || b.createdAt).localeCompare(a.publishedAt || a.createdAt));
 }
 export async function saveRun(run: Run) {

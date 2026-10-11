@@ -5940,7 +5940,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const admin=!!adminToken();
     const drafts=S.research.filter(r=>r.status==='draft');
     const live=S.research.filter(r=>r.status!=='draft');
-    const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><button type="button" class="cb-btn primary" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div>`:'';
+    const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><div class="cb-actions">${drafts.length?`<button type="button" class="cb-btn primary" data-cb="rs-publish-all">📨 פרסום כל הטיוטות ושליחה לצוותים (${drafts.length})</button>`:''}<button type="button" class="cb-btn${drafts.length?'':' primary'}" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div></div>`:'';
     const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים בקוד הקהילה, ומשם לפתוח מרחב עבודה לצוות.</p>';
     return bar+intro+
       (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-grid">${drafts.map(researchCard).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
@@ -6046,6 +6046,15 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(a==='kind'){S.kind=t.dataset.k;render();return}
     if(a==='new')return openNew();
     if(a==='rs-gen')return openGenerate();
+    if(a==='rs-publish-all'){
+      const drafts=S.research.filter(x=>x.status==='draft');
+      const people=new Set(drafts.flatMap(r=>r.researchers.map(x=>x.name)));
+      if(!drafts.length||!confirm(`לפרסם את ${drafts.length} הטיוטות ולשלוח לכל צוות מוצע הודעה במייל (${people.size} חברי נבחרת)?`))return;
+      t.disabled=true;t.textContent='מפרסמת…';let mailed=0,ok=0,mailOff=false,err='';
+      for(const r of drafts){try{const j=await post({action:'research-publish',id:r.id,notify:true},{Authorization:'Bearer '+adminToken()});ok++;mailed+=j.mailed||0;if(j.mailConfigured===false)mailOff=true}catch(e){err=e.message;break}}
+      alert(`פורסמו ${ok} מתוך ${drafts.length} רעיונות.${mailOff?' שליחת המיילים מהאתר עוד לא פעילה, ולכן לא נשלחו הודעות.':` נשלחו ${mailed} הודעות.`}${err?`\n${err}`:''}`);
+      await load().catch(()=>{});return;
+    }
     if(a==='rs-join')return openResearchJoin(t.dataset.id);
     if(a==='rs-team')return openResearchTeam(t.dataset.id);
     if(a==='rs-share'){const link=`${site()}/people#research-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לרעיון:',link)}return}
