@@ -5762,6 +5762,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .cb-btn.danger{border-color:#d9c6c6;color:#a23b3b}
 .cb-btn:hover{filter:brightness(1.05);box-shadow:0 3px 10px rgba(47,110,79,.15)}
 .cb-btn[disabled]{opacity:.55;cursor:default;box-shadow:none}
+.cb-btn[hidden]{display:none}
+.cb-how{margin:12px 0 0;font-size:13.5px}.cb-how summary{cursor:pointer;font-weight:700;color:#2a6048}.cb-how ol{margin:8px 0 0;padding-inline-start:20px;line-height:1.7}.cb-how li{margin-bottom:4px}
 .cb-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 14px;border-bottom:1px solid var(--cb-line)}
 .cb-tab{border:0;border-bottom:3px solid transparent;background:none;padding:8px 12px;font:inherit;font-size:14.5px;font-weight:700;color:var(--cb-soft);cursor:pointer}
 .cb-tab[aria-selected="true"]{color:var(--cb-green);border-bottom-color:var(--cb-green)}
@@ -5857,9 +5859,17 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const root=document.createElement('section');root.id='collabHub';root.className='cb';root.setAttribute('aria-labelledby','cbTitle');
     root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle">🤝 שידוכים בקהילה</h3>
         <p>מי מקדמת מה, מי יכולה לעבוד עם מי, ובקשות פתוחות לשיתוף פעולה. אפשר לבקש שותפות לרעיון, להצטרף לבקשה של אחרת, או לעדכן מה את יכולה לקדם.</p></div>
-      <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכולה לקדם</button></div></div>
+      <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכולה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
+      <details class="cb-how"><summary>איך זה עובד?</summary><ol>
+        <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
+        <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
+        <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
+        <li><strong>🙋 הצטרפות:</strong> לוחצים "אני רוצה להצטרף" וכותבים שם ומייל. מי שפרסמה את הבקשה מקבלת מייל וחוזרת אלייך. כשנמצאו שותפות, אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת.</li>
+        <li><strong>✏️ מה אני יכולה לקדם:</strong> כותבים את המייל שבכרטיס שלך, ומקבלים קישור אישי לעדכון.</li>
+      </ol></details>
       <div class="cb-tabs" role="tablist"></div><div data-panel><p class="cb-empty">טוען…</p></div>`;
     head.after(root);
+    const inv=root.querySelector('[data-cb="invite-all"]');const sync=()=>{inv.hidden=!adminToken()};sync();setInterval(sync,2000);
     root.addEventListener('click',onClick);
     root.addEventListener('change',e=>{
       if(e.target.matches('[data-me]')){S.me=e.target.value;ls.set('hosen.collab.me',S.me);render()}
@@ -5975,6 +5985,14 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(a==='kind'){S.kind=t.dataset.k;render();return}
     if(a==='new')return openNew();
     if(a==='offer')return openOffer();
+    if(a==='invite-all'){
+      const n=S.people.filter(p=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p.email||'')).length;
+      if(!confirm(`לשלוח לכל חברות וחברי הנבחרת שיש להם מייל בכרטיס (${n}) קישור אישי לעדכון "מה אני יכולה לקדם"?\n\nמי שהוסר/ה מרשימות הדיוור לא יקבל/תקבל.`))return;
+      t.disabled=true;const label=t.textContent;t.textContent='שולחת…';
+      try{const j=await post({action:'offer-invite-all'},{Authorization:'Bearer '+adminToken()});alert(`נשלחו ${j.sent} מתוך ${j.total} מיילים.${j.failed.length?`\nלא נשלח אל: ${j.failed.join(', ')}${j.reason?`\n${j.reason}`:''}`:''}`)}
+      catch(err){alert(err.message)}
+      t.disabled=false;t.textContent=label;return;
+    }
     if(a==='join')return openJoin(t.dataset.id);
     if(a==='share'){const link=`${site()}/people#collab-req-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לבקשה:',link)}return}
     if(a==='del'){

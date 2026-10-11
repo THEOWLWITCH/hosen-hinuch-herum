@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { communityCodeOK, issueMemberToken, json, looksHuman, memberFromToken, store, validToken } from "../lib/shared.mts";
-import { THEME_LABELS, loadPeople, mailConfigured, mailErrorHint, personTopics, sendMail, siteUrl } from "../lib/calls.mts";
+import { THEME_LABELS, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addRequest } from "../lib/requests.mts";
 import { createTeam, hashKey as teamHash, newKey as teamKey, saveTeam } from "../lib/teams.mts";
 import {
@@ -26,6 +26,19 @@ async function mail(to: string | undefined, subject: string, lines: string[], li
     console.error("collab mail failed", mailErrorHint(e));
     return false;
   }
+}
+
+// קישור אישי לעדכון "מה אני יכולה לקדם" (60 יום). זורק שגיאה אם השליחה נכשלה.
+async function offerMail(p: { id: string; name: string; email?: string }, site: string) {
+  const link = `${site}/people#my-offer=${await issueMemberToken(p.id)}`;
+  const lines = [
+    `שלום ${p.name},`,
+    "בעמוד הנבחרת באתר הקהילה נפתח אזור חדש: 🤝 שידוכים בקהילה. רואים בו מי מקדמת מה, מי מתאימה לעבודה משותפת, ובקשות פתוחות לשיתוף פעולה שאפשר להצטרף אליהן.",
+    "התשובות מהטבלה של קבוצת העניין כבר נמצאות שם. בקישור הזה אפשר לבדוק, לעדכן ולהוסיף: לבחור את סוגי הפעילות שתרצי לקדם ולכתוב כמה מילים על הרעיון או הנושא.",
+    "הקישור אישי ובתוקף 60 יום. כדאי לא להעביר אותו הלאה.",
+  ];
+  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>✏️ לעדכון מה שאני יכולה לקדם</strong></a></p><p><a href="${esc(site)}/people" style="color:#17649a">לשידוכים בעמוד הנבחרת</a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
+  await sendMail(String(p.email), "מה אני יכולה לקדם: שידוכים בקהילה", html, lines.join("\n\n") + `\n\nלעדכון: ${link}`);
 }
 
 const manageLink = (site: string, cid: string, key: string) => `${site}/people#collab=${cid}.${key}`;
@@ -125,11 +138,23 @@ export default async (req: Request) => {
     const p = (await loadPeople(u.origin)).find(x => norm(x.email) === email);
     if (!p) return json({ error: "not_member", message: "המייל הזה לא מופיע בכרטיס בנבחרת. אם הכרטיס שלך רשום עם מייל אחר, כדאי לנסות אותו. עוד לא בנבחרת? אפשר לבקש להצטרף בכפתור \"🙋 הצטרפות\"." }, 404);
     if (!mailConfigured()) return json({ error: "mail", message: "שליחת המיילים מהאתר עוד לא פעילה. אפשר לכתוב למנהלת הקהילה, והיא תעדכן את הכרטיס." }, 503);
-    const link = `${site}/people#my-offer=${await issueMemberToken(p.id)}`;
-    const ok = await mail(String(p.email), "מה אני יכולה לקדם: עדכון הכרטיס שלך",
-      [`שלום ${p.name},`, "בעמוד הנבחרת יש עכשיו לשונית שידוכים: מי מקדמת מה, ומי יכולה לעבוד עם מי.", "בקישור הזה אפשר לבחור את סוגי הפעילות שתרצי לקדם ולכתוב כמה מילים על הרעיון שלך.", "הקישור אישי ובתוקף 60 יום."],
-      ["✏️ לעדכון מה שאני יכולה לקדם", link]);
-    return ok ? json({ ok: true, sent: true }) : json({ error: "mail", message: "השליחה לא הצליחה. אפשר לנסות שוב בעוד כמה דקות." }, 502);
+    try {
+      await offerMail(p, site);
+      return json({ ok: true, sent: true });
+    } catch (e) {
+      return json({ error: "mail", message: "השליחה לא הצליחה. " + mailErrorHint(e) }, 502);
+    }
+  }
+
+  // מנהלת המערכת: קישור אישי לעדכון "מה אני יכולה לקדם" לכל חברות הנבחרת שיש להן מייל.
+  if (action === "offer-invite-all") {
+    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+    if (!mailConfigured()) return json({ error: "mail", message: "שליחת המיילים מהאתר עוד לא פעילה (חסרים GMAIL_USER ו-GMAIL_APP_PASSWORD ב-Netlify)." }, 503);
+    const optout = new Set(await getOptOut());
+    const people = (await loadPeople(u.origin)).filter(p => validEmail(String(p.email || "").trim()) && !optout.has(norm(p.email)));
+    const rows = body.onlyNew === true ? people.filter(p => { const o = offerOf(p as any); return !o.kinds.length && !o.text; }) : people;
+    const r = await sendAll(rows, p => offerMail(p, site));
+    return json({ ok: true, sent: r.ok.length, failed: r.failed.map(p => p.name), reason: r.reason, total: rows.length });
   }
 
   if (action === "offer-save") {
