@@ -3934,7 +3934,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
       const d=formData(f),kind=f.dataset.form;
       const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['meta',d]};
-      run(async()=>{await act(...map[kind]);if(kind==='meta'){msg('נשמר ✓','ok');refreshTeams()}});
+      // ההודעה "נשמר" מוצגת אחרי שהמסך מצויר מחדש, אחרת הציור מוחק אותה ונראה כאילו לא נשמר.
+      if(kind==='meta'){(async()=>{try{await act(...map[kind]);render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
+      run(async()=>{await act(...map[kind])});
     });
     render();
   }
@@ -6374,12 +6376,31 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(o){history.replaceState(null,'',location.pathname);openOffer(decodeURIComponent(o[1]));return}
     const r=location.hash.match(/^#collab-req-([\w-]+)$/);
     if(r)focusRequest(r[1]);
+    if(location.hash==='#research'){S.tab='research';render();document.getElementById('collabHub')?.scrollIntoView({behavior:'smooth'});return}
     const rs=location.hash.match(/^#research-([\w-]+)$/);
     if(rs){S.tab='research';render();const el=document.getElementById('research-'+rs[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2600)}}
   }
 
+  // בעמוד "שיתופי פעולה": רעיונות המחקר מהשידוכים (והטיוטות שמחכות לפרסום, למנהלת המערכת), עם קישור לעמוד הנבחרת.
+  async function mountMatchIdeas(){
+    const head=document.querySelector('#match .section-head');if(!head||document.getElementById('cbMatchIdeas'))return;
+    const box=document.createElement('section');box.id='cbMatchIdeas';box.className='cb';box.style.margin='0 0 18px';
+    head.after(box);
+    const draw=async()=>{
+      const tok=adminToken();
+      let d;try{const r=await fetch('/api/collab'+(tok?'?admin=1':''),{headers:tok?{Authorization:'Bearer '+tok}:{}});d=await r.json()}catch(e){box.remove();return}
+      const all=d.research||[];const live=all.filter(r=>r.status==='open'||r.status==='team');const drafts=all.filter(r=>r.status==='draft');
+      box.innerHTML=`<div class="cb-top"><div><h3>🔬 רעיונות למחקר מהשידוכים</h3><p>רעיונות למחקרים משותפים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים, ומשם לפתוח כאן מרחב עבודה.</p></div><div class="cb-actions"><a class="cb-btn primary" href="/people#research">לכל הרעיונות${live.length?` (${live.length})`:''}</a></div></div>
+        ${tok&&drafts.length?`<p class="cb-why" style="margin-top:12px">📝 <strong>${drafts.length} רעיונות ממתינים לבדיקה ולפרסום שלך.</strong> הם גלויים רק לך עד הפרסום. <a href="/people#research">לבדיקה ולפרסום</a></p>`:''}
+        ${live.length?`<ul class="cb-ul" style="margin-top:10px">${live.slice(0,6).map(r=>`<li><a href="/people#research-${h(r.id)}" style="color:#17649a;font-weight:600">${h(r.title)}</a> <span class="cb-meta">· ${h(r.researchers.map(x=>x.name).join(', '))}${r.status==='team'?' · נפתח מרחב עבודה':''}</span></li>`).join('')}</ul>`:(tok?'':'<p class="cb-meta" style="margin-top:10px">רעיונות ראשונים יתפרסמו כאן בקרוב.</p>')}`;
+    };
+    await draw();
+    let last=adminToken();setInterval(()=>{const t=adminToken();if(t!==last){last=t;draw()}},2000);
+  }
+
   window.hosenCollab={open:openNew,offer:()=>openOffer()};
   document.addEventListener('DOMContentLoaded',async()=>{
+    if(document.documentElement.dataset.page==='match'){mountMatchIdeas();return}
     if(document.documentElement.dataset.page!=='people')return;
     if(!mount())return;
     try{await load()}catch(e){const p=document.querySelector('#collabHub [data-panel]');if(p)p.innerHTML='<p class="cb-empty">לא ניתן לטעון כרגע את השידוכים. אפשר לרענן את העמוד.</p>'}
