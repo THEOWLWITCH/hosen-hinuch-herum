@@ -5807,7 +5807,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 /* שידוכים בקהילה: בעמוד הנבחרת. הנתונים: /api/collab. */
 (function(){
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const adminToken=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  // כניסת הניהול בתוקף 12 שעות: אסימון שפג תוקפו לא נחשב כניסה (התוקף כתוב באסימון עצמו).
+  const adminToken=()=>{try{const t=sessionStorage.getItem('hosen_editor_token')||'';const m=t.match(/^(?:admin:)?(\d+)\./);return m&&Number(m[1])>Date.now()?t:''}catch(e){return ''}};
   const ls={get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   const S={kinds:[],themes:{},people:[],requests:[],tab:'',kind:'',me:ls.get('hosen.collab.me'),want:[],loaded:false};
   const fmt=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+m[3]}.${+m[2]}.${m[1]}`:''};
@@ -6063,9 +6064,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 
   // "מה אני יכולה לקדם": חברת נבחרת בקישור אישי במייל, ומנהלת המערכת לכל כרטיס.
   async function openOffer(tok){
-    const admin=adminToken();
     const root=modal('<p class="nv-status">טוען…</p>');const opened=Date.now();
-    if(!tok&&!admin){
+    if(!tok&&!adminToken()){
       root.innerHTML=`<h2>✏️ מה אני יכולה לקדם</h2>
         <p>לחברות ולחברי הנבחרת. כתבו את המייל שמופיע בכרטיס שלכם, ויישלח אליכם קישור אישי לעדכון.</p>
         <form class="nv-row" novalidate><input name="email" type="email" dir="ltr" placeholder="name@example.com" autocomplete="email" style="flex:1;min-width:220px"><input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="submit" class="nv-btn primary">שליחת קישור</button></form>
@@ -6099,8 +6099,9 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     f.addEventListener('submit',async e=>{
       e.preventDefault();const kinds=checked(f),text=f.elements.text.value.trim();
       if(!kinds.length&&!text){st.className='nv-status err';st.textContent='נשמח לסוג פעילות אחד לפחות, או לכמה מילים.';return}
+      if(pick&&!adminToken()){st.className='nv-status err';st.textContent='כניסת הניהול הסתיימה (היא בתוקף 12 שעות). אפשר להיכנס שוב לניהול, ואז ללחוץ שוב "שמירה בכרטיס". מה שכתבת נשאר כאן.';return}
       try{
-        await post({action:'offer-save',kinds,text,personId:pick?root.querySelector('[name=pid]').value:''},tok?{'x-member-token':tok}:{Authorization:'Bearer '+admin});
+        await post({action:'offer-save',kinds,text,personId:pick?root.querySelector('[name=pid]').value:''},tok?{'x-member-token':tok}:{Authorization:'Bearer '+adminToken()});
         st.className='nv-status ok';st.textContent='✓ נשמר בכרטיס. אפשר לחזור לקישור הזה ולשנות בכל עת.';
         document.querySelectorAll('#peopleGrid .person[data-cb]').forEach(el=>el.removeAttribute('data-cb'));
         await load();

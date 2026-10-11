@@ -41,6 +41,10 @@ async function offerMail(p: { id: string; name: string; email?: string }, site: 
   await sendMail(String(p.email), "מה אני יכולה לקדם: שידוכים בקהילה", html, lines.join("\n\n") + `\n\nלעדכון: ${link}`);
 }
 
+// כניסת ניהול שפג תוקפה (12 שעות): הודעה ברורה במקום "הקישור לא תקין".
+const ADMIN_EXPIRED = { error: "admin_expired", message: "כניסת הניהול הסתיימה (היא בתוקף 12 שעות). אפשר להיכנס שוב לניהול ולנסות שוב." };
+const hasBearer = (req: Request) => /^Bearer\b/i.test(req.headers.get("authorization") || "");
+
 const manageLink = (site: string, cid: string, key: string) => `${site}/people#collab=${cid}.${key}`;
 const kindLabels = (kinds: string[]) => kinds.map(k => KINDS.find(x => x.key === k)?.label || k).join(", ");
 
@@ -148,7 +152,7 @@ export default async (req: Request) => {
 
   // מנהלת המערכת: קישור אישי לעדכון "מה אני יכולה לקדם" לכל חברות הנבחרת שיש להן מייל.
   if (action === "offer-invite-all") {
-    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+    if (!(await validToken(req, "admin"))) return json(ADMIN_EXPIRED, 401);
     if (!mailConfigured()) return json({ error: "mail", message: "שליחת המיילים מהאתר עוד לא פעילה (חסרים GMAIL_USER ו-GMAIL_APP_PASSWORD ב-Netlify)." }, 503);
     const optout = new Set(await getOptOut());
     const people = (await loadPeople(u.origin)).filter(p => validEmail(String(p.email || "").trim()) && !optout.has(norm(p.email)));
@@ -159,6 +163,7 @@ export default async (req: Request) => {
 
   if (action === "offer-save") {
     const admin = await validToken(req, "admin");
+    if (!admin && hasBearer(req)) return json(ADMIN_EXPIRED, 401);
     const pid = admin ? clip(body.personId, 80) : await memberFromToken(clip(req.headers.get("x-member-token"), 400));
     if (!pid) return json({ error: "forbidden", message: "הקישור לא תקין או שפג תוקפו. אפשר לבקש קישור חדש." }, 403);
     const p = (await loadPeople(u.origin)).find(x => x.id === pid);
@@ -172,7 +177,7 @@ export default async (req: Request) => {
 
   // ----- מנהלת המערכת -----
   if (action === "admin-delete") {
-    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+    if (!(await validToken(req, "admin"))) return json(ADMIN_EXPIRED, 401);
     const c = await getCollab(clip(body.id, 80));
     if (!c) return json({ error: "not_found" }, 404);
     await deleteCollab(c.id);
