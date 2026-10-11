@@ -3452,6 +3452,12 @@ html[data-page="calls"] #resourceArea{display:none!important}
 .ch-teams h4{margin:0 0 6px;font-size:13px}
 .ch-team{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed #cfe0e4}
 .ch-team:first-of-type{border-top:0}
+.ch-tlist{display:grid;gap:8px}
+.ch-trow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:11px 14px;border:1px solid var(--ch-line);border-right:4px solid var(--ch-accent);border-radius:10px;background:#fff;color:inherit;font:inherit;text-align:right;cursor:pointer}
+.ch-trow:hover{background:#f6fafc;box-shadow:0 3px 10px rgba(30,70,100,.08)}
+.ch-trow-main{display:flex;flex-direction:column;gap:3px;min-width:0}.ch-trow-main strong{font-size:15px}.ch-trow-main small{color:var(--ch-soft);font-size:12.5px}
+.ch-trow-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}.ch-trow-open{font-size:12.5px;font-weight:700;color:var(--ch-accent)}
+@media(max-width:640px){.ch-trow{flex-direction:column;align-items:stretch}.ch-trow-side{flex-direction:row;justify-content:space-between;align-items:center}}
 .ch-team p{margin:0;font-size:13px}.ch-team small{display:block;color:var(--ch-soft)}
 .ch-card-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .ch-credit{margin-top:8px;font-size:11.5px;color:#7b8d98}
@@ -3639,9 +3645,29 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const details=[c.funder?'גוף מממן: '+c.funder:'',c.url?'לפרטים ולהגשה: '+c.url:'',location.origin+'/calls#call-'+c.id].filter(Boolean).join('\n');
     return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('מועד אחרון: '+c.title)+'&dates='+d+'/'+next+'&details='+encodeURIComponent(details);
   }
+  // בעמוד שיתופי פעולה: קבוצה מקופלת לשורה, והפרטים בחלון צף.
+  function teamLine(t){
+    return `<button type="button" class="ch-trow" data-ch="team-open" data-id="${h(t.id)}">
+      <span class="ch-trow-main"><strong dir="auto">${h(t.title)}</strong><small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.deadline?` · עד ${fmt(t.deadline)}`:''}${teamKey(t.id)?' · ✓ את בקבוצה':''}</small></span>
+      <span class="ch-trow-side"><span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?'<span class="ch-badge green">🌱 מנבט</span>':''}<span class="ch-trow-open">לפרטים ›</span></span></button>`;
+  }
+  function openTeamCard(id){
+    const t=state.teams.find(x=>x.id===id);if(!t)return;
+    const mine=teamKey(t.id);
+    const m=modal(`<span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?' <span class="ch-badge green">🌱 מנבט</span>':''}
+      <h2 dir="auto" style="margin-top:8px">${h(t.title)}</h2>
+      ${t.callId&&t.callTitle?`<p><a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a></p>`:''}
+      ${t.summary?`<p dir="auto" style="white-space:pre-line">${h(t.summary)}</p>`:''}
+      ${t.need?`<p dir="auto"><strong>מחפשות:</strong> ${h(t.need)}</p>`:''}
+      <p class="ch-credit"><strong>מובילה:</strong> ${h(t.lead)}${t.members.length>1?` · <strong>בקבוצה:</strong> ${t.members.map(h).join(', ')}`:''}</p>
+      ${(t.internal&&t.funder)||t.deadline?`<p class="ch-credit">${t.internal&&t.funder?`<strong>גוף מממן:</strong> ${h(t.funder)}`:''}${t.internal&&t.funder&&t.deadline?' · ':''}${t.deadline?`<strong>מועד הגשה:</strong> ${fmt(t.deadline)}`:''}</p>`:''}
+      <div class="ch-card-actions">${mine?`<button type="button" class="ch-btn primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn primary" data-ch="join" data-id="${h(t.id)}">בקשת הצטרפות</button>`:'')}</div>`);
+    m.addEventListener('click',e=>{if(e.target.closest('[data-ch]')){m.close();onClick(e)}});
+  }
   function teamRow(t){
     const mine=teamKey(t.id);
     const onMatch=document.documentElement.dataset.page==='match';
+    if(onMatch)return teamLine(t);
     return `<div class="ch-team"><p><strong>${h(t.title)}</strong> <span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?' <span class="ch-badge green">🌱 מנבט</span>':''}${onMatch&&t.callId?` <a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a>`:''}${onMatch&&t.summary?`<small>${h(t.summary)}</small>`:''}
       <small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
       <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn small" data-ch="join" data-id="${h(t.id)}">בקשת הצטרפות</button>`:'')}</span></div>`;
@@ -3687,7 +3713,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(!el)return;
     if(document.documentElement.dataset.page==='match'){
       const rows=state.teams;
-      el.innerHTML=rows.length?`<div class="ch-card">${rows.map(teamRow).join('')}</div>`:'<p class="ch-empty">עדיין אין קבוצות משימה. רוצה להוביל הגשה או מיזם? הקימי קבוצה, וכתבי מי דרושה לך.</p>';
+      el.innerHTML=rows.length?`<div class="ch-tlist">${rows.map(teamRow).join('')}</div>`:'<p class="ch-empty">עדיין אין קבוצות משימה. רוצה להוביל הגשה או מיזם? הקימי קבוצה, וכתבי מי דרושה לך.</p>';
       return;
     }
     const rows=state.teams.filter(t=>t.internal||!state.open.some(c=>c.id===t.callId));
@@ -4102,6 +4128,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(a==='team-new')return openTeamNew(b.dataset.call||'');
     if(a==='join')return openJoin(b.dataset.id);
     if(a==='ws')return openWorkspace(b.dataset.id);
+    if(a==='team-open')return openTeamCard(b.dataset.id);
     if(a==='calendar')return openCalendar();
     if(a==='admin')return openCallsAdmin();
   }
