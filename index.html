@@ -2208,7 +2208,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
         <a class="site-tab" data-route="apps" href="/apps">🌱 יישומים</a>
-        <a class="site-tab" data-route="tasks" href="/tasks">🐦 צופית</a>
+        <a class="site-tab" data-route="tasks" href="/tasks">🧵 אֲרִיאַדְנֶה</a>
   </div>
 </nav>
 <main>
@@ -2962,19 +2962,19 @@ html[data-page="apps"] #apps{display:block!important}
   });
 })();
 </script>
-<style id="tsofit-v1">
+<style id="ariadne-v1">
 #tasks{display:none}
 html[data-page="tasks"] #tasks{display:block!important}
-#tsofitRoot{--tf-ink:#1f4256;--tf-soft:#5f7686;--tf-line:#d7e3e7;--tf-accent:#245f82;--tf-green:#2f6e4f;--tf-gold:#9a6a12;--tf-red:#a23b3b;color:var(--tf-ink);font-size:14.5px;line-height:1.65;padding:26px 0 56px}
-#tsofitRoot [hidden]{display:none!important}
-#tsofitRoot h2,#tsofitRoot h3,#tsofitRoot h4{color:#173b5d;margin:0}
+#ariadneRoot{--tf-ink:#1f4256;--tf-soft:#5f7686;--tf-line:#d7e3e7;--tf-accent:#245f82;--tf-green:#2f6e4f;--tf-gold:#9a6a12;--tf-red:#a23b3b;color:var(--tf-ink);font-size:14.5px;line-height:1.65;padding:26px 0 56px}
+#ariadneRoot [hidden]{display:none!important}
+#ariadneRoot h2,#ariadneRoot h3,#ariadneRoot h4{color:#173b5d;margin:0}
 .tf-hero{padding:22px 24px;border:1px solid #d3e4ea;border-radius:14px;background:linear-gradient(135deg,#eef6f9 0%,#fffaf0 100%);margin-bottom:18px}
 .tf-hero h2{font-size:24px}
 .tf-hero p{margin:6px 0 0;color:var(--tf-soft)}
 .tf-ask{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:14px}
 .tf-ask textarea{min-height:46px}
-#tsofitRoot input,#tsofitRoot select,#tsofitRoot textarea{font:inherit;border:1px solid var(--tf-line);border-radius:8px;padding:8px 10px;background:#fff;color:inherit;box-sizing:border-box;max-width:100%}
-#tsofitRoot textarea{width:100%;resize:vertical}
+#ariadneRoot input,#ariadneRoot select,#ariadneRoot textarea{font:inherit;border:1px solid var(--tf-line);border-radius:8px;padding:8px 10px;background:#fff;color:inherit;box-sizing:border-box;max-width:100%}
+#ariadneRoot textarea{width:100%;resize:vertical}
 .tf-btn{font:inherit;border:1px solid #c9d9e1;background:#fff;color:var(--tf-accent);border-radius:999px;padding:7px 15px;cursor:pointer;white-space:nowrap}
 .tf-btn:hover{background:#f3f8fa}
 .tf-btn.primary{background:var(--tf-accent);border-color:var(--tf-accent);color:#fff}
@@ -3031,21 +3031,21 @@ html[data-page="tasks"] #tasks{display:block!important}
 .tf-steps input[type=text]{width:100%}
 .tf-steps .tf-steprow{display:grid;grid-template-columns:1fr 110px auto;gap:6px;margin-bottom:6px}
 @media screen and (max-width:640px){
-  #tsofitRoot{padding:16px 0 40px}
+  #ariadneRoot{padding:16px 0 40px}
   .tf-ask{grid-template-columns:1fr}
   .tf-panel{padding:16px 14px}
   .tf-steps .tf-steprow{grid-template-columns:1fr 80px auto}
 }
 </style>
-<section id="tasks" aria-label="צופית: עוזרת למשימות"><div class="wrap" id="tsofitRoot"></div></section>
-<script id="tsofit-v1-js">
-/* צופית: עוזרת למשימות. כל המשימות כאן חינמיות: הן מסדרות את מה שכבר יש באתר, בדפדפן, בלי מודל שפה.
+<section id="tasks" aria-label="אֲרִיאַדְנֶה: עוזרת למשימות"><div class="wrap" id="ariadneRoot"></div></section>
+<script id="ariadne-v1-js">
+/* אֲרִיאַדְנֶה: עוזרת למשימות. כל המשימות כאן חינמיות: הן מסדרות את מה שכבר יש באתר, בדפדפן, בלי מודל שפה.
    משימה שדורשת מודל (cost:'model') נעצרת לפני כל פנייה, ומוצגת הודעה. */
 (function(){
-  const NAME='צופית';
+  const NAME='אֲרִיאַדְנֶה';
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-  const K={basket:'hosen.tsofit.basket',mine:'hosen.tsofit.mine'};
+  const K={basket:'hosen.ariadne.basket',mine:'hosen.ariadne.mine'};
   const D={};
   const opened=Date.now();
   const today=()=>new Date().toISOString().slice(0,10);
@@ -3202,7 +3202,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     const e=s=>String(s||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/([,;])/g,'\\$1');
     const fold=line=>{const ch=Array.from(line);if(ch.length<=35)return line;const out=[];for(let i=0;i<ch.length;i+=35)out.push(ch.slice(i,i+35).join(''));return out.join('\r\n ')};
     const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
-    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//hosen-hinuch-herum//tsofit//HE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//hosen-hinuch-herum//ariadne//HE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
     for(const v of events){
       const d=v.date.replace(/-/g,''),n=addDays(v.date,1).replace(/-/g,'');
       L.push('BEGIN:VEVENT','UID:'+v.uid+'@hosen-hinuch-herum','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+n,fold('SUMMARY:'+e(v.title)));
@@ -3227,7 +3227,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${h(title)}</title><style>@page Section1{size:21cm 29.7cm;margin:2.4cm}div.Section1{page:Section1}${DOC_CSS}</style></head><body dir="rtl" lang="he"><div class="Section1"><h1>${h(title)}</h1>${body}</div></body></html>`;
     download(safeName(title)+'.doc','application/msword','\ufeff'+html);
   }
-  const safeName=s=>String(s||'צופית').replace(/[\\/:*?"<>|]+/g,' ').trim().slice(0,80);
+  const safeName=s=>String(s||'אריאדנה').replace(/[\\/:*?"<>|]+/g,' ').trim().slice(0,80);
   function printDoc(title,body){
     const w=window.open('','_blank');if(!w)return alert('הדפדפן חסם חלון חדש. אפשר לאשר חלונות קופצים לאתר ולנסות שוב.');
     w.document.write(docHtml(title,body));w.document.close();setTimeout(()=>{w.focus();w.print()},350);
@@ -3451,7 +3451,7 @@ html[data-page="tasks"] #tasks{display:block!important}
   let root;
   function home(){
     const mine=ls.get(K.mine,[]);
-    root.innerHTML=`<div class="tf-hero"><h2>🐦 ${NAME}: עוזרת למשימות</h2>
+    root.innerHTML=`<div class="tf-hero"><h2>🧵 ${NAME}: עוזרת למשימות</h2>
       <p>${NAME} אוספת מכל האתר ומגישה משהו מוכן: רשימות מקורות, קבצים לזוטרו, טבלאות מועדים, לוחות זמנים להגשה ומסמכים. המשימות מסדרות את מה שכבר יש באתר, בדפדפן, ולכן הן חינמיות. משימה שדורשת מודל שפה נעצרת לפני כל פנייה, עם הודעה.</p>
       <form class="tf-ask" id="tfAsk"><textarea name="ask" rows="1" dir="auto" placeholder="מה תרצו לעשות? למשל: רשימת מקורות APA על רציפות למידה מ-2020" aria-label="מה תרצו לעשות"></textarea><button class="tf-btn primary">חיפוש משימה</button></form>
       <div id="tfAskOut"></div></div>
@@ -3573,7 +3573,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     if(f.dataset.form==='suggest'){
       const m=f.parentElement.querySelector('[data-suggest-msg]');const v=n=>String(f.querySelector(`[name=${n}]`)?.value||'').trim();
       try{
-        const r=await fetch('/api/requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',type:'feedback',elapsed:Math.max(Date.now()-opened,3000),website:v('website'),fields:{name:v('name'),email:v('email'),type:'משימה חדשה ל'+NAME,title:v('text').slice(0,90),details:v('text')}})});
+        const r=await fetch('/api/requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',type:'feedback',elapsed:Math.max(Date.now()-opened,3000),website:v('website'),fields:{name:v('name'),email:v('email'),type:'משימה חדשה עבור '+NAME,title:v('text').slice(0,90),details:v('text')}})});
         if(!r.ok)throw 0;f.remove();m.innerHTML=`<p class="tf-ok">✓ הבקשה נשלחה למנהלת הקהילה. תודה!</p>`;
       }catch(_){m.innerHTML=`<p class="tf-err">השליחה לא הצליחה. אפשר לנסות שוב, או לכתוב בכפתור המשוב בתחתית האתר.</p>`}
     }
@@ -3586,7 +3586,7 @@ html[data-page="tasks"] #tasks{display:block!important}
   }
 
   document.addEventListener('DOMContentLoaded',()=>{
-    root=document.getElementById('tsofitRoot');if(!root)return;
+    root=document.getElementById('ariadneRoot');if(!root)return;
     root.addEventListener('click',onClick);root.addEventListener('submit',onSubmit);
     root.addEventListener('input',e=>{if(e.target.matches('[data-live]'))onInput(e)});root.addEventListener('change',e=>{if(e.target.dataset?.pick!==undefined||e.target.matches('select[data-live]'))onInput(e)});
     if(document.documentElement.dataset.page!=='tasks')return;
@@ -3594,7 +3594,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     if(TASKS[id])openTask(id);else home();
   });
   // מתוך מרחב העבודה של קבוצה: "📄 Word".
-  window.hosenTsofit={wordProposal(t,c){wordFile(t.title,proposalBody(t,c,{roles:true,empty:false}))}};
+  window.hosenAriadne={wordProposal(t,c){wordFile(t.title,proposalBody(t,c,{roles:true,empty:false}))}};
 })();
 </script>
 </main>
@@ -4643,7 +4643,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         return}
       if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
       if(w==='print')return printProposal(ws.team,call());
-      if(w==='word')return window.hosenTsofit?.wordProposal(ws.team,call());
+      if(w==='word')return window.hosenAriadne?.wordProposal(ws.team,call());
     });
     m.addEventListener('submit',async e=>{
       const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
