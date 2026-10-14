@@ -2208,6 +2208,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="lectures" href="/lectures">הרצאות</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
         <a class="site-tab" data-route="apps" href="/apps">🌱 יישומים</a>
+        <a class="site-tab" data-route="tasks" href="/tasks">🐦 צופית</a>
   </div>
 </nav>
 <main>
@@ -2959,6 +2960,641 @@ html[data-page="apps"] #apps{display:block!important}
     window.addEventListener('hashchange',handleHash);
     handleHash();
   });
+})();
+</script>
+<style id="tsofit-v1">
+#tasks{display:none}
+html[data-page="tasks"] #tasks{display:block!important}
+#tsofitRoot{--tf-ink:#1f4256;--tf-soft:#5f7686;--tf-line:#d7e3e7;--tf-accent:#245f82;--tf-green:#2f6e4f;--tf-gold:#9a6a12;--tf-red:#a23b3b;color:var(--tf-ink);font-size:14.5px;line-height:1.65;padding:26px 0 56px}
+#tsofitRoot [hidden]{display:none!important}
+#tsofitRoot h2,#tsofitRoot h3,#tsofitRoot h4{color:#173b5d;margin:0}
+.tf-hero{padding:22px 24px;border:1px solid #d3e4ea;border-radius:14px;background:linear-gradient(135deg,#eef6f9 0%,#fffaf0 100%);margin-bottom:18px}
+.tf-hero h2{font-size:24px}
+.tf-hero p{margin:6px 0 0;color:var(--tf-soft)}
+.tf-ask{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:14px}
+.tf-ask textarea{min-height:46px}
+#tsofitRoot input,#tsofitRoot select,#tsofitRoot textarea{font:inherit;border:1px solid var(--tf-line);border-radius:8px;padding:8px 10px;background:#fff;color:inherit;box-sizing:border-box;max-width:100%}
+#tsofitRoot textarea{width:100%;resize:vertical}
+.tf-btn{font:inherit;border:1px solid #c9d9e1;background:#fff;color:var(--tf-accent);border-radius:999px;padding:7px 15px;cursor:pointer;white-space:nowrap}
+.tf-btn:hover{background:#f3f8fa}
+.tf-btn.primary{background:var(--tf-accent);border-color:var(--tf-accent);color:#fff}
+.tf-btn.primary:hover{background:#1d5070}
+.tf-btn.small{padding:4px 11px;font-size:12.5px}
+.tf-btn.danger{color:var(--tf-red);border-color:#e3b9b9}
+.tf-group{margin:22px 0 0}
+.tf-group>h3{font-size:17px;margin-bottom:10px}
+.tf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tf-card{font:inherit;color:inherit;text-align:right;border:1px solid var(--tf-line);border-radius:12px;background:#fff;padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.tf-card:hover{border-color:#9eb7c3;box-shadow:0 4px 14px rgba(20,60,90,.07)}
+.tf-card strong{font-size:15.5px;color:#173b5d}
+.tf-card span{color:var(--tf-soft);font-size:13px}
+.tf-tag{display:inline-block;font-size:11.5px;border-radius:999px;padding:1px 9px;align-self:flex-start}
+.tf-tag.free{background:#e8f4ec;color:var(--tf-green)}
+.tf-tag.paid{background:#fbf0dd;color:var(--tf-gold)}
+.tf-mine{display:flex;flex-wrap:wrap;gap:8px}
+.tf-mine>div{display:flex;gap:4px;align-items:center;border:1px solid var(--tf-line);border-radius:999px;padding:3px 4px 3px 12px;background:#fff}
+.tf-panel{border:1px solid var(--tf-line);border-radius:14px;background:#fff;padding:20px 22px;margin-top:6px}
+.tf-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.tf-panel-head p{margin:4px 0 0;color:var(--tf-soft)}
+.tf-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 16px;margin:14px 0;padding:14px 16px;border-radius:10px;background:#f6fafb}
+.tf-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#39556a}
+.tf-form label.wide{grid-column:1/-1}
+.tf-form label.check{flex-direction:row;align-items:center;gap:7px}
+.tf-form .tf-help{grid-column:1/-1;margin:0;font-size:12.5px;color:var(--tf-soft)}
+.tf-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tf-picker{max-height:420px;overflow:auto;border:1px solid var(--tf-line);border-radius:10px;margin-top:10px}
+.tf-pick{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:9px 12px;border-bottom:1px solid #edf2f4;cursor:pointer;align-items:start}
+.tf-pick:last-child{border-bottom:0}
+.tf-pick small{display:block;color:var(--tf-soft)}
+.tf-pick.on{background:#fffaf0}
+.tf-out{border:1px solid var(--tf-line);border-radius:10px;background:#fff;padding:18px 20px;min-height:90px;outline:none;margin-top:10px;overflow-x:auto}
+.tf-out:focus{border-color:#7fa6bd;box-shadow:0 0 0 3px rgba(36,95,130,.08)}
+.tf-out h3{font-size:18px;margin:0 0 10px}
+.tf-out h4{font-size:15px;margin:16px 0 6px}
+.tf-out p{margin:0 0 .7em}
+.tf-out .tf-ref{padding-inline-start:2.2em;text-indent:-2.2em}
+.tf-out .tf-note{margin:-.3em 0 1em;padding-inline-start:2.2em;color:#3d5566}
+.tf-out table{border-collapse:collapse;width:100%;font-size:13.5px}
+.tf-out th,.tf-out td{border:1px solid #d6e2e8;padding:6px 8px;text-align:right;vertical-align:top}
+.tf-out th{background:#1f4256;color:#fff;font-weight:600}
+.tf-out tr:nth-child(even) td{background:#f6fafb}
+.tf-out td.n{white-space:nowrap}
+.tf-hint{font-size:12.5px;color:var(--tf-soft);margin:6px 0 0}
+.tf-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tf-missing{margin-top:12px;padding:12px 14px;border:1px dashed #e0c48e;border-radius:10px;background:#fffbf3;font-size:13px}
+.tf-missing ul{margin:6px 0 0;padding-inline-start:20px}
+.tf-stop{margin-top:14px;padding:16px 18px;border:1px solid #e8cf9c;border-radius:12px;background:#fff8ea}
+.tf-stop h4{color:#7a4f0c!important;margin-bottom:4px!important}
+.tf-stop p{margin:4px 0}
+.tf-ok{margin-top:8px;font-size:13px;color:var(--tf-green)}
+.tf-err{margin-top:8px;font-size:13px;color:var(--tf-red)}
+.tf-steps input[type=text]{width:100%}
+.tf-steps .tf-steprow{display:grid;grid-template-columns:1fr 110px auto;gap:6px;margin-bottom:6px}
+@media screen and (max-width:640px){
+  #tsofitRoot{padding:16px 0 40px}
+  .tf-ask{grid-template-columns:1fr}
+  .tf-panel{padding:16px 14px}
+  .tf-steps .tf-steprow{grid-template-columns:1fr 80px auto}
+}
+</style>
+<section id="tasks" aria-label="צופית: עוזרת למשימות"><div class="wrap" id="tsofitRoot"></div></section>
+<script id="tsofit-v1-js">
+/* צופית: עוזרת למשימות. כל המשימות כאן חינמיות: הן מסדרות את מה שכבר יש באתר, בדפדפן, בלי מודל שפה.
+   משימה שדורשת מודל (cost:'model') נעצרת לפני כל פנייה, ומוצגת הודעה. */
+(function(){
+  const NAME='צופית';
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  const K={basket:'hosen.tsofit.basket',mine:'hosen.tsofit.mine'};
+  const D={};
+  const opened=Date.now();
+  const today=()=>new Date().toISOString().slice(0,10);
+  const il=iso=>{const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+m[3]}.${+m[2]}.${m[1]}`:''};
+  const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+  const daysTo=iso=>Math.round((Date.parse(iso+'T12:00:00')-Date.parse(today()+'T12:00:00'))/86400000);
+  const DOW=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const isHe=s=>/[\u0590-\u05FF]/.test(String(s||''));
+  const norm=s=>String(s||'').toLowerCase().replace(/[״"׳'`]/g,'').replace(/\s+/g,' ').trim();
+
+  // ---------- נתוני האתר ----------
+  const g=name=>{try{return Function('return typeof '+name+'!=="undefined"?'+name+':undefined')()}catch(e){return undefined}};
+  function catLabel(c){const f=g('researchCategoryLabel');return c?(typeof f==='function'?f(c):c):''}
+  function yearOf(v){const m=String(v||'').match(/\b(19|20)\d{2}\b/);return m?m[0]:''}
+  function doiOf(...v){for(const s of v){const m=String(s||'').match(/10\.\d{4,9}\/[^\s"<>]+/);if(m)return m[0].replace(/[.,;]+$/,'')}return ''}
+  async function library(){
+    if(D.lib)return D.lib;
+    let stored=[];try{const r=await fetch('/api/library');if(r.ok)stored=await r.json()}catch(e){}
+    const up=g('uploadedResearchItems'),load=g('loadUploadedResearch');
+    if(typeof load==='function'&&!(up&&up.length)){try{await load()}catch(e){}}
+    const kindFn=g('researchLibraryRow');
+    const research=[...(g('researchWorldItems')||[]),...(g('researchPracticalSources')||[]),...(g('uploadedResearchItems')||[])].map(x=>{
+      let kind='מאמר';try{if(typeof kindFn==='function')kind=kindFn(x).type||kind}catch(e){}
+      const url=String(x.url||'');
+      return {id:'r-'+x.id,title:String(x.title||'').trim(),authors:String(x.authors||'').trim(),year:yearOf(x.year||x.date),journal:String(x.source||'').trim(),url,doi:doiOf(url),abstract:String(x.summary||'').trim(),why:String(x.why||'').trim(),cat:x.cat||'',kind,apa:''};
+    });
+    const rows=stored.map(x=>{
+      const raw=String(x.doi||'');
+      return {id:'s-'+x.id,title:String(x.title||'').trim(),authors:String(x.authors||'').trim(),year:yearOf(x.year),journal:String(x.journal||'').trim(),url:/^https?:/i.test(raw)?raw:(x.fileUrl||''),doi:doiOf(raw),abstract:String(x.abstract||'').trim(),why:'',cat:'',kind:x.type||'מאמר',apa:String(x.apa||'').trim()};
+    });
+    const seen=new Set();
+    D.lib=[...research,...rows].filter(x=>{const k=norm(x.title||x.apa);if(!k||seen.has(k))return false;seen.add(k);return true});
+    return D.lib;
+  }
+  async function calls(){
+    if(D.calls)return D.calls;
+    const r=await fetch('/api/calls?view=public');if(!r.ok)throw new Error('לא הצלחתי לטעון את הקולות הקוראים. אפשר לנסות שוב בעוד רגע.');
+    return D.calls=await r.json();
+  }
+  async function community(){
+    if(D.people)return D.people;
+    const r=await fetch('/api/collab');if(!r.ok)throw new Error('לא הצלחתי לטעון את כרטיסי הנבחרת. אפשר לנסות שוב בעוד רגע.');
+    return D.people=await r.json();
+  }
+  function myTeams(){
+    const out=[];
+    try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);const m=k&&k.match(/^hosen\.team\.([\w-]+)$/);if(m&&m[1]!=='myname'&&localStorage.getItem(k))out.push({id:m[1],key:localStorage.getItem(k)})}}catch(e){}
+    return out;
+  }
+  async function team(t){
+    const r=await fetch('/api/teams?id='+encodeURIComponent(t.id),{headers:{'x-team-key':t.key}});
+    if(!r.ok)return null;return r.json();
+  }
+
+  // ---------- מחברים, APA וציטוט ----------
+  const INITIALS=/^(?:[A-Z\u00C0-\u024F\u0590-\u05FF]{1,2}[.׳'’]\s*-?\s*)+$/;
+  function people(a){
+    const toks=String(a||'').replace(/\s+(?:&|and|ו־?)\s+/g,', ').replace(/&/g,',').split(/\s*[,;]\s*/).map(s=>s.trim()).filter(Boolean);
+    const out=[];
+    for(const t of toks){if(INITIALS.test(t)&&out.length&&!out[out.length-1].given)out[out.length-1].given=t;else out.push({family:t.replace(/^ו(?=[\u0590-\u05FF]{2})/,''),given:''})}
+    return out;
+  }
+  function authorsAPA(a){
+    let s=String(a||'').trim().replace(/\s+/g,' ');if(!s)return '';
+    if(isHe(s))s=s.replace(/,?\s*&\s*/g,', ו');
+    return /[.)]$/.test(s)?s:s+'.';
+  }
+  function link(x){return x.doi?'https://doi.org/'+x.doi:(x.url||'')}
+  function missingOf(x){
+    if(x.apa)return [];
+    const m=[];
+    if(!x.authors)m.push('מחברים/ות');
+    if(!x.year)m.push('שנה');
+    if(x.kind==='מאמר'){if(!x.journal)m.push('שם כתב העת');m.push('כרך, גיליון ועמודים')}
+    if(!x.doi)m.push(x.url?'DOI (יש קישור)':'DOI או קישור');
+    return m;
+  }
+  function apa(x){
+    if(x.apa)return {html:h(x.apa),text:x.apa};
+    const he=isHe(x.title+' '+x.authors);
+    const au=authorsAPA(x.authors),yr=`(${x.year||(he?'ללא תאריך':'n.d.')}).`,ti=String(x.title||'').replace(/[.\s]+$/,''),src=x.journal.replace(/[.\s]+$/,''),ln=link(x);
+    const article=x.kind==='מאמר';
+    const parts=[];
+    if(article){
+      if(au)parts.push([h(au),au],[yr,yr],[h(ti)+'.',ti+'.']);else parts.push([h(ti)+'.',ti+'.'],[yr,yr]);
+      if(src)parts.push([`<i>${h(src)}</i>.`,src+'.']);
+    }else{
+      if(au)parts.push([h(au),au],[yr,yr],[`<i>${h(ti)}</i>.`,ti+'.']);else parts.push([`<i>${h(ti)}</i>.`,ti+'.'],[yr,yr]);
+      if(src&&norm(src)!==norm(x.authors))parts.push([h(src)+'.',src+'.']);
+    }
+    if(ln)parts.push([h(ln),ln]);
+    return {html:parts.map(p=>p[0]).join(' '),text:parts.map(p=>p[1]).join(' ')};
+  }
+  function inText(x){
+    const he=isHe(x.authors||x.title);
+    const yr=x.year||(he?'ללא תאריך':'n.d.');
+    const ps=people(x.authors).map(p=>p.family);
+    let who;
+    if(!ps.length){const t=String(x.title||'').split(/\s+/).slice(0,4).join(' ');who=he?`"${t}"`:`"${t}"`}
+    else if(ps.length===1)who=ps[0];
+    else if(ps.length===2)who=he?`${ps[0]} ו${isHe(ps[1])?'':'-'}${ps[1]}`:`${ps[0]} & ${ps[1]}`;
+    else who=he?`${ps[0]} ואחרים`:`${ps[0]} et al.`;
+    return `(${who}, ${yr})`;
+  }
+  function sortRefs(list,o){
+    const key=x=>norm(people(x.authors)[0]?.family||x.apa||x.title);
+    const arr=[...list];
+    if(o.sort==='year')arr.sort((a,b)=>String(b.year).localeCompare(String(a.year))||key(a).localeCompare(key(b),'he'));
+    else arr.sort((a,b)=>key(a).localeCompare(key(b),'he'));
+    if(o.heFirst)arr.sort((a,b)=>(isHe(b.authors||b.title)?1:0)-(isHe(a.authors||a.title)?1:0));
+    return arr;
+  }
+
+  // ---------- RIS ו-BibTeX ----------
+  function risType(x){return x.kind==='מאמר'?'JOUR':(x.kind==='דוח'||x.kind==='מדיניות')?'RPRT':'GEN'}
+  function ris(list){
+    return list.map(x=>{
+      const L=['TY  - '+risType(x)];
+      people(x.authors).forEach(p=>L.push('AU  - '+p.family+(p.given?', '+p.given:'')));
+      if(x.title)L.push('TI  - '+x.title);
+      if(x.journal)L.push((x.kind==='מאמר'?'T2  - ':'PB  - ')+x.journal);
+      if(x.year)L.push('PY  - '+x.year);
+      if(x.doi)L.push('DO  - '+x.doi);
+      if(x.url)L.push('UR  - '+x.url);
+      if(x.abstract)L.push('AB  - '+x.abstract.replace(/\s+/g,' '));
+      if(x.apa&&!x.title)L.push('N1  - '+x.apa);
+      L.push('ER  - ');
+      return L.join('\r\n');
+    }).join('\r\n\r\n')+'\r\n';
+  }
+  function bibtex(list){
+    const used=new Set();
+    const esc=s=>String(s||'').replace(/([{}])/g,'\\$1');
+    return list.map(x=>{
+      const first=(people(x.authors)[0]?.family||'anon').replace(/[^A-Za-z\u0590-\u05FF]/g,'').toLowerCase()||'anon';
+      const word=(String(x.title||'').match(/[A-Za-z\u0590-\u05FF]{4,}/)||['ref'])[0].toLowerCase();
+      let key=`${first}${x.year||'nd'}${word}`,i=1;while(used.has(key))key=`${first}${x.year||'nd'}${word}${++i}`;used.add(key);
+      const type=x.kind==='מאמר'?'article':(x.kind==='דוח'||x.kind==='מדיניות')?'techreport':'misc';
+      const f=[];
+      const au=people(x.authors).map(p=>p.family+(p.given?', '+p.given:'')).join(' and ');
+      if(au)f.push(`  author = {${esc(au)}}`);
+      if(x.title)f.push(`  title = {{${esc(x.title)}}}`);
+      if(x.journal)f.push(`  ${type==='article'?'journal':type==='techreport'?'institution':'howpublished'} = {${esc(x.journal)}}`);
+      if(x.year)f.push(`  year = {${x.year}}`);
+      if(x.doi)f.push(`  doi = {${x.doi}}`);
+      if(x.url)f.push(`  url = {${x.url}}`);
+      if(x.apa&&!x.title)f.push(`  note = {${esc(x.apa)}}`);
+      return `@${type}{${key},\n${f.join(',\n')}\n}`;
+    }).join('\n\n')+'\n';
+  }
+
+  // ---------- יומן (ICS) ----------
+  function ics(events){
+    const e=s=>String(s||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/([,;])/g,'\\$1');
+    const fold=line=>{const ch=Array.from(line);if(ch.length<=35)return line;const out=[];for(let i=0;i<ch.length;i+=35)out.push(ch.slice(i,i+35).join(''));return out.join('\r\n ')};
+    const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//hosen-hinuch-herum//tsofit//HE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+    for(const v of events){
+      const d=v.date.replace(/-/g,''),n=addDays(v.date,1).replace(/-/g,'');
+      L.push('BEGIN:VEVENT','UID:'+v.uid+'@hosen-hinuch-herum','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+d,'DTEND;VALUE=DATE:'+n,fold('SUMMARY:'+e(v.title)));
+      if(v.desc)L.push(fold('DESCRIPTION:'+e(v.desc)));
+      if(v.url)L.push(fold('URL:'+v.url));
+      for(const a of v.alarms||[])L.push('BEGIN:VALARM','TRIGGER:-P'+a+'D','ACTION:DISPLAY',fold('DESCRIPTION:'+e(v.title)),'END:VALARM');
+      L.push('END:VEVENT');
+    }
+    L.push('END:VCALENDAR');return L.join('\r\n')+'\r\n';
+  }
+
+  // ---------- שמירה, העתקה והדפסה ----------
+  function download(name,type,content){
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  }
+  const DOC_CSS='body{font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#1d3445;font-size:11.5pt;line-height:1.6}h1{font-size:17pt;color:#173b5d;margin:0 0 4pt}h3{font-size:14pt;color:#173b5d}h4{font-size:12pt;color:#173b5d;margin:14pt 0 4pt}p{margin:0 0 7pt}.tf-ref{margin-right:0;padding-inline-start:2.2em;text-indent:-2.2em}.tf-note{padding-inline-start:2.2em;color:#3d5566}table{border-collapse:collapse;width:100%;font-size:10pt}th,td{border:1px solid #c9d6dd;padding:4pt 6pt;text-align:right;vertical-align:top}th{background:#1f4256;color:#fff}thead{display:table-header-group}tr{break-inside:avoid}.meta{color:#5f7686;font-size:9.5pt;margin:0 0 12pt}';
+  function docHtml(title,body){
+    return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>${h(title)}</title><style>@page{size:A4;margin:24mm}${DOC_CSS}</style></head><body dir="rtl"><h1>${h(title)}</h1><p class="meta">${h(il(today()))} · בינה מלאכותית: חוסן-חינוך-חרום · hosen-hinuch-herum.netlify.app</p>${body}</body></html>`;
+  }
+  function wordFile(title,body){
+    const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${h(title)}</title><style>@page Section1{size:21cm 29.7cm;margin:2.4cm}div.Section1{page:Section1}${DOC_CSS}</style></head><body dir="rtl" lang="he"><div class="Section1"><h1>${h(title)}</h1>${body}</div></body></html>`;
+    download(safeName(title)+'.doc','application/msword','\ufeff'+html);
+  }
+  const safeName=s=>String(s||'צופית').replace(/[\\/:*?"<>|]+/g,' ').trim().slice(0,80);
+  function printDoc(title,body){
+    const w=window.open('','_blank');if(!w)return alert('הדפדפן חסם חלון חדש. אפשר לאשר חלונות קופצים לאתר ולנסות שוב.');
+    w.document.write(docHtml(title,body));w.document.close();setTimeout(()=>{w.focus();w.print()},350);
+  }
+  async function copyRich(node,btn){
+    const html=node.innerHTML,text=node.innerText;
+    try{
+      if(window.ClipboardItem&&navigator.clipboard?.write)await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]);
+      else await navigator.clipboard.writeText(text);
+    }catch(e){const r=document.createRange();r.selectNodeContents(node);const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy')}catch(_){}s.removeAllRanges()}
+    if(btn){const t=btn.textContent;btn.textContent='✓ הועתק';setTimeout(()=>btn.textContent=t,1600)}
+  }
+
+  // ---------- מבחר מקורות: מהסל או לפי סינון ----------
+  const basket=()=>ls.get(K.basket,[]);
+  const setBasket=v=>ls.set(K.basket,[...new Set(v)]);
+  function cats(lib){return [...new Set(lib.map(x=>x.cat).filter(Boolean))].map(c=>[c,catLabel(c)])}
+  function sourceFields(o,lib){
+    const b=basket().filter(id=>lib.some(x=>x.id===id)).length;
+    return `<label>מאילו מקורות<select name="from"><option value="basket"${o.from==='basket'?' selected':''}>מהסל שלי (${b})</option><option value="filter"${o.from!=='basket'?' selected':''}>לפי סינון בספרייה</option></select></label>
+      <label>נושא<select name="cat"><option value="">כל הנושאים</option>${cats(lib).map(([k,v])=>`<option value="${h(k)}"${o.cat===k?' selected':''}>${h(v)}</option>`).join('')}</select></label>
+      <label>משנה<input name="yFrom" inputmode="numeric" placeholder="למשל 2020" value="${h(o.yFrom||'')}"></label>
+      <label>עד שנה<input name="yTo" inputmode="numeric" placeholder="למשל 2026" value="${h(o.yTo||'')}"></label>
+      <label class="wide">מילת חיפוש<input name="q" placeholder="למשל: מורים, רציפות למידה, AI" value="${h(o.q||'')}"></label>
+      <p class="tf-help">הסינון חל רק כש"לפי סינון בספרייה" מסומן. את הסל ממלאים במשימה "סל מקורות אישי".</p>`;
+  }
+  function pickSources(o,lib){
+    if(o.from==='basket'){const ids=new Set(basket());return lib.filter(x=>ids.has(x.id))}
+    const q=norm(o.q),yf=+o.yFrom||0,yt=+o.yTo||9999;
+    return lib.filter(x=>(!o.cat||x.cat===o.cat)&&(!x.year?!(yf||o.yTo):(+x.year>=yf&&+x.year<=yt))&&(!q||norm([x.title,x.authors,x.journal,x.abstract,x.why,x.apa].join(' ')).includes(q)));
+  }
+  function missingBox(list){
+    const rows=list.map(x=>[x,missingOf(x)]).filter(([,m])=>m.length);
+    if(!rows.length)return '';
+    return `<div class="tf-missing"><strong>⚠ מה חסר בפרטי המקורות (לא נכנס להעתקה ולקובץ)</strong><ul>${rows.map(([x,m])=>`<li>${h(String(x.title||x.apa).slice(0,90))}: ${h(m.join(', '))}</li>`).join('')}</ul><p class="tf-hint" style="margin-top:8px">${NAME} לא משלימה פרטים מהדמיון. כדאי לבדוק מול המאמר עצמו, ולהציע תיקון למנהלת הספרייה.</p></div>`;
+  }
+
+  // ---------- המשימות ----------
+  const TASKS={
+    basket:{group:'lib',icon:'⭐',title:'סל מקורות אישי',desc:'מסמנים מקורות מהספרייה. הסל נשמר בדפדפן, וממנו מפיקים רשימות וקבצים.',cost:'free',
+      defaults:{q:'',cat:''},
+      async form(o){const lib=await library();return `<label class="wide">חיפוש בספרייה<input name="q" placeholder="כותרת, מחבר/ת, נושא" value="${h(o.q||'')}" data-live></label>
+        <label>נושא<select name="cat" data-live><option value="">כל הנושאים</option>${cats(lib).map(([k,v])=>`<option value="${h(k)}"${o.cat===k?' selected':''}>${h(v)}</option>`).join('')}</select></label>
+        <div class="tf-row" style="align-self:end"><span id="tfBasketCount"></span><button type="button" class="tf-btn small danger" data-act="basket-clear">ניקוי הסל</button></div>
+        <div class="wide" style="grid-column:1/-1"><div class="tf-picker" id="tfPicker"></div></div>`},
+      live:true,noRun:true},
+    apa:{group:'lib',icon:'📑',title:'רשימה ביבליוגרפית APA 7',desc:'רשימת מקורות מסודרת, עם ציטוט בתוך הטקסט לכל מקור, מהסל או לפי נושא ושנים.',cost:'free',
+      defaults:{from:'basket',sort:'abc',heFirst:true,cite:false,title:'רשימת מקורות'},
+      async form(o){const lib=await library();return sourceFields(o,lib)+`
+        <label>סדר<select name="sort"><option value="abc"${o.sort!=='year'?' selected':''}>לפי א"ב של המחבר/ת</option><option value="year"${o.sort==='year'?' selected':''}>מהחדש לישן</option></select></label>
+        <label class="check"><input type="checkbox" name="heFirst"${o.heFirst?' checked':''}> מקורות בעברית קודם</label>
+        <label class="check"><input type="checkbox" name="cite"${o.cite?' checked':''}> ציטוט בתוך הטקסט מתחת לכל מקור</label>
+        <label class="wide">כותרת<input name="title" value="${h(o.title||'רשימת מקורות')}"></label>`},
+      async run(o){
+        const lib=await library(),list=sortRefs(pickSources(o,lib),o);
+        if(!list.length)return {empty:o.from==='basket'?'הסל ריק. אפשר לבחור מקורות במשימה "סל מקורות אישי", או לעבור ל"לפי סינון בספרייה".':'לא נמצאו מקורות לסינון הזה. אפשר להרחיב את השנים או לנקות את מילת החיפוש.'};
+        const body=`<h3>${h(o.title||'רשימת מקורות')}</h3>`+list.map(x=>{const a=apa(x);return `<p class="tf-ref" dir="${isHe(a.text)?'rtl':'ltr'}">${a.html}</p>`+(o.cite?`<p class="tf-note" dir="${isHe(x.authors||x.title)?'rtl':'ltr'}">בטקסט: ${h(inText(x))}</p>`:'')}).join('');
+        return {title:o.title||'רשימת מקורות',body,after:missingBox(list),files:refFiles(list)};
+      }},
+    export:{group:'lib',icon:'📤',title:'ייצוא לזוטרו, מנדלי או EndNote',desc:'קובץ RIS או BibTeX מהסל או לפי סינון. בתוכנה בוחרים "ייבוא" ומקבלים את כל המקורות.',cost:'free',
+      defaults:{from:'basket'},
+      async form(o){const lib=await library();return sourceFields(o,lib)},
+      async run(o){
+        const lib=await library(),list=sortRefs(pickSources(o,lib),{});
+        if(!list.length)return {empty:'אין מקורות לייצוא. אפשר למלא את הסל או לשנות את הסינון.'};
+        const body=`<h3>${list.length} מקורות מוכנים לייצוא</h3><p>הקבצים כוללים מחברים/ות, כותרת, מקור, שנה, DOI או קישור ותקציר, ככל שהם קיימים בספרייה.</p><ul>${list.map(x=>`<li dir="auto">${h(x.title||x.apa)}</li>`).join('')}</ul>
+          <h4>איך מייבאים</h4><ul><li><strong>זוטרו:</strong> קובץ ← ייבוא… ← בוחרים את קובץ ה-RIS.</li><li><strong>מנדלי:</strong> File ← Import ← RIS.</li><li><strong>EndNote:</strong> File ← Import ← File, ובשדה Import Option בוחרים Reference Manager (RIS).</li><li><strong>Overleaf ו-LaTeX:</strong> קובץ ה-BibTeX.</li></ul>`;
+        return {title:'ייצוא מקורות',body,after:missingBox(list),files:refFiles(list),primaryFiles:true};
+      }},
+    annotated:{group:'lib',icon:'🗒',title:'ביבליוגרפיה מוערת',desc:'לכל מקור: הרישום ב-APA ומתחתיו הערה מתוך התקציר ו"למה זה חשוב" שכבר כתובים באתר.',cost:'free',
+      defaults:{from:'basket',note:'both',short:false,sort:'abc',heFirst:true,title:'ביבליוגרפיה מוערת'},
+      async form(o){const lib=await library();return sourceFields(o,lib)+`
+        <label>מה נכנס להערה<select name="note"><option value="both"${o.note==='both'?' selected':''}>תקציר ו"למה זה חשוב"</option><option value="abstract"${o.note==='abstract'?' selected':''}>תקציר בלבד</option><option value="why"${o.note==='why'?' selected':''}>"למה זה חשוב" בלבד</option></select></label>
+        <label class="check"><input type="checkbox" name="short"${o.short?' checked':''}> משפט ראשון בלבד</label>
+        <label class="check"><input type="checkbox" name="heFirst"${o.heFirst?' checked':''}> מקורות בעברית קודם</label>
+        <label class="wide">כותרת<input name="title" value="${h(o.title||'ביבליוגרפיה מוערת')}"></label>
+        <p class="tf-help">ההערות מועתקות כמו שהן מהאתר, בלי ניסוח מחדש. אפשר לערוך אותן ישירות בתוצר.</p>`},
+      async run(o){
+        const lib=await library(),list=sortRefs(pickSources(o,lib),o);
+        if(!list.length)return {empty:'אין מקורות. אפשר למלא את הסל או לשנות את הסינון.'};
+        const cut=s=>{s=String(s||'').trim();if(!o.short)return s;const m=s.match(/^.+?[.!?](?=\s|$)/);return m?m[0]:s};
+        const body=`<h3>${h(o.title||'ביבליוגרפיה מוערת')}</h3>`+list.map(x=>{
+          const a=apa(x),notes=[];
+          if(o.note!=='why'&&x.abstract)notes.push(cut(x.abstract));
+          if(o.note!=='abstract'&&x.why)notes.push((o.note==='both'?'למה זה חשוב: ':'')+cut(x.why));
+          return `<p class="tf-ref" dir="${isHe(a.text)?'rtl':'ltr'}">${a.html}</p>`+(notes.length?notes.map(n=>`<p class="tf-note" dir="auto">${h(n)}</p>`).join(''):`<p class="tf-note">אין עדיין תקציר באתר למקור הזה. אפשר לכתוב כאן הערה.</p>`);
+        }).join('');
+        return {title:o.title||'ביבליוגרפיה מוערת',body,after:missingBox(list),files:refFiles(list)};
+      }},
+    deadlines:{group:'calls',icon:'📅',title:'טבלת מועדים לקולות קוראים',desc:'כל הקולות הקוראים הפתוחים לפי מועד ההגשה, עם קובץ יומן ותזכורות שבוע ויום לפני.',cost:'free',
+      defaults:{within:'',topic:'',q:''},
+      async form(o){const c=await calls();const th=Object.entries(c.themes||{});return `
+        <label>עד כמה זמן קדימה<select name="within"><option value="">כל הפתוחים</option>${[30,60,90,180].map(n=>`<option value="${n}"${String(o.within)===String(n)?' selected':''}>${n} הימים הקרובים</option>`).join('')}</select></label>
+        <label>תחום<select name="topic"><option value="">כל התחומים</option>${th.map(([k,v])=>`<option value="${h(k)}"${o.topic===k?' selected':''}>${h(v)}</option>`).join('')}</select></label>
+        <label class="wide">מילת חיפוש<input name="q" placeholder="למשל: משרד החינוך, ISF, מורים" value="${h(o.q||'')}"></label>`},
+      async run(o){
+        const c=await calls(),q=norm(o.q);
+        const list=(c.open||[]).filter(x=>(!o.within||(x.endDate&&daysTo(x.endDate)<=+o.within))&&(!o.topic||(x.topics||[]).includes(o.topic))&&(!q||norm([x.title,x.funder,x.description,x.eligibility].join(' ')).includes(q)))
+          .sort((a,b)=>(a.endDate||'9999').localeCompare(b.endDate||'9999'));
+        if(!list.length)return {empty:'אין כרגע קולות קוראים פתוחים שמתאימים לסינון.'};
+        const body=`<h3>מועדי הגשה לקולות קוראים</h3><table><thead><tr><th>הקול הקורא</th><th>גוף מממן</th><th>היקף</th><th>מי יכול/ה להגיש</th><th>מועד הגשה</th><th>ימים שנותרו</th></tr></thead><tbody>${list.map(x=>`<tr><td dir="auto">${x.url?`<a href="${h(x.url)}">${h(x.title)}</a>`:h(x.title)}</td><td>${h(x.funder||'')}</td><td>${h(x.amount||'')}</td><td>${h(x.eligibility||'')}</td><td class="n">${x.endDate?h(il(x.endDate)):'לא צוין'}</td><td class="n">${x.endDate?daysTo(x.endDate):''}</td></tr>`).join('')}</tbody></table>`;
+        const ev=list.filter(x=>x.endDate).map(x=>({uid:'call-'+x.id,date:x.endDate,title:'הגשה: '+x.title,desc:[x.funder,x.amount,x.url].filter(Boolean).join('\n'),url:x.url,alarms:[7,1]}));
+        return {title:'מועדי הגשה לקולות קוראים',body,files:ev.length?[{label:'📅 קובץ יומן ('+ev.length+')',name:'מועדי קולות קוראים.ics',type:'text/calendar;charset=utf-8',content:()=>ics(ev)}]:[]};
+      }},
+    timeline:{group:'calls',icon:'⏳',title:'לוח זמנים לאחור מהמועד',desc:'מתאריך ההגשה אחורה: אבני דרך עד ההגשה, קובץ יומן, ואפשר להוסיף אותן כמשימות לקבוצה.',cost:'free',
+      defaults:{call:'',date:'',fit:true,weekdays:true,steps:null},
+      STEPS:[['קריאת הקול הקורא ובדיקת תנאי הסף',56],['הרכבת הצוות וחלוקת הסעיפים',49],['שלד ההצעה: שאלה, מטרות ושיטה',42],['טיוטה ראשונה של כל הסעיפים',28],['תקציב ופנייה לרשות המחקר במוסד',21],['קריאה פנימית ומשוב',14],['תיקונים ונוסח סופי',7],['אישור המוסד וחתימות',4],['הגשה, יום לפני המועד',1]],
+      async form(o){
+        let open=[];try{open=((await calls()).open||[]).filter(x=>x.endDate)}catch(e){}
+        const steps=o.steps||TASKS.timeline.STEPS;
+        return `<label class="wide">קול קורא<select name="call"><option value="">תאריך אחר (בשדה הבא)</option>${open.map(x=>`<option value="${h(x.id)}"${o.call===x.id?' selected':''}>${h(il(x.endDate))} · ${h(x.title)}</option>`).join('')}</select></label>
+          <label>תאריך ההגשה (אם אין קול קורא ברשימה)<input type="date" name="date" value="${h(o.date||addDays(today(),60))}"></label>
+          <label class="check"><input type="checkbox" name="fit"${o.fit?' checked':''}> אם אין מספיק זמן, לדחוס את הלוח עד היום</label>
+          <label class="check"><input type="checkbox" name="weekdays"${o.weekdays!==false?' checked':''}> שלב שנופל בשישי או בשבת מוקדם ליום חמישי</label>
+          <div class="wide tf-steps" style="grid-column:1/-1"><strong style="font-size:13px">השלבים וכמה ימים לפני המועד</strong>
+          <div id="tfSteps">${steps.map(s=>stepRow(s[0],s[1])).join('')}</div>
+          <button type="button" class="tf-btn small" data-act="step-add">➕ הוספת שלב</button></div>`;
+      },
+      collect(f,o){o.steps=[...f.querySelectorAll('.tf-steprow')].map(r=>[r.querySelector('[data-s=t]').value.trim(),Math.max(0,parseInt(r.querySelector('[data-s=d]').value,10)||0)]).filter(s=>s[0])},
+      async run(o){
+        let deadline=o.date,label='';
+        if(o.call){const c=((await calls()).open||[]).find(x=>x.id===o.call);if(c){deadline=c.endDate;label=c.title}}
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(deadline||''))return {empty:'נשמח לתאריך הגשה, או לבחירת קול קורא מהרשימה.'};
+        const left=daysTo(deadline);
+        if(left<1)return {empty:'מועד ההגשה כבר עבר או שהוא היום. אפשר לבחור תאריך אחר.'};
+        let steps=[...(o.steps||TASKS.timeline.STEPS)].sort((a,b)=>b[1]-a[1]);
+        const maxD=Math.max(...steps.map(s=>s[1]));
+        const squeeze=o.fit&&maxD>=left;
+        if(squeeze)steps=steps.map(([t,d])=>[t,Math.max(0,Math.round(d*(left-1)/maxD))]);
+        // שישי ושבת: השלב מוקדם ליום חמישי, אם זה לא לפני היום.
+        const wk=iso=>{if(!o.weekdays)return iso;const dw=new Date(iso+'T12:00:00').getDay(),back=dw===5?1:dw===6?2:0,x=addDays(iso,-back);return back&&daysTo(x)>=0?x:iso};
+        const rows=steps.map(([t,d])=>({t,date:d<=1?addDays(deadline,-d):wk(addDays(deadline,-d))}));
+        const title='לוח זמנים להגשה'+(label?': '+label:'');
+        const body=`<h3>${h(title)}</h3><p>מועד ההגשה: <strong>${h(il(deadline))}</strong>, בעוד ${left} ימים.${squeeze?' אין מספיק זמן ללוח המלא, ולכן השלבים נדחסו עד היום.':''}</p>
+          <table><thead><tr><th>#</th><th>השלב</th><th>עד תאריך</th><th>יום</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="n">${i+1}</td><td>${h(r.t)}${daysTo(r.date)<0?' <span style="color:#a23b3b">(התאריך עבר)</span>':''}</td><td class="n">${h(il(r.date))}</td><td class="n">${DOW[new Date(r.date+'T12:00:00').getDay()]}</td></tr>`).join('')}</tbody></table>`;
+        const ev=rows.map((r,i)=>({uid:'step-'+deadline+'-'+i,date:r.date,title:r.t+(label?' · '+label:''),alarms:[1]}));
+        D.lastSteps={rows,label};
+        return {title,body,files:[{label:'📅 קובץ יומן',name:safeName(title)+'.ics',type:'text/calendar;charset=utf-8',content:()=>ics(ev)}],teamTasks:true};
+      }},
+    people:{group:'people',icon:'🔎',title:'מי בקהילה עוסק/ת ב...',desc:'חיפוש בכרטיסי הנבחרת לפי נושא ולפי מה שכל אחד/ת יכול/ה לקדם. בלי מייל ובלי טלפון.',cost:'free',
+      defaults:{q:'',kinds:[]},
+      async form(o){const c=await community();return `<label class="wide">נושא או מילת חיפוש<input name="q" placeholder="למשל: חוסן, הכשרת מורים, ערבית, הערכה" value="${h(o.q||'')}"></label>
+        <div class="wide" style="grid-column:1/-1"><span style="font-size:13px;color:#39556a">מה אפשר לקדם יחד (רשות)</span><div class="tf-row" style="margin-top:6px">${(c.kinds||[]).map(k=>`<label class="check" style="font-size:13px;display:flex;flex-direction:row;gap:5px;align-items:center;border:1px solid #d7e3e7;border-radius:999px;padding:3px 10px"><input type="checkbox" name="kinds" value="${h(k.key)}"${(o.kinds||[]).includes(k.key)?' checked':''}> ${h(k.icon)} ${h(k.label)}</label>`).join('')}</div></div>`},
+      async run(o){
+        const c=await community(),q=norm(o.q),kinds=o.kinds||[];
+        const lab=Object.fromEntries((c.kinds||[]).map(k=>[k.key,k.icon+' '+k.label])),th=c.themes||{};
+        const list=(c.people||[]).filter(p=>(!kinds.length||kinds.some(k=>(p.kinds||[]).includes(k)))&&(!q||norm([p.name,p.institution,p.text,(p.themes||[]).map(t=>th[t]||t).join(' ')].join(' ')).includes(q)));
+        if(!list.length)return {empty:'לא נמצאו חברים/ות שמתאימים/ות לחיפוש. אפשר לנסות מילה אחרת או להסיר סימונים.'};
+        const body=`<h3>מי בקהילה${o.q?' עוסק/ת ב'+h(o.q):''}</h3><table><thead><tr><th>שם</th><th>מוסד</th><th>מה אני יכול/ה לקדם</th><th>תחומים</th></tr></thead><tbody>${list.map(p=>`<tr><td>${h(p.name)}</td><td>${h(p.institution||'')}</td><td>${h(p.text||'')}${(p.kinds||[]).length?`<br><small>${h(p.kinds.map(k=>lab[k]||k).join(' · '))}</small>`:''}</td><td>${h((p.themes||[]).map(t=>th[t]||t).join(', '))}</td></tr>`).join('')}</tbody></table><p class="tf-hint">פרטי קשר: בכרטיס של כל אחד/ת בעמוד הנבחרת (hosen-hinuch-herum.netlify.app/people).</p>`;
+        return {title:'מי בקהילה',body};
+      }},
+    word:{group:'people',icon:'📄',title:'ייצוא הצעה מקבוצת משימה ל-Word',desc:'ההצעה מסביבת העבודה של הקבוצה כקובץ Word לעריכה ולשליחה למוסד.',cost:'free',
+      defaults:{team:'',empty:false,roles:true},
+      async form(o){
+        const mine=myTeams();D.teams=[];
+        for(const t of mine){const w=await team(t).catch(()=>null);if(w)D.teams.push(w)}
+        if(!D.teams.length)return `<p class="tf-help" style="font-size:13.5px">בדפדפן הזה עוד לא נשמר קישור למרחב עבודה של קבוצה. אפשר להיכנס למרחב מהקישור שנשלח במייל, ואז לחזור לכאן. יש גם כפתור "📄 Word" בתוך מרחב העבודה.</p>`;
+        return `<label class="wide">הקבוצה<select name="team">${D.teams.map(t=>`<option value="${h(t.id)}"${o.team===t.id?' selected':''}>${h(t.title)}</option>`).join('')}</select></label>
+          <label class="check"><input type="checkbox" name="roles"${o.roles?' checked':''}> טבלת הצוות והתפקידים</label>
+          <label class="check"><input type="checkbox" name="empty"${o.empty?' checked':''}> גם סעיפים שעוד ריקים (עם ההנחיה)</label>`;
+      },
+      async run(o){
+        const t=(D.teams||[]).find(x=>x.id===o.team)||(D.teams||[])[0];
+        if(!t)return {empty:'אין קבוצה זמינה בדפדפן הזה.'};
+        return {title:t.title,body:proposalBody(t,null,o)};
+      }},
+    abstract:{group:'write',icon:'🌐',title:'תקציר בעברית, בערבית ובאנגלית',desc:'כתיבה ותרגום של תקציר בשלוש שפות. דורש מודל שפה, ולכן עלות נוספת.',cost:'model',
+      reason:'כתיבה ותרגום של תקציר דורשים מודל שפה.',
+      free:{label:'תבנית ריקה לתקציר בשלוש שפות',run(){
+        const L=[['עברית','rtl',['רקע','מטרה','שיטה','ממצאים','מסקנות','מילות מפתח']],['العربية','rtl',['الخلفية','الهدف','المنهجية','النتائج','الاستنتاجات','الكلمات المفتاحية']],['English','ltr',['Background','Aims','Method','Findings','Conclusions','Keywords']]];
+        const body=`<h3>תקציר בשלוש שפות</h3>`+L.map(([n,d,hs])=>`<div dir="${d}"><h4>${h(n)}</h4>${hs.map(x=>`<p><strong>${h(x)}:</strong> </p>`).join('')}</div>`).join('');
+        return {title:'תקציר בשלוש שפות',body};
+      }}}
+  };
+  const GROUPS=[['lib','📚 מהספרייה'],['calls','📅 קולות קוראים'],['people','👥 אנשים וקבוצות'],['write','✍ כתיבה']];
+  function stepRow(t,d){return `<div class="tf-steprow"><input type="text" data-s="t" value="${h(t)}" aria-label="השלב"><input type="number" min="0" data-s="d" value="${h(d)}" aria-label="ימים לפני המועד"><button type="button" class="tf-btn small danger" data-act="step-del" aria-label="הסרת השלב">✕</button></div>`}
+  function refFiles(list){return [
+    {label:'📚 RIS (זוטרו, מנדלי, EndNote)',name:'מקורות.ris',type:'application/x-research-info-systems;charset=utf-8',content:()=>ris(list)},
+    {label:'📚 BibTeX',name:'מקורות.bib',type:'application/x-bibtex;charset=utf-8',content:()=>bibtex(list)}]}
+
+  // ---------- הצעה מקבוצת משימה ----------
+  function paraHtml(txt){
+    const bold=s=>h(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    const out=[];let list=null;
+    for(const line of String(txt||'').split(/\n/)){const l=line.trim();if(/^[-•]\s+/.test(l)){if(!list){list=[];out.push(list)}list.push(l.replace(/^[-•]\s+/,''));continue}list=null;if(l)out.push(l)}
+    return out.map(x=>Array.isArray(x)?`<ul>${x.map(i=>`<li>${bold(i)}</li>`).join('')}</ul>`:`<p dir="auto">${bold(x)}</p>`).join('');
+  }
+  function proposalBody(t,c,o={roles:true,empty:false}){
+    const meta=[c?.title||t.callTitle?'קול קורא: '+(c?.title||t.callTitle):'',t.funder?'גוף מממן: '+t.funder:'',t.deadline?'מועד הגשה: '+il(t.deadline):''].filter(Boolean);
+    let b=meta.length?`<p class="meta">${h(meta.join(' · '))}</p>`:'';
+    for(const s of t.sections||[]){
+      if(!String(s.text||'').trim()&&!o.empty)continue;
+      b+=`<h4>${h(s.title)}</h4>`+(String(s.text||'').trim()?paraHtml(s.text):`<p style="color:#7a8790">${h(s.hint||'')}</p>`);
+    }
+    if(o.roles&&(t.members||[]).length)b+=`<h4>הצוות והתפקידים</h4><table><thead><tr><th>שם</th><th>תפקיד בהצעה</th></tr></thead><tbody>${t.members.map(m=>`<tr><td>${h(m.name)}</td><td>${h(m.role||'')}</td></tr>`).join('')}</tbody></table>`;
+    return b;
+  }
+
+  // ---------- זיהוי בקשה חופשית ----------
+  const INTENTS=[
+    ['apa',['apa','ביבליוגרפ','רשימת מקורות','רשימה של מקורות','מראי מקום','מראה מקום','ציטוט','רפרנס','references']],
+    ['export',['זוטרו','zotero','מנדלי','mendeley','endnote','אנדנוט','ris','bibtex','ביבטקס']],
+    ['annotated',['מוערת','annotated','עם הערות']],
+    ['basket',['סל ','הסל','מועדפים','לאסוף מקורות','לשמור מקורות','לסמן מקורות']],
+    ['deadlines',['מועדי','מועד הגשה','דדליין','deadline','טבלת מועדים','מתי נסגר','קולות קוראים']],
+    ['timeline',['לוח זמנים','אבני דרך','לתכנן את ההגשה','תכנון הגשה','לאחור','תזכורות']],
+    ['people',['מי בקהילה','מי עוסק','מי עוסקת','מי חוקר','מי חוקרת','מומחה','מומחית','שותף','שותפה','מרצה','פאנל','סדנה','נבחרת']],
+    ['word',['word','וורד','להוריד את ההצעה','ייצוא ההצעה','קובץ של ההצעה']],
+    ['abstract',['תקציר','abstract','בערבית','באנגלית','תרגום','לתרגם']],
+  ];
+  const MODEL=['לכתוב','תכתוב','תכתבי','כתיבת','לנסח','תנסח','תנסחי','ניסוח','לסכם','תסכם','תסכמי','סיכום','לתרגם','תתרגם','תתרגמי','תרגום','סקירת ספרות','סקירה','לנתח','ניתוח','להשוות','השוואה','פוסט','מכתב','רעיונות','לשכתב','להציע','לנבא','להסביר','הסבר','חוות דעת','summar','translat','write'];
+  function understand(text){
+    const s=' '+norm(text)+' ';
+    const scored=INTENTS.map(([id,ws])=>[id,ws.filter(w=>s.includes(norm(w))).length]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
+    const model=MODEL.filter(w=>s.includes(norm(w)));
+    return {task:scored[0]?.[0]||'',model};
+  }
+
+  // ---------- המסך ----------
+  const S={task:'',opts:{},result:null};
+  let root;
+  function home(){
+    const mine=ls.get(K.mine,[]);
+    root.innerHTML=`<div class="tf-hero"><h2>🐦 ${NAME}: עוזרת למשימות</h2>
+      <p>${NAME} אוספת מכל האתר ומגישה משהו מוכן: רשימות מקורות, קבצים לזוטרו, טבלאות מועדים, לוחות זמנים להגשה ומסמכים. המשימות מסדרות את מה שכבר יש באתר, בדפדפן, ולכן הן חינמיות. משימה שדורשת מודל שפה נעצרת לפני כל פנייה, עם הודעה.</p>
+      <form class="tf-ask" id="tfAsk"><textarea name="ask" rows="1" dir="auto" placeholder="מה תרצו לעשות? למשל: רשימת מקורות APA על רציפות למידה מ-2020" aria-label="מה תרצו לעשות"></textarea><button class="tf-btn primary">חיפוש משימה</button></form>
+      <div id="tfAskOut"></div></div>
+      ${mine.length?`<div class="tf-group"><h3>⭐ המשימות שלי</h3><div class="tf-mine">${mine.map(m=>`<div><button type="button" class="tf-btn small" data-act="mine-run" data-id="${h(m.id)}">${h(TASKS[m.task]?.icon||'')} ${h(m.name)}</button><button type="button" class="tf-btn small danger" data-act="mine-del" data-id="${h(m.id)}" aria-label="מחיקת המשימה ${h(m.name)}">✕</button></div>`).join('')}</div></div>`:''}
+      ${GROUPS.map(([gk,gl])=>`<div class="tf-group"><h3>${gl}</h3><div class="tf-grid">${Object.entries(TASKS).filter(([,t])=>t.group===gk).map(([k,t])=>`<button type="button" class="tf-card" data-act="open" data-task="${k}"><span class="tf-tag ${t.cost==='model'?'paid':'free'}">${t.cost==='model'?'דורשת מודל · עלות נוספת':'חינם'}</span><strong>${t.icon} ${h(t.title)}</strong><span>${h(t.desc)}</span></button>`).join('')}</div></div>`).join('')}`;
+    S.task='';
+  }
+  function stopBox(reason,text,alt){
+    return `<div class="tf-stop" role="status"><h4>✋ עצרתי כאן: המשימה דורשת עלות נוספת</h4>
+      <p>${h(reason)} כל פנייה למודל עולה כסף, ולכן ${NAME} לא מפעילה אותו. לא נשלח דבר למודל, ולא נגבה דבר.</p>
+      ${alt?`<p><strong>מה אפשר לעשות בחינם:</strong> ${alt}</p>`:''}
+      <p>אפשר לשלוח את הבקשה למנהלת הקהילה, שתחליט אם להוסיף משימה כזו. השליחה עצמה חינמית.</p>
+      <form class="tf-row" data-form="suggest" style="margin-top:8px"><input name="name" placeholder="שם (רשות)" style="flex:1;min-width:140px"><input name="email" type="email" dir="ltr" placeholder="מייל לתשובה (רשות)" style="flex:1;min-width:160px"><input type="hidden" name="text" value="${h(text||'')}"><input class="tf-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px"><button class="tf-btn small">שליחת הבקשה למנהלת</button></form>
+      <div data-suggest-msg></div></div>`;
+  }
+  async function openTask(id,opts){
+    const t=TASKS[id];if(!t)return home();
+    S.task=id;S.opts={...(t.defaults||{}),...(opts||{})};S.result=null;
+    if(t.cost==='model'){
+      root.innerHTML=panelHead(t)+stopBox(t.reason,t.title,t.free?`<button type="button" class="tf-btn small" data-act="free-alt">${h(t.free.label)}</button>`:'')+'<div id="tfResult"></div></div>';
+      return;
+    }
+    root.innerHTML=panelHead(t)+`<form class="tf-form" id="tfForm"><p class="tf-help">טוען…</p></form><div id="tfResult"></div></div>`;
+    const f=root.querySelector('#tfForm');
+    try{f.innerHTML=await t.form(S.opts)+(t.noRun?'':`<div class="wide tf-row" style="grid-column:1/-1"><button class="tf-btn primary">הפקה</button></div>`)}
+    catch(e){f.innerHTML=`<p class="tf-err">${h(e.message||'לא הצלחתי לטעון את הנתונים. אפשר לנסות שוב.')}</p>`;return}
+    if(t.live)renderPicker();
+    window.scrollTo({top:root.getBoundingClientRect().top+scrollY-80,behavior:'smooth'});
+  }
+  function panelHead(t){return `<p style="margin:0 0 8px"><button type="button" class="tf-btn small" data-act="home">→ כל המשימות</button></p><div class="tf-panel"><div class="tf-panel-head"><div><h2 style="font-size:21px">${t.icon} ${h(t.title)}</h2><p>${h(t.desc)}</p></div><span class="tf-tag ${t.cost==='model'?'paid':'free'}">${t.cost==='model'?'דורשת מודל · עלות נוספת':'חינם'}</span></div>`}
+  function readForm(f){
+    const t=TASKS[S.task],o={...S.opts};
+    for(const el of f.querySelectorAll('[name]')){
+      if(el.name==='kinds')continue;
+      o[el.name]=el.type==='checkbox'?el.checked:el.value;
+    }
+    if(f.querySelector('[name=kinds]'))o.kinds=[...f.querySelectorAll('[name=kinds]:checked')].map(x=>x.value);
+    if(t.collect)t.collect(f,o);
+    return o;
+  }
+  async function runTask(){
+    const t=TASKS[S.task];
+    if(t.cost==='model'){root.querySelector('#tfResult').innerHTML=stopBox(t.reason,t.title);return}
+    const f=root.querySelector('#tfForm');S.opts=readForm(f);
+    const out=root.querySelector('#tfResult');out.innerHTML='<p class="tf-hint">מכינה…</p>';
+    let r;try{r=await t.run(S.opts)}catch(e){out.innerHTML=`<p class="tf-err">${h(e.message||'משהו השתבש. אפשר לנסות שוב.')}</p>`;return}
+    showResult(r);
+  }
+  function showResult(r){
+    const out=root.querySelector('#tfResult');S.result=r;
+    if(r.empty){out.innerHTML=`<p class="tf-err">${h(r.empty)}</p>`;return}
+    const teams=r.teamTasks?myTeams():[];
+    out.innerHTML=`<div class="tf-out" id="tfOut" contenteditable="true" dir="rtl" spellcheck="true">${r.body}</div>
+      <p class="tf-hint">אפשר לערוך את הטקסט כאן לפני ההעתקה או השמירה.</p>
+      <div class="tf-tools">${(r.files||[]).filter(()=>r.primaryFiles).map((x,i)=>`<button type="button" class="tf-btn small primary" data-act="file" data-i="${i}">${h(x.label)}</button>`).join('')}
+        <button type="button" class="tf-btn small" data-act="copy">📋 העתקה</button><button type="button" class="tf-btn small" data-act="word">📄 Word</button><button type="button" class="tf-btn small" data-act="txt">📝 טקסט</button><button type="button" class="tf-btn small" data-act="print">🖨 הדפסה / PDF</button>
+        ${(r.files||[]).filter(()=>!r.primaryFiles).map((x,i)=>`<button type="button" class="tf-btn small" data-act="file" data-i="${i}">${h(x.label)}</button>`).join('')}
+        ${teams.length?`<button type="button" class="tf-btn small" data-act="team-tasks">✅ הוספה כמשימות לקבוצה</button>`:''}
+        <button type="button" class="tf-btn small" data-act="save-mine">⭐ שמירה כמשימה שלי</button></div>
+      <div id="tfMsg"></div>${r.after||''}`;
+  }
+  function renderPicker(){
+    const box=root.querySelector('#tfPicker');if(!box||!D.lib)return;
+    const f=root.querySelector('#tfForm'),q=norm(f.querySelector('[name=q]')?.value),cat=f.querySelector('[name=cat]')?.value||'';
+    const ids=new Set(basket());
+    const list=D.lib.filter(x=>(!cat||x.cat===cat)&&(!q||norm([x.title,x.authors,x.journal,x.abstract,x.apa].join(' ')).includes(q))).sort((a,b)=>(ids.has(b.id)?1:0)-(ids.has(a.id)?1:0)||String(b.year).localeCompare(String(a.year)));
+    box.innerHTML=list.length?list.slice(0,300).map(x=>`<label class="tf-pick${ids.has(x.id)?' on':''}"><input type="checkbox" data-pick="${h(x.id)}"${ids.has(x.id)?' checked':''}><span dir="auto"><strong>${h(x.title||x.apa)}</strong><small>${h([x.authors,x.year,x.journal].filter(Boolean).join(' · '))}</small></span></label>`).join(''):'<p class="tf-hint" style="padding:10px 12px">לא נמצאו מקורות.</p>';
+    const n=root.querySelector('#tfBasketCount');if(n)n.innerHTML=`<strong>בסל: ${basket().filter(id=>D.lib.some(x=>x.id===id)).length}</strong> <button type="button" class="tf-btn small" data-act="open" data-task="apa">← רשימת APA</button> <button type="button" class="tf-btn small" data-act="open" data-task="export">← לזוטרו</button>`;
+  }
+  const msg=(t,k)=>{const el=root.querySelector('#tfMsg');if(el)el.innerHTML=`<p class="${k==='err'?'tf-err':'tf-ok'}">${h(t)}</p>`};
+
+  async function onClick(e){
+    const b=e.target.closest('[data-act]');if(!b||!root.contains(b))return;
+    const a=b.dataset.act,out=root.querySelector('#tfOut'),r=S.result;
+    if(a==='home'){history.replaceState(null,'',location.pathname);return home()}
+    if(a==='open'){history.replaceState(null,'',location.pathname+'#'+b.dataset.task);return openTask(b.dataset.task)}
+    if(a==='copy'&&out)return copyRich(out,b);
+    if(a==='word'&&out)return wordFile(r.title,out.innerHTML);
+    if(a==='txt'&&out)return download(safeName(r.title)+'.txt','text/plain;charset=utf-8','\ufeff'+out.innerText);
+    if(a==='print'&&out)return printDoc(r.title,out.innerHTML);
+    if(a==='file'){const x=r.files[+b.dataset.i];return download(x.name,x.type,x.content())}
+    if(a==='free-alt'){const t=TASKS[S.task];return showResult(t.free.run())}
+    if(a==='basket-clear'){if(confirm('לרוקן את הסל?')){setBasket([]);renderPicker()}return}
+    if(a==='step-add'){root.querySelector('#tfSteps').insertAdjacentHTML('beforeend',stepRow('',7));return}
+    if(a==='step-del'){b.closest('.tf-steprow').remove();return}
+    if(a==='save-mine'){
+      const name=prompt('שם למשימה (למשל: "APA לסעיף רקע"):',TASKS[S.task].title);if(!name)return;
+      const mine=ls.get(K.mine,[]);mine.unshift({id:Date.now().toString(36),name:name.slice(0,60),task:S.task,opts:S.opts});ls.set(K.mine,mine.slice(0,30));
+      return msg('✓ נשמר ב"המשימות שלי", עם כל ההגדרות. המשימה נשמרת בדפדפן הזה.');
+    }
+    if(a==='mine-run'){const m=ls.get(K.mine,[]).find(x=>x.id===b.dataset.id);if(m)return openTask(m.task,m.opts);return}
+    if(a==='mine-del'){if(!confirm('למחוק את המשימה מהרשימה?'))return;ls.set(K.mine,ls.get(K.mine,[]).filter(x=>x.id!==b.dataset.id));return home()}
+    if(a==='team-tasks'){
+      const teams=myTeams();if(!teams.length||!D.lastSteps)return;
+      let pick=teams[0];
+      if(teams.length>1){const ws=[];for(const t of teams){const w=await team(t).catch(()=>null);if(w)ws.push([t,w.title])}const i=prompt('לאיזו קבוצה להוסיף? מספר:\n'+ws.map(([,n],j)=>`${j+1}. ${n}`).join('\n'),'1');if(!i)return;pick=ws[(+i||1)-1]?.[0];if(!pick)return}
+      const name=(()=>{try{return localStorage.getItem('hosen.team.myname')||''}catch(e){return ''}})()||NAME;
+      let n=0;
+      for(const s of D.lastSteps.rows){if(daysTo(s.date)<0)continue;
+        const res=await fetch('/api/teams',{method:'POST',headers:{'Content-Type':'application/json','x-team-key':pick.key},body:JSON.stringify({action:'task-add',id:pick.id,name,text:s.t,due:s.date})});if(res.ok)n++}
+      return msg(n?`✓ ${n} משימות נוספו ללשונית "משימות" במרחב העבודה של הקבוצה.`:'לא הצלחתי להוסיף משימות. אפשר לנסות שוב.',n?'':'err');
+    }
+  }
+  async function onSubmit(e){
+    const f=e.target;if(!root.contains(f))return;e.preventDefault();
+    if(f.id==='tfForm')return runTask();
+    if(f.id==='tfAsk'){
+      const text=f.ask.value.trim(),box=root.querySelector('#tfAskOut');if(!text)return;
+      const u=understand(text),t=TASKS[u.task];
+      if(t&&t.cost!=='model'&&!u.model.length){
+        const opts={};const yrs=text.match(/\b(19|20)\d{2}\b/g);if(yrs&&('yFrom' in (t.defaults||{})||['apa','annotated','export'].includes(u.task))){opts.from='filter';opts.yFrom=yrs[0];if(yrs[1])opts.yTo=yrs[1]}
+        if(['apa','annotated','export'].includes(u.task)&&!basket().length)opts.from='filter';
+        history.replaceState(null,'',location.pathname+'#'+u.task);return openTask(u.task,opts);
+      }
+      const alt=t&&t.cost!=='model'?`<button type="button" class="tf-btn small" data-act="open" data-task="${u.task}">${t.icon} ${h(t.title)}</button>`:(t?.free?`<button type="button" class="tf-btn small" data-act="open" data-task="${u.task}">${t.icon} ${h(t.title)}</button>`:'');
+      const reason=u.model.length?`הבקשה כוללת כתיבה, סיכום, תרגום או ניתוח ("${u.model[0]}"), ואלה דורשים מודל שפה.`:`לא מצאתי משימה חינמית שמתאימה לבקשה. משימה חדשה כזו דורשת כנראה מודל שפה.`;
+      box.innerHTML=stopBox(reason,text,alt);return;
+    }
+    if(f.dataset.form==='suggest'){
+      const m=f.parentElement.querySelector('[data-suggest-msg]');const v=n=>String(f.querySelector(`[name=${n}]`)?.value||'').trim();
+      try{
+        const r=await fetch('/api/requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',type:'feedback',elapsed:Math.max(Date.now()-opened,3000),website:v('website'),fields:{name:v('name'),email:v('email'),type:'משימה חדשה ל'+NAME,title:v('text').slice(0,90),details:v('text')}})});
+        if(!r.ok)throw 0;f.remove();m.innerHTML=`<p class="tf-ok">✓ הבקשה נשלחה למנהלת הקהילה. תודה!</p>`;
+      }catch(_){m.innerHTML=`<p class="tf-err">השליחה לא הצליחה. אפשר לנסות שוב, או לכתוב בכפתור המשוב בתחתית האתר.</p>`}
+    }
+  }
+  function onInput(e){
+    if(!root.contains(e.target))return;
+    if(e.target.matches('[data-live]'))renderPicker();
+    const p=e.target.dataset?.pick;
+    if(p!==undefined){const ids=new Set(basket());e.target.checked?ids.add(p):ids.delete(p);setBasket([...ids]);e.target.closest('.tf-pick')?.classList.toggle('on',e.target.checked);renderPicker()}
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    root=document.getElementById('tsofitRoot');if(!root)return;
+    root.addEventListener('click',onClick);root.addEventListener('submit',onSubmit);
+    root.addEventListener('input',e=>{if(e.target.matches('[data-live]'))onInput(e)});root.addEventListener('change',e=>{if(e.target.dataset?.pick!==undefined||e.target.matches('select[data-live]'))onInput(e)});
+    if(document.documentElement.dataset.page!=='tasks')return;
+    const id=location.hash.slice(1);
+    if(TASKS[id])openTask(id);else home();
+  });
+  // מתוך מרחב העבודה של קבוצה: "📄 Word".
+  window.hosenTsofit={wordProposal(t,c){wordFile(t.title,proposalBody(t,c,{roles:true,empty:false}))}};
 })();
 </script>
 </main>
@@ -3898,7 +4534,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
         <div class="ch-actions"><label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>
         <select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>
-        <button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button><button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
+        <button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button><button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
         <nav class="ch-tabs">${[['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
@@ -4007,6 +4643,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         return}
       if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
       if(w==='print')return printProposal(ws.team,call());
+      if(w==='word')return window.hosenTsofit?.wordProposal(ws.team,call());
     });
     m.addEventListener('submit',async e=>{
       const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
@@ -5499,7 +6136,7 @@ document.addEventListener('DOMContentLoaded',renderResearchWorld);
   const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
