@@ -185,6 +185,16 @@ export default async (req: Request) => {
       }
       break;
     }
+    case "member-join": {
+      // הצטרפות מתוך סביבת העבודה: מי שיש לה את הקישור מצטרפת לרשימת חברות הצוות.
+      const name = clip(body.member, 160);
+      if (!name) return json({ error: "missing_fields", message: "נשמח לשם." }, 400);
+      if (!t.members.some(x => x.name === name)) {
+        t.members.push({ name, email: clip(body.email, 240), role: clip(body.role, 120), joinedAt: at });
+        t.requests = t.requests.filter(r => r.name !== name);
+      }
+      break;
+    }
     case "member-update": {
       const m = t.members.find(x => x.name === clip(body.member, 160));
       if (m) {

@@ -3881,7 +3881,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
         <div class="ch-actions"><label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>
         <select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>
-        <button type="button" class="ch-btn small primary" data-w="join-link">🙋 קישור להצטרפות לצוות</button><button type="button" class="ch-btn small" data-w="link">🔑 קישור לחברות הצוות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
+        ${t.members.some(x=>x.name===myName())?'':'<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>'}<button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
         <nav class="ch-tabs">${[['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
@@ -3959,8 +3959,13 @@ html[data-page="calls"] #resourceArea{display:none!important}
         else{const mail='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(j.member.email||'')+'&su='+encodeURIComponent('הצטרפת לקבוצת המשימה: '+ws.team.title)+'&body='+encodeURIComponent(`שלום ${j.member.name},\n\nשמחות שהצטרפת לקבוצת המשימה "${ws.team.title}".\n\nזה הקישור לסביבת העבודה שלנו. שמרי אותו — רק איתו נכנסים:\n${j.link}\n\n${me()}`);
           window.open(mail,'_blank','noopener');msg(`${j.member.name} צורפה. נפתחה טיוטה ב-Gmail עם הקישור לסביבת העבודה — נשאר רק לשלוח.`,'ok')}
         return}
-      if(w==='join-link')return modal(`<h2>קישור להצטרפות לצוות</h2><p>את הקישור הזה אפשר לשלוח לכל מי שתרצו להזמין, גם בקבוצות ובמיילים. מי שפותחת אותו ממלאת שם ומייל ושולחת בקשת הצטרפות. הבקשה מגיעה ללשונית "הצוות", ואחרי האישור נשלח אליה הקישור לסביבת העבודה.</p>${joinBox()}<p class="ch-credit">הקישור לא פותח את סביבת העבודה. כדי להכניס מישהי ישר לעבודה יש את "🔑 קישור לחברות הצוות".</p>`);
-      if(w==='link')return modal(`<h2>קישור לחברות הצוות</h2><p>הקישור פותח את סביבת העבודה. אפשר לשלוח אותו רק לחברות הצוות: מי שיש לה אותו יכולה להיכנס ולכתוב. להזמנת חברות חדשות יש את "🙋 קישור להצטרפות לצוות".</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
+      if(w==='join'){
+        const jm=modal(`<h2>הצטרפות לצוות</h2><p><strong>${h(ws.team.title)}</strong></p><form class="ch-form"><label>השם שלך*<input name="member" required value="${h(me())}"></label><label>מייל<input name="email" type="email" dir="ltr"></label><label class="wide">התפקיד שלי בהצעה (רשות)<input name="role" dir="auto" placeholder="למשל: שיטות מחקר, כתיבה, קשר עם השטח"></label><div class="wide"><button class="ch-btn primary">הצטרפות</button><div class="ch-status"></div></div></form>`);
+        jm.querySelector('form').addEventListener('submit',async e=>{e.preventDefault();const d=formData(e.target);
+          try{await act('member-join',d);store.set('hosen.team.myname',d.member);jm.close();render(true);msg(`${d.member} הצטרפה לצוות.`,'ok')}
+          catch(err){setStatus(jm.querySelector('.ch-status'),err.message,'err')}});
+        return}
+      if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
       if(w==='print')return printProposal(ws.team,call());
     });
     m.addEventListener('submit',async e=>{
