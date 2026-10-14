@@ -3897,7 +3897,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
         <div class="ch-actions"><label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>
         <select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>
-        ${t.members.some(x=>x.name===myName())?'':'<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>'}<button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
+        <button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button><button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
         <nav class="ch-tabs">${[['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
@@ -3975,6 +3975,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
           window.open(mail,'_blank','noopener');msg(`${j.member.name} צורפה. נפתחה טיוטה ב-Gmail עם הקישור לסביבת העבודה — נשאר רק לשלוח.`,'ok')}
         return}
       if(w==='join'){
+        if(ws.team.members.some(x=>x.name===me()))return msg(`${me()} כבר בצוות.`,'ok');
         const jm=modal(`<h2>הצטרפות לצוות</h2><p><strong>${h(ws.team.title)}</strong></p><form class="ch-form"><label>השם שלך*<input name="member" required value="${h(me())}"></label><label>מייל<input name="email" type="email" dir="ltr"></label><label class="wide">התפקיד שלי בהצעה (רשות)<input name="role" dir="auto" placeholder="למשל: שיטות מחקר, כתיבה, קשר עם השטח"></label><div class="wide"><button class="ch-btn primary">הצטרפות</button><div class="ch-status"></div></div></form>`);
         jm.querySelector('form').addEventListener('submit',async e=>{e.preventDefault();const d=formData(e.target);
           try{await act('member-join',d);store.set('hosen.team.myname',d.member);jm.close();render(true);msg(`${d.member} הצטרפה לצוות.`,'ok')}
