@@ -2,6 +2,7 @@
 // מקור אמת יחיד לנושאים ולהתאמה — גם המסך הציבורי וגם המיילים נשענים עליו.
 import { id, issueToken, store } from "./shared.mts";
 import { type Team, listTeams } from "./teams.mts";
+import { CALLS_SEED } from "./calls-seed.mts";
 
 export type Call = {
   id: string; title: string; description?: string; category: string; type?: string;
@@ -371,7 +372,37 @@ export async function setInboxStatus(key: string, status: InboxItem["status"], c
   return next;
 }
 
+// קולות קוראים שנאספו בחיפוש ברשת ונכתבו בקוד (calls-seed.mts). כל אחד נשמר פעם אחת כקול קורא רגיל,
+// ואחר כך אפשר לערוך או למחוק אותו כרגיל: הרשימה ב-call-seeded.json מונעת שמירה חוזרת.
+let seeding: Promise<void> | null = null;
+async function seedCalls() {
+  const st = data();
+  const done = new Set((await st.get("call-seeded.json", { type: "json" }) as string[] | null) || []);
+  const pending = CALLS_SEED.filter(x => !done.has(x.seedId));
+  if (!pending.length) return;
+  const known = new Set<string>();
+  for (const c of await storedCalls()) {
+    if (c.url) known.add(linkKey(c.url));
+    known.add("t:" + normTitle(c.title));
+  }
+  for (const x of pending) done.add(x.seedId);
+  await st.setJSON("call-seeded.json", [...done]);
+  for (const x of pending) {
+    const url = cleanLink(x.url);
+    if (!url || known.has(linkKey(url)) || known.has("t:" + normTitle(x.title))) continue;
+    await saveCall(newCall(cleanCallFields(x), { source: "admin", url }));
+  }
+}
+
 export async function listCalls(): Promise<Call[]> {
+  try {
+    seeding ||= seedCalls().finally(() => { seeding = null; });
+    await seeding;
+  } catch { /* הקולות הקוראים הקיימים מוצגים גם אם השמירה נכשלה */ }
+  return storedCalls();
+}
+
+async function storedCalls(): Promise<Call[]> {
   const st = data();
   const { blobs } = await st.list({ prefix: "resources/" });
   const rows: Call[] = [];

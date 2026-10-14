@@ -152,9 +152,10 @@ export type Run = { id: string; at: string; articles: RunArticle[]; people: { id
 // הרעיונות הראשונים (research-seed.mts): טיוטה עד שמפרסמים. מה שנשמר בשרת גובר, ומחיקה נשמרת כסימון.
 const SEED_AT = "2026-10-11T09:00:00.000Z";
 function seedResearch(x: typeof RESEARCH_SEED[number]): Research {
+  const at = (x as { createdAt?: string }).createdAt || SEED_AT;
   return {
     ...JSON.parse(JSON.stringify(x)), status: "draft", initiators: [], teamId: "", notified: 0,
-    createdAt: SEED_AT, publishedAt: "", updatedAt: SEED_AT,
+    createdAt: at, publishedAt: "", updatedAt: at,
   };
 }
 
