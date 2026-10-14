@@ -1,4 +1,12 @@
-import { mkdir, rm, copyFile, cp, access } from "node:fs/promises";
+import { mkdir, rm, copyFile, cp, access, readFile } from "node:fs/promises";
+import { check } from "./research-weekly.mjs";
+
+// חידושים במחקר: עדכון שבור לא עולה לאתר (Netlify משאיר את הגרסה הקודמת).
+const research = check(await readFile("index.html", "utf8"));
+if (research.errors.length) {
+  console.error("חידושים במחקר:\n" + research.errors.join("\n"));
+  process.exit(1);
+}
 
 await rm("dist", { recursive: true, force: true });
 await mkdir("dist", { recursive: true });
