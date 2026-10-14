@@ -110,8 +110,6 @@ export default async (req: Request) => {
     const mailed = await mail(email, `הצטרפת לקבוצת המשימה: ${t.title}`,
       [`שלום ${name},`, `הצטרפת לקבוצת המשימה "${t.title}". זה הקישור שלך לסביבת העבודה.`, "שמרי אותו. רק איתו נכנסים."],
       ["כניסה לסביבת העבודה", link]);
-    if (t.lead.email && t.lead.email !== email)
-      await mail(t.lead.email, `${name} הצטרפה לקבוצה "${t.title}"`, [`שלום ${t.lead.name},`, `${name} הצטרפה לקבוצת המשימה "${t.title}" דרך כפתור ההצטרפות.`], ["לאתר", `${site}/calls`]);
     return json({ ok: true, id: t.id, key, link, mailed });
   }
 
