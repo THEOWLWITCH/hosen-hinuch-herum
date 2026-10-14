@@ -3867,6 +3867,11 @@ html[data-page="calls"] #resourceArea{display:none!important}
       return j;
     }
     function words(t){return (String(t||'').trim().match(/\S+/g)||[]).length}
+    const joinLink=()=>location.origin+location.pathname+'#join-team='+teamId;
+    function joinBox(){
+      const link=joinLink(),text=`מזמינות אותך להצטרף לצוות "${ws.team.title}". בקישור אפשר לשלוח בקשת הצטרפות, ומובילת הצוות מאשרת:\n${link}`;
+      return `<div class="ch-linkbox"><input readonly value="${h(link)}" aria-label="קישור להצטרפות לצוות"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button><a class="ch-btn small" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(text)}">וואטסאפ</a></div>`;
+    }
     function head(){
       const t=ws.team,c=call();
       const deadline=t.deadline||c?.endDate||'';
@@ -3876,7 +3881,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
         <div class="ch-actions"><label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>
         <select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>
-        <button type="button" class="ch-btn small" data-w="link">🔗 קישור לשותפות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
+        <button type="button" class="ch-btn small primary" data-w="join-link">🙋 קישור להצטרפות לצוות</button><button type="button" class="ch-btn small" data-w="link">🔑 קישור לחברות הצוות</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button></div></div>
         <nav class="ch-tabs">${[['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
@@ -3902,9 +3907,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <form class="ch-inline" data-form="message" style="grid-template-columns:1fr auto"><textarea name="text" rows="2" required dir="auto" placeholder="הודעה לקבוצה"></textarea><button class="ch-btn small">שליחה</button></form>`;
       if(ws.tab==='team'){
         const invite=(c?.matches||[]).filter(x=>!t.members.some(mm=>mm.name===x.name));
-        return `<h4 style="margin:0 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong><input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקרת ראשית, שיטות)" dir="auto">${x.name!==t.lead.name?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:'<span class="ch-tag">מובילה</span>'}</div>`).join('')}</div>
+        return `<h4 style="margin:0 0 6px">🙋 קישור להצטרפות לצוות</h4><p class="ch-credit" style="margin:0">אפשר לשלוח לכל מי שתרצו להזמין. הבקשות מגיעות לכאן לאישור.</p>${joinBox()}
+          <h4 style="margin:16px 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong><input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקרת ראשית, שיטות)" dir="auto">${x.name!==t.lead.name?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:'<span class="ch-tag">מובילה</span>'}</div>`).join('')}</div>
           <h4 style="margin:16px 0 6px">בקשות הצטרפות</h4>${t.requests.length?`<div class="ch-rows">${t.requests.map(r=>`<div class="ch-row"><span class="grow"><strong>${h(r.name)}</strong>${r.note?` — ${h(r.note)}`:''}</span><button type="button" class="ch-btn small primary" data-w="req-approve" data-id="${h(r.id)}">אישור</button><button type="button" class="ch-btn small" data-w="req-decline" data-id="${h(r.id)}">לא הפעם</button></div>`).join('')}</div>`:'<p class="ch-credit">אין בקשות חדשות.</p>'}
-          ${invite.length?`<h4 style="margin:16px 0 6px">חוקרות מהקהילה שהקול הקורא מתאים להן</h4><p class="ch-credit">${invite.map(x=>h(x.name)).join(' · ')} — אפשר לשלוח להן את הקישור לקבוצה, או להזמין אותן לבקש להצטרף.</p>`:''}`;
+          ${invite.length?`<h4 style="margin:16px 0 6px">חוקרות מהקהילה שהקול הקורא מתאים להן</h4><p class="ch-credit">${invite.map(x=>h(x.name)).join(' · ')} — אפשר לשלוח להן את הקישור להצטרפות לצוות.</p>`:''}`;
       }
       if(ws.tab==='links')return `<div class="ch-rows">${t.links.length?t.links.map(l=>`<div class="ch-row"><a class="grow" href="${h(l.url)}" target="_blank" rel="noopener" dir="auto">${h(l.label)}</a><button type="button" class="ch-btn small danger" data-w="link-remove" data-id="${h(l.id)}">הסרה</button></div>`).join(''):'<p class="ch-empty">קישורים למסמך משותף, לנוסח הקול הקורא, לטפסים ולתקציב.</p>'}</div>
         <form class="ch-inline" data-form="link-add" style="grid-template-columns:1fr 1.4fr auto"><input name="label" placeholder="שם (למשל: טיוטה ב־Google Docs)" dir="auto"><input name="url" required type="url" dir="ltr" placeholder="https://"><button class="ch-btn small">הוספה</button></form>`;
@@ -3953,7 +3959,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
         else{const mail='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(j.member.email||'')+'&su='+encodeURIComponent('הצטרפת לקבוצת המשימה: '+ws.team.title)+'&body='+encodeURIComponent(`שלום ${j.member.name},\n\nשמחות שהצטרפת לקבוצת המשימה "${ws.team.title}".\n\nזה הקישור לסביבת העבודה שלנו. שמרי אותו — רק איתו נכנסים:\n${j.link}\n\n${me()}`);
           window.open(mail,'_blank','noopener');msg(`${j.member.name} צורפה. נפתחה טיוטה ב-Gmail עם הקישור לסביבת העבודה — נשאר רק לשלוח.`,'ok')}
         return}
-      if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
+      if(w==='join-link')return modal(`<h2>קישור להצטרפות לצוות</h2><p>את הקישור הזה אפשר לשלוח לכל מי שתרצו להזמין, גם בקבוצות ובמיילים. מי שפותחת אותו ממלאת שם ומייל ושולחת בקשת הצטרפות. הבקשה מגיעה ללשונית "הצוות", ואחרי האישור נשלח אליה הקישור לסביבת העבודה.</p>${joinBox()}<p class="ch-credit">הקישור לא פותח את סביבת העבודה. כדי להכניס מישהי ישר לעבודה יש את "🔑 קישור לחברות הצוות".</p>`);
+      if(w==='link')return modal(`<h2>קישור לחברות הצוות</h2><p>הקישור פותח את סביבת העבודה. אפשר לשלוח אותו רק לחברות הצוות: מי שיש לה אותו יכולה להיכנס ולכתוב. להזמנת חברות חדשות יש את "🙋 קישור להצטרפות לצוות".</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
       if(w==='print')return printProposal(ws.team,call());
     });
     m.addEventListener('submit',async e=>{
@@ -4137,6 +4144,11 @@ html[data-page="calls"] #resourceArea{display:none!important}
   function handleHash(){
     const t=location.hash.match(/^#team=([\w-]+)\.([\w-]+)$/);
     if(t){store.set('hosen.team.'+t[1],t[2]);history.replaceState(null,'',location.pathname+'#teams');renderCalls();renderTeams();openWorkspace(t[1]);return}
+    // #join-team=ID — קישור פתוח להצטרפות: בקשה שמגיעה לאישור המובילה.
+    const jt=location.hash.match(/^#join-team=([\w-]+)$/);
+    if(jt){history.replaceState(null,'',location.pathname+'#teams');
+      if(state.teams.some(x=>x.id===jt[1]))return openJoin(jt[1]);
+      return modal('<h2>הצטרפות לצוות</h2><p>הצוות הזה כבר לא מקבל בקשות הצטרפות, או שהקישור לא שלם. אפשר לראות את כל קבוצות המשימה הפתוחות בעמוד.</p>')}
     const c=location.hash.match(/^#call-([\w-]+)$/);
     if(c){const el=document.getElementById('call-'+c[1]);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),2500)}}
     if(location.hash==='#team-new'){history.replaceState(null,'',location.pathname+'#teams');openTeamNew('');return}
