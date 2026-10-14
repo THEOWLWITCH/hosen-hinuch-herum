@@ -3661,7 +3661,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${t.need?`<p dir="auto"><strong>מחפשות:</strong> ${h(t.need)}</p>`:''}
       <p class="ch-credit"><strong>מובילה:</strong> ${h(t.lead)}${t.members.length>1?` · <strong>בקבוצה:</strong> ${t.members.map(h).join(', ')}`:''}</p>
       ${(t.internal&&t.funder)||t.deadline?`<p class="ch-credit">${t.internal&&t.funder?`<strong>גוף מממן:</strong> ${h(t.funder)}`:''}${t.internal&&t.funder&&t.deadline?' · ':''}${t.deadline?`<strong>מועד הגשה:</strong> ${fmt(t.deadline)}`:''}</p>`:''}
-      <div class="ch-card-actions">${mine?`<button type="button" class="ch-btn primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn primary" data-ch="join" data-id="${h(t.id)}">בקשת הצטרפות</button>`:'')}</div>`);
+      <div class="ch-card-actions">${mine?`<button type="button" class="ch-btn primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn primary" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:'')}</div>`);
     m.addEventListener('click',e=>{if(e.target.closest('[data-ch]')){m.close();onClick(e)}});
   }
   function teamRow(t){
@@ -3670,7 +3670,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(onMatch)return teamLine(t);
     return `<div class="ch-team"><p><strong>${h(t.title)}</strong> <span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?' <span class="ch-badge green">🌱 מנבט</span>':''}${onMatch&&t.callId?` <a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a>`:''}${onMatch&&t.summary?`<small>${h(t.summary)}</small>`:''}
       <small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
-      <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn small" data-ch="join" data-id="${h(t.id)}">בקשת הצטרפות</button>`:'')}</span></div>`;
+      <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:(t.status==='recruiting'||t.status==='writing'?`<button type="button" class="ch-btn small primary" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:'')}</span></div>`;
   }
   function callCard(c,archived){
     const teams=state.teams.filter(t=>t.callId===c.id);
@@ -3805,6 +3805,29 @@ html[data-page="calls"] #resourceArea{display:none!important}
         m.querySelector('[data-copy]').onclick=ev=>copy(j.link,ev.target);
         m.querySelector('[data-open]').onclick=()=>{m.close();openWorkspace(j.id)};
         await refreshTeams();
+      }catch(err){setStatus(st,err.message,'err')}
+    });
+  }
+
+  // הצטרפות ישירה מהכפתור: חברות הקהילה (בקוד הקהילה) נכנסות מיד לצוות ולסביבת העבודה.
+  function openJoinNow(teamId){
+    const t=state.teams.find(x=>x.id===teamId);if(!t)return;
+    const m=modal(`<h2>הצטרפות לצוות</h2><p><strong>${h(t.title)}</strong>${t.need?`<br><span class="ch-credit">מחפשות: ${h(t.need)}</span>`:''}</p>
+      <form class="ch-form">
+        <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
+        <label>מייל*<span class="hint">לשם יישלח הקישור האישי לסביבת העבודה</span><input name="email" type="email" dir="ltr" required></label>
+        <label class="wide">התפקיד שלי בהצעה (רשות)<input name="role" dir="auto" placeholder="למשל: שיטות מחקר, כתיבה, קשר עם השטח"></label>
+        ${codeField()}
+        <div class="wide"><button class="ch-btn primary">🙋 הצטרפות</button><div class="ch-status"></div>
+        <p class="ch-credit">אין לך קוד קהילה? <a href="#" data-req>בקשת הצטרפות</a> למובילת הצוות.</p></div>
+      </form>`);
+    m.querySelector('[data-req]').addEventListener('click',e=>{e.preventDefault();m.close();openJoin(teamId)});
+    m.querySelector('form').addEventListener('submit',async e=>{
+      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'מצרפת…');
+      try{const body=formData(e.target);const j=await api('/api/teams',{method:'POST',body:JSON.stringify({action:'join-direct',id:teamId,...body})});
+        if(!j.key)throw new Error('ההצטרפות לא הושלמה. אפשר לנסות שוב.');
+        store.set('hosen.team.'+teamId,j.key);store.set('hosen.team.myname',body.name);
+        m.close();state.teams=await api('/api/teams').catch(()=>state.teams);renderTeams();openWorkspace(teamId);
       }catch(err){setStatus(st,err.message,'err')}
     });
   }
@@ -4139,6 +4162,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(a==='suggest')return openSuggest();
     if(a==='team-new')return openTeamNew(b.dataset.call||'');
     if(a==='join')return openJoin(b.dataset.id);
+    if(a==='join-now')return openJoinNow(b.dataset.id);
     if(a==='ws')return openWorkspace(b.dataset.id);
     if(a==='team-open')return openTeamCard(b.dataset.id);
     if(a==='calendar')return openCalendar();

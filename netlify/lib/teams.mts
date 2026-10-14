@@ -19,7 +19,7 @@ export type Task = { id: string; text: string; owner?: string; due?: string; don
 export type Message = { id: string; name: string; text: string; at: string };
 export type Link = { id: string; label: string; url: string };
 export type Team = {
-  id: string; keyHash: string; title: string; summary: string; need: string;
+  id: string; keyHash: string; memberKeys?: string[]; title: string; summary: string; need: string;
   callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean; origin?: string;
   status: TeamStatus; lead: { name: string; email?: string };
   members: Member[]; requests: JoinRequest[]; sections: Section[]; tasks: Task[]; messages: Message[]; links: Link[];
@@ -85,7 +85,9 @@ export async function listTeams(): Promise<Team[]> {
 export async function openTeam(teamId: string, key: string): Promise<Team | null> {
   const t = await getTeam(teamId);
   if (!t || !key) return null;
-  return (await hashKey(key)) === t.keyHash ? t : null;
+  const h = await hashKey(key);
+  // מפתח הקבוצה, או מפתח אישי של מי שהצטרפה בכפתור "הצטרפות לצוות".
+  return h === t.keyHash || (t.memberKeys || []).includes(h) ? t : null;
 }
 
 // מה שכולם רואים: מי בקבוצה ומה היא מחפשת — בלי נוסח ההצעה ובלי כתובות מייל.
@@ -99,7 +101,7 @@ export function publicTeam(t: Team) {
 
 // מה שחברות הקבוצה רואות בסביבת העבודה.
 export function workspaceTeam(t: Team) {
-  const { keyHash, ...rest } = t;
+  const { keyHash, memberKeys, ...rest } = t;
   return { ...rest, statusLabel: TEAM_STATUS[t.status], statuses: TEAM_STATUS };
 }
 

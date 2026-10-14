@@ -91,6 +91,30 @@ export default async (req: Request) => {
     return json({ ok: true });
   }
 
+  // ----- הצטרפות ישירה לצוות: חברות הקהילה, בקוד הקהילה -----
+  if (action === "join-direct") {
+    if (!looksHuman(body)) return json({ ok: true });
+    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    const name = clip(body.name, 160);
+    const email = clip(body.email, 240);
+    if (!name || !email.includes("@")) return json({ error: "missing_fields", message: "נשמח לשם ולמייל." }, 400);
+    const t = await getTeam(clip(body.id, 80));
+    if (!t || t.status === "closed") return json({ error: "not_found", message: "הקבוצה לא נמצאה." }, 404);
+    const at = new Date().toISOString();
+    if (!t.members.some(m => m.name === name)) t.members.push({ name, email, role: clip(body.role, 120), joinedAt: at });
+    t.requests = t.requests.filter(r => r.name !== name);
+    const key = newKey();
+    t.memberKeys = [...(t.memberKeys || []), await hashKey(key)].slice(-80);
+    await saveTeam(t);
+    const link = workspaceLink(site, t, key);
+    const mailed = await mail(email, `הצטרפת לקבוצת המשימה: ${t.title}`,
+      [`שלום ${name},`, `הצטרפת לקבוצת המשימה "${t.title}". זה הקישור שלך לסביבת העבודה.`, "שמרי אותו. רק איתו נכנסים."],
+      ["כניסה לסביבת העבודה", link]);
+    if (t.lead.email && t.lead.email !== email)
+      await mail(t.lead.email, `${name} הצטרפה לקבוצה "${t.title}"`, [`שלום ${t.lead.name},`, `${name} הצטרפה לקבוצת המשימה "${t.title}" דרך כפתור ההצטרפות.`], ["לאתר", `${site}/calls`]);
+    return json({ ok: true, id: t.id, key, link, mailed });
+  }
+
   // ----- ניהול מערכת -----
   if (action === "admin-delete" || action === "admin-rekey") {
     if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
