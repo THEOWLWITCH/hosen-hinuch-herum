@@ -130,6 +130,43 @@ export default async (req: Request) => {
   if (!t) return json({ error: "forbidden", message: "הקישור לסביבת העבודה לא תקין." }, 403);
   const who = clip(body.name, 160) || "חברת קבוצה";
   const at = new Date().toISOString();
+  const norm = (s: unknown) => String(s ?? "").trim().toLowerCase();
+
+  // יציאה מהמרחב: החבר/ה יוצא/ת מרשימת הקבוצה, והדפדפן שוכח את הקישור.
+  // מוביל/ה שיוצא/ת מעביר/ה את ההובלה לחבר/ה אחר/ת. מוביל/ה יחיד/ה: מוחקים את המרחב.
+  if (action === "leave") {
+    const m = t.members.find(x => x.name === clip(body.member, 160));
+    if (!m) return json({ ok: true, left: false });
+    if (m.name === t.lead.name) {
+      const next = t.members.find(x => x !== m && x.name === clip(body.newLead, 160));
+      if (!next) {
+        if (t.members.length === 1) return json({ error: "last_member", message: "את/ה החבר/ה היחיד/ה במרחב. אם הוא כבר לא נחוץ, אפשר למחוק אותו." }, 409);
+        return json({ error: "need_lead", message: "לפני היציאה, נשמח לבחירה: מי מוביל/ה את הקבוצה מעכשיו." }, 400);
+      }
+      t.lead = { name: next.name, email: next.email || "" };
+      next.role = next.role || "מוביל/ה";
+      await mail(next.email, `את/ה מוביל/ה עכשיו את קבוצת המשימה: ${t.title}`,
+        [`שלום ${next.name},`, `${m.name} יצא/ה מקבוצת המשימה "${t.title}" והעביר/ה אליך את ההובלה.`, "בקשות הצטרפות חדשות יגיעו מעכשיו אליך."],
+        ["לאתר", `${site}/calls#teams`]);
+    }
+    t.members = t.members.filter(x => x !== m);
+    t.messages.push({ id: newItemId(), name: m.name, text: "יצא/ה מהקבוצה.", at });
+    await saveTeam(t);
+    return json({ ok: true, left: true });
+  }
+
+  // מחיקת המרחב: רק המוביל/ה, עם המייל שאיתו הקבוצה הוקמה. המחיקה סופית.
+  if (action === "delete") {
+    if (!t.lead.email || norm(body.email) !== norm(t.lead.email))
+      return json({ error: "forbidden", message: "רק מי שמוביל/ה את הקבוצה יכול/ה למחוק את המרחב, עם המייל שאיתו הקבוצה הוקמה." }, 403);
+    await deleteTeam(t.id);
+    for (const x of t.members) {
+      if (norm(x.email) === norm(t.lead.email)) continue;
+      await mail(x.email, `מרחב העבודה "${t.title}" נמחק`,
+        [`שלום ${x.name},`, `${t.lead.name} מחק/ה את מרחב העבודה של קבוצת המשימה "${t.title}".`, "הקישור למרחב כבר לא פעיל."]);
+    }
+    return json({ ok: true, deleted: true });
+  }
 
   switch (action) {
     case "section-save": {
