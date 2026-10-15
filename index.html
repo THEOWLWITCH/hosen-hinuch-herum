@@ -3604,6 +3604,172 @@ html[data-page="tasks"] #tasks{display:block!important}
   window.hosenAriadne={wordProposal(t,c){wordFile(t.title,proposalBody(t,c,{roles:true,empty:false}))}};
 })();
 </script>
+<style id="survey-v1">
+.sv-card{margin:16px 0 0;padding:18px 20px;border:1px solid #e0d3b3;border-radius:14px;background:linear-gradient(135deg,#fffaf0 0%,#f1f7f9 100%);display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between}
+.sv-card h3{margin:0;font-size:19px;color:#173b5d}
+.sv-card p{margin:4px 0 0;color:#4f6577;font-size:14px;max-width:60ch}
+.sv-card button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:10px 20px;background:#8A1F3D;color:#fff;cursor:pointer;white-space:nowrap}
+.sv-card button:hover{background:#731933}
+.sv{color:#1f4256;font-size:14.5px;line-height:1.6}
+.sv h2{margin:0 0 4px;color:#173b5d}
+.sv .sv-lede{margin:0 0 10px;color:#4f6577}
+.sv-ideas{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.sv-idea{border:1px solid #d7e3e7;border-radius:12px;padding:12px 14px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:start}
+.sv-idea.on{border-color:#9fbfcd;background:#f6fafb}
+.sv-idea.star{border-color:#d9b25f;background:#fffaf0}
+.sv-idea strong{font-size:15.5px;color:#173b5d}
+.sv-idea p{margin:3px 0 0;color:#3d5566}
+.sv-pick{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.sv-pick label{display:flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap;border:1px solid #d7e3e7;border-radius:999px;padding:4px 11px;cursor:pointer;background:#fff}
+.sv-pick input{margin:0}
+.sv textarea{width:100%;min-height:90px;font:inherit;border:1px solid #d7e3e7;border-radius:10px;padding:10px;box-sizing:border-box}
+.sv .sv-note{font-size:12.5px;color:#5f7686;margin:6px 0 0}
+.sv .sv-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.sv .sv-err{color:#a23b3b;font-size:13px}
+.sv table{border-collapse:collapse;width:100%;font-size:13.5px}
+.sv th,.sv td{border:1px solid #d6e2e8;padding:6px 8px;text-align:right;vertical-align:top}
+.sv th{background:#1f4256;color:#fff}
+.sv td.n{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sv .sv-bar{height:8px;border-radius:4px;background:#c9973a;margin-top:4px}
+@media screen and (max-width:640px){.sv-idea{grid-template-columns:1fr}.sv-pick{flex-direction:row;flex-wrap:wrap}}
+</style>
+<script id="survey-v1-js">
+/* סקר רעיונות לאתר: בעילום שם, בלי עלות. נשמר בשרת של האתר (/api/survey), והתוצאות רק למנהלת המערכת. */
+(function(){
+  const IDEAS=[
+    ['ask','בקשה ממוקדת אחת בשבוע','פעם בשבוע האתר שולח לחבר/ה אחד/ת שאלה קטנה שמתאימה לתחום שלו/ה: למשל להוסיף שני משפטים על מחקר חדש בספרייה, או להמליץ על מקור. תשובה של דקה, שמופיעה באתר עם קרדיט.'],
+    ['onboard','קליטה של חברים/ות חדשים/ות','מי שמצטרף/ת לקהילה מקבל/ת חבר/ה מלווה לחודש הראשון, ומשימה ראשונה קטנה כבר בשבוע הראשון: לעדכן את הכרטיס, להציע מקור לספרייה או להצטרף לרעיון למחקר.'],
+    ['path','מסלול השתתפות גלוי בכרטיס','בכרטיס בנבחרת יופיע מה כל אחד/ת עשה/תה בקהילה: הגיב/ה לדיון, הציע/ה מקור, כתב/ה בקבוצת משימה, הוביל/ה קבוצה. כך התרומה נראית, וקל לדעת למי לפנות.'],
+    ['credit','קרדיט אקדמי לעבודה משותפת','תוצרים של הקהילה (סקירות, ניירות עמדה, כלים) יקבלו DOI חינמי במאגר Zenodo, עם רשימת התורמים/ות לפי תפקידי CRediT. כך עבודה משותפת נספרת גם בקורות החיים האקדמיים.'],
+    ['orcid','מפת מומחיות, בהסכמה','מי שרוצה מחבר/ת לכרטיס את מזהה ה-ORCID, והאתר מציג את הפרסומים. כך אפשר לחפש "מי בקהילה פרסם/ה על..." ולמצוא שותפים/ות. רק למי שבוחר/ת בזה.'],
+    ['cases','בנק מקרים מתחקירים אחרי פעולה','תבנית של 15 דקות לתיעוד אירוע מהשטח: מה תוכנן, מה קרה, למה, ומה נעשה בפעם הבאה. המקרים נשמרים בלי פרטים מזהים, ומשמשים להוראה, להכשרה ולמחקר.'],
+    ['problems','בנק בעיות מהשטח','מנהלים/ות, רשויות ועמותות מעלים/ות בעיה שמעסיקה אותם/ן, והקהילה מצביעה. הבעיות שקיבלו הכי הרבה קולות הופכות לרעיונות מחקר ולקבוצות משימה.'],
+    ['measures','ספריית כלי מדידה משותפת','שאלונים, סולמות וכלי תצפית בעברית ובערבית, עם מידע על התיקוף ועל מי השתמש/ה בהם. חוסך חיפוש מחדש בכל מחקר, ומאפשר להשוות בין מחקרים.'],
+    ['stewards','נאמנים/ות תחום מתחלפים/ות','לכל תחום (מוכנות, חוסן, רציפות למידה, צוותי חינוך, AI בחירום) שני חברים/ות לחצי שנה, שעוקבים/ות אחרי החדש בתחום ומציגים/ות אותו לקהילה. אחר כך התפקיד עובר הלאה.'],
+    ['pulse','דופק חודשי "לתת ולקבל"','פעם בחודש טופס של 5 דקות: תצפית מהשטח, משאב שכדאי להכיר או שאלה לקהילה. התשובות מתפרסמות עם קרדיט, ומראות מה קורה עכשיו בשטח.'],
+    ['codesign','מעגל עיצוב משותף','פעם ברבעון מפגש מקוון של 45 דקות שבו חברי/ות הקהילה בוחרים/ות את התכונה הבאה באתר, ובוחנים/ות מה עובד ומה לא.'],
+    ['open','תוצרים פתוחים ברישיון CC BY','תוצרים מאושרים של הקהילה יתפרסמו ברישיון פתוח: כל אחד/ת יכול/ה להשתמש בהם ולהפיץ אותם עם קרדיט. הם יישמרו לטווח ארוך במאגר Zenodo.'],
+    ['gadrrres','מסגרת GADRRRES כשפה משותפת','מסגרת בינלאומית לבטיחות בית ספרית מקיפה: מבנים בטוחים, ניהול בית הספר בחירום, וחינוך להפחתת סיכונים. שפה משותפת בהצעות מחקר מקלה על שיתוף פעולה ועל הגשה לקרנות בינלאומיות.'],
+    ['langs','שוויון שפות במפגשים','במפגשי הקהילה שפת ההובלה מתחלפת בין עברית, ערבית ואנגלית, וחברים/ות מתרגמים/ות זה לזה. כך כולם/ן נכנסים/ות לשיחה.']
+  ];
+  const DONE='hosen.survey.ideas2026.done';
+  const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const done=()=>{try{return !!localStorage.getItem(DONE)}catch(e){return false}};
+  function modal(html){
+    const m=document.createElement('div');m.className='nv-modal';
+    m.innerHTML=`<div class="nv-dialog wide" role="dialog" aria-modal="true" dir="rtl"><button type="button" class="nv-x" aria-label="סגירה">×</button><div class="sv">${html}</div></div>`;
+    const close=()=>{m.remove();document.removeEventListener('keydown',esc)};
+    const esc=e=>{if(e.key==='Escape')close()};
+    m.addEventListener('click',e=>{if(e.target===m||e.target.classList.contains('nv-x'))close()});
+    document.addEventListener('keydown',esc);document.body.appendChild(m);m.close=close;return m;
+  }
+
+  function openSurvey(){
+    const opened=Date.now();
+    if(done()){modal('<h2>✓ כבר השתתפת בסקר</h2><p>תודה! אפשר לשלוח עוד רעיונות בכפתור "בקשות / תיקונים / רעיונות / תקלות" בתחתית האתר.</p>');return}
+    const m=modal(`<h2>💡 מה תרצו שיהיה באתר?</h2>
+      <p class="sv-lede">רעיונות מהעבודה עם יועצים/ות מהעולם. כולם אפשריים בלי עלות נוספת. אפשר לסמן כל רעיון שהייתם רוצים, ועד שלושה כ"הכי חשוב לי". <strong>הסקר בעילום שם:</strong> לא נשמרים שם, מייל או כתובת.</p>
+      <form>
+        <div class="sv-ideas">${IDEAS.map(([k,t,d])=>`<div class="sv-idea" data-k="${k}"><div><strong>${h(t)}</strong><p>${h(d)}</p></div>
+          <div class="sv-pick"><label><input type="checkbox" name="want" value="${k}"> הייתי רוצה את זה</label><label><input type="checkbox" name="top" value="${k}"> ⭐ הכי חשוב לי</label></div></div>`).join('')}</div>
+        <label for="svIdeas"><strong>רעיונות משלך</strong> (רשות)</label>
+        <textarea id="svIdeas" name="ideas" dir="auto" placeholder="מה עוד היה עוזר לך באתר או בקהילה?"></textarea>
+        <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
+        <div class="sv-row"><button class="nv-btn primary">שליחה</button><span class="sv-err" data-err></span></div>
+      </form>`);
+    const f=m.querySelector('form'),err=m.querySelector('[data-err]');
+    f.addEventListener('change',e=>{
+      const el=e.target,card=el.closest('.sv-idea');if(!card)return;
+      const want=card.querySelector('[name=want]'),top=card.querySelector('[name=top]');
+      if(el.name==='top'&&el.checked){
+        if(f.querySelectorAll('[name=top]:checked').length>3){el.checked=false;err.textContent='אפשר לבחור עד שלושה כ"הכי חשוב לי".';return}
+        want.checked=true;
+      }
+      if(el.name==='want'&&!el.checked)top.checked=false;
+      err.textContent='';
+      card.classList.toggle('on',want.checked);card.classList.toggle('star',top.checked);
+    });
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();err.textContent='';
+      const body={want:[...f.querySelectorAll('[name=want]:checked')].map(i=>i.value),top:[...f.querySelectorAll('[name=top]:checked')].map(i=>i.value),ideas:f.elements.ideas.value.trim(),website:f.elements.website.value,elapsed:Date.now()-opened};
+      if(!body.want.length&&!body.ideas){err.textContent='נשמח לסימון של רעיון אחד לפחות, או לרעיון משלך.';return}
+      const btn=f.querySelector('button');btn.disabled=true;btn.textContent='שולח…';
+      try{
+        const r=await fetch('/api/survey',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+        const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||'השליחה לא הצליחה. אפשר לנסות שוב.');
+        try{localStorage.setItem(DONE,'1')}catch(_){}
+        m.querySelector('.sv').innerHTML='<h2>✓ תודה!</h2><p>התשובות נשמרו בעילום שם. נעדכן את הקהילה במה שנבחר.</p>';
+        document.querySelector('.sv-card button')?.replaceWith(Object.assign(document.createElement('span'),{textContent:'✓ השתתפת בסקר. תודה!'}));
+      }catch(x){err.textContent=x.message;btn.disabled=false;btn.textContent='שליחה'}
+    });
+  }
+
+  // ---------- תוצאות: למנהלת המערכת ----------
+  const INVITE_SUBJECT='מה תרצו שיהיה באתר הקהילה? סקר קצר, בעילום שם';
+  const INVITE_BODY=`שלום,
+
+בחודשים האחרונים חשבנו, יחד עם יועצים ויועצות מהעולם, איך להפוך את האתר לקהילה אקדמית־מקצועית חיה יותר. בחרנו 14 רעיונות שאפשר לבנות בלי עלות נוספת, ועכשיו נשמח לדעת מה חשוב לך.
+
+- מסמנים כל רעיון שהיית רוצה, ועד שלושה כ"הכי חשוב לי"
+- אפשר להוסיף רעיונות משלך
+- הסקר בעילום שם: לא נשמרים שם, מייל או כתובת
+- זה לוקח כ-3 דקות
+
+לסקר: https://hosen-hinuch-herum.netlify.app/#survey
+
+תודה,
+ד״ר יעל שדה`;
+  async function openResults(){
+    const tok=(()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}})();
+    const m=modal('<p>טוען…</p>');const root=m.querySelector('.sv');
+    let d;
+    try{const r=await fetch('/api/survey',{headers:{Authorization:'Bearer '+tok}});if(r.status===401)throw new Error('פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".');d=await r.json()}
+    catch(e){root.innerHTML=`<h2>סקר רעיונות</h2><p class="sv-err">${h(e.message)}</p>`;return}
+    const rows=IDEAS.map(([k,t])=>({k,t,...(d.tally[k]||{want:0,top:0})})).sort((a,b)=>b.top-a.top||b.want-a.want);
+    const max=Math.max(1,...rows.map(r=>r.want));
+    root.innerHTML=`<h2>📋 סקר רעיונות לאתר</h2><p class="sv-lede"><strong>${d.responses}</strong> השיבו. ממוין לפי "הכי חשוב לי", ואחר כך לפי "הייתי רוצה".</p>
+      <div style="overflow-x:auto"><table><thead><tr><th>הרעיון</th><th>⭐ הכי חשוב</th><th>הייתי רוצה</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${h(r.t)}<div class="sv-bar" style="width:${Math.round(r.want/max*100)}%"></div></td><td class="n">${r.top}</td><td class="n">${r.want}</td></tr>`).join('')}</tbody></table></div>
+      <h3 style="margin:18px 0 6px">רעיונות שנכתבו (${d.ideas.length})</h3>${d.ideas.length?`<ul>${d.ideas.map(x=>`<li dir="auto">${h(x.text)} <span class="sv-note">(${h(x.at)})</span></li>`).join('')}</ul>`:'<p class="sv-note">עדיין אין.</p>'}
+      <div class="sv-row"><button type="button" class="nv-btn" data-csv>⬇ הורדה לאקסל (CSV)</button><button type="button" class="nv-btn primary" data-invite>✉ הזמנה אישית לכל הקהילה</button><button type="button" class="nv-btn" data-copy>🔗 העתקת הקישור לסקר</button></div>
+      <p class="sv-note">ההזמנה נפתחת בחלון "עדכון אישי לקהילה", עם נוסח מוכן לעריכה. כל אחד/ת מקבל/ת מייל שנפתח בשמו/ה, והקישור זהה לכולם, ולכן הסקר נשאר בעילום שם.</p>`;
+    root.querySelector('[data-csv]').onclick=()=>{
+      const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+      const csv=['הרעיון,הכי חשוב לי,הייתי רוצה',...rows.map(r=>[q(r.t),r.top,r.want].join(',')),'','רעיונות שנכתבו,תאריך',...d.ideas.map(x=>[q(x.text),x.at].join(','))].join('\r\n');
+      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));a.download='סקר רעיונות לאתר.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+    };
+    root.querySelector('[data-copy]').onclick=e=>{const link=location.origin+'/#survey';navigator.clipboard.writeText(link).then(()=>e.target.textContent='✓ הועתק',()=>prompt('הקישור לסקר:',link))};
+    root.querySelector('[data-invite]').onclick=()=>{
+      try{localStorage.setItem('hosen.communityMail.draft',JSON.stringify({subject:INVITE_SUBJECT,body:INVITE_BODY}))}catch(e){}
+      m.close();if(typeof window.openCommunityMail==='function')window.openCommunityMail();
+    };
+  }
+  window.hosenSurveyResults=openResults;
+
+  function addAdminTab(){
+    const tabs=document.getElementById('adminTabs');
+    if(!tabs||document.getElementById('tabSurvey'))return;
+    if(typeof currentAccessRole!=='undefined'&&currentAccessRole!=='admin')return;
+    const b=document.createElement('button');b.id='tabSurvey';b.type='button';b.textContent='סקר רעיונות';
+    b.onclick=()=>{if(typeof closeAdmin==='function')closeAdmin();openResults()};
+    tabs.appendChild(b);
+  }
+  function mountCard(){
+    const host=document.querySelector('#now .top-now-content');
+    if(!host||document.querySelector('.sv-card'))return;
+    const c=document.createElement('div');c.className='sv-card';
+    c.innerHTML=`<div><h3>💡 מה תרצו שיהיה באתר?</h3><p>14 רעיונות לקהילה, בלי עלות נוספת. מסמנים מה הייתם רוצים, ומוסיפים רעיונות משלכם. בעילום שם, כ-3 דקות.</p></div>`+(done()?'<span>✓ השתתפת בסקר. תודה!</span>':'<button type="button">לסקר</button>');
+    c.querySelector('button')?.addEventListener('click',openSurvey);
+    const strip=host.querySelector('.join-strip');strip?host.insertBefore(c,strip):host.appendChild(c);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    mountCard();
+    const tabs=document.getElementById('adminTabs');
+    if(tabs){addAdminTab();new MutationObserver(addAdminTab).observe(tabs,{childList:true})}
+    if(location.hash==='#survey'){history.replaceState(null,'',location.pathname);openSurvey()}
+    window.addEventListener('hashchange',()=>{if(location.hash==='#survey'){history.replaceState(null,'',location.pathname);openSurvey()}});
+  });
+})();
+</script>
 </main>
 <script id="library-admin-v1-js">
 /* ניהול הספרייה המתחדשת: מקורות חדשים לאישור, ומקורות לאיסוף. */
