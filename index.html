@@ -1,6 +1,62 @@
 <!doctype html>
 <html lang="he" dir="rtl">
 <head>
+<script id="member-session">
+/* הקוד האישי גם לפרסום באתר: מי שנכנס/ה עם הקוד האישי לא צריך/ה את קוד הקהילה.
+   כל פנייה לשרת (/api/) יוצאת עם האסימון האישי, ושדה קוד הקהילה מתחלף בשורה "מחובר/ת עם הקוד האישי".
+   מי שלא נכנס/ה יכול/ה להקליד בשדה גם את הקוד האישי. */
+(function(){
+  const KEY='hosen_member_token',NAME='hosen_member_name',SENT='__member__';
+  const get=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+  const tok=()=>get(KEY);
+  const _fetch=window.fetch.bind(window);
+  window.fetch=function(input,init){
+    try{
+      const url=typeof input==='string'?input:(input&&input.url)||'';
+      const t=tok();
+      if(t&&/^(\/api\/|https?:\/\/[^/]*\/api\/)/.test(url)&&(!/^https?:/.test(url)||url.startsWith(location.origin))){
+        init=Object.assign({},init||{});
+        const h=new Headers(init.headers||(typeof input!=='string'&&input.headers)||{});
+        if(!h.has('x-member-token'))h.set('x-member-token',t);
+        init.headers=h;
+      }
+    }catch(e){}
+    return _fetch(input,init);
+  };
+  const fields=root=>[...(root||document).querySelectorAll('input[name="communityCode"],#boardCode')];
+  function decorate(){
+    const on=!!tok(),name=get(NAME);
+    for(const i of fields()){
+      const label=i.closest('label')||i.parentElement;
+      i.setAttribute('inputmode','text');i.autocomplete='off';
+      let note=label.previousElementSibling&&label.previousElementSibling.classList.contains('mc-on')?label.previousElementSibling:null;
+      if(on){
+        if(i.value!==SENT){i.dataset.mcKeep=i.value;i.value=SENT}
+        i.required=false;label.style.display='none';
+        if(!note){note=document.createElement('div');note.className='mc-on'+(label.classList.contains('wide')?' wide':'');label.before(note)}
+        note.textContent=`✓ מחובר/ת עם הקוד האישי${name?' ('+name+')':''}. אין צורך בקוד הקהילה.`;
+      }else{
+        if(i.value===SENT)i.value='';
+        label.style.display='';if(note)note.remove();
+        if(!label.querySelector('.mc-hint')){const sp=document.createElement('span');sp.className='mc-hint';sp.textContent='אפשר להקליד את קוד הקהילה או את הקוד האישי שלך.';label.appendChild(sp)}
+      }
+    }
+  }
+  // טפסים שמתאפסים אחרי שליחה, ושדה הקוד של לוח ההודעות: ממלאים שוב רגע לפני השליחה.
+  const refill=()=>{if(tok())for(const i of fields())i.value=SENT};
+  document.addEventListener('submit',refill,true);
+  document.addEventListener('click',e=>{if(e.target.closest('button'))refill()},true);
+  window.addEventListener('hosen-member',decorate);
+  document.addEventListener('DOMContentLoaded',()=>{
+    decorate();
+    new MutationObserver(()=>{if(fields().some(i=>!i.dataset.mcSeen)){fields().forEach(i=>i.dataset.mcSeen='1');decorate()}}).observe(document.body,{childList:true,subtree:true});
+    fields().forEach(i=>i.dataset.mcSeen='1');
+    // כניסה שפג תוקפה: חוזרים לשדה הקוד.
+    if(tok())_fetch('/api/member',{headers:{'x-member-token':tok()}}).then(r=>{if(r.status===403){try{localStorage.removeItem(KEY);localStorage.removeItem(NAME)}catch(e){}decorate()}else if(r.ok)return r.json().then(d=>{try{localStorage.setItem(NAME,d.name||'')}catch(e){}decorate()})}).catch(()=>{});
+  });
+})();
+</script>
+<style id="member-session-css">.mc-on{font-size:13px;color:#2f6e4f;background:#eef6f2;border-radius:8px;padding:7px 10px;align-self:end}.mc-hint{display:block;font-size:11px;font-weight:400;color:#6b7d88;margin-top:3px}</style>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>בינה מלאכותית: חוסן-חינוך-חרום</title>
 <style>
@@ -2335,7 +2391,7 @@ body:has(.feedback-modal.open){
   </div>
 
   <div id="research-suggest" class="research-suggest-wrap research-anchor">
-    <div class="research-suggest-head"><div><span>עזרו לנו לאתר ידע חשוב</span><h3>הוספת מאמר או מכון מחקר</h3></div><p>המקור מתפרסם באתר מיד. נדרש קוד הקהילה.</p></div>
+    <div class="research-suggest-head"><div><span>עזרו לנו לאתר ידע חשוב</span><h3>הוספת מאמר או מכון מחקר</h3></div><p>המקור מתפרסם באתר מיד, בקוד הקהילה או בקוד האישי.</p></div>
     <form id="researchSuggestionForm" name="research-suggestions" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="submitResearchSuggestion(event)">
       <input type="hidden" name="form-name" value="research-suggestions">
       <p class="research-honeypot"><label>לא למלא<input name="bot-field"></label></p>
@@ -6756,7 +6812,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   // הקוד נשלח בהצטרפות. הכניסה מחזירה אסימון אישי שנשמר בדפדפן, כך שלא צריך להקליד את הקוד בכל פעם.
   const MKEY='hosen_member_token';
   const memberToken=()=>{try{return localStorage.getItem(MKEY)||''}catch(e){return ''}};
-  const setMemberToken=t=>{try{t?localStorage.setItem(MKEY,t):localStorage.removeItem(MKEY)}catch(e){}};
+  const setMemberToken=(t,name)=>{try{if(t){localStorage.setItem(MKEY,t);if(name)localStorage.setItem('hosen_member_name',name)}else{localStorage.removeItem(MKEY);localStorage.removeItem('hosen_member_name')}}catch(e){}window.dispatchEvent(new Event('hosen-member'))};
   // טופס כניסה בקוד, עם "שכחתי את הקוד" (הקוד נשלח למייל שבכרטיס). onDone מקבל את האסימון.
   function memberLogin(root,title,onDone){
     const opened=Date.now();
@@ -6775,7 +6831,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       e.preventDefault();const code=f.elements.code.value.trim();
       if(code.replace(/[^a-z0-9]/gi,'').length<8){st.className='nv-status err';st.textContent='הקוד בן 8 תווים, למשל AB2C-D3EF.';return}
       const btn=f.querySelector('button');btn.disabled=true;st.className='nv-status';st.textContent='בודקת…';
-      try{const j=await post('/api/member',{action:'login',code});setMemberToken(j.token);onDone(j.token)}
+      try{const j=await post('/api/member',{action:'login',code});setMemberToken(j.token,j.name);onDone(j.token)}
       catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
     });
     const rf=root.querySelector('[data-recover]'),rst=root.querySelector('[data-rst]');

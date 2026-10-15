@@ -1,7 +1,8 @@
 import type { Config } from "@netlify/functions";
-import { communityCodeOK, issueMemberToken, json, looksHuman, memberFromToken, store, validToken } from "../lib/shared.mts";
+import { issueMemberToken, json, looksHuman, memberFromToken, store, validToken } from "../lib/shared.mts";
 import { THEME_LABELS, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addRequest } from "../lib/requests.mts";
+import { communityOK } from "../lib/member-code.mts";
 import { createTeam, hashKey as teamHash, newKey as teamKey, saveTeam } from "../lib/teams.mts";
 import {
   KINDS, STATUS_LABELS, type CollabStatus, clip, cleanKinds, createCollab, deleteCollab, getCollab, hashKey, isDate, listCollabs, newKey,
@@ -140,7 +141,7 @@ export default async (req: Request) => {
   // ----- בקשה חדשה לשיתוף פעולה: מתפרסמת מיד, בקוד הקהילה -----
   if (action === "create") {
     if (!looksHuman(body)) return json({ ok: true });
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה לא תואם. אפשר לבדוק ולנסות שוב." }, 401);
+    if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד לא תואם. אפשר להקליד את קוד הקהילה או את הקוד האישי, ולנסות שוב." }, 401);
     const f = {
       name: clip(body.name, 160), email: clip(body.email, 240), personId: clip(body.personId, 80),
       title: clip(body.title, 200), kinds: cleanKinds(body.kinds), description: clip(body.description, 3000), need: clip(body.need, 800), deadline: clip(body.deadline, 10),
@@ -312,7 +313,7 @@ export default async (req: Request) => {
   // הצטרפות לרשימת היוזמים: לחברי הקהילה בלבד, בקוד הקהילה (ועם הגנה מספאם).
   if (action === "research-join") {
     if (!looksHuman(body)) return json({ ok: true });
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה לא תואם. אפשר לבדוק ולנסות שוב." }, 401);
+    if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד לא תואם. אפשר להקליד את קוד הקהילה או את הקוד האישי, ולנסות שוב." }, 401);
     const name = clip(body.name, 160), email = clip(body.email, 240), note = clip(body.note, 800);
     if (!name || !validEmail(email)) return json({ error: "missing", message: "כדי להצטרף, נשמח לשם ולמייל." }, 400);
     const r = await getResearch(clip(body.id, 80));
@@ -327,7 +328,7 @@ export default async (req: Request) => {
   // פתיחת מרחב עבודה מתוך הרעיון: קבוצת משימה בעמוד שיתופי פעולה, עם כל היוזמים. בקוד הקהילה, כמו כל קבוצה.
   if (action === "research-team") {
     if (!looksHuman(body)) return json({ ok: true });
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה לא תואם. אפשר לבדוק ולנסות שוב." }, 401);
+    if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד לא תואם. אפשר להקליד את קוד הקהילה או את הקוד האישי, ולנסות שוב." }, 401);
     const name = clip(body.name, 160), email = clip(body.email, 240);
     if (!name || !validEmail(email)) return json({ error: "missing", message: "כדי לפתוח מרחב עבודה, נשמח לשם ולמייל." }, 400);
     const r = await getResearch(clip(body.id, 80));

@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
-import { cleanLinks, communityCodeOK, id, json, store } from "../lib/shared.mts";
+import { cleanLinks, id, json, store } from "../lib/shared.mts";
+import { communityOK } from "../lib/member-code.mts";
 import { addRequest, updateRequest } from "../lib/requests.mts";
 
 function clean(v: unknown, max = 4000) {
@@ -22,7 +23,7 @@ export default async (req: Request) => {
   if (req.method !== "POST") return json({ error: "method" }, 405);
   const body = await req.json().catch(() => ({} as any));
   if (body["bot-field"]) return json({ ok: true });
-  if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+  if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד שגוי. אפשר להקליד את קוד הקהילה או את הקוד האישי." }, 401);
 
   const institute = clean(body.suggestionType, 80) === "מכון";
   const category = institute ? "research-institute" : SECTION_CATEGORY[clean(body.targetSection, 120)];

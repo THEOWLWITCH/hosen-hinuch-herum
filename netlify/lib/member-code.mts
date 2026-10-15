@@ -1,5 +1,5 @@
-import { store } from "./shared.mts";
-import { sendMail } from "./calls.mts";
+import { communityCodeOK, memberFromToken, store } from "./shared.mts";
+import { loadPeople, sendMail } from "./calls.mts";
 
 // קוד אישי לחברות וחברי הקהילה: נכנסים איתו לעדכון הכרטיס, בלי קישור במייל.
 // הקוד נשמר מוצפן (כדי שאפשר יהיה לשלוח אותו שוב לפי המייל), ואינדקס לפי גיבוב
@@ -115,4 +115,22 @@ export async function codeMail(p: { name: string; email?: string }, code: string
     : `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>👤 לכרטיס שלי</strong></a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
   const subject = kind === "recover" ? "הקוד האישי שלך לאתר הקהילה" : kind === "welcome" ? "ברוכים הבאים לקהילה: הקוד האישי שלך" : "קוד אישי לעדכון הכרטיס שלך באתר הקהילה";
   await sendMail(String(p.email), subject, html, lines.join("\n\n") + `\n\nלכרטיס שלי: ${link}`);
+}
+
+// פרסום באתר: קוד הקהילה, או הקוד האישי במקומו, או כניסה קיימת עם הקוד האישי
+// (האסימון בכותרת x-member-token, שהדפדפן מוסיף לבד). הכרטיס צריך להיות קיים בנבחרת,
+// כך שמי שהוסר/ה מהנבחרת לא מפרסם/ת בקוד הישן.
+export const MEMBER_SENTINEL = "__member__";
+export async function memberIdFromRequest(req: Request, code?: unknown): Promise<string | null> {
+  const c = String(code ?? "").trim();
+  let pid = c && c !== MEMBER_SENTINEL ? await pidFromCode(c) : null;
+  if (!pid) pid = await memberFromToken(String(req.headers.get("x-member-token") || "").slice(0, 400));
+  if (!pid) return null;
+  const people = await loadPeople(new URL(req.url).origin);
+  return people.some(p => p.id === pid) ? pid : null;
+}
+
+export async function communityOK(req: Request, code: unknown): Promise<boolean> {
+  if (communityCodeOK(code)) return true;
+  return !!(await memberIdFromRequest(req, code));
 }

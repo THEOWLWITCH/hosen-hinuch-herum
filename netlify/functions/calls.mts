@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
-import { communityCodeOK, json, looksHuman, tokenRole, validToken } from "../lib/shared.mts";
+import { json, looksHuman, tokenRole, validToken } from "../lib/shared.mts";
+import { communityOK } from "../lib/member-code.mts";
 import { addRequest } from "../lib/requests.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
@@ -103,7 +104,7 @@ export default async (req: Request) => {
     const title = t(body.title, 300), url = t(body.url, 1200);
     // בקוד הקהילה: עולה לאתר מיד, וגם עם מסמכים מצורפים במקום קישור.
     if (String(body.communityCode || "").trim()) {
-      if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי. אפשר לשלוח גם בלי קוד, והקול הקורא יעלה לאתר בפרסום השבועי." }, 401);
+      if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד שגוי (קוד הקהילה או הקוד האישי). אפשר לשלוח גם בלי קוד, והקול הקורא יעלה לאתר בפרסום השבועי." }, 401);
       if (!title) return json({ error: "missing_fields", message: "נשמח לכותרת." }, 400);
       try {
         const r = await publishMemberCall({ title, url, endDate: t(body.endDate, 10), funder: t(body.funder, 200), description: t(body.description, 3000), name, email: t(body.email, 240), files: body.files });
@@ -124,7 +125,7 @@ export default async (req: Request) => {
 
   // ----- עריכה בקוד הקהילה, מתוך הכרטיס: רק קול קורא שחברת קהילה העלתה -----
   if (action === "member-edit") {
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד שגוי. אפשר להקליד את קוד הקהילה או את הקוד האישי." }, 401);
     const c = await getCall(t(body.id, 80));
     if (!c) return json({ error: "not_found", message: "הקול הקורא לא נמצא. אולי הוא כבר הוסר." }, 404);
     if (c.source !== "member") return json({ error: "forbidden", message: "בקוד הקהילה אפשר לערוך רק קול קורא שחברות הקהילה העלו." }, 403);

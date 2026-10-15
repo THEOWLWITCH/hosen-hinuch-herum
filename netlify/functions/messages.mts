@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { cleanLinks, id, json, store, validToken, type LinkItem } from "../lib/shared.mts";
+import { communityOK } from "../lib/member-code.mts";
 
 type Attachment = { key:string; name:string; type?:string; size?:number };
 type Message = {
@@ -24,10 +25,6 @@ function cleanAttachments(v: any): Attachment[] {
 function dataStore(){ return store("hosen-data"); }
 function fileStore(){ return store("hosen-files"); }
 
-function pinOK(code: unknown) {
-  const expected = Netlify.env.get("BOARD_CODE") || "";
-  return !!expected && String(code || "") === expected;
-}
 
 async function listAll(): Promise<Message[]> {
   const st = dataStore();
@@ -73,7 +70,7 @@ export default async (req: Request) => {
   if (req.method === "POST") {
     const body = await req.json();
     const tokenOK = await validToken(req, ["admin","uploader"]);
-    if (!pinOK(body.code) && !tokenOK) return json({ error:"invalid_code" }, 401);
+    if (!(await communityOK(req, body.code)) && !tokenOK) return json({ error:"invalid_code" }, 401);
 
     const now = new Date();
     const expiresText = String(body.expiresAt || "").trim();

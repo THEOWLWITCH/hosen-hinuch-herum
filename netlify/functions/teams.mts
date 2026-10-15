@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
-import { communityCodeOK, json, looksHuman, validToken } from "../lib/shared.mts";
+import { json, looksHuman, validToken } from "../lib/shared.mts";
+import { communityOK } from "../lib/member-code.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, listTeams, newItemId, newKey,
@@ -53,7 +54,7 @@ export default async (req: Request) => {
   if (action === "create" || action === "join") {
     if (!looksHuman(body)) return json({ ok: true });
     // הקמת קבוצה מתפרסמת מיד — בקוד הקהילה. בקשת הצטרפות מגיעה לאישור המובילה — בלי קוד.
-    if (action === "create" && !communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    if (action === "create" && !(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד שגוי. אפשר להקליד את קוד הקהילה או את הקוד האישי." }, 401);
     const name = clip(body.name, 160);
     const email = clip(body.email, 240);
     if (!name || !email.includes("@")) return json({ error: "missing_fields", message: "נא למלא שם ומייל." }, 400);
@@ -94,7 +95,7 @@ export default async (req: Request) => {
   // ----- הצטרפות ישירה לצוות: חברות הקהילה, בקוד הקהילה -----
   if (action === "join-direct") {
     if (!looksHuman(body)) return json({ ok: true });
-    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    if (!(await communityOK(req, body.communityCode))) return json({ error: "invalid_code", message: "הקוד שגוי. אפשר להקליד את קוד הקהילה או את הקוד האישי." }, 401);
     const name = clip(body.name, 160);
     const email = clip(body.email, 240);
     if (!name || !email.includes("@")) return json({ error: "missing_fields", message: "נשמח לשם ולמייל." }, 400);

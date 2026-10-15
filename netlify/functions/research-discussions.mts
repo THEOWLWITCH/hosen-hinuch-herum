@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { id, json, store, validToken } from "../lib/shared.mts";
+import { communityOK } from "../lib/member-code.mts";
 
 type Discussion = {
   id: string;
@@ -14,11 +15,6 @@ type Discussion = {
 };
 
 const discussionStore = () => store("hosen-data");
-
-function codeOK(code: unknown) {
-  const expected = Netlify.env.get("BOARD_CODE") || "";
-  return !!expected && String(code || "") === expected;
-}
 
 function clean(value: unknown, max: number) {
   return String(value ?? "").trim().slice(0, max);
@@ -51,8 +47,8 @@ export default async (req: Request) => {
   if (req.method === "POST") {
     const body = await req.json().catch(() => ({}));
     const tokenOK = await validToken(req, "admin");
-    if (!tokenOK && !codeOK(body.communityCode)) {
-      return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    if (!tokenOK && !(await communityOK(req, body.communityCode))) {
+      return json({ error: "invalid_code", message: "הקוד שגוי. אפשר להקליד את קוד הקהילה או את הקוד האישי." }, 401);
     }
 
     const week = clean(body.week, 20);

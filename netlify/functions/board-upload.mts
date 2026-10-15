@@ -1,10 +1,7 @@
 import type { Config } from "@netlify/functions";
 import { id, json, safeName, store, validToken } from "../lib/shared.mts";
+import { communityOK } from "../lib/member-code.mts";
 
-function pinOK(code: unknown) {
-  const expected = Netlify.env.get("BOARD_CODE") || "";
-  return !!expected && String(code || "") === expected;
-}
 
 function allowed(name: string, type: string) {
   const ext = (name.split(".").pop() || "").toLowerCase();
@@ -20,7 +17,7 @@ export default async (req: Request) => {
 
   const form = await req.formData();
   const tokenOK = await validToken(req, ["admin","uploader"]);
-  if (!pinOK(form.get("code")) && !tokenOK) return json({ error: "invalid_code" }, 401);
+  if (!(await communityOK(req, form.get("code"))) && !tokenOK) return json({ error: "invalid_code" }, 401);
 
   const f = form.get("file");
   if (!(f instanceof File)) return json({ error: "missing_file" }, 400);
