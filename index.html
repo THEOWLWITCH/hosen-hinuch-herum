@@ -3394,7 +3394,7 @@ html[data-page="tasks"] #tasks{display:block!important}
         if(!t)return {empty:'אין קבוצה זמינה בדפדפן הזה.'};
         return {title:t.title,body:proposalBody(t,null,o)};
       }},
-    abstract:{group:'write',icon:'🌐',title:'תקציר בעברית, בערבית ובאנגלית',desc:'כתיבה ותרגום של תקציר בשלוש שפות. דורש מודל שפה, ולכן עלות נוספת.',cost:'model',
+    abstract:{group:'write',icon:'🌐',title:'תקציר בעברית, בערבית ובאנגלית',desc:'תקציר אחד בעברית, בערבית ובאנגלית.',cost:'model',
       reason:'כתיבה ותרגום של תקציר דורשים מודל שפה.',
       free:{label:'תבנית ריקה לתקציר בשלוש שפות',run(){
         const L=[['עברית','rtl',['רקע','מטרה','שיטה','ממצאים','מסקנות','מילות מפתח']],['العربية','rtl',['الخلفية','الهدف','المنهجية','النتائج','الاستنتاجات','الكلمات المفتاحية']],['English','ltr',['Background','Aims','Method','Findings','Conclusions','Keywords']]];
@@ -3456,7 +3456,7 @@ html[data-page="tasks"] #tasks{display:block!important}
       <form class="tf-ask" id="tfAsk"><textarea name="ask" rows="1" dir="auto" placeholder="מה תרצו לעשות? למשל: רשימת מקורות APA על רציפות למידה מ-2020" aria-label="מה תרצו לעשות"></textarea><button class="tf-btn primary">חיפוש משימה</button></form>
       <div id="tfAskOut"></div></div>
       ${mine.length?`<div class="tf-group"><h3>⭐ המשימות שלי</h3><div class="tf-mine">${mine.map(m=>`<div><button type="button" class="tf-btn small" data-act="mine-run" data-id="${h(m.id)}">${h(TASKS[m.task]?.icon||'')} ${h(m.name)}</button><button type="button" class="tf-btn small danger" data-act="mine-del" data-id="${h(m.id)}" aria-label="מחיקת המשימה ${h(m.name)}">✕</button></div>`).join('')}</div></div>`:''}
-      ${GROUPS.map(([gk,gl])=>`<div class="tf-group"><h3>${gl}</h3><div class="tf-grid">${Object.entries(TASKS).filter(([,t])=>t.group===gk).map(([k,t])=>`<button type="button" class="tf-card" data-act="open" data-task="${k}"><span class="tf-tag ${t.cost==='model'?'paid':'free'}">${t.cost==='model'?'דורשת מודל · עלות נוספת':'חינם'}</span><strong>${t.icon} ${h(t.title)}</strong><span>${h(t.desc)}</span></button>`).join('')}</div></div>`).join('')}`;
+      ${GROUPS.map(([gk,gl])=>`<div class="tf-group"><h3>${gl}</h3><div class="tf-grid">${Object.entries(TASKS).filter(([,t])=>t.group===gk).map(([k,t])=>`<button type="button" class="tf-card" data-act="open" data-task="${k}"><strong>${t.icon} ${h(t.title)}</strong><span>${h(t.desc)}</span></button>`).join('')}</div></div>`).join('')}`;
     S.task='';
   }
   function stopBox(reason,text,alt){
@@ -3481,7 +3481,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     if(t.live)renderPicker();
     window.scrollTo({top:root.getBoundingClientRect().top+scrollY-80,behavior:'smooth'});
   }
-  function panelHead(t){return `<p style="margin:0 0 8px"><button type="button" class="tf-btn small" data-act="home">→ כל המשימות</button></p><div class="tf-panel"><div class="tf-panel-head"><div><h2 style="font-size:21px">${t.icon} ${h(t.title)}</h2><p>${h(t.desc)}</p></div><span class="tf-tag ${t.cost==='model'?'paid':'free'}">${t.cost==='model'?'דורשת מודל · עלות נוספת':'חינם'}</span></div>`}
+  function panelHead(t){return `<p style="margin:0 0 8px"><button type="button" class="tf-btn small" data-act="home">→ כל המשימות</button></p><div class="tf-panel"><div class="tf-panel-head"><div><h2 style="font-size:21px">${t.icon} ${h(t.title)}</h2><p>${h(t.desc)}</p></div></div>`}
   function readForm(f){
     const t=TASKS[S.task],o={...S.opts};
     for(const el of f.querySelectorAll('[name]')){
