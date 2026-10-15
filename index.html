@@ -4496,6 +4496,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${archived?'':`<div class="ch-card-actions">
         ${c.url||c.fileUrl?`<a class="ch-btn small primary" href="${h(c.url||c.fileUrl)}" target="_blank" rel="noopener">לפרטים ולהגשה</a>`:''}
         ${c.endDate?`<a class="ch-btn small" href="${h(googleEventLink(c))}" target="_blank" rel="noopener">📅 ליומן Google</a><a class="ch-btn small" href="/api/calls?format=ics&id=${encodeURIComponent(c.id)}" title="קובץ יומן ל-Outlook או ל-Apple">📅 Outlook / Apple</a>`:''}
+        ${c.source==='member'?`<button type="button" class="ch-btn small" data-ch="call-edit" data-id="${h(c.id)}" title="עריכה בקוד הקהילה">✏️ עריכה</button>`:''}
       </div>`}
       ${credit?`<div class="ch-credit">${credit}</div>`:''}
     </article>`;
@@ -4554,7 +4555,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
   // העלאת מסמכים (עד 4MB לקובץ) עם הרשאת העלאה: מנהלת המערכת, או קוד הקהילה.
   async function uploadFiles(input,token){
     const out=[];
-    for(const f of [...(input?.files||[])]){
+    for(const f of Array.isArray(input)?input:[...(input?.files||[])]){
+      if(f.size>4_000_000)throw new Error(`הקובץ "${f.name}" גדול מ־4MB. אפשר להסיר אותו מהרשימה ולצרף קישור.`);
       const fd=new FormData();fd.append('file',f);
       const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
       const j=await r.json().catch(()=>({}));
@@ -4562,6 +4564,14 @@ html[data-page="calls"] #resourceArea{display:none!important}
       out.push({key:j.key,name:j.name||f.name});
     }
     return out;
+  }
+  // בחירת מסמכים שמצטברת: כל בחירה מוסיפה לרשימה ולא מחליפה אותה, ואפשר להסיר קובץ.
+  function fileQueue(input){
+    const files=[],list=document.createElement('ul');list.className='ch-files ch-queue';input.after(list);
+    const draw=()=>{list.innerHTML=files.map((f,i)=>`<li>📎 ${h(f.name)} <span class="hint">(${(f.size/1048576).toFixed(1)}MB)</span> <button type="button" class="ch-btn small" data-rm="${i}" aria-label="הסרת ${h(f.name)}">✕</button></li>`).join('')};
+    input.addEventListener('change',()=>{for(const f of input.files)if(!files.some(x=>x.name===f.name&&x.size===f.size))files.push(f);input.value='';draw()});
+    list.addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b){e.preventDefault();files.splice(+b.dataset.rm,1);draw()}});
+    return {files,clear(){files.length=0;draw()}};
   }
   const filesHtml=c=>(c.files||[]).length?`<ul class="ch-files">${c.files.map(f=>`<li><a href="${h(f.url)}" target="_blank" rel="noopener">📎 ${h(f.name)}</a></li>`).join('')}</ul>`:'';
   function formData(form){const d=Object.fromEntries(new FormData(form));const m=form.closest('.ch-modal');if(m)d.elapsed=Date.now()-Number(m.dataset.opened||0);return d}
@@ -4575,29 +4585,65 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <label>מועד אחרון להגשה<input name="endDate" type="date"></label>
         <label>גוף מממן<input name="funder" dir="auto"></label>
         <label class="wide">כמה מילים על הקול הקורא<textarea name="description" rows="3" dir="auto"></textarea></label>
-        <label class="wide">מסמכים (רשות, אפשר כמה, עד 4MB לקובץ)<input name="docs" type="file" multiple><span class="hint">צירוף מסמכים בקוד הקהילה בלבד.</span></label>
+        <label class="wide">מסמכים (רשות, אפשר כמה, עד 4MB לקובץ)<input name="docs" type="file" multiple><span class="hint">אפשר לבחור כמה פעמים: כל בחירה מצטרפת לרשימה. צירוף מסמכים בקוד הקהילה בלבד.</span></label>
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
         <label>מייל (לא יפורסם)<input name="email" type="email" dir="ltr"></label>
         <label class="wide">קוד הקהילה (רשות)<input name="communityCode" type="password" autocomplete="off"><span class="hint">עם הקוד: פרסום מיידי באתר.</span></label>
         ${botField()}
         <div class="wide"><button class="ch-btn primary">שליחה</button><div class="ch-status"></div></div>
       </form>`);
+    const docs=fileQueue(m.querySelector('input[name=docs]'));
     m.querySelector('form').addEventListener('submit',async e=>{
       e.preventDefault();const f=e.target,st=m.querySelector('.ch-status');
-      const d=formData(f);delete d.docs;const code=String(d.communityCode||'').trim();const docs=f.elements.docs;
+      const d=formData(f);delete d.docs;const code=String(d.communityCode||'').trim();
       if(!d.url&&!(code&&docs.files.length))return setStatus(st,code?'נשמח לקישור או למסמך מצורף.':'נשמח לקישור. מסמכים אפשר לצרף עם קוד הקהילה.','err');
       if(docs.files.length&&!code)return setStatus(st,'צירוף מסמכים אפשרי עם קוד הקהילה. אפשר להוסיף את הקוד, או לשלוח בלי המסמכים.','err');
       setStatus(st,'שולח…');
       try{
         if(code&&docs.files.length){
           let tok;try{tok=(await api('/api/auth',{method:'POST',body:JSON.stringify({code,mode:'upload'})})).token}catch(_){throw new Error('קוד הקהילה שגוי.')}
-          setStatus(st,'מעלה מסמכים…');d.files=await uploadFiles(docs,tok);
+          setStatus(st,'מעלה מסמכים…');d.files=await uploadFiles(docs.files,tok);
         }
         const j=await api('/api/calls',{method:'POST',body:JSON.stringify({action:'suggest',...d})});
         if(j.duplicate)setStatus(st,'הקול הקורא הזה כבר אצלנו. תודה!','ok');
-        else if(j.published){setStatus(st,'✓ הקול הקורא עלה לאתר. תודה!','ok');load()}
+        else if(j.published){setStatus(st,'✓ הקול הקורא עלה לאתר. אפשר לערוך אותו מהכרטיס, בכפתור "✏️ עריכה". תודה!','ok');load()}
         else setStatus(st,'תודה! הקול הקורא יעלה לאתר בפרסום השבועי, ביום ראשון.','ok');
-        f.reset();
+        f.reset();docs.clear();
+      }catch(err){setStatus(st,err.message,'err')}
+    });
+  }
+
+  // עריכה מתוך הכרטיס, בקוד הקהילה: קול קורא שחברת קהילה העלתה. בלי לחפש אותו ברשימת הניהול.
+  function openMemberEdit(id){
+    const c=[...state.open,...state.archive].find(x=>x.id===id);if(!c)return;
+    const m=modal(`<h2>עריכת הקול הקורא</h2><p class="ch-credit">בקוד הקהילה. השינויים עולים לאתר מיד.</p>
+      <form class="ch-form">
+        <label class="wide">שם הקול הקורא*<input name="title" required dir="auto" value="${h(c.title)}"></label>
+        <label class="wide">קישור<input name="url" type="url" dir="ltr" placeholder="https://" value="${h(c.url||'')}"></label>
+        <label>מועד אחרון להגשה<input name="endDate" type="date" value="${h(c.endDate||'')}"></label>
+        <label>גוף מממן<input name="funder" dir="auto" value="${h(c.funder||'')}"></label>
+        <label class="wide">כמה מילים על הקול הקורא<textarea name="description" rows="4" dir="auto">${h(c.description||'')}</textarea></label>
+        ${(c.files||[]).length?`<div class="wide"><span style="font-size:13px">מסמכים מצורפים <span class="hint">(להסרה: מבטלים את הסימון)</span></span>${c.files.map(fl=>`<label style="display:flex;flex-direction:row;gap:6px;align-items:center"><input type="checkbox" name="keepfile" value="${h(JSON.stringify({key:fl.key,name:fl.name}))}" checked> 📎 ${h(fl.name)}</label>`).join('')}</div>`:''}
+        <label class="wide">הוספת מסמכים (רשות, עד 4MB לקובץ)<input name="docs" type="file" multiple><span class="hint">אפשר לבחור כמה פעמים: כל בחירה מצטרפת לרשימה.</span></label>
+        <label class="wide">קוד הקהילה*<input name="communityCode" type="password" autocomplete="off" required></label>
+        <div class="wide"><button class="ch-btn primary">שמירה</button><div class="ch-status"></div></div>
+      </form>`);
+    const docs=fileQueue(m.querySelector('input[name=docs]'));
+    m.querySelector('form').addEventListener('submit',async e=>{
+      e.preventDefault();const f=e.target,st=m.querySelector('.ch-status');
+      const d=formData(f);const code=String(d.communityCode||'').trim();
+      const keep=[...f.querySelectorAll('input[name=keepfile]:checked')].map(i=>JSON.parse(i.value));
+      if(!String(d.title||'').trim())return setStatus(st,'נשמח לכותרת.','err');
+      if(!d.url&&!keep.length&&!docs.files.length&&!c.fileUrl)return setStatus(st,'נשמח לקישור או למסמך מצורף.','err');
+      setStatus(st,'שומרת…');
+      try{
+        let add=[];
+        if(docs.files.length){
+          let tok;try{tok=(await api('/api/auth',{method:'POST',body:JSON.stringify({code,mode:'upload'})})).token}catch(_){throw new Error('קוד הקהילה שגוי.')}
+          setStatus(st,'מעלה מסמכים…');add=await uploadFiles(docs.files,tok);
+        }
+        await api('/api/calls',{method:'POST',body:JSON.stringify({action:'member-edit',id:c.id,title:d.title,url:d.url,endDate:d.endDate,funder:d.funder,description:d.description,files:[...keep,...add],communityCode:code})});
+        setStatus(st,'✓ נשמר. השינויים כבר באתר.','ok');load();setTimeout(()=>m.close(),1200);
       }catch(err){setStatus(st,err.message,'err')}
     });
   }
@@ -4978,7 +5024,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
     // ההודעה נשמרת גם כשהחלון מתרענן אחרי הפעולה.
     const amsg=(t,k)=>{A.msg=[t,k];const el=m.querySelector('#chAdmMsg');if(el){setStatus(el,t,k);el.scrollIntoView({block:'nearest'})}};
     const fields=f=>{const d=formData(f);delete d.newfiles;delete d.keepfile;d.topics=[...f.querySelectorAll('input[name=topics]:checked')].map(i=>i.value);return d};
-    const withFiles=async(f,d)=>{const keep=[...f.querySelectorAll('input[name=keepfile]:checked')].map(i=>JSON.parse(i.value));const add=await uploadFiles(f.querySelector('input[name=newfiles]'),token);d.files=[...keep,...add];return d};
+    // גם כאן הבחירה מצטברת: הרשימה נוצרת בלחיצה הראשונה על שדה הקבצים.
+    const queues=new WeakMap();
+    m.addEventListener('click',e=>{const i=e.target.closest('input[name=newfiles]');if(i&&!queues.has(i))queues.set(i,fileQueue(i))},true);
+    const withFiles=async(f,d)=>{const keep=[...f.querySelectorAll('input[name=keepfile]:checked')].map(i=>JSON.parse(i.value));const inp=f.querySelector('input[name=newfiles]');const add=await uploadFiles(queues.get(inp)?.files||inp,token);d.files=[...keep,...add];return d};
     m.addEventListener('click',async e=>{
       const tb=e.target.closest('[data-atab]');if(tb){A.tab=tb.dataset.atab;A.msg=null;render();return}
       const b=e.target.closest('[data-act]');if(!b||b.tagName==='BUTTON'&&b.closest('form')&&!b.type.includes('button'))return;
@@ -5051,6 +5100,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const a=b.dataset.ch;
     if(a==='topic'){state.topic=state.topic===b.dataset.k?'':b.dataset.k;renderCalls();return}
     if(a==='suggest')return openSuggest();
+    if(a==='call-edit')return openMemberEdit(b.dataset.id);
     if(a==='team-new'){if(isCalls()){location.href='/match#team-new'+(b.dataset.call?'='+b.dataset.call:'');return}return openTeamNew(b.dataset.call||'')}
     if(a==='teams-admin')return openCallsAdmin('teams');
     if(a==='join')return openJoin(b.dataset.id);

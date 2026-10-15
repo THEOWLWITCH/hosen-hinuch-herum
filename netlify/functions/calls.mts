@@ -122,6 +122,21 @@ export default async (req: Request) => {
     }
   }
 
+  // ----- עריכה בקוד הקהילה, מתוך הכרטיס: רק קול קורא שחברת קהילה העלתה -----
+  if (action === "member-edit") {
+    if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי." }, 401);
+    const c = await getCall(t(body.id, 80));
+    if (!c) return json({ error: "not_found", message: "הקול הקורא לא נמצא. אולי הוא כבר הוסר." }, 404);
+    if (c.source !== "member") return json({ error: "forbidden", message: "בקוד הקהילה אפשר לערוך רק קול קורא שחברות הקהילה העלו." }, 403);
+    // רק השדות שבטופס. שדות שמנהלת המערכת מילאה (היקף, נושאים, סיפור הצלחה) נשארים.
+    const f = cleanCallFields({ title: body.title, url: body.url, endDate: body.endDate, files: Array.isArray(body.files) ? body.files : c.files || [] });
+    if (!f.title) return json({ error: "missing_fields", message: "נשמח לכותרת." }, 400);
+    if (t(body.url, 1200) && !f.url) return json({ error: "invalid_url", message: "הקישור לא תקין." }, 400);
+    if (!f.url && !(f.files || []).length && !c.fileKey) return json({ error: "missing_fields", message: "נשמח לקישור או למסמך מצורף." }, 400);
+    const call = await saveCall({ ...c, title: f.title!, url: f.url, endDate: f.endDate, files: f.files, funder: t(body.funder, 200), description: t(body.description, 3000) });
+    return json({ ok: true, id: call.id });
+  }
+
   // ----- פעולות ניהול: מנהלת המערכת או צוות אישור הקולות הקוראים -----
   const role = await tokenRole(req);
   if (role !== "admin" && role !== "calls") return json({ error: "unauthorized" }, 401);
