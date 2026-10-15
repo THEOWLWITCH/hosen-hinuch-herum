@@ -3461,15 +3461,7 @@ html[data-page="tasks"] #tasks{display:block!important}
       <p>${NAME} אוספת מכל האתר ומגישה משהו מוכן: רשימות מקורות, קבצים לזוטרו, טבלאות מועדים, לוחות זמנים להגשה ומסמכים. המשימות מסדרות את מה שכבר יש באתר, בדפדפן, ולכן הן חינמיות. משימה שדורשת מודל שפה נעצרת לפני כל פנייה, עם הודעה.</p>
       <form class="tf-ask" id="tfAsk"><textarea name="ask" rows="1" dir="auto" placeholder="מה תרצו לעשות? למשל: רשימת מקורות APA על רציפות למידה מ-2020" aria-label="מה תרצו לעשות"></textarea><button class="tf-btn primary">חיפוש משימה</button></form>
       <div id="tfAskOut"></div>
-      <details class="tf-about"><summary>על אֲרִיאַדְנֶה ועל השם</summary>
-        <h4>למה אֲרִיאַדְנֶה?</h4>
-        <p>במיתולוגיה היוונית אריאדנה נתנה לתזאוס פקעת חוט, כדי שימצא את הדרך החוצה מהמבוך. "החוט של אריאדנה" הוא עד היום ביטוי לחוט שמוביל בתוך מבוך. אֲרִיאַדְנֶה שלנו מושכת את החוט בתוך האתר: הספרייה, הקולות הקוראים, כרטיסי הנבחרת וקבוצות המשימה, ומגישה תוצר מסודר שאפשר לערוך, להעתיק ולשמור. מבטאים אַ־רִי־<strong>אַד</strong>־נֶה.</p>
-        <h4>רק משימות בלי עלות</h4>
-        <p>כל המשימות כאן רצות בדפדפן מתוך הנתונים שכבר באתר, בלי מודל שפה, ולכן הן אינן כרוכות בעלות. משימות אפשריות אחרות, כמו כתיבת סקירת ספרות, סיכום מחקרים, תרגום תקציר או ניסוח מכתב, דורשות מודל שפה, וכל הפעלה שלהן עולה כסף. לכן הן הוסרו מהרשימה.</p>
-        <p>בקשה כזו בתיבה למעלה נעצרת לפני כל פנייה למודל, ואפשר לשלוח אותה כהצעה למנהלת הקהילה.</p>
-        <h4>לא ממציאה פרטים</h4>
-        <p>פרט שחסר בספרייה, כמו DOI, כרך או עמודים, מסומן ב"מה חסר" ולא מושלם מהדמיון.</p>
-      </details></div>
+</div>
       ${mine.length?`<div class="tf-group"><h3>⭐ המשימות שלי</h3><div class="tf-mine">${mine.map(m=>`<div><button type="button" class="tf-btn small" data-act="mine-run" data-id="${h(m.id)}">${h(TASKS[m.task]?.icon||'')} ${h(m.name)}</button><button type="button" class="tf-btn small danger" data-act="mine-del" data-id="${h(m.id)}" aria-label="מחיקת המשימה ${h(m.name)}">✕</button></div>`).join('')}</div></div>`:''}
       ${GROUPS.map(([gk,gl])=>`<div class="tf-group"><h3>${gl}</h3><div class="tf-grid">${Object.entries(TASKS).filter(([,t])=>t.group===gk).map(([k,t])=>`<button type="button" class="tf-card" data-act="open" data-task="${k}"><strong>${t.icon} ${h(t.title)}</strong><span>${h(t.desc)}</span></button>`).join('')}</div></div>`).join('')}`;
     S.task='';
