@@ -4577,15 +4577,16 @@ html[data-page="calls"] #resourceArea{display:none!important}
     }
     // יציאה מהמרחב ומחיקת המרחב, בתחתית "על הקבוצה".
     function endZone(){
-      const t=ws.team,name=me(),isLead=!!name&&name===t.lead.name;
+      const t=ws.team,name=me();
       const others=t.members.filter(x=>x.name!==t.lead.name);
       return `<div class="ch-ws-end">
         <h4>🚪 יציאה מהמרחב</h4>
         <p class="ch-credit">השם יוצא מרשימת הקבוצה, והדפדפן הזה שוכח את הקישור. אפשר לחזור רק עם קישור חדש מהמוביל/ה.</p>
-        <form class="ch-inline" data-form="leave" style="grid-template-columns:${isLead&&others.length?'1fr ':''}auto">
-          ${isLead&&others.length?`<select name="newLead" required aria-label="מי מוביל/ה מעכשיו"><option value="">מי מוביל/ה את הקבוצה מעכשיו?</option>${others.map(x=>`<option>${h(x.name)}</option>`).join('')}</select>`:''}
+        <form class="ch-inline" data-form="leave" style="grid-template-columns:1fr${others.length?' 1fr':''} auto">
+          <select name="member" required aria-label="מי יוצא/ת מהקבוצה"><option value="">מי יוצא/ת מהקבוצה?</option>${t.members.map(x=>`<option${x.name===name?' selected':''}>${h(x.name)}</option>`).join('')}</select>
+          ${others.length?`<select name="newLead" aria-label="אם המוביל/ה יוצא/ת: מי מוביל/ה מעכשיו"><option value="">אם ${h(t.lead.name)} יוצא/ת: מי מוביל/ה מעכשיו?</option>${others.map(x=>`<option>${h(x.name)}</option>`).join('')}</select>`:''}
           <button class="ch-btn small">יציאה מהמרחב</button></form>
-        ${isLead&&!others.length?'<p class="ch-credit">את/ה החבר/ה היחיד/ה במרחב. אם הוא כבר לא נחוץ, אפשר למחוק אותו.</p>':''}
+        ${t.members.length===1?'<p class="ch-credit">יש במרחב חבר/ה אחד/ת בלבד. אם הוא כבר לא נחוץ, אפשר למחוק אותו.</p>':''}
         <h4>🗑 מחיקת המרחב</h4>
         <p class="ch-credit">רק המוביל/ה (${h(t.lead.name)}). הסעיפים, המשימות, הדיון והקישורים נמחקים לגמרי, והקבוצה יורדת מהרשימה באתר. כדאי לשמור קודם עותק ב"ייצוא להדפסה / PDF". חברי וחברות הקבוצה מקבלים/ות הודעה במייל.</p>
         <form class="ch-inline" data-form="delete" style="grid-template-columns:1fr auto"><input name="email" type="email" required dir="ltr" placeholder="המייל שאיתו הקבוצה הוקמה" aria-label="המייל של המוביל/ה"><button class="ch-btn small danger">מחיקת המרחב</button></form>
@@ -4649,10 +4650,14 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
       const d=formData(f),kind=f.dataset.form;
       if(kind==='leave'){
-        const name=me();
-        if(!name&&!confirm('לא מופיע שם בשדה "אני". להמשיך? הדפדפן ישכח את הקישור, אבל אף שם לא ייצא מרשימת הקבוצה.'))return;
-        if(name&&!confirm(`לצאת מהמרחב "${ws.team.title}"?`))return;
-        try{if(name)await act('leave',{member:name,newLead:d.newLead||''});forget('יצאת מהמרחב')}catch(err){msg(err.message,'err')}
+        const who=d.member;
+        if(!who)return msg('נשמח לבחירה: מי יוצא/ת מהקבוצה.','err');
+        if(!confirm(`להוציא את ${who} מהמרחב "${ws.team.title}"?`))return;
+        try{const j=await act('leave',{member:who,newLead:d.newLead||''});
+          if(!j.left)return msg(`השם ${who} לא נמצא ברשימת הקבוצה. אפשר לרענן את הדף ולנסות שוב.`,'err');
+          if(who===me()||who===myName())return forget('יצאת מהמרחב');
+          render(true);msg(`✓ ${who} יצא/ה מהקבוצה.`,'ok');refreshTeams();
+        }catch(err){msg(err.message,'err')}
         return;
       }
       if(kind==='delete'){
