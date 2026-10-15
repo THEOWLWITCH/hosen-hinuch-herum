@@ -32,7 +32,8 @@
 :root[data-theme="dark"]{--ink:#e4ecf0;--soft:#9fb2bd;--line:#2c3f4b;--paper:#111b22;--card:#17242d;--thread:#e0788a;--green:#6cc29a;--gold:#d9ae62;--teal:#7cc0dc;--wash:#1b2b33;--shade:rgba(0,0,0,.62);color-scheme:dark}
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;direction:rtl}
+body{direction:rtl;text-align:right}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.7}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
@@ -306,6 +307,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <script>
 (function(){
+document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','he');
 const SITE='https://hosen-hinuch-herum.netlify.app';
 const IMG='assets/guide/';
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
