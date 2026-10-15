@@ -3,9 +3,10 @@ import { id, json, looksHuman, store, validToken } from "../lib/shared.mts";
 import { loadPeople } from "../lib/calls.mts";
 import { mailConfigured, mailErrorHint, sendMail, siteUrl } from "../lib/calls.mts";
 import { TYPE_LABELS, addReply, addRequest, getRequest, listRequests, updateRequest } from "../lib/requests.mts";
+import { codeFor, codeMail, formatCode } from "../lib/member-code.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
-const SOURCE_CATEGORIES = ["research-institute", "research-preparedness", "research-resilience", "research-continuity", "research-teachers", "research-tech", "publications", "professional", "policy", "research-tools"];
+const SOURCE_CATEGORIES = ["research-institute", "research-preparedness", "research-resilience", "research-continuity", "research-teachers", "research-tech", "research-org", "publications", "professional", "policy", "research-tools"];
 
 export default async (req: Request) => {
   if (req.method === "GET") {
@@ -57,8 +58,15 @@ export default async (req: Request) => {
       };
     }
     await st.setJSON(`people/${person.id}.json`, person);
-    await updateRequest(r.id, { status: "done", note: `נוסף לנבחרת ${new Date().toLocaleDateString("he-IL")}${r.note ? " · " + r.note : ""}` });
-    return json({ ok: true, merged: !!same, person: { id: person.id, name: person.name } });
+    // קוד אישי לעדכון הכרטיס: נשלח במייל ברוכים הבאים, ומוצג גם למנהלת המערכת (למקרה שהמייל לא נשלח).
+    const { code } = await codeFor(person.id);
+    let mailed = false, mailReason = "";
+    if (mailConfigured() && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(person.email || ""))) {
+      try { await codeMail(person, code, siteUrl(new URL(req.url).origin), same ? "invite" : "welcome"); mailed = true; }
+      catch (e) { mailReason = mailErrorHint(e); }
+    }
+    await updateRequest(r.id, { status: "done", note: `נוסף לנבחרת ${new Date().toLocaleDateString("he-IL")}${mailed ? " · נשלח קוד אישי" : ""}${r.note ? " · " + r.note : ""}` });
+    return json({ ok: true, merged: !!same, person: { id: person.id, name: person.name }, code: formatCode(code), mailed, mailReason });
   }
 
   // פרסום מקור שהוצע ("שליחת מאמר או מכון מחקר"): המקור עולה לאתר, והפנייה מסומנת כטופלה.

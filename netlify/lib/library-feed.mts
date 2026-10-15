@@ -19,6 +19,7 @@ export const TOPICS: { key: string; label: string; cat: string; q: string; must:
   { key: "teachers", label: "מורים וצוותים בזמן משבר", cat: "teachers", q: "teachers crisis stress support", must: /teacher|educator|school staff|principal/i },
   { key: "ai", label: "בינה מלאכותית בחינוך", cat: "tech", q: "artificial intelligence education teachers", must: /artificial intelligence|\bAI\b|generative|chatgpt|large language model/i },
   { key: "preparedness", label: "מוכנות והיערכות", cat: "preparedness", q: "school emergency preparedness", must: /prepared|readiness|drill|plan/i },
+  { key: "org", label: "חוסן ארגוני", cat: "org", q: "organizational resilience schools crisis", must: /organi[sz]ational resilience|school resilience|institutional resilience|organi[sz]ational learning/i },
   { key: "parents", label: "הורים וקהילה", cat: "resilience", q: "parent family community engagement school crisis", must: /parent|famil|communit/i },
 ];
 const FIELD = /educat|school|teacher|student|pupil|learning|classroom|kindergarten|principal|חינוך|בית ספר|מורים|תלמיד/i;

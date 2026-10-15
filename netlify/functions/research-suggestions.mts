@@ -13,6 +13,7 @@ export const SECTION_CATEGORY: Record<string, string> = {
   "רציפות למידה": "research-continuity",
   "צוותי חינוך ומנהיגות": "research-teachers",
   "טכנולוגיה AI וסימולציה בחירום": "research-tech",
+  "חוסן ארגוני": "research-org",
   "מכוני מחקר מובילים": "research-institute",
 };
 

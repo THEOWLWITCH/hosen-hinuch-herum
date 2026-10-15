@@ -2169,6 +2169,32 @@ body:has(.feedback-modal.open){
 .research-weekly-flag{display:inline-flex;align-self:flex-start;align-items:center;min-height:18px;padding:2px 7px;border:1px solid #a9cbd1;border-radius:999px;background:#dceff1;color:#285f6d;font-size:9.2px;font-weight:700;line-height:1.25}
 .research-page-nav{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:14px 0 22px;padding:10px 0;border-bottom:1px solid #e1e8ea}.research-page-nav strong{font-size:11px;color:#617783;margin-inline-end:3px}.research-page-nav a{display:inline-flex;align-items:center;min-height:27px;padding:3px 9px;border:1px solid #cfdee4;border-radius:999px;background:#fff;color:#315f77;text-decoration:none;font-size:10.5px;line-height:1.3}.research-page-nav a:hover{background:#eef6f8;border-color:#afcbd5}.research-anchor{scroll-margin-top:86px}.research-practice-wrap{margin:18px 0 2px;padding-top:16px;border-top:1px solid #dfe7ea}.research-practice-wrap .research-latest-head{margin-bottom:9px}.research-practice-wrap .research-latest-head h3{font-size:18px}.research-practice-wrap .research-latest-head p{max-width:560px}@media(max-width:650px){.research-page-nav{align-items:flex-start}.research-page-nav strong{width:100%}}
 </style>
+<style id="research-compact-v70">
+/* פתקים מצומצמים: שני טורים, תקציר בלחיצה, סינון ו"הצגת עוד" */
+.research-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.research-chip{font:inherit;font-size:11.5px;color:#315f77;background:#fff;border:1px solid #cfdee4;border-radius:999px;padding:5px 11px;cursor:pointer}
+.research-chip small{color:#83939c;font-size:10px}.research-chip:hover{background:#eef6f8}
+.research-chip.on{background:#315f77;border-color:#315f77;color:#fff}.research-chip.on small{color:#d6e6ee}
+.research-chronological-grid.research-compact-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.research-compact-grid .research-chronological-card{padding:10px 12px!important;gap:5px!important}
+.research-compact-grid .research-chronological-card h4{font-size:13.2px!important;line-height:1.38!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.research-compact-grid .research-citation{font-size:10.6px!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.research-more summary{cursor:pointer;font-size:11px;color:#2c6987;list-style:none;display:inline-flex;align-items:center;gap:4px}
+.research-more summary::-webkit-details-marker{display:none}.research-more summary::before{content:'▸';font-size:10px}
+.research-more[open] summary::before{content:'▾'}.research-more[open] summary{margin-bottom:5px}
+.research-more p{margin:0 0 6px!important;font-size:12px!important;line-height:1.62!important}
+.research-compact-grid{align-items:start}.research-card-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 10px}.research-card-foot .research-more[open]{flex-basis:100%;order:2}
+.research-card-links{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.research-compact-grid .research-card-links>a{margin-top:0!important}.research-card-links .lk-view{margin:0}
+.research-more-row{display:flex;justify-content:center;margin:12px 0 0}
+.research-show-more{font:inherit;font-size:12px;color:#fff;background:#315f77;border:1px solid #315f77;border-radius:999px;padding:7px 16px;cursor:pointer}
+.research-show-more small{color:#d6e6ee}
+.research-theme-section>summary{cursor:pointer;list-style:none}.research-theme-section>summary::-webkit-details-marker{display:none}
+.research-theme-section>summary h4::before{content:'▸ ';font-size:13px;color:#6f8d9c}.research-theme-section[open]>summary h4::before{content:'▾ '}
+.research-theme-section{margin:0 0 10px!important}.research-theme-section[open]{margin-bottom:22px!important}
+.research-axis-nav{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important}
+@media screen and (max-width:760px){.research-chronological-grid.research-compact-grid{grid-template-columns:1fr!important}}
+@media print{.research-more>*{display:block!important}.research-chips,.research-more-row{display:none}}
+</style>
 <style id="research-hub-v64">
 .research-axis-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:15px 0 0}.research-axis-nav a{display:flex;align-items:center;min-height:43px;padding:7px 10px;border:1px solid #d7e3e7;border-radius:7px;background:#fff;color:#2e596f;text-decoration:none;font-size:11.5px;font-weight:650;line-height:1.3}.research-axis-nav a:hover{background:#eef6f7;border-color:#abc5ce}.research-axis-nav small{display:block;margin-top:2px;font-size:9.8px;font-weight:400;color:#71828b}.research-weekly-dossier{margin:0 0 28px;padding:17px 18px;border:1px solid #cadde2;border-radius:10px;background:linear-gradient(135deg,#eef8f8 0%,#fffdf7 100%)}.research-weekly-dossier-head{display:flex;align-items:end;justify-content:space-between;gap:18px;padding-bottom:11px;border-bottom:1px solid rgba(70,112,126,.18)}.research-weekly-dossier-head span{font-size:10px;color:#63828d}.research-weekly-dossier-head h3{margin:2px 0 0;font-size:21px;color:#294d60}.research-weekly-dossier-head p{max-width:500px;margin:0;font-size:11.5px;line-height:1.6;color:#5f7580}.weekly-dossier-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.weekly-dossier-card{padding:12px;border:1px solid rgba(83,123,134,.18);border-radius:8px;background:rgba(255,255,255,.9)}.weekly-dossier-card h4{margin:0 0 6px;font-size:13.2px;line-height:1.4;color:#2b5064;direction:ltr;text-align:left}.weekly-dossier-meta{font-size:10px;color:#6d808a}.weekly-dossier-card p{margin:7px 0;font-size:11.4px;line-height:1.62;color:#536a76}.weekly-dossier-practical{padding:7px 8px;border-right:2px solid #8caeba;background:#f4f8f8;border-radius:4px;font-size:10.9px;line-height:1.55;color:#46606d}.weekly-dossier-card a{display:inline-block;margin-top:7px;font-size:10.6px;color:#23668b;text-decoration:none}.research-dispute-box{grid-column:1/-1;padding:12px 13px;border:1px solid rgba(153,122,77,.23);border-radius:8px;background:#fffdf8}.research-dispute-box h4{margin:0 0 5px;font-size:13px;color:#604e31}.research-dispute-box p{margin:0;font-size:11.4px;line-height:1.65;color:#625e54}.research-discussion{grid-column:1/-1;padding:12px 13px;border-top:1px solid rgba(70,112,126,.17)}.research-discussion summary{cursor:pointer;font-size:12px;font-weight:650;color:#315e73}.research-comment-list{display:grid;gap:7px;margin:10px 0}.research-comment{padding:8px 9px;border-right:2px solid #b2c7cd;background:#f8fafb;font-size:11px;line-height:1.55;color:#4d6572}.research-comment-meta{display:block;margin-bottom:3px;font-size:10px;font-weight:650;color:#31576b}.research-comment-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.research-comment-form label{display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:#576d79}.research-comment-form .wide{grid-column:1/-1}.research-comment-form input,.research-comment-form textarea{font:inherit;font-size:11px;border:1px solid #d4e0e4;border-radius:4px;padding:7px;background:#fff}.research-comment-actions{display:flex;align-items:center;gap:9px}.research-comment-actions button{font:inherit;font-size:11px;border:1px solid #315f77;background:#315f77;color:#fff;border-radius:4px;padding:7px 10px;cursor:pointer}.research-comment-status{font-size:10.5px;color:#58717c}.research-comment-status.error{color:#983e3e}.research-comment-status.success{color:#397158}.library-academic-intro{margin:0 0 17px;padding:15px 16px;border:1px solid #dce6e9;border-radius:9px;background:#f8fbfb}.library-academic-intro h3{margin:0 0 5px;font-size:18px;color:#2b4f62}.library-academic-intro p{margin:0;font-size:12px;line-height:1.6;color:#617681}.library-reading-paths{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:12px 0}.library-reading-path{min-height:76px;padding:9px;border:1px solid #d7e3e7;border-radius:7px;background:#fff;color:#315c71;text-align:right;font:inherit;font-size:12px;font-weight:650;cursor:pointer}.library-reading-path small{display:block;margin-top:5px;font-size:10px;font-weight:400;line-height:1.35;color:#74848d}.library-reading-path:hover,.library-reading-path.active{background:#eef6f7;border-color:#a9c4cc}.library-academic-search{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:7px;margin:13px 0;padding:12px;border:1px solid #dbe5e8;border-radius:8px;background:#fff}.library-academic-search input,.library-academic-search select{width:100%;box-sizing:border-box;font:inherit;font-size:11.5px;border:1px solid #d4dfe3;border-radius:4px;padding:8px;background:#fff}.library-explorer-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 20px}.library-explorer-results .lib-item{border:1px solid #e0e7e9;border-radius:7px;background:#fff;padding:10px}.library-knowledge-section{margin:24px 0 12px;padding-top:18px;border-top:1px solid #dfe7e9}.library-knowledge-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:10px}.library-knowledge-head h3{margin:2px 0 0;font-size:19px;color:#2b4f62}.library-knowledge-head span{font-size:10px;color:#788991}.library-knowledge-head p{max-width:500px;margin:0;font-size:11.5px;line-height:1.55;color:#6b7d86}.knowledge-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.knowledge-state-card{padding:11px 12px;border:1px solid #e0e7e9;border-radius:7px;background:#fff}.knowledge-state-card h4{margin:0 0 8px;font-size:13px;color:#2c5267}.knowledge-state-card p{margin:5px 0;font-size:11px;line-height:1.55;color:#5d717c}.knowledge-state-card strong{color:#365c70}@media(max-width:900px){.library-reading-paths{grid-template-columns:repeat(2,minmax(0,1fr))}.library-academic-search{grid-template-columns:repeat(2,minmax(0,1fr))}.library-explorer-results{grid-template-columns:1fr}.weekly-dossier-grid{grid-template-columns:1fr}}@media(max-width:650px){.research-axis-nav{grid-template-columns:1fr}.research-weekly-dossier-head,.library-knowledge-head{align-items:flex-start;flex-direction:column}.research-comment-form{grid-template-columns:1fr}.research-comment-form .wide{grid-column:auto}.library-academic-search{grid-template-columns:1fr}.knowledge-state-grid{grid-template-columns:1fr}}
 </style>
@@ -2224,7 +2250,7 @@ body:has(.feedback-modal.open){
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
 </div>
-<div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyTopics()">🎯 כבר בנבחרת? בחירת תחומי העניין שלי</button></div>
+<div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button></div>
 </div>
 </div></section>
 <section id="match" class="match"><div class="wrap">
@@ -2237,7 +2263,7 @@ body:has(.feedback-modal.open){
   <div id="galleryGrid" class="gallery-grid"><p class="muted">טוען גלריה...</p></div>
 </div></section>
 
-<section id="people" style="background:#f3f8fa"><div class="wrap"><div class="section-head"><div><h2>הנבחרת</h2></div><div class="join-strip" style="margin:0"><button type="button" class="join-topics" onclick="hosenMyTopics()">🎯 בחירת תחומי העניין שלי</button><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות</button></div></div><input class="search" id="search" placeholder="חיפוש לפי שם, מוסד או תחום..." oninput="filterPeople()"><div class="people" id="peopleGrid">
+<section id="people" style="background:#f3f8fa"><div class="wrap"><div class="section-head"><div><h2>הנבחרת</h2></div><div class="join-strip" style="margin:0"><button type="button" class="join-topics" onclick="hosenMyCard()">👤 הכרטיס שלי</button><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות</button></div></div><input class="search" id="search" placeholder="חיפוש לפי שם, מוסד או תחום..." oninput="filterPeople()"><div class="people" id="peopleGrid">
 <div class="person" data-search="ד״ר איבנה רטנר האקדמית גורדון / משרד החינוך אוריינות מדיה קולנוע ומדיה PISA 2029 מנהלת תחום (מפמ״ר) קולנוע ומדיה באגף אמנויות, משרד החינוך; מרצה ורכזת פדגוגית בחוג להוראת תקשורת ומדיה באקדמית גורדון. עוסקת באוריינות מדיה, אזרחות דיגיטלית, דיאלוג דרך קולנוע ומדיה, חינוך רב־תרבותי ובינה מלאכותית בחינוך; מובילה חשיבה לקראת PISA 2029. מייל: ratnere@gmail.com • טלפון: 0507156711" data-name="ד״ר איבנה רטנר" data-inst="האקדמית גורדון / משרד החינוך" data-detail="מנהלת תחום (מפמ״ר) קולנוע ומדיה באגף אמנויות, משרד החינוך; מרצה ורכזת פדגוגית בחוג להוראת תקשורת ומדיה באקדמית גורדון. עוסקת באוריינות מדיה, אזרחות דיגיטלית, דיאלוג דרך קולנוע ומדיה, חינוך רב־תרבותי ובינה מלאכותית בחינוך; מובילה חשיבה לקראת PISA 2029. מייל: ratnere@gmail.com • טלפון: 0507156711" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר איבנה רטנר</h3><div class="muted">האקדמית גורדון / משרד החינוך</div></div>
 <div class="person" data-search="ד״ר שרי גנון-שילון האקדמית אחוה חדשנות טכנולוגית ניהול בתי ספר תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך." data-name="ד״ר שרי גנון-שילון" data-inst="האקדמית אחוה" data-detail="תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך." onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר שרי גנון-שילון</h3><div class="muted">האקדמית אחוה</div></div>
 <div class="person" data-search="ד״ר מאירה לוי שנקר / מכללת רמת גן חשיבה עיצובית ניהול ידע למידה מרחוק חוקרת ומרצה בתחומי מנהל עסקים, עיצוב ומערכות מידע. תחומי מחקר כוללים חשיבה עיצובית (Design Thinking), Service Design, ניהול ידע, למידה מרחוק והיברידית ורשתות חברתיות; עוסקת גם בחיבורים בין עיצוב, טכנולוגיה והיבטים רפואיים. מייל: levysiis@iac.ac.il • טלפון: 0545783305" data-name="ד״ר מאירה לוי" data-inst="שנקר / מכללת רמת גן" data-detail="חוקרת ומרצה בתחומי מנהל עסקים, עיצוב ומערכות מידע. תחומי מחקר כוללים חשיבה עיצובית (Design Thinking), Service Design, ניהול ידע, למידה מרחוק והיברידית ורשתות חברתיות; עוסקת גם בחיבורים בין עיצוב, טכנולוגיה והיבטים רפואיים. מייל: levysiis@iac.ac.il • טלפון: 0545783305" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר מאירה לוי</h3><div class="muted">שנקר / מכללת רמת גן</div></div>
@@ -2260,10 +2286,10 @@ body:has(.feedback-modal.open){
   <div class="research-world-head">
     <div class="research-kicker">עודכן: 14.10.2026 · מחקרים ופרסומים נבחרים מ־2024–2026</div>
     <h2>חידושים במחקר</h2>
-    <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום: מחקרים חדשים מישראל ומהעולם לצד ששת צירי הידע של הקהילה. המחקרים מוצגים בשני טורים לפי תאריך פרסום מאומת, בסדר יורד מימין לשמאל ולאחר מכן לשורה הבאה.</p>
+    <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום: מחקרים חדשים מישראל ומהעולם לצד שבעת צירי הידע של הקהילה. המחקרים מוצגים בשני טורים לפי תאריך פרסום מאומת, בסדר יורד מימין לשמאל ולאחר מכן לשורה הבאה.</p>
     <p class="research-scope-note"><strong>גבול המדור:</strong> אין כאן מחקרים קליניים. ״חוסן נפשי״ נבחן בהקשר החינוכי־קהילתי: יכולת של תלמידים, צוותים, בתי ספר וקהילות להמשיך לתפקד, להשתייך, ללמוד ולהסתגל בזמן משבר.</p>
     <p class="research-weekly-note"><strong>חדש בסקירה השבועית:</strong> הרקע הבהיר מציין מקור שנוסף בעדכון זה. ההדגשה תוחלף בסקירה הבאה, והמקור עצמו יישאר במאגר.</p>
-    <nav class="research-axis-nav" aria-label="ששת צירי החידושים במחקר"><a href="#research-new">מחקרים חדשים בישראל ובעולם<small>מאגר כרונולוגי מאומת</small></a><a href="#research-theme-preparedness">מוכנות<small>תכנון, תרגול וניהול סיכונים</small></a><a href="#research-theme-resilience">חוסן נפשי<small>שייכות, הסתגלות וקהילת חוסן</small></a><a href="#research-theme-continuity">רציפות למידה<small>תפקוד המערכת לאורך משבר</small></a><a href="#research-theme-teachers">צוותי חינוך<small>מורים, מנהיגות ויכולת פעולה</small></a><a href="#research-theme-tech">AI בחירום<small>טכנולוגיה אחראית ורציפה</small></a></nav>
+    <nav class="research-axis-nav" aria-label="שבעת צירי החידושים במחקר"><a href="#research-new">מחקרים חדשים בישראל ובעולם<small>מאגר כרונולוגי מאומת</small></a><a href="#research-theme-preparedness">מוכנות<small>תכנון, תרגול וניהול סיכונים</small></a><a href="#research-theme-resilience">חוסן נפשי<small>שייכות, הסתגלות וקהילת חוסן</small></a><a href="#research-theme-continuity">רציפות למידה<small>תפקוד המערכת לאורך משבר</small></a><a href="#research-theme-teachers">צוותי חינוך<small>מורים, מנהיגות ויכולת פעולה</small></a><a href="#research-theme-tech">AI בחירום<small>טכנולוגיה אחראית ורציפה</small></a><a href="#research-theme-org">חוסן ארגוני<small>בתי ספר, מוסדות ורשויות כארגון</small></a></nav>
   </div>
 
   <section id="research-weekly" class="research-weekly-dossier research-anchor" aria-labelledby="researchWeeklyTitle">
@@ -2299,7 +2325,7 @@ body:has(.feedback-modal.open){
   </div>
 
   <div id="research-themes" class="research-themes-wrap research-anchor">
-    <div class="research-themes-head"><div><span>מפת התחום</span><h3>חמשת מדורי המחקר</h3></div><p>אותם מחקרים ממופים גם לפי תחום, כרשימה אקדמית קומפקטית עם מחברים ושנת פרסום.</p></div>
+    <div class="research-themes-head"><div><span>מפת התחום</span><h3>ששת מדורי המחקר</h3></div><p>אותם מחקרים ממופים גם לפי תחום, כרשימה אקדמית קומפקטית עם מחברים ושנת פרסום.</p></div>
     <div id="researchThemeSections"></div>
   </div>
 
@@ -2315,7 +2341,7 @@ body:has(.feedback-modal.open){
       <p class="research-honeypot"><label>לא למלא<input name="bot-field"></label></p>
       <div class="research-suggest-grid">
         <label>סוג ההצעה<select name="suggestionType" id="rsType" required><option value="מאמר">מאמר / מחקר</option><option value="מכון">מכון / מרכז מחקר</option></select></label>
-        <label>מדור <span style="font-weight:400">(מאמר מופיע גם ב"מחקרים חדשים")</span><select name="targetSection" id="rsSection" required><option value="">בחירה</option><option>מוכנות</option><option>חוסן נפשי</option><option>רציפות למידה</option><option>צוותי חינוך ומנהיגות</option><option>טכנולוגיה AI וסימולציה בחירום</option><option>מכוני מחקר מובילים</option></select></label>
+        <label>מדור <span style="font-weight:400">(מאמר מופיע גם ב"מחקרים חדשים")</span><select name="targetSection" id="rsSection" required><option value="">בחירה</option><option>מוכנות</option><option>חוסן נפשי</option><option>רציפות למידה</option><option>צוותי חינוך ומנהיגות</option><option>טכנולוגיה AI וסימולציה בחירום</option><option>חוסן ארגוני</option><option>מכוני מחקר מובילים</option></select></label>
         <label class="wide">קישור למקור<input name="url" id="rsUrl" type="url" placeholder="https://..." required></label>
         <div class="wide lk-field"><span class="lk-title">קישורים נוספים <span style="font-weight:400">(למשל: גרסה מלאה, מצגת, סרטון)</span></span><div id="rsLinks" class="links-editor"></div></div>
         <label class="wide">כותרת המאמר / שם המכון<input name="title" id="rsTitle" dir="auto" required></label>
@@ -4015,8 +4041,8 @@ html[data-page="tasks"] #tasks{display:block!important}
       card.appendChild(f);const ta=f.querySelector('textarea');ta.focus();const pos=ta.value.indexOf('\n\n')+2;ta.setSelectionRange(pos,pos);
     }
     // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
-    const SRC_CATS=[['research-institute','חידושי מחקר / מכוני מחקר מובילים'],['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
-    const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','מכוני מחקר מובילים':'research-institute'};
+    const SRC_CATS=[['research-institute','חידושי מחקר / מכוני מחקר מובילים'],['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['research-org','חידושי מחקר / חוסן ארגוני'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
+    const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','חוסן ארגוני':'research-org','מכוני מחקר מובילים':'research-institute'};
     function sourceFields(r){
       if(r.data)return r.data;
       // פניות ישנות (לפני שנשמרו השדות בנפרד): מחלצים מתוך הטקסט.
@@ -4053,7 +4079,7 @@ html[data-page="tasks"] #tasks{display:block!important}
       const rc=e.target.closest('[data-reply-cancel]');if(rc){rc.closest('[data-reply-form]').remove();return}
       const ps=e.target.closest('[data-publish-source]');if(ps){openPublish(ps);return}
       const pc=e.target.closest('[data-pub-cancel]');if(pc){pc.closest('[data-pub]').remove();return}
-      const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg(j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת — תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`,'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
+      const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.\nבמייל ברוכים הבאים יישלח קוד אישי לעדכון הכרטיס.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg((j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת: תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`)+(j.code?(j.mailed?` הקוד האישי (${j.code}) נשלח במייל.`:` הקוד האישי: ${j.code}. המייל לא נשלח${j.mailReason?` (${j.mailReason})`:''}, ואפשר להעביר את הקוד ידנית.`):''),'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
       const b=e.target.closest('[data-bulk]');if(b){const ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו פניות.','err');try{await update(ids,{status:b.dataset.bulk});msg(`עודכנו ${ids.length} פניות ✓`,'ok')}catch(err){msg(err.message,'err')}return}
       if(e.target.matches('[data-allsel]'))root.querySelectorAll('[data-sel]').forEach(i=>i.checked=e.target.checked);
     });
@@ -5460,6 +5486,7 @@ const catLabels={
   'research-continuity':'מחקרים / רציפות למידה',
   'research-teachers':'מחקרים / צוותי חינוך ומנהיגות',
   'research-tech':'מחקרים / טכנולוגיה AI וסימולציה בחירום',
+  'research-org':'מחקרים / חוסן ארגוני',
   'research-institute':'מחקרים / מכוני מחקר מובילים',
   'community-activity':'מה שקורה עכשיו / פעילות חדשה בקהילה',
   'active-project':'מה שקורה עכשיו / פרויקט פעיל'
@@ -5468,7 +5495,7 @@ const resourceDestinationSections={
   library:[['professional','משאבים'],['publications','פרסומים — ספרים ומאמרים'],['policy','מסמכי מדיניות'],['research-tools','כלי מחקר']],
   activity:[['community-activity','פעילות חדשה בקהילה']],
   project:[['active-project','פרויקט פעיל']],
-  research:[['research-preparedness','מוכנות'],['research-resilience','חוסן נפשי'],['research-continuity','רציפות למידה'],['research-teachers','צוותי חינוך ומנהיגות'],['research-tech','טכנולוגיה AI וסימולציה בחירום']],
+  research:[['research-preparedness','מוכנות'],['research-resilience','חוסן נפשי'],['research-continuity','רציפות למידה'],['research-teachers','צוותי חינוך ומנהיגות'],['research-tech','טכנולוגיה AI וסימולציה בחירום'],['research-org','חוסן ארגוני']],
   calls:[['calls','קולות קוראים']],
   conferences:[['conferences','כנסים']],
   grants:[['grants','מענקי מחקר']],
@@ -5593,12 +5620,13 @@ async function refreshPublicResources(){if(currentCategory)showCategory(currentC
 function openLibrary(){const q=document.getElementById('libSearch');if(q){q.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>q.focus(),250)}}
 function closeLibrary(){}
 let activeReadingPath='';
-const readingPaths={school:{label:'ניהול בית ספר',cats:['preparedness','continuity','teachers']},researcher:{label:'חמשת תחומי המחקר',cats:['preparedness','resilience','continuity','teachers','tech']},local:{label:'רשויות מקומיות',cats:['preparedness','resilience','continuity']},teacher:{label:'הוראה וצוותי חינוך',cats:['teachers','tech','continuity']},community:{label:'קהילת חוסן',cats:['resilience','preparedness','continuity']}};
+const readingPaths={school:{label:'ניהול בית ספר',cats:['preparedness','continuity','teachers','org']},researcher:{label:'ששת תחומי המחקר',cats:['preparedness','resilience','continuity','teachers','tech','org']},local:{label:'רשויות מקומיות',cats:['preparedness','resilience','continuity','org']},teacher:{label:'הוראה וצוותי חינוך',cats:['teachers','tech','continuity']},community:{label:'קהילת חוסן',cats:['resilience','preparedness','continuity']}};
 const monthlyKnowledgeStates=[
  {cat:'preparedness',title:'מוכנות',known:'היערכות אפקטיבית נבנית בשגרה ומשלבת תרחישים, תפקידים, תיאום ומשאבים; היא אינה מסתכמת בתרגיל יחיד.',open:'עדיין אין הסכמה מספקת אילו מדדי מוכנות מנבאים תפקוד בפועל בזמן כשל מורכב.',next:'אילו שילובים של תרגול, נתונים ויתירות תפקודית מקצרים את זמן ההתאוששות?'},
  {cat:'resilience',title:'חוסן נפשי',known:'אמון, שייכות, ידע משותף ויכולת פעולה קולקטיבית הם מנגנונים מרכזיים, מעבר למשאבים מבודדים.',open:'נדרשת הבחנה טובה יותר בין תפיסת חוסן, מנגנון חברתי ותפקוד נצפה לאורך משבר.',next:'אילו מנגנונים קהילתיים משמרים השתתפות ותפקוד גם כשהלחץ מתמשך?'},
  {cat:'continuity',title:'רציפות למידה',known:'מערכת עמידה נשענת על חלופות בין ערוצי קשר, הוראה, כוח אדם ומקום — ולא על פלטפורמה יחידה.',open:'חסרות השוואות ארוכות טווח בין חלופות low-tech, דיגיטליות והיברידיות בהקשרים שונים.',next:'איזו ארכיטקטורת רציפות מונעת אובדן של תלמידים ושל קשר עם משפחות?'},
  {cat:'teachers',title:'צוותי חינוך ומנהיגות',known:'צוותים זקוקים לשיקול דעת, תקשורת ותיאום תחת אי־ודאות, ולא רק לציות לנוהל.',open:'לא ידוע די הצורך כיצד פיתוח מקצועי משותף מתורגם לעמידות של הארגון כולו.',next:'אילו תרגולים מפתחים אוטונומיה מקצועית בלי לפגוע בתיאום המערכתי?'},
+ {cat:'org',title:'חוסן ארגוני',known:'ארגון חינוכי עמיד נשען על מנהיגות משתפת, מסוגלות קולקטיבית של הצוות ומנגנונים קבועים של תיאום ולמידה, ולא רק על חוסן של אנשים בודדים.',open:'עדיין לא ברור אילו מדדים של חוסן ארגוני בבית ספר מנבאים תפקוד בפועל בזמן משבר מתמשך.',next:'אילו מנגנונים ארגוניים שומרים על הצוות ועל הרציפות כשהמשבר נמשך חודשים?'},
  {cat:'tech',title:'AI בחירום',known:'AI מבטיח בעיקר כאשר הוא תומך במורה ובקבלת החלטות, תוך נגישות, פרטיות ובקרה אנושית.',open:'בסיס הראיות על תוצאי למידה וחוסן בשימושי AI ישירים עדיין מצומצם יחסית.',next:'מהם המאפיינים של מערכת AI שתומכת בחוסן חינוכי בלי לפגוע באוטונומיה, באמון ובהוגנות?'}
 ];
 function normalizeLibraryText(value){return String(value||'').toLocaleLowerCase('he').replace(/[־–—]/g,'-')}
@@ -6268,10 +6296,14 @@ url:'https://www.inee.org/journal'
 }
 ];
 const researchWorldCategories=[
- {id:'preparedness',label:'מוכנות'},{id:'resilience',label:'חוסן נפשי'},{id:'continuity',label:'רציפות למידה'},{id:'teachers',label:'צוותי חינוך ומנהיגות'},{id:'tech',label:'טכנולוגיה AI וסימולציה בחירום'}
+ {id:'preparedness',label:'מוכנות'},{id:'resilience',label:'חוסן נפשי'},{id:'continuity',label:'רציפות למידה'},{id:'teachers',label:'צוותי חינוך ומנהיגות'},{id:'tech',label:'טכנולוגיה AI וסימולציה בחירום'},{id:'org',label:'חוסן ארגוני'}
 ];
 const researchWorldItems=[
 // עדכון 14.10.2026: אומתו (כותרת, מחברים, שנה ותקציר)
+// מדור חוסן ארגוני (15.10.2026): אומתו (כותרת, מחברים, שנה ותקציר)
+{id:"org2026-ghanamah-leadership-arab-schools",date:"2026-04-11",dateLabel:"11.4.2026",authors:"Ghanamah, R.",cat:"org",source:"Education Sciences, 16(4), 610",year:"2026",title:"Leadership Matters: Fostering Teacher Resilience in Arab Schools Amid Crisis and Systemic Uncertainty",summary:"מחקר איכותני שכלל 20 ראיונות עם מנהלים וסגני מנהלים בבתי ספר ערביים בישראל. מנהיגות מעצבת ומשתפת, עם תמיכה רגשית וקבלת החלטות משותפת, נתפסה כמחזקת את תחושת הביטחון, המסוגלות והחוסן הקולקטיבי של המורים. סגנון סמכותי ונוקשה נקשר ללחץ גבוה יותר ולמוטיבציה נמוכה יותר.",why:"החוסן של הצוות נבנה בדרך שבה הארגון מנוהל: שיתוף בהחלטות ותמיכה רגשית הם מנגנון ארגוני, לא רק תכונה של מורה יחיד.",url:"https://doi.org/10.3390/educsci16040610"},
+{id:"org2025-shenhav-chester-principals-wartime",date:"2025-11-10",dateLabel:"10.11.2025",authors:"Shenhav, S., & Chester, D.",cat:"org",source:"International Journal of Educational Reform (online first)",year:"2025",title:"Obstacles and Motivators Facing School Principals During Wartime",summary:"מחקר איכותני על מנהלי בתי ספר בישראל מאז 7 באוקטובר 2023, על סמך שאלון פתוח שמילאו 95 מנהלים. המנהלים תיארו מתח בין התגובה הרגשית שלהם למלחמה לבין התפקידים הניהוליים, והמחקר מזהה שישה גורמים שעזרו או הקשו על תפקוד המנהלים.",why:"המחקר מצביע על המנהל/ת כנקודת עומס בארגון בזמן משבר, ומכאן הצורך במנגנוני תמיכה וגיבוי לבעלי תפקידים ניהוליים.",url:"https://doi.org/10.1177/10567879251383868"},
+{id:"org2024-zadok-benoliel-schechter",date:"2024-06-17",dateLabel:"17.6.2024",authors:"Zadok, A., Benoliel, P., & Schechter, C.",cat:"org",source:"Frontiers in Education, 9, 1333551",year:"2024",title:"Organizational resilience and transformational leadership for managing complex school systems",summary:"מחקר בקרב 103 מובילים ביניים ו־506 מורים בבתי ספר על־יסודיים בישראל, בניתוח משוואות מבניות. הממצאים מראים שמנהיגות מעצבת של מובילי הביניים קשורה לחוסן הארגוני של בית הספר, דרך המסוגלות הקולקטיבית של המורים.",why:"חוסן ארגוני בבית הספר עובר דרך הצוות: חיזוק המסוגלות המשותפת של המורים ושל מובילי הביניים הוא נקודת התערבות מעשית.",url:"https://doi.org/10.3389/feduc.2024.1333551"},
 {id:"w20261014-densley",weeklyNew:true,date:"2026-07-22",dateLabel:"22.7.2026",authors:"Densley, J. A., Pyrooz, D. C., & Peterson, J. K.",cat:"preparedness",source:"Journal of School Violence (online first)",year:"2026",title:"Public Support for Active Shooter Drills, Arming Teachers, and Target Hardening: Evidence from a National Experiment",summary:"ניסוי סקר ארצי בקרב כ־10,000 מבוגרים בארצות הברית בדק תמיכה באמצעי מוכנות בבתי ספר. התמיכה הגבוהה ביותר הייתה באבטחה פיזית (85%) ובתרגילי חירום (73% עד 83%), והיא ירדה כשהמשיבים קיבלו מידע על המחירים האפשריים, כמו חרדה של תלמידים ופגיעה באקלים בית הספר.",why:"כדאי לתכנן תרגילי חירום כך שיבנו מוכנות בלי להגביר פחד, ולשתף את ההורים והקהילה במידע על התועלת ועל המחירים כבר בשלב התכנון.",url:"https://doi.org/10.1080/15388220.2026.2704742"},
 {id:"w20261014-golos",weeklyNew:true,date:"2026-08-04",dateLabel:"4.8.2026",authors:"Golos, Weintraub, Lavie-Pitaro, & Tal-Saban",cat:"resilience",source:"Frontiers in Psychology, 17, 1774403",year:"2026",title:"Resilience, social support, and participation among adolescents in conflict situations",summary:"מחקר בקרב 209 תלמידי כיתות י' וי\"א בישראל בזמן המלחמה מצא שתמיכה של המשפחה ושל החברים, יחד עם החשיבות שהתלמידים מייחסים להשתתפות בבית הספר, תורמות כל אחת בנפרד לחוסן. המודל הסביר 37.3% מהשונות בחוסן.",why:"שמירה על השתתפות פעילה בחיי בית הספר ועל קשרי חברים בזמן חירום היא מקור חוסן, ולכן כדאי לתת לה מקום מרכזי בתכנון השגרה בחירום.",url:"https://doi.org/10.3389/fpsyg.2026.1774403"},
 {id:"w20261014-baron",weeklyNew:true,date:"2026-06-29",dateLabel:"29.6.2026",authors:"Bar-On, Y., & Schechter, C.",cat:"teachers",source:"Management in Education (online first)",year:"2026",title:"Leadership metaphors: Evacuated principals' role during a war crisis",summary:"ראיונות עומק עם 33 מנהלי בתי ספר בישראל שפונו עם מוסדותיהם במלחמת 7 באוקטובר חשפו חמישה ממדים בתפקיד המנהל בחירום: דמות לחיקוי, אסטרטג, מכיל רגשית, יוצר פתרונות ומנהל תפעולי. החוקרים מציעים מודל רב־שכבתי לתפקיד המנהל בזמן מלחמה.",why:"המודל יכול לשמש בהכשרת מנהלים ובבניית צוותי הנהלה, כך שהממדים השונים יתחלקו בין כמה בעלי תפקידים ולא יישענו על המנהל לבדו.",url:"https://doi.org/10.1177/08920206261462722"},
@@ -6342,7 +6374,7 @@ let uploadedResearchItems=[];
 function researchCategoryLabel(id){return researchWorldCategories.find(c=>c.id===id)?.label||id}
 function researchSortValue(x){const raw=String(x.date||x.year||'').trim();if(/^\d{4}$/.test(raw))return Date.UTC(Number(raw),0,1);const stamp=Date.parse(raw);return Number.isFinite(stamp)?stamp:0}
 function sortResearchItems(items){return [...items].sort((a,b)=>researchSortValue(b)-researchSortValue(a))}
-function researchCardMarkup(x){return `<article class="research-card research-chronological-card${x.weeklyNew?' weekly-new':''}">${x.weeklyNew?`<span class="research-weekly-flag">חדש בסקירה השבועית</span>`:''}${x.thumbnailUrl?`<img class="research-uploaded-thumb" src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<div class="research-card-topline"><span class="research-card-date">${esc(x.dateLabel||x.year||'')}</span><span class="research-card-category">${esc(researchCategoryLabel(x.cat))}</span></div><h4>${esc(x.title)}</h4><div class="research-citation">${esc(x.authors||'')} (${esc(x.year||'')}) · ${esc(x.source||'')}</div><p>${esc(x.summary)}</p>${x.why?`<div class="research-why"><strong>למה זה חשוב לנו?</strong> ${esc(x.why)}</div>`:''}${x.url?`<a href="${escAttr(x.url)}" target="_blank" rel="noopener">למקור</a>`:''}${linksHtml(x.links)}</article>`}
+function researchCardMarkup(x){return `<article class="research-card research-chronological-card${x.weeklyNew?' weekly-new':''}">${x.weeklyNew?`<span class="research-weekly-flag">חדש בסקירה השבועית</span>`:''}${x.thumbnailUrl?`<img class="research-uploaded-thumb" src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<div class="research-card-topline"><span class="research-card-date">${esc(x.dateLabel||x.year||'')}</span><span class="research-card-category">${esc(researchCategoryLabel(x.cat))}</span></div><h4>${esc(x.title)}</h4><div class="research-citation">${esc(x.authors||'')} (${esc(x.year||'')}) · ${esc(x.source||'')}</div><div class="research-card-foot">${x.summary||x.why?`<details class="research-more"><summary>תקציר ולמה זה חשוב</summary>${x.summary?`<p>${esc(x.summary)}</p>`:''}${x.why?`<div class="research-why"><strong>למה זה חשוב לנו?</strong> ${esc(x.why)}</div>`:''}</details>`:''}<div class="research-card-links">${x.url?`<a href="${escAttr(x.url)}" target="_blank" rel="noopener">למקור</a>`:''}${linksHtml(x.links)}</div></div></article>`}
 async function loadUploadedResearch(){
   const cats=researchWorldCategories.map(c=>'research-'+c.id);
   try{
@@ -6364,17 +6396,28 @@ async function loadUploadedResearch(){
     }));
   }catch(e){uploadedResearchItems=[]}
 }
+// רשימה מצומצמת: סינון לפי מדור, 12 פתקים בכל פעם, והתקציר נפתח בלחיצה.
+const RESEARCH_PAGE=12;let researchFilter='',researchShown=RESEARCH_PAGE;
 function renderResearchStudies(){
  const root=document.getElementById('researchWorldContent');if(!root)return;
- const rows=sortResearchItems([...researchWorldItems,...uploadedResearchItems].filter(x=>x.date));
- root.innerHTML=`<div class="research-chronological-grid">${rows.map(researchCardMarkup).join('')}</div>`;
+ const all=sortResearchItems([...researchWorldItems,...uploadedResearchItems].filter(x=>x.date));
+ const rows=researchFilter?all.filter(x=>x.cat===researchFilter):all;
+ const count=id=>all.filter(x=>x.cat===id).length;
+ const chips=[['','הכול',all.length],...researchWorldCategories.map(c=>[c.id,c.label,count(c.id)])].filter(c=>c[2]).map(([id,label,n])=>`<button type="button" class="research-chip${id===researchFilter?' on':''}" data-research-cat="${escAttr(id)}" aria-pressed="${id===researchFilter}">${esc(label)} <small>${n}</small></button>`).join('');
+ const shown=rows.slice(0,researchShown),left=rows.length-shown.length;
+ root.innerHTML=`<div class="research-chips" role="group" aria-label="סינון לפי מדור">${chips}</div><div class="research-chronological-grid research-compact-grid">${shown.map(researchCardMarkup).join('')}</div>${left>0?`<div class="research-more-row"><button type="button" class="research-show-more" data-research-more>הצגת עוד ${Math.min(left,RESEARCH_PAGE)} <small>(נותרו ${left})</small></button></div>`:''}`;
+ root.onclick=e=>{
+   const chip=e.target.closest('[data-research-cat]');
+   if(chip){researchFilter=chip.dataset.researchCat;researchShown=RESEARCH_PAGE;renderResearchStudies();return}
+   if(e.target.closest('[data-research-more]')){researchShown+=RESEARCH_PAGE;renderResearchStudies()}
+ };
 }
 function renderResearchPracticeSources(){const root=document.getElementById('researchPracticeContent');if(!root)return;root.innerHTML=`<div class="research-chronological-grid">${researchPracticalSources.map(researchCardMarkup).join('')}</div>`}
 function renderResearchThemes(){
  const root=document.getElementById('researchThemeSections');if(!root)return;
  root.innerHTML=researchWorldCategories.map(cat=>{
    const rows=sortResearchItems([...researchWorldItems,...uploadedResearchItems].filter(x=>x.cat===cat.id&&x.date));
-   return `<section id="research-theme-${escAttr(cat.id)}" class="research-theme-section research-anchor"><div class="research-category-title"><h4>${esc(cat.label)}</h4><span>${rows.length} פריטים</span></div><div class="research-theme-list">${rows.map(x=>`<a class="research-theme-item" href="${escAttr(x.url)}" target="_blank" rel="noopener"><span class="research-theme-title">${esc(x.title)}</span><span class="research-theme-cite">${esc(x.authors||'')} (${esc(x.year||'')})</span></a>`).join('')}</div></section>`;
+   return `<details id="research-theme-${escAttr(cat.id)}" class="research-theme-section research-anchor"><summary class="research-category-title"><h4>${esc(cat.label)}</h4><span>${rows.length} פריטים</span></summary><div class="research-theme-list">${rows.map(x=>`<a class="research-theme-item" href="${escAttr(x.url)}" target="_blank" rel="noopener"><span class="research-theme-title">${esc(x.title)}</span><span class="research-theme-cite">${esc(x.authors||'')} (${esc(x.year||'')})</span></a>`).join('')}</div></details>`;
  }).join('');
 }
 const weeklyResearchNotes={
@@ -6409,6 +6452,10 @@ async function renderResearchWorld(){
  if(document.documentElement.dataset.page==='articles')loadLibrary(false).catch(()=>{});
 }
 document.addEventListener('DOMContentLoaded',renderResearchWorld);
+// מדור סגור נפתח כשמגיעים אליו מהניווט.
+function openResearchTheme(hash){const el=hash&&/^#research-theme-[\w-]+$/.test(hash)?document.getElementById(hash.slice(1)):null;if(el&&el.tagName==='DETAILS'){el.open=true;el.scrollIntoView({block:'start'})}}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#research-theme-"]');if(a)setTimeout(()=>openResearchTheme(a.getAttribute('href')),0)});
+window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
 </script>
 <script id="separate-pages-v38-js">
 (function(){
@@ -6640,6 +6687,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .join-strip .join-topics{border:1px solid #9fc2b0;background:#fff;color:#2a6048}
 .join-strip button:hover{filter:brightness(1.06);box-shadow:0 4px 14px rgba(47,110,79,.18)}
 .jt-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.mc-forgot{margin-top:14px;padding-top:10px;border-top:1px solid #e1e8ea}.mc-forgot summary{cursor:pointer;font-size:13px;color:#2c6987}.mc-forgot[open] summary{margin-bottom:6px}
 .jt-topics label,.nv-form .jt-topics label{display:flex;flex-direction:row;gap:8px;align-items:flex-start;font-size:13.5px;font-weight:400;color:inherit;cursor:pointer;padding:4px 2px}
 .nv-form .jt-topics input{width:17px!important;min-height:0!important}
 .jt-topics input{margin-top:4px;width:17px;height:17px;flex:none}
@@ -6700,40 +6748,133 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     });
   }
 
+  // ----- הכרטיס האישי: כניסה בקוד אישי -----
+  // הקוד נשלח בהצטרפות. הכניסה מחזירה אסימון אישי שנשמר בדפדפן, כך שלא צריך להקליד את הקוד בכל פעם.
+  const MKEY='hosen_member_token';
+  const memberToken=()=>{try{return localStorage.getItem(MKEY)||''}catch(e){return ''}};
+  const setMemberToken=t=>{try{t?localStorage.setItem(MKEY,t):localStorage.removeItem(MKEY)}catch(e){}};
+  // טופס כניסה בקוד, עם "שכחתי את הקוד" (הקוד נשלח למייל שבכרטיס). onDone מקבל את האסימון.
+  function memberLogin(root,title,onDone){
+    const opened=Date.now();
+    root.innerHTML=`<h2>${h(title)}</h2>
+      <p>לחברות ולחברי הנבחרת. נכנסים עם הקוד האישי שקיבלת במייל כשהצטרפת לקהילה.</p>
+      <form class="nv-row" data-code novalidate><input name="code" dir="ltr" placeholder="XXXX-XXXX" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" style="flex:1;min-width:160px;letter-spacing:2px;font-family:monospace;font-size:16px" aria-label="הקוד האישי"><button type="submit" class="nv-btn primary">כניסה</button></form>
+      <div class="nv-status" data-st></div>
+      <details class="mc-forgot"><summary>שכחתי את הקוד, או שעוד לא קיבלתי</summary>
+        <p class="nv-status">אפשר לכתוב את המייל שמופיע בכרטיס שלך בנבחרת, והקוד יישלח אליו.</p>
+        <form class="nv-row" data-recover novalidate><input name="email" type="email" dir="ltr" placeholder="name@example.com" autocomplete="email" style="flex:1;min-width:220px"><input name="website" class="jt-hp" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="submit" class="nv-btn">שליחת הקוד למייל</button></form>
+        <div class="nv-status" data-rst></div>
+      </details>`;
+    const f=root.querySelector('[data-code]'),st=root.querySelector('[data-st]');
+    setTimeout(()=>f.elements.code.focus(),50);
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();const code=f.elements.code.value.trim();
+      if(code.replace(/[^a-z0-9]/gi,'').length<8){st.className='nv-status err';st.textContent='הקוד בן 8 תווים, למשל AB2C-D3EF.';return}
+      const btn=f.querySelector('button');btn.disabled=true;st.className='nv-status';st.textContent='בודקת…';
+      try{const j=await post('/api/member',{action:'login',code});setMemberToken(j.token);onDone(j.token)}
+      catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
+    });
+    const rf=root.querySelector('[data-recover]'),rst=root.querySelector('[data-rst]');
+    rf.addEventListener('submit',async e=>{
+      e.preventDefault();const btn=rf.querySelector('button');btn.disabled=true;rst.className='nv-status';rst.textContent='שולחת…';
+      try{await post('/api/member',{action:'recover',email:rf.elements.email.value,website:rf.elements.website.value,elapsed:Math.max(Date.now()-opened,0)});rst.className='nv-status ok';rst.textContent='✓ הקוד נשלח למייל. אם הוא לא מגיע תוך כמה דקות, כדאי לבדוק גם בתיקיית הספאם.';btn.disabled=false}
+      catch(err){btn.disabled=false;rst.className='nv-status err';rst.textContent=err.message}
+    });
+  }
+  // הכרטיס של מי שנכנס/ה. אסימון שפג תוקפו נמחק, וחוזרים לכניסה בקוד.
+  async function loadMe(tok){
+    const r=await fetch('/api/member',{headers:{'x-member-token':tok}});const d=await r.json().catch(()=>({}));
+    if(!r.ok){if(r.status===403&&tok===memberToken())setMemberToken('');const e=new Error(d.message||'הכניסה לא הצליחה.');e.status=r.status;throw e}
+    return d;
+  }
+
+  async function openMyCard(tok){
+    const root=modal('<p class="nv-status">טוען…</p>');
+    tok=tok||memberToken();
+    if(!tok)return memberLogin(root,'👤 הכרטיס שלי',t=>{root.closest('.nv-modal').remove();openMyCard(t)});
+    let d;try{d=await loadMe(tok)}catch(err){if(err.status===403)return memberLogin(root,'👤 הכרטיס שלי',t=>{root.closest('.nv-modal').remove();openMyCard(t)});root.innerHTML=`<h2>👤 הכרטיס שלי</h2><p class="nv-status err">${h(err.message)}</p>`;return}
+    const kinds=(d.kinds||[]).map(k=>`<label><input type="checkbox" name="kinds" value="${h(k.key)}"${(d.offer?.kinds||[]).includes(k.key)?' checked':''}> ${h(k.icon||'')} ${h(k.label)}</label>`).join('');
+    const field=(name,label,attrs='',wide=false)=>`<label${wide?' class="wide"':''}>${label}<input name="${name}" value="${h(d[name]||'')}" ${attrs}></label>`;
+    root.innerHTML=`<h2>👤 הכרטיס שלי</h2>
+      <p>שלום ${h(d.name)}. כאן אפשר לעדכן את הכרטיס שלך בעמוד הנבחרת. השינויים מופיעים באתר מיד אחרי השמירה.</p>
+      <form class="nv-form" novalidate>
+        ${field('name','שם (כפי שיופיע בכרטיס)','autocomplete="name"')}
+        ${field('institution','מוסד או ארגון','autocomplete="organization"')}
+        <label class="wide">תחומי עיסוק ומחקר<textarea name="description" rows="5" dir="auto">${h(d.description)}</textarea></label>
+        ${field('email','מייל','type="email" dir="ltr" autocomplete="email"')}
+        ${field('phone','נייד','type="tel" dir="ltr" autocomplete="tel"')}
+        ${field('motto','משפט אישי (רשות)','dir="auto"',true)}
+        ${field('websiteUrl','אתר (רשות)','dir="ltr" placeholder="https://"')}
+        ${field('linkedinUrl','LinkedIn (רשות)','dir="ltr" placeholder="https://"')}
+        ${field('facebookUrl','Facebook (רשות)','dir="ltr" placeholder="https://"')}
+        ${field('instagramUrl','Instagram (רשות)','dir="ltr" placeholder="https://"')}
+        <div class="wide"><strong style="font-size:13px">🎯 תחומי העניין שלי</strong> <span class="nv-status">לפיהם נשלחים קולות קוראים, מענקים וכנסים, והסיכום השבועי.</span>${checks(d.themes,d.topics)}</div>
+        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכולה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד שיתופי פעולה.</span><div class="jt-topics">${kinds}</div>
+          <textarea name="offer" rows="3" dir="auto" placeholder="הפעילות, הרעיון או הנושא שאוכל לקדם" style="width:100%;margin-top:8px;box-sizing:border-box">${h(d.offer?.text||'')}</textarea></div>
+        <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירת הכרטיס</button><button type="button" class="nv-btn" data-out>יציאה</button></div>
+      </form><div class="nv-status" data-st></div>`;
+    const f=root.querySelector('form'),st=root.querySelector('[data-st]');
+    root.querySelector('[data-out]').onclick=()=>{setMemberToken('');root.closest('.nv-modal').remove()};
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();const v=k=>(f.elements[k].value||'').trim();
+      const topics=[...f.querySelectorAll('[name=topics]:checked')].map(i=>i.value);
+      const miss=[!v('name')&&'שם',!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))&&'מייל תקין',!topics.length&&'תחום עניין אחד לפחות'].filter(Boolean);
+      if(miss.length){st.className='nv-status err';st.textContent='נשמח ל'+miss.join(', ')+'.';return}
+      const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='שומרת…';
+      const data={action:'card-save',topics,offer:{kinds:[...f.querySelectorAll('[name=kinds]:checked')].map(i=>i.value),text:v('offer')}};
+      ['name','institution','description','email','phone','motto','websiteUrl','linkedinUrl','facebookUrl','instagramUrl'].forEach(k=>data[k]=v(k));
+      try{await post('/api/member',data,{'x-member-token':tok});btn.disabled=false;st.className='nv-status ok';st.textContent='✓ הכרטיס נשמר.';if(typeof loadPeople==='function')loadPeople().catch(()=>{})}
+      catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
+    });
+  }
+
   // ----- בחירת תחומי עניין (חברות הנבחרת) -----
   async function openMyTopics(tok){
-    const root=modal('<p class="nv-status">טוען…</p>');const opened=Date.now();
-    if(!tok){
-      root.innerHTML=`<h2>🎯 בחירת תחומי העניין שלי</h2>
-        <p>לחברות ולחברי הנבחרת. כתבו את המייל שמופיע בכרטיס שלכם, ויישלח אליכם קישור אישי לבחירה.</p>
-        <p class="nv-status">לפי הבחירה יישלחו אליכם קולות קוראים, מענקים וכנסים, וגם הסיכום השבועי יותאם. הבחירה נשמרת בכרטיס, ואפשר לשנות אותה בכל עת.</p>
-        <form class="nv-row" novalidate><input name="email" type="email" dir="ltr" placeholder="name@example.com" autocomplete="email" style="flex:1;min-width:220px"><input name="website" class="jt-hp" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="submit" class="nv-btn primary">שליחת קישור</button></form>
-        <div class="nv-status" data-st></div>`;
-      const f=root.querySelector('form'),st=root.querySelector('[data-st]');
-      f.addEventListener('submit',async e=>{
-        e.preventDefault();const btn=f.querySelector('button');btn.disabled=true;st.className='nv-status';st.textContent='שולחת…';
-        try{await post('/api/member',{action:'link',email:f.elements.email.value,website:f.elements.website.value,elapsed:Math.max(Date.now()-opened,0)});st.className='nv-status ok';st.textContent='✓ נשלח קישור אישי למייל. אם הוא לא מגיע תוך כמה דקות, כדאי לבדוק גם בתיקיית הספאם.'}
-        catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
-      });
-      return;
-    }
+    const root=modal('<p class="nv-status">טוען…</p>');
+    if(tok)setMemberToken(tok);
+    tok=tok||memberToken();
+    const relogin=()=>memberLogin(root,'🎯 בחירת תחומי העניין שלי',t=>{root.closest('.nv-modal').remove();openMyTopics(t)});
+    if(!tok)return relogin();
     try{
-      const r=await fetch('/api/member',{headers:{'x-member-token':tok}});const d=await r.json();if(!r.ok)throw new Error(d.message||'הקישור לא תקין.');
+      const d=await loadMe(tok);
       root.innerHTML=`<h2>🎯 תחומי העניין שלי</h2>
         <p>שלום ${h(d.name)}${d.institution?` · <span class="nv-status">${h(d.institution)}</span>`:''}</p>
         <p class="nv-status">${d.chosen?'זו הבחירה השמורה בכרטיס שלך. אפשר לשנות ולשמור.':'סימנו מראש תחומים לפי מה שכתוב בכרטיס שלך. אפשר להוסיף, להוריד ולשמור.'} לפי התחומים האלה יישלחו אלייך קולות קוראים, מענקים וכנסים, וגם הסיכום השבועי יותאם.</p>
-        <form novalidate>${checks(d.themes,d.topics)}<div class="nv-row" style="margin-top:12px"><button type="submit" class="nv-btn primary">שמירה בכרטיס</button></div></form><div class="nv-status" data-st></div>`;
+        <form novalidate>${checks(d.themes,d.topics)}<div class="nv-row" style="margin-top:12px"><button type="submit" class="nv-btn primary">שמירה בכרטיס</button><button type="button" class="nv-btn" data-card>👤 לכל הכרטיס שלי</button></div></form><div class="nv-status" data-st></div>`;
+      root.querySelector('[data-card]').onclick=()=>{root.closest('.nv-modal').remove();openMyCard(tok)};
       const f=root.querySelector('form'),st=root.querySelector('[data-st]');
       f.addEventListener('submit',async e=>{
         e.preventDefault();const topics=[...f.querySelectorAll('[name=topics]:checked')].map(i=>i.value);
-        if(!topics.length){st.className='nv-status err';st.textContent='נא לבחור לפחות תחום אחד.';return}
-        try{await post('/api/member',{action:'save',topics},{'x-member-token':tok});st.className='nv-status ok';st.textContent=`✓ נשמר בכרטיס (${topics.length===1?"תחום אחד":topics.length+" תחומים"}). אפשר לחזור לקישור הזה ולשנות בכל עת.`}
+        if(!topics.length){st.className='nv-status err';st.textContent='נשמח לתחום אחד לפחות.';return}
+        try{await post('/api/member',{action:'save',topics},{'x-member-token':tok});st.className='nv-status ok';st.textContent=`✓ נשמר בכרטיס (${topics.length===1?"תחום אחד":topics.length+" תחומים"}).`}
         catch(err){st.className='nv-status err';st.textContent=err.message}
       });
     }catch(err){
-      root.innerHTML=`<h2>🎯 תחומי העניין שלי</h2><p class="nv-status err">${h(err.message)}</p><button type="button" class="nv-btn primary" data-new>בקשת קישור חדש</button>`;
-      root.querySelector('[data-new]').onclick=()=>{root.closest('.nv-modal').remove();openMyTopics()};
+      if(err.status===403)return relogin();
+      root.innerHTML=`<h2>🎯 תחומי העניין שלי</h2><p class="nv-status err">${h(err.message)}</p>`;
     }
+  }
+
+  // ----- מנהלת המערכת: קוד אישי לנבחרת -----
+  async function codesAll(){
+    const onlyNew=confirm('לשלוח קוד אישי לעדכון הכרטיס?\n\nאישור = רק למי שעוד אין לה/לו קוד.\nביטול = לכולם (מי שכבר יש לה/לו קוד יקבל/תקבל את אותו קוד שוב).');
+    if(!onlyNew&&!confirm('לשלוח את הקוד האישי לכל חברות וחברי הנבחרת שיש להם מייל?'))return;
+    try{
+      const j=await post('/api/member',{action:'code-invite-all',onlyNew},{Authorization:'Bearer '+token()});
+      alert(`נשלחו ${j.sent} מתוך ${j.total} מיילים.${j.failed.length?`\nלא נשלח אל: ${j.failed.join(', ')}${j.reason?`\n${j.reason}`:''}`:''}`);
+    }catch(err){alert(err.message)}
+  }
+  // קוד לכרטיס אחד (לפי שם): מוצג כאן, ונשלח גם במייל כשאפשר.
+  async function codeOne(){
+    let people=[];try{people=await (await fetch('/api/people')).json()}catch(e){}
+    const q=(prompt('קוד אישי לכרטיס אחד. שם או חלק מהשם:')||'').trim();if(!q)return;
+    const hit=people.filter(p=>String(p.name||'').includes(q));
+    if(hit.length!==1){alert(hit.length?`נמצאו ${hit.length} כרטיסים: ${hit.map(p=>p.name).join(', ')}. אפשר לדייק את השם.`:'לא נמצא כרטיס בשם הזה.');return}
+    const fresh=confirm(`${hit[0].name}\n\nאישור = קוד חדש (הקוד הקודם יפסיק לפעול).\nביטול = הקוד הקיים (או קוד ראשון, אם עוד אין).`);
+    try{
+      const j=await post('/api/member',{action:'code-send',personId:hit[0].id,fresh},{Authorization:'Bearer '+token()});
+      prompt(`הקוד האישי של ${j.name}${j.sent?' (נשלח גם במייל)':j.reason?` (המייל לא נשלח: ${j.reason})`:' (לא נשלח במייל)'}:`,j.code);
+    }catch(err){alert(err.message)}
   }
 
   // ----- מנהלת המערכת: קישור אישי לכל הנבחרת -----
@@ -6746,16 +6887,20 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     }catch(err){alert(err.message)}
   }
 
-  window.hosenJoin=openJoin;window.hosenMyTopics=()=>openMyTopics();
+  window.hosenJoin=openJoin;window.hosenMyTopics=()=>openMyTopics();window.hosenMyCard=()=>openMyCard();
+  window.hosenMemberToken=memberToken;window.hosenSetMemberToken=setMemberToken;window.hosenMemberLogin=memberLogin;
   document.addEventListener('DOMContentLoaded',()=>{
     const m=location.hash.match(/^#my-topics=(.+)$/);
     if(m){const tok=decodeURIComponent(m[1]);history.replaceState(null,'',location.pathname);openMyTopics(tok)}
     if(location.hash==='#join'){history.replaceState(null,'',location.pathname);openJoin()}
+    if(location.hash==='#my-card'){history.replaceState(null,'',location.pathname);openMyCard()}
     const mail=document.getElementById('adminCommunityMail');
     if(mail&&!document.getElementById('adminTopicsInvite')){
       const b=document.createElement('button');b.id='adminTopicsInvite';b.type='button';b.className='admin-community-mail';b.textContent='🎯 קישור לבחירת נושאים לנבחרת';b.onclick=inviteAll;
       (document.getElementById('adminRequests')||mail).after(b);
-      const sync=()=>{b.hidden=!!mail.hidden};new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
+      const c=document.createElement('button');c.id='adminMemberCodes';c.type='button';c.className='admin-community-mail';c.textContent='🔑 קודים אישיים לנבחרת';c.onclick=codesAll;b.after(c);
+      const c1=document.createElement('button');c1.id='adminMemberCode';c1.type='button';c1.className='admin-community-mail';c1.textContent='🔑 קוד לכרטיס אחד';c1.onclick=codeOne;c.after(c1);
+      const sync=()=>{b.hidden=c.hidden=c1.hidden=!!mail.hidden};new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
     }
   });
 })();
@@ -6934,7 +7079,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
         <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
         <li><strong>🙋 הצטרפות:</strong> לוחצים "אני רוצה להצטרף" וכותבים שם ומייל. מי שפרסמה את הבקשה מקבלת מייל וחוזרת אלייך. כשנמצאו שותפות, אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת.</li>
-        <li><strong>✏️ מה אני יכולה לקדם:</strong> כותבים את המייל שבכרטיס שלך, ומקבלים קישור אישי לעדכון.</li>
+        <li><strong>✏️ מה אני יכולה לקדם:</strong> נכנסים עם הקוד האישי שקיבלת בהצטרפות (ואם נשכח, הוא נשלח שוב למייל שבכרטיס).</li>
       </ol></details>
       <div class="cb-tabs" role="tablist"></div><div data-panel><p class="cb-empty">טוען…</p></div>`;
     (document.getElementById('callsHub')||head).after(root); // קבוצות המשימה קודם, השידוכים אחריהן
@@ -7350,26 +7495,20 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   // "מה אני יכולה לקדם": חברת נבחרת בקישור אישי במייל, ומנהלת המערכת לכל כרטיס.
   async function openOffer(tok){
     const root=modal('<p class="nv-status">טוען…</p>');const opened=Date.now();
-    if(!tok&&!adminToken()){
-      root.innerHTML=`<h2>✏️ מה אני יכולה לקדם</h2>
-        <p>לחברות ולחברי הנבחרת. כתבו את המייל שמופיע בכרטיס שלכם, ויישלח אליכם קישור אישי לעדכון.</p>
-        <form class="nv-row" novalidate><input name="email" type="email" dir="ltr" placeholder="name@example.com" autocomplete="email" style="flex:1;min-width:220px"><input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true"><button type="submit" class="nv-btn primary">שליחת קישור</button></form>
-        <div class="nv-status" data-st></div>
-        <p class="nv-status" style="margin-top:14px">מנהלת המערכת? <a href="#" data-admin>כניסה עם קוד הניהול</a>, לעדכון כל כרטיס.</p><div data-login></div>`;
+    if(tok&&window.hosenSetMemberToken)window.hosenSetMemberToken(tok);
+    if(!tok&&!adminToken())tok=window.hosenMemberToken?window.hosenMemberToken():'';
+    // בלי כניסה: הקוד האישי (ומנהלת המערכת: קוד הניהול, לעדכון כל כרטיס).
+    const codeLogin=()=>{
+      window.hosenMemberLogin(root,'✏️ מה אני יכולה לקדם',t=>{root.close();openOffer(t)});
+      root.insertAdjacentHTML('beforeend','<p class="nv-status" style="margin-top:14px">מנהלת המערכת? <a href="#" data-admin>כניסה עם קוד הניהול</a>, לעדכון כל כרטיס.</p><div data-login></div>');
       root.querySelector('[data-admin]').onclick=ev=>{ev.preventDefault();adminLogin(root.querySelector('[data-login]'),()=>{root.close();openOffer()})};
-      const f=root.querySelector('form'),st=root.querySelector('[data-st]');
-      f.addEventListener('submit',async e=>{
-        e.preventDefault();const btn=f.querySelector('button');btn.disabled=true;st.className='nv-status';st.textContent='שולחת…';
-        try{await post({action:'offer-link',email:f.elements.email.value,website:f.elements.website.value,elapsed:Date.now()-opened});st.className='nv-status ok';st.textContent='✓ נשלח קישור אישי למייל. אם הוא לא מגיע תוך כמה דקות, כדאי לבדוק גם בתיקיית הספאם.'}
-        catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
-      });
-      return;
-    }
+    };
+    if(!tok&&!adminToken())return codeLogin();
     let me;
     try{
-      if(tok){const r=await fetch('/api/collab?me=1',{headers:{'x-member-token':tok}});me=await r.json();if(!r.ok)throw new Error(me.message||'הקישור לא תקין.');if(!S.kinds.length)S.kinds=me.kinds}
+      if(tok){const r=await fetch('/api/collab?me=1',{headers:{'x-member-token':tok}});me=await r.json();if(r.status===403){if(window.hosenSetMemberToken)window.hosenSetMemberToken('');return codeLogin()}if(!r.ok)throw new Error(me.message||'הקישור לא תקין.');if(!S.kinds.length)S.kinds=me.kinds}
     }catch(err){
-      root.innerHTML=`<h2>✏️ מה אני יכולה לקדם</h2><p class="nv-status err">${h(err.message)}</p><button type="button" class="nv-btn primary" data-new>בקשת קישור חדש</button>`;
+      root.innerHTML=`<h2>✏️ מה אני יכולה לקדם</h2><p class="nv-status err">${h(err.message)}</p><button type="button" class="nv-btn primary" data-new>כניסה בקוד האישי</button>`;
       root.querySelector('[data-new]').onclick=()=>{root.close();openOffer()};return;
     }
     const pick=!tok;
@@ -7390,7 +7529,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       if(pick&&!adminToken())return relogin();
       try{
         await post({action:'offer-save',kinds,text,personId:pick?root.querySelector('[name=pid]').value:''},tok?{'x-member-token':tok}:{Authorization:'Bearer '+adminToken()});
-        st.className='nv-status ok';st.textContent='✓ נשמר בכרטיס. אפשר לחזור לקישור הזה ולשנות בכל עת.';
+        st.className='nv-status ok';st.textContent='✓ נשמר בכרטיס. אפשר לשנות בכל עת בכפתור "👤 הכרטיס שלי".';
         document.querySelectorAll('#peopleGrid .person[data-cb]').forEach(el=>el.removeAttribute('data-cb'));
         await load().catch(()=>{});
       }catch(err){if(pick&&err.code==='admin_expired')return relogin();st.className='nv-status err';st.textContent=err.message}

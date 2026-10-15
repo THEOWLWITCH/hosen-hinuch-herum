@@ -13,7 +13,7 @@ import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 
 const FILE = "index.html";
-const CATS = ["preparedness", "resilience", "continuity", "teachers", "tech"];
+const CATS = ["preparedness", "resilience", "continuity", "teachers", "tech", "org"];
 
 function range(src, name) {
   const at = src.indexOf(`const ${name}=`);
