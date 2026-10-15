@@ -3020,6 +3020,10 @@ html[data-page="tasks"] #tasks{display:block!important}
 .tf-out tr:nth-child(even) td{background:#f6fafb}
 .tf-out td.n{white-space:nowrap}
 .tf-hint{font-size:12.5px;color:var(--tf-soft);margin:6px 0 0}
+.tf-about{margin-top:14px;border-top:1px solid #d3e4ea;padding-top:10px}
+.tf-about summary{cursor:pointer;color:var(--tf-accent);font-weight:600}
+.tf-about h4{font-size:15px;margin:12px 0 4px}
+.tf-about p{margin:0 0 6px}
 .tf-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .tf-missing{margin-top:12px;padding:12px 14px;border:1px dashed #e0c48e;border-radius:10px;background:#fffbf3;font-size:13px}
 .tf-missing ul{margin:6px 0 0;padding-inline-start:20px}
@@ -3394,15 +3398,17 @@ html[data-page="tasks"] #tasks{display:block!important}
         if(!t)return {empty:'אין קבוצה זמינה בדפדפן הזה.'};
         return {title:t.title,body:proposalBody(t,null,o)};
       }},
-    abstract:{group:'write',icon:'🌐',title:'תקציר בעברית, בערבית ובאנגלית',desc:'תקציר אחד בעברית, בערבית ובאנגלית.',cost:'model',
-      reason:'כתיבה ותרגום של תקציר דורשים מודל שפה.',
-      free:{label:'תבנית ריקה לתקציר בשלוש שפות',run(){
-        const L=[['עברית','rtl',['רקע','מטרה','שיטה','ממצאים','מסקנות','מילות מפתח']],['العربية','rtl',['الخلفية','الهدف','المنهجية','النتائج','الاستنتاجات','الكلمات المفتاحية']],['English','ltr',['Background','Aims','Method','Findings','Conclusions','Keywords']]];
-        const body=`<h3>תקציר בשלוש שפות</h3>`+L.map(([n,d,hs])=>`<div dir="${d}"><h4>${h(n)}</h4>${hs.map(x=>`<p><strong>${h(x)}:</strong> </p>`).join('')}</div>`).join('');
+    abstract:{group:'write',icon:'🌐',title:'תבנית לתקציר בשלוש שפות',desc:'תבנית מסודרת בעברית, בערבית ובאנגלית, עם כותרות המבנה המקובל, למילוי ולעריכה.',cost:'free',
+      defaults:{title:''},
+      async form(o){return `<label class="wide">כותרת המחקר (רשות)<input name="title" dir="auto" value="${h(o.title||'')}" placeholder="תופיע בראש כל אחת משלוש השפות"></label>
+        <p class="tf-help">אֲרִיאַדְנֶה לא כותבת ולא מתרגמת את התקציר: זה דורש מודל שפה, ולכן עלות נוספת. היא מכינה את המבנה, ואת התוכן כותבים בתבנית.</p>`},
+      async run(o){
+        const L=[['עברית','rtl','כותרת',['רקע','מטרה','שיטה','ממצאים','מסקנות','מילות מפתח']],['العربية','rtl','العنوان',['الخلفية','الهدف','المنهجية','النتائج','الاستنتاجات','الكلمات المفتاحية']],['English','ltr','Title',['Background','Aims','Method','Findings','Conclusions','Keywords']]];
+        const body=`<h3>תקציר בשלוש שפות</h3>`+L.map(([n,d,tl,hs])=>`<div dir="${d}"><h4>${h(n)}</h4><p><strong>${h(tl)}:</strong> ${h(o.title||'')}</p>${hs.map(x=>`<p><strong>${h(x)}:</strong> </p>`).join('')}</div>`).join('');
         return {title:'תקציר בשלוש שפות',body};
-      }}}
+      }}
   };
-  const GROUPS=[['lib','📚 מהספרייה'],['calls','📅 קולות קוראים'],['people','👥 אנשים וקבוצות'],['write','✍ כתיבה']];
+  const GROUPS=[['lib','📚 מהספרייה'],['calls','📅 קולות קוראים'],['people','👥 אנשים וקבוצות'],['write','✍ תבניות']];
   function stepRow(t,d){return `<div class="tf-steprow"><input type="text" data-s="t" value="${h(t)}" aria-label="השלב"><input type="number" min="0" data-s="d" value="${h(d)}" aria-label="ימים לפני המועד"><button type="button" class="tf-btn small danger" data-act="step-del" aria-label="הסרת השלב">✕</button></div>`}
   function refFiles(list){return [
     {label:'📚 RIS (זוטרו, מנדלי, EndNote)',name:'מקורות.ris',type:'application/x-research-info-systems;charset=utf-8',content:()=>ris(list)},
@@ -3454,7 +3460,16 @@ html[data-page="tasks"] #tasks{display:block!important}
     root.innerHTML=`<div class="tf-hero"><h2>🧵 ${NAME}: עוזרת למשימות</h2>
       <p>${NAME} אוספת מכל האתר ומגישה משהו מוכן: רשימות מקורות, קבצים לזוטרו, טבלאות מועדים, לוחות זמנים להגשה ומסמכים. המשימות מסדרות את מה שכבר יש באתר, בדפדפן, ולכן הן חינמיות. משימה שדורשת מודל שפה נעצרת לפני כל פנייה, עם הודעה.</p>
       <form class="tf-ask" id="tfAsk"><textarea name="ask" rows="1" dir="auto" placeholder="מה תרצו לעשות? למשל: רשימת מקורות APA על רציפות למידה מ-2020" aria-label="מה תרצו לעשות"></textarea><button class="tf-btn primary">חיפוש משימה</button></form>
-      <div id="tfAskOut"></div></div>
+      <div id="tfAskOut"></div>
+      <details class="tf-about"><summary>על אֲרִיאַדְנֶה ועל השם</summary>
+        <h4>למה אֲרִיאַדְנֶה?</h4>
+        <p>במיתולוגיה היוונית אריאדנה נתנה לתזאוס פקעת חוט, כדי שימצא את הדרך החוצה מהמבוך. "החוט של אריאדנה" הוא עד היום ביטוי לחוט שמוביל בתוך מבוך. אֲרִיאַדְנֶה שלנו מושכת את החוט בתוך האתר: הספרייה, הקולות הקוראים, כרטיסי הנבחרת וקבוצות המשימה, ומגישה תוצר מסודר שאפשר לערוך, להעתיק ולשמור. מבטאים אַ־רִי־<strong>אַד</strong>־נֶה.</p>
+        <h4>רק משימות בלי עלות</h4>
+        <p>כל המשימות כאן רצות בדפדפן מתוך הנתונים שכבר באתר, בלי מודל שפה, ולכן הן אינן כרוכות בעלות. משימות אפשריות אחרות, כמו כתיבת סקירת ספרות, סיכום מחקרים, תרגום תקציר או ניסוח מכתב, דורשות מודל שפה, וכל הפעלה שלהן עולה כסף. לכן הן הוסרו מהרשימה.</p>
+        <p>בקשה כזו בתיבה למעלה נעצרת לפני כל פנייה למודל, ואפשר לשלוח אותה כהצעה למנהלת הקהילה.</p>
+        <h4>לא ממציאה פרטים</h4>
+        <p>פרט שחסר בספרייה, כמו DOI, כרך או עמודים, מסומן ב"מה חסר" ולא מושלם מהדמיון.</p>
+      </details></div>
       ${mine.length?`<div class="tf-group"><h3>⭐ המשימות שלי</h3><div class="tf-mine">${mine.map(m=>`<div><button type="button" class="tf-btn small" data-act="mine-run" data-id="${h(m.id)}">${h(TASKS[m.task]?.icon||'')} ${h(m.name)}</button><button type="button" class="tf-btn small danger" data-act="mine-del" data-id="${h(m.id)}" aria-label="מחיקת המשימה ${h(m.name)}">✕</button></div>`).join('')}</div></div>`:''}
       ${GROUPS.map(([gk,gl])=>`<div class="tf-group"><h3>${gl}</h3><div class="tf-grid">${Object.entries(TASKS).filter(([,t])=>t.group===gk).map(([k,t])=>`<button type="button" class="tf-card" data-act="open" data-task="${k}"><strong>${t.icon} ${h(t.title)}</strong><span>${h(t.desc)}</span></button>`).join('')}</div></div>`).join('')}`;
     S.task='';
