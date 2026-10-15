@@ -2307,7 +2307,7 @@ body:has(.feedback-modal.open){
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
 </div>
-<div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button></div>
+<div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button><a class="join-topics join-guide" href="/guide">📖 המדריך לקהילה</a></div>
 </div>
 </div></section>
 <section id="match" class="match"><div class="wrap">
@@ -5230,7 +5230,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
   <span>עיצוב ובניית האתר: ד"ר יעל שדה</span>
   <a href="tel:+972523969417">052-3969417</a>
   <a href="mailto:Yael.sade@gmail.com">Yael.sade@gmail.com</a>
-  <button type="button" class="feedback-link" onclick="openFeedback()">בקשות / תיקונים / רעיונות / תקלות</button>
+  <a class="feedback-link" href="/guide" style="text-decoration:none">📖 המדריך לקהילה</a> <button type="button" class="feedback-link" onclick="openFeedback()">בקשות / תיקונים / רעיונות / תקלות</button>
 </div>
 
 
@@ -6748,6 +6748,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .join-strip .join-topics{border:1px solid #9fc2b0;background:#fff;color:#2a6048}
 .join-strip button:hover{filter:brightness(1.06);box-shadow:0 4px 14px rgba(47,110,79,.18)}
 .jt-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.join-guide{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
 .mc-forgot{margin-top:14px;padding-top:10px;border-top:1px solid #e1e8ea}.mc-forgot summary{cursor:pointer;font-size:13px;color:#2c6987}.mc-forgot[open] summary{margin-bottom:6px}
 .jt-topics label,.nv-form .jt-topics label{display:flex;flex-direction:row;gap:8px;align-items:flex-start;font-size:13.5px;font-weight:400;color:inherit;cursor:pointer;padding:4px 2px}
 .nv-form .jt-topics input{width:17px!important;min-height:0!important}

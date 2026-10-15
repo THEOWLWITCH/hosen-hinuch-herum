@@ -12,6 +12,7 @@ await rm("dist", { recursive: true, force: true });
 await mkdir("dist", { recursive: true });
 
 await copyFile("index.html", "dist/index.html");
+await copyFile("guide.html", "dist/guide.html"); // המדריך לקהילה: /guide
 
 try {
   await access("_redirects");
