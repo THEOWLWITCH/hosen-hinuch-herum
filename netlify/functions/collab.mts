@@ -346,7 +346,7 @@ export default async (req: Request) => {
     r.status = "team";
     if (!r.initiators.some(i => norm(i.email) === norm(email))) r.initiators.push({ id: crypto.randomUUID().slice(0, 8), name, email, note: "פתח/ה את מרחב העבודה", at, personId: clip(body.personId, 80) });
     await saveResearch(r);
-    const link = `${site}/calls#team=${t.id}.${key}`;
+    const link = `${site}/match#team=${t.id}.${key}`;
     let mailed = 0;
     for (const m of t.members) {
       if (await mail(m.email, `מרחב העבודה של "${t.title}"`,
@@ -354,6 +354,33 @@ export default async (req: Request) => {
         ["כניסה למרחב העבודה", link])) mailed++;
     }
     return json({ ok: true, link, mailed, members: t.members.length });
+  }
+
+  // ----- יציאה מרשימה: מצטרפים/ות לבקשה, או יוזמים/ות של רעיון למחקר, לפי המייל שאיתו נרשמו -----
+  // מנהלת המערכת מוציאה לפי שם (admin-person-remove).
+  if (action === "leave" || action === "admin-person-remove") {
+    const isAdmin = action === "admin-person-remove";
+    if (isAdmin && !(await validToken(req, "admin"))) return json(ADMIN_EXPIRED, 401);
+    const email = norm(body.email), name = clip(body.name, 160);
+    if (!isAdmin && !email.includes("@")) return json({ error: "missing_fields", message: "נשמח למייל שאיתו הצטרפת." }, 400);
+    const hit = (p: { name: string; email: string }) => isAdmin ? p.name === name : norm(p.email) === email;
+    const notFound = json({ error: "not_found", message: isAdmin ? "השם לא נמצא ברשימה." : "המייל לא נמצא ברשימה. אפשר לנסות את המייל שאיתו הצטרפת, או לכתוב בכפתור המשוב בתחתית האתר." }, 404);
+    if (body.kind === "research") {
+      const r = await getResearch(clip(body.id, 80));
+      if (!r) return json({ error: "not_found" }, 404);
+      const left = r.initiators.filter(i => !hit(i));
+      if (left.length === r.initiators.length) return notFound;
+      r.initiators = left;
+      await saveResearch(r);
+    } else {
+      const c = await getCollab(clip(body.id, 80));
+      if (!c) return json({ error: "not_found" }, 404);
+      const left = c.joiners.filter(j => !hit(j));
+      if (left.length === c.joiners.length) return notFound;
+      c.joiners = left;
+      await saveCollab(c);
+    }
+    return json({ ok: true });
   }
 
   // ----- מנהלת המערכת -----
@@ -391,7 +418,7 @@ export default async (req: Request) => {
       for (const j of c.joiners) t.members.push({ name: j.name, email: j.email, role: "", joinedAt: at });
       t.status = "writing";
       await saveTeam(t);
-      const link = `${site}/calls#team=${t.id}.${key}`;
+      const link = `${site}/match#team=${t.id}.${key}`;
       c.teamId = t.id;
       c.status = "matched";
       await saveCollab(c);

@@ -4213,11 +4213,6 @@ html[data-page="calls"] #resourceArea{display:none!important}
       </div>
       <div class="ch-chips" id="chChips" aria-label="סינון לפי נושא"></div>
       <div class="ch-list" id="chList"><p class="ch-empty">טוען קולות קוראים…</p></div>
-      <section class="ch-section" id="teams" aria-labelledby="chTeamsTitle">
-        <h3 id="chTeamsTitle">🤝 זירת קבוצות המשימה</h3>
-        <p>קבוצות אד־הוק להגשות משותפות — סביב קול קורא מהרשימה, או סביב <strong>קול קורא פנימי</strong> שחוקרת מהקהילה מציעה. כל קבוצה כותבת את ההצעה בסביבת עבודה משלה.</p>
-        <div class="ch-list" id="chTeams"></div>
-      </section>
       <details class="ch-section ch-archive" id="chArchiveWrap" hidden>
         <summary>קולות קוראים שנסגרו וסיפורי הצלחה</summary>
         <div class="ch-list" id="chArchive" style="margin-top:12px"></div>
@@ -4240,10 +4235,12 @@ html[data-page="calls"] #resourceArea{display:none!important}
     root.innerHTML=`<section class="ch-section" id="teams" style="margin-top:0" aria-labelledby="chTeamsTitle">
         <div class="ch-intro"><div><h3 id="chTeamsTitle">🤝 קבוצות משימה שמחפשות שותפות</h3>
           <p>הגשות משותפות ומיזמי יישום — סביב קול קורא, קול קורא פנימי או רעיון מנבט 🌱. כל קבוצה עובדת בסביבת עבודה משלה, ומחכה לשותפות.</p></div>
-          <div class="ch-actions"><button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button></div></div>
+          <div class="ch-actions"><button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button><button type="button" class="ch-btn" data-ch="teams-admin" hidden id="chTeamsAdminBtn">⚙ ניהול קבוצות משימה</button></div></div>
         <div class="ch-list" id="chTeams"><p class="ch-empty">טוען…</p></div></section>`;
     head.after(root);
     root.addEventListener('click',onClick);
+    const syncAdmin=()=>{const b=document.getElementById('chTeamsAdminBtn');if(b)b.hidden=!(()=>{try{return sessionStorage.getItem('hosen_editor_token')}catch(e){return ''}})()};
+    syncAdmin();setInterval(syncAdmin,2000);
   }
 
   async function load(){
@@ -4323,7 +4320,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${filesHtml(c)}
       ${(c.topics||[]).length?`<div class="ch-tags">${c.topics.map(k=>`<span class="ch-tag">${h(state.themes[k]||k)}</span>`).join('')}</div>`:''}
       ${!archived&&matches?`<p class="ch-match"><strong>מתאים במיוחד ל:</strong> ${matches}</p>`:''}
-      ${teams.length?`<div class="ch-teams"><h4>🤝 קבוצות משימה סביב הקול הקורא</h4>${teams.map(teamRow).join('')}</div>`:''}
+      ${teams.length?`<div class="ch-teams"><a href="/match#teams">🤝 ${teams.length===1?'קבוצת משימה אחת':teams.length+' קבוצות משימה'} סביב הקול הקורא, בשיתופי פעולה ←</a></div>`:''}
       ${archived?'':`<div class="ch-card-actions">
         ${c.url||c.fileUrl?`<a class="ch-btn small primary" href="${h(c.url||c.fileUrl)}" target="_blank" rel="noopener">לפרטים ולהגשה</a>`:''}
         <button type="button" class="ch-btn small" data-ch="team-new" data-call="${h(c.id)}">🤝 הקמת קבוצה להגשה</button>
@@ -4670,7 +4667,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
           try{await act('member-join',d);store.set('hosen.team.myname',d.member);jm.close();render(true);msg(`${d.member} הצטרפה לצוות.`,'ok')}
           catch(err){setStatus(jm.querySelector('.ch-status'),err.message,'err')}});
         return}
-      if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/calls#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
+      if(w==='link')return modal(`<h2>קישור לסביבת העבודה</h2><p>שלחי את הקישור רק לחברות הקבוצה. מי שיש לה אותו יכולה להיכנס ולכתוב.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/match#team='+teamId+'.'+key)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
       if(w==='print')return printProposal(ws.team,call());
       if(w==='word')return window.hosenAriadne?.wordProposal(ws.team,call());
     });
@@ -4737,11 +4734,12 @@ html[data-page="calls"] #resourceArea{display:none!important}
         sessionStorage.setItem('hosen_calls_token',j.token);m.close();openCallsAdmin()}catch(err){setStatus(st,'הקוד שגוי.','err')}});
   }
 
-  async function openCallsAdmin(){
-    const token=adminToken();
+  async function openCallsAdmin(mode){
+    const teamsOnly=mode==='teams';
+    const token=teamsOnly?(()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}})():adminToken();
     if(!token){alert('יש להיכנס קודם דרך "🔒 ניהול מערכת" בתחתית העמוד.');return}
     const m=modal('<div id="chAdm"></div>',true);
-    const A={tab:'inbox',d:null};
+    const A={tab:teamsOnly?'teams':'inbox',d:null};
     const call=(action,payload)=>api('/api/calls',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action,...payload})});
     async function reload(){
       try{A.d=await api('/api/calls?admin=1',{headers:{Authorization:'Bearer '+token}});
@@ -4774,8 +4772,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
     function render(){
       const d=A.d,t=A.tab;
       const isAdmin=d.role!=='calls';
-      const tabs=[['inbox',`📥 לאישור (${d.inbox.length})`],['calls','📢 מפורסמים'],...(isAdmin?[['teams',`🤝 קבוצות (${(A.teams||[]).length})`]]:[]),['sources','🔎 מקורות לאיסוף'],...(isAdmin?[['mail','✉ מיילים']]:[])];
-      let html=`<h2>ניהול קולות קוראים</h2>${isAdmin?'':'<p class="ch-credit">נכנסת כצוות אישור הקולות הקוראים. <button type="button" class="ch-btn small" data-act="calls-logout">יציאה</button></p>'}<nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
+      const tabs=teamsOnly?[['teams',`🤝 קבוצות (${(A.teams||[]).length})`]]:[['inbox',`📥 ממתינים (${d.inbox.length})`],['calls','📢 מפורסמים'],['sources','🔎 מקורות לאיסוף'],...(isAdmin?[['mail','✉ מיילים']]:[])];
+      let html=`<h2>${teamsOnly?'ניהול קבוצות משימה':'ניהול קולות קוראים'}</h2>${isAdmin?'':'<p class="ch-credit">נכנסת כצוות אישור הקולות הקוראים. <button type="button" class="ch-btn small" data-act="calls-logout">יציאה</button></p>'}<nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
       if(t==='inbox')html+=`<div class="ch-note" style="margin-bottom:12px"><strong>פרסום אוטומטי.</strong> כל יום ראשון בבוקר כל מה שממתין כאן עולה לאתר, בלי מיון, וחצי שעה אחר כך יוצא הסיכום השבועי לחוקרים ולחוקרות. קול קורא שהמועד שלו עבר לא עולה. אפשר גם לפרסם ולשלוח עכשיו:
         <div class="ch-actions" style="margin-top:8px"><button type="button" class="ch-btn primary" data-act="publish-all"${d.inbox.length?'':' disabled'}>📤 פרסום כל הממתינים (${d.inbox.length}) ושליחה עכשיו</button></div></div>`;
       if(t==='inbox')html+=d.inbox.length?d.inbox.map(x=>`<div class="ch-admin-item"><h4 dir="auto">${h(x.title)}</h4><p class="ch-credit">${x.source==='member'?`הוצע על ידי ${h(x.suggestedBy||'')}${x.suggestedEmail?' · '+h(x.suggestedEmail):''}`:`נמצא אוטומטית · ${h(x.sourceName)}`} · <a href="${h(x.url)}" target="_blank" rel="noopener">פתיחת המקור לבדיקה</a></p>${editor(x,true)}</div>`).join(''):'<p class="ch-empty">אין קולות קוראים שמחכים לאישור.</p>';
@@ -4882,7 +4880,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const a=b.dataset.ch;
     if(a==='topic'){state.topic=state.topic===b.dataset.k?'':b.dataset.k;renderCalls();return}
     if(a==='suggest')return openSuggest();
-    if(a==='team-new')return openTeamNew(b.dataset.call||'');
+    if(a==='team-new'){if(isCalls()){location.href='/match#team-new'+(b.dataset.call?'='+b.dataset.call:'');return}return openTeamNew(b.dataset.call||'')}
+    if(a==='teams-admin')return openCallsAdmin('teams');
     if(a==='join')return openJoin(b.dataset.id);
     if(a==='join-now')return openJoinNow(b.dataset.id);
     if(a==='ws')return openWorkspace(b.dataset.id);
@@ -4893,6 +4892,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
 
   // #team=ID.KEY — קישור לסביבת עבודה. שומרים את המפתח בדפדפן ומסירים אותו משורת הכתובת.
   function handleHash(){
+    // קבוצות המשימה ומרחבי העבודה נמצאים רק בשיתופי פעולה. קישורים ישנים מ"קולות קוראים" עוברים לשם.
+    if(isCalls()&&/^#(team=|join-team=|team-new|teams$)/.test(location.hash)){location.replace('/match'+location.hash);return}
+    const tn=location.hash.match(/^#team-new=([\w-]+)$/);
+    if(tn){history.replaceState(null,'',location.pathname+'#teams');openTeamNew(tn[1]);return}
     const t=location.hash.match(/^#team=([\w-]+)\.([\w-]+)$/);
     if(t){store.set('hosen.team.'+t[1],t[2]);history.replaceState(null,'',location.pathname+'#teams');renderCalls();renderTeams();openWorkspace(t[1]);return}
     // #join-team=ID — פותח את חלון ההצטרפות לצוות.
@@ -6746,7 +6749,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       <div><strong style="font-size:13.5px">👥 הצוות המוצע</strong><ul class="cb-ul">${r.researchers.map(x=>`<li><strong>${h(x.name)}</strong>${x.why?`: ${h(x.why)}`:''}</li>`).join('')}</ul></div>
       <div><strong style="font-size:13.5px">📚 מאמרים עדכניים בתחום</strong><ul class="cb-ul cb-arts">${r.articles.map(a=>`<li><a href="${h(a.url)}" target="_blank" rel="noopener" dir="auto">${h(a.title)}</a><div class="cb-meta" dir="auto">${h([a.authors,a.year,a.source].filter(Boolean).join(' · '))}</div>${a.note?`<div class="cb-note" dir="auto">${h(a.note)}</div>`:''}</li>`).join('')}</ul></div>
       ${r.firstStep?`<p dir="auto" class="cb-why"><strong>👣 צעד ראשון:</strong> ${h(r.firstStep)}</p>`:''}
-      ${r.initiators.length?`<p class="cb-meta"><strong>🙋 ברשימת היוזמים:</strong> ${r.initiators.map(h).join(', ')}</p>`:(r.status==='open'?'<p class="cb-meta">עדיין אין יוזמים. אפשר להיות הראשונים.</p>':'')}
+      ${r.initiators.length?`<p class="cb-meta"><strong>🙋 ברשימת היוזמים:</strong> ${admin?r.initiators.map(n=>`<button type="button" class="cb-btn small" data-cb="out" data-kind="research" data-id="${h(r.id)}" data-name="${h(n)}" title="הוצאה מהרשימה">${h(n)} ✕</button>`).join(' '):r.initiators.map(h).join(', ')} <button type="button" class="cb-btn small" data-cb="leave" data-kind="research" data-id="${h(r.id)}">🚪 יציאה מהרשימה</button></p>`:(r.status==='open'?'<p class="cb-meta">עדיין אין יוזמים. אפשר להיות הראשונים.</p>':'')}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="rs-join" data-id="${h(r.id)}">🙋 הצטרפות לרשימת היוזמים</button><button type="button" class="cb-btn small" data-cb="rs-team" data-id="${h(r.id)}">🤝 פתיחת מרחב עבודה</button>`:''}
         ${r.status==='team'?`<a class="cb-btn small primary" href="#teams" onclick="document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});return false">🤝 לקבוצת המשימה, למטה בעמוד</a>`:''}
@@ -6797,7 +6800,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       <div class="cb-tags">${r.kinds.map(k=>tag(k,S.kind===k)).join('')}</div>
       <p dir="auto">${h(r.description)}</p>
       ${r.need?`<p dir="auto"><strong>את מי מחפשות:</strong> ${h(r.need)}</p>`:''}
-      ${r.joiners.length?`<p class="cb-meta"><strong>הצטרפו:</strong> ${r.joiners.map(h).join(', ')}</p>`:''}
+      ${r.joiners.length?`<p class="cb-meta"><strong>הצטרפו:</strong> ${admin?r.joiners.map(n=>`<button type="button" class="cb-btn small" data-cb="out" data-kind="collab" data-id="${h(r.id)}" data-name="${h(n)}" title="הוצאה מהרשימה">${h(n)} ✕</button>`).join(' '):r.joiners.map(h).join(', ')} <button type="button" class="cb-btn small" data-cb="leave" data-kind="collab" data-id="${h(r.id)}">🚪 יציאה מהרשימה</button></p>`:''}
       ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד שיתופי פעולה באתר הקהילה יש בקשה לשיתוף פעולה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="join" data-id="${h(r.id)}">🙋 אני רוצה להצטרף</button>`:''}
@@ -6926,11 +6929,30 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       t.disabled=false;t.textContent=label;return;
     }
     if(a==='join')return openJoin(t.dataset.id);
+    if(a==='leave')return openLeave(t.dataset.kind,t.dataset.id);
+    if(a==='out'){
+      if(!confirm(`להוציא את ${t.dataset.name} מהרשימה?`))return;
+      try{await post({action:'admin-person-remove',kind:t.dataset.kind,id:t.dataset.id,name:t.dataset.name},{Authorization:'Bearer '+adminToken()});await load()}catch(err){alert(err.message)}
+      return;
+    }
     if(a==='share'){const link=`${site()}/match#collab-req-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לבקשה:',link)}return}
     if(a==='del'){
       const r=S.requests.find(x=>x.id===t.dataset.id);if(!r||!confirm(`למחוק את הבקשה "${r.title}"?`))return;
       try{await post({action:'admin-delete',id:r.id},{Authorization:'Bearer '+adminToken()});await load()}catch(err){alert(err.message)}
     }
+  }
+
+  // יציאה מרשימת המצטרפים לבקשה, או מרשימת היוזמים של רעיון למחקר: לפי המייל שאיתו נרשמו.
+  function openLeave(kind,id){
+    const root=modal('');
+    root.innerHTML=`<h2>🚪 יציאה מהרשימה</h2><p class="nv-status">השם יוצא מהרשימה ${kind==='research'?'של היוזמים':'של המצטרפים'}. כדי לוודא שזו את/ה, נשמח למייל שאיתו הצטרפת.</p>
+      <form class="nv-form" novalidate><label class="wide">המייל שאיתו הצטרפת<input name="email" type="email" required dir="ltr"></label>
+      <div class="wide nv-row"><button class="nv-btn primary">יציאה מהרשימה</button></div><p class="nv-status" data-st></p></form>`;
+    root.querySelector('form').addEventListener('submit',async e=>{
+      e.preventDefault();const st=root.querySelector('[data-st]');st.textContent='רגע…';
+      try{await post({action:'leave',kind,id,email:e.target.elements.email.value.trim()});root.innerHTML='<h2>✓ יצאת מהרשימה</h2><p>השם כבר לא מופיע בה. אפשר תמיד להצטרף שוב.</p>';await load()}
+      catch(err){st.textContent=err.message}
+    });
   }
 
   function openNew(){

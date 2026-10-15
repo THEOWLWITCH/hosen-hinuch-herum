@@ -8,7 +8,7 @@ import {
 
 
 function workspaceLink(site: string, t: Team, key: string) {
-  return `${site}/calls#team=${t.id}.${key}`;
+  return `${site}/match#team=${t.id}.${key}`;
 }
 
 function esc(s: string) {
@@ -165,7 +165,7 @@ export default async (req: Request) => {
       next.role = next.role || "מוביל/ה";
       await mail(next.email, `את/ה מוביל/ה עכשיו את קבוצת המשימה: ${t.title}`,
         [`שלום ${next.name},`, `${m.name} יצא/ה מקבוצת המשימה "${t.title}" והעביר/ה אליך את ההובלה.`, "בקשות הצטרפות חדשות יגיעו מעכשיו אליך."],
-        ["לאתר", `${site}/calls#teams`]);
+        ["לאתר", `${site}/match#teams`]);
     }
     t.members = t.members.filter(x => x !== m);
     t.messages.push({ id: newItemId(), name: m.name, text: "יצא/ה מהקבוצה.", at });

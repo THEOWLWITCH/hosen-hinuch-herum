@@ -712,8 +712,8 @@ export function weeklyDigest(person: Person | null, calls: Call[], site: string,
   const sec = (title: string, rows: Call[]) => rows.length ? `<h3 style="font-size:16px;margin:22px 0 4px;color:#244b61">${title}</h3>${rows.map(c => callBlockHtml(c, today, site)).join("")}` : "";
   const secT = (title: string, rows: Call[]) => rows.length ? `${title}\n\n${rows.map(c => callBlockText(c, today, site)).join("\n\n")}\n\n` : "";
   const teamLine = (t: Team) => `${t.title}${t.funder ? " · " + t.funder : ""}${t.deadline ? " · עד " + formatDate(t.deadline) : ""}${t.need ? " — מחפשות: " + t.need : ""}`;
-  const teamsHtml = recruiting.length ? `<h3 style="font-size:16px;margin:22px 0 4px;color:#244b61">🤝 קבוצות משימה שמחפשות שותפות</h3><ul style="padding-inline-start:18px">${recruiting.map(t => `<li>${escHtml(teamLine(t))}</li>`).join("")}</ul><p><a href="${site}/calls#teams" style="color:#17649a">לבקשת הצטרפות באתר</a></p>` : "";
-  const teamsText = recruiting.length ? `קבוצות משימה שמחפשות שותפות\n\n${recruiting.map(t => "- " + teamLine(t)).join("\n")}\nלבקשת הצטרפות: ${site}/calls#teams\n\n` : "";
+  const teamsHtml = recruiting.length ? `<h3 style="font-size:16px;margin:22px 0 4px;color:#244b61">🤝 קבוצות משימה שמחפשות שותפות</h3><ul style="padding-inline-start:18px">${recruiting.map(t => `<li>${escHtml(teamLine(t))}</li>`).join("")}</ul><p><a href="${site}/match#teams" style="color:#17649a">לבקשת הצטרפות באתר</a></p>` : "";
+  const teamsText = recruiting.length ? `קבוצות משימה שמחפשות שותפות\n\n${recruiting.map(t => "- " + teamLine(t)).join("\n")}\nלבקשת הצטרפות: ${site}/match#teams\n\n` : "";
   const subject = mine.length ? `קולות קוראים השבוע: ${mine.length} מתאימים לתחום שלך` : "קולות קוראים השבוע בקהילה";
   const html = wrapHtml(`<p>שלום${name ? " " + escHtml(name) : ""},</p><p>זה הסיכום השבועי של <strong>הקולות הקוראים</strong> בקהילה.</p>
 ${sec("✨ מתאימים לתחום שלך", mine)}${sec("⏳ נסגרים בשבועיים הקרובים", closing)}${sec("🆕 חדשים השבוע", fresh)}${teamsHtml}`, site);
