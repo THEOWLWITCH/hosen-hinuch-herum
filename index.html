@@ -4215,8 +4215,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       <div class="ch-intro">
         <p>קולות קוראים, מענקים וכנסים בתחום — <strong>מהמקורות ומהקהילה</strong>, ממוינים לפי המועד האחרון להגשה. לכל קול קורא מוצגות החוקרות שהוא מתאים להן, ואפשר להקים סביבו <strong>קבוצת משימה</strong> ולכתוב את ההצעה יחד.</p>
         <div class="ch-actions">
-          <button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button>
-          <button type="button" class="ch-btn" data-ch="suggest">＋ מצאתי קול קורא</button>
+          <button type="button" class="ch-btn primary" data-ch="suggest">＋ מצאתי קול קורא</button>
           <button type="button" class="ch-btn" data-ch="calendar">📅 כל המועדים ביומן</button>
           <button type="button" class="ch-btn" data-ch="admin" hidden id="chAdminBtn">⚙ ניהול קולות קוראים</button>
         </div>
@@ -4338,7 +4337,6 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${teams.length?`<div class="ch-teams"><a href="/match#teams">🤝 ${teams.length===1?'קבוצת משימה אחת':teams.length+' קבוצות משימה'} סביב הקול הקורא, בשיתופי פעולה ←</a></div>`:''}
       ${archived?'':`<div class="ch-card-actions">
         ${c.url||c.fileUrl?`<a class="ch-btn small primary" href="${h(c.url||c.fileUrl)}" target="_blank" rel="noopener">לפרטים ולהגשה</a>`:''}
-        <button type="button" class="ch-btn small" data-ch="team-new" data-call="${h(c.id)}">🤝 הקמת קבוצה להגשה</button>
         ${c.endDate?`<a class="ch-btn small" href="${h(googleEventLink(c))}" target="_blank" rel="noopener">📅 ליומן Google</a><a class="ch-btn small" href="/api/calls?format=ics&id=${encodeURIComponent(c.id)}" title="קובץ יומן ל-Outlook או ל-Apple">📅 Outlook / Apple</a>`:''}
       </div>`}
       ${credit?`<div class="ch-credit">${credit}</div>`:''}
