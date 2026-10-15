@@ -114,6 +114,24 @@ export default async (req: Request) => {
   }
 
   // ----- ניהול מערכת -----
+  // מנהלת המערכת: הוצאת חבר/ה מקבוצה. כשיוצא/ת המוביל/ה, ההובלה עוברת לחבר/ה הבא/ה ברשימה.
+  if (action === "admin-member-remove") {
+    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+    const t = await getTeam(clip(body.id, 80));
+    if (!t) return json({ error: "not_found" }, 404);
+    const m = t.members.find(x => x.name === clip(body.member, 160));
+    if (!m) return json({ error: "not_found", message: "השם לא נמצא ברשימת הקבוצה." }, 404);
+    if (m.name === t.lead.name) {
+      const next = t.members.find(x => x !== m);
+      if (!next) return json({ error: "last_member", message: "זה/זו החבר/ה היחיד/ה בקבוצה. אפשר למחוק את הקבוצה." }, 409);
+      t.lead = { name: next.name, email: next.email || "" };
+    }
+    t.members = t.members.filter(x => x !== m);
+    t.messages.push({ id: newItemId(), name: m.name, text: "יצא/ה מהקבוצה.", at: new Date().toISOString() });
+    await saveTeam(t);
+    return json({ ok: true, lead: t.lead.name });
+  }
+
   if (action === "admin-delete" || action === "admin-rekey") {
     if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     const t = await getTeam(clip(body.id, 80));

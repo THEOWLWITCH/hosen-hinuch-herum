@@ -6,13 +6,15 @@ import { CALLS_SEED } from "./calls-seed.mts";
 
 export type Call = {
   id: string; title: string; description?: string; category: string; type?: string;
-  url?: string; fileKey?: string; startDate?: string; endDate?: string; active?: boolean;
+  url?: string; fileKey?: string; files?: CallFile[]; startDate?: string; endDate?: string; active?: boolean;
   funder?: string; amount?: string; eligibility?: string; language?: string;
   topics?: string[]; outcome?: string;
   source?: "admin" | "auto" | "member"; sourceName?: string; suggestedBy?: string;
   notified?: { email: string; at: string }[];
   createdAt?: string; updatedAt?: string;
 };
+export type CallFile = { key: string; name: string };
+
 export type InboxItem = {
   id: string; key: string; title: string; url: string; description: string;
   endDate: string; funder: string; source: "auto" | "member"; sourceName: string;
@@ -363,6 +365,36 @@ export async function addMemberSuggestion(x: { title: string; url: string; endDa
   return { duplicate: false };
 }
 
+// פרסום אוטומטי: כל מה שמחכה בתיבה עולה לאתר, בלי מיון ידני. מה שהמועד שלו כבר עבר לא עולה.
+export async function publishInbox(): Promise<{ published: number; expired: number }> {
+  const today = israelToday();
+  let published = 0, expired = 0;
+  for (const x of await listInbox()) {
+    if (x.endDate && x.endDate < today) { await setInboxStatus(x.key, "rejected"); expired++; continue; }
+    const call = newCall(cleanCallFields({ title: x.title, description: x.description, endDate: x.endDate, funder: x.funder }),
+      { source: x.source, sourceName: x.sourceName, suggestedBy: x.suggestedBy, url: x.url });
+    await saveCall(call);
+    await setInboxStatus(x.key, "approved", call.id);
+    published++;
+  }
+  await data().setJSON("call-mail/last-publish.json", { at: new Date().toISOString(), published, expired });
+  return { published, expired };
+}
+
+// קול קורא מחבר/ת קהילה בקוד הקהילה: עולה לאתר מיד, כמו חומרים לספרייה.
+export async function publishMemberCall(x: { title: string; url: string; endDate: string; funder: string; description: string; name: string; email: string; files: unknown; category?: string }) {
+  const url = x.url ? cleanLink(x.url) : "";
+  if (x.url && !url) throw new Error("invalid_url");
+  const files = cleanFiles(x.files);
+  if (!url && !files.length) throw new Error("missing");
+  const known = await existingKeys();
+  if ((url && known.has(linkKey(url))) || known.has("t:" + normTitle(x.title))) return { duplicate: true, call: null };
+  const call = newCall(cleanCallFields({ title: x.title, description: x.description, funder: x.funder, endDate: /^\d{4}-\d{2}-\d{2}$/.test(x.endDate) ? x.endDate : extractDeadline(x.description), files, category: x.category }),
+    { source: "member", sourceName: "חבר/ת קהילה", suggestedBy: x.name, url });
+  await saveCall(call);
+  return { duplicate: false, call };
+}
+
 export async function setInboxStatus(key: string, status: InboxItem["status"], callId?: string) {
   const st = data();
   const v = await st.get(`call-inbox/${key}.json`, { type: "json" }) as InboxItem | null;
@@ -434,7 +466,17 @@ export function cleanCallFields(body: any): Partial<Call> {
   if (body.endDate !== undefined) out.endDate = /^\d{4}-\d{2}-\d{2}$/.test(String(body.endDate)) ? String(body.endDate) : "";
   if (body.category !== undefined) out.category = CALL_CATEGORIES.includes(body.category) ? body.category : "calls";
   if (Array.isArray(body.topics)) out.topics = body.topics.filter((k: string) => THEME_LABELS[k]);
+  if (Array.isArray(body.files)) out.files = cleanFiles(body.files);
   return out;
+}
+
+// מסמכים מצורפים לקול קורא: רק קבצים שהועלו לאתר (/api/upload), עד 10.
+export function cleanFiles(rows: unknown): CallFile[] {
+  return (Array.isArray(rows) ? rows : [])
+    .map((f: any) => ({ key: String(f?.key ?? "").trim().slice(0, 300), name: String(f?.name ?? "").trim().slice(0, 200) }))
+    .filter(f => /^files\/[\p{L}\p{N}._-]+$/u.test(f.key))
+    .map(f => ({ key: f.key, name: f.name || f.key.replace(/^files\/[^-]+-/, "") }))
+    .slice(0, 10);
 }
 
 export function newCall(fields: Partial<Call>, origin: Partial<Call>): Call {

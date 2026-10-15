@@ -4064,7 +4064,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
 .ch-actions{display:flex;flex-wrap:wrap;gap:8px}
 .ch-btn{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:6px 14px;border:1px solid #9fc2d5;border-radius:999px;background:#fff;color:var(--ch-accent);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
 .ch-btn:hover{background:#eef5f7}.ch-btn.primary{background:#245f82;border-color:#245f82;color:#fff}.ch-btn.primary:hover{background:#1d4f6d}
-.ch-btn.small{min-height:28px;padding:3px 10px;font-size:12px}.ch-btn.danger{color:var(--ch-red);border-color:#e3b9b9}
+.ch-btn.small{min-height:28px;padding:3px 10px;font-size:12px}.ch-files{margin:6px 0;padding-inline-start:18px;font-size:13px}.ch-files a{color:#17649a}.ch-btn.danger{color:var(--ch-red);border-color:#e3b9b9}
 .ch-filters{display:grid;grid-template-columns:1.4fr 1fr auto;gap:8px;margin:0 0 10px}
 .ch-filters input,.ch-filters select,.ch-form input,.ch-form select,.ch-form textarea,.ch-ws textarea,.ch-ws input,.ch-ws select{width:100%;box-sizing:border-box;min-height:36px;padding:7px 10px;border:1px solid var(--ch-line);border-radius:7px;background:#fff;font:inherit;color:inherit}
 .ch-toggle{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:13px;color:var(--ch-soft)}
@@ -4320,6 +4320,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${meta.length?`<ul class="ch-meta">${meta.map(([k,v])=>`<li><strong>${h(k)}:</strong> ${h(v)}</li>`).join('')}</ul>`:''}
       ${c.description?`<p class="ch-desc" dir="auto">${h(c.description)}</p>`:''}
       ${c.outcome?`<p class="ch-desc"><strong>🏆 ${h(c.outcome)}</strong></p>`:''}
+      ${filesHtml(c)}
       ${(c.topics||[]).length?`<div class="ch-tags">${c.topics.map(k=>`<span class="ch-tag">${h(state.themes[k]||k)}</span>`).join('')}</div>`:''}
       ${!archived&&matches?`<p class="ch-match"><strong>מתאים במיוחד ל:</strong> ${matches}</p>`:''}
       ${teams.length?`<div class="ch-teams"><h4>🤝 קבוצות משימה סביב הקול הקורא</h4>${teams.map(teamRow).join('')}</div>`:''}
@@ -4382,26 +4383,53 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
   const botField=()=>`<input class="ch-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`;
   const codeField=()=>`<label>קוד הקהילה*<input name="communityCode" required autocomplete="off"><span class="hint">הקוד של חברות הקהילה.</span></label>${botField()}`;
+  // העלאת מסמכים (עד 4MB לקובץ) עם הרשאת העלאה: מנהלת המערכת, או קוד הקהילה.
+  async function uploadFiles(input,token){
+    const out=[];
+    for(const f of [...(input?.files||[])]){
+      const fd=new FormData();fd.append('file',f);
+      const r=await fetch('/api/upload',{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(j.message||(r.status===401?'אין הרשאה להעלאת מסמכים.':`העלאת "${f.name}" לא הצליחה.`));
+      out.push({key:j.key,name:j.name||f.name});
+    }
+    return out;
+  }
+  const filesHtml=c=>(c.files||[]).length?`<ul class="ch-files">${c.files.map(f=>`<li><a href="${h(f.url)}" target="_blank" rel="noopener">📎 ${h(f.name)}</a></li>`).join('')}</ul>`:'';
   function formData(form){const d=Object.fromEntries(new FormData(form));const m=form.closest('.ch-modal');if(m)d.elapsed=Date.now()-Number(m.dataset.opened||0);return d}
   function setStatus(el,msg,kind){el.className='ch-status'+(kind?' '+kind:'');el.textContent=msg}
 
   function openSuggest(){
-    const m=modal(`<h2>מצאתי קול קורא</h2><p class="ch-credit">הקול הקורא יגיע לאישור של ד״ר יעל שדה, ויפורסם עם קרדיט לך. אחרי הפרסום הוא יישלח לחוקרות שהוא מתאים להן.</p>
+    const m=modal(`<h2>מצאתי קול קורא</h2><p class="ch-credit">עם קוד הקהילה הקול הקורא עולה לאתר מיד, ואפשר לצרף אליו מסמכים. בלי קוד הוא עולה בפרסום השבועי, ביום ראשון. הקרדיט בשמך, ובסיכום השבועי הוא מגיע לחוקרים ולחוקרות שהוא מתאים להם.</p>
       <form class="ch-form">
         <label class="wide">שם הקול הקורא*<input name="title" required dir="auto"></label>
-        <label class="wide">קישור*<input name="url" required type="url" dir="ltr" placeholder="https://"></label>
+        <label class="wide">קישור<input name="url" type="url" dir="ltr" placeholder="https://"></label>
         <label>מועד אחרון להגשה<input name="endDate" type="date"></label>
         <label>גוף מממן<input name="funder" dir="auto"></label>
         <label class="wide">כמה מילים על הקול הקורא<textarea name="description" rows="3" dir="auto"></textarea></label>
+        <label class="wide">מסמכים (רשות, אפשר כמה, עד 4MB לקובץ)<input name="docs" type="file" multiple><span class="hint">צירוף מסמכים בקוד הקהילה בלבד.</span></label>
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
         <label>מייל (לא יפורסם)<input name="email" type="email" dir="ltr"></label>
+        <label class="wide">קוד הקהילה (רשות)<input name="communityCode" type="password" autocomplete="off"><span class="hint">עם הקוד: פרסום מיידי באתר.</span></label>
         ${botField()}
-        <div class="wide"><button class="ch-btn primary">שליחה לאישור</button><div class="ch-status"></div></div>
+        <div class="wide"><button class="ch-btn primary">שליחה</button><div class="ch-status"></div></div>
       </form>`);
     m.querySelector('form').addEventListener('submit',async e=>{
-      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'שולח…');
-      try{const j=await api('/api/calls',{method:'POST',body:JSON.stringify({action:'suggest',...formData(e.target)})});
-        setStatus(st,j.duplicate?'הקול הקורא הזה כבר אצלנו. תודה!':'תודה! הקול הקורא נשלח לאישור.','ok');e.target.reset();
+      e.preventDefault();const f=e.target,st=m.querySelector('.ch-status');
+      const d=formData(f);delete d.docs;const code=String(d.communityCode||'').trim();const docs=f.elements.docs;
+      if(!d.url&&!(code&&docs.files.length))return setStatus(st,code?'נשמח לקישור או למסמך מצורף.':'נשמח לקישור. מסמכים אפשר לצרף עם קוד הקהילה.','err');
+      if(docs.files.length&&!code)return setStatus(st,'צירוף מסמכים אפשרי עם קוד הקהילה. אפשר להוסיף את הקוד, או לשלוח בלי המסמכים.','err');
+      setStatus(st,'שולח…');
+      try{
+        if(code&&docs.files.length){
+          let tok;try{tok=(await api('/api/auth',{method:'POST',body:JSON.stringify({code,mode:'upload'})})).token}catch(_){throw new Error('קוד הקהילה שגוי.')}
+          setStatus(st,'מעלה מסמכים…');d.files=await uploadFiles(docs,tok);
+        }
+        const j=await api('/api/calls',{method:'POST',body:JSON.stringify({action:'suggest',...d})});
+        if(j.duplicate)setStatus(st,'הקול הקורא הזה כבר אצלנו. תודה!','ok');
+        else if(j.published){setStatus(st,'✓ הקול הקורא עלה לאתר. תודה!','ok');load()}
+        else setStatus(st,'תודה! הקול הקורא יעלה לאתר בפרסום השבועי, ביום ראשון.','ok');
+        f.reset();
       }catch(err){setStatus(st,err.message,'err')}
     });
   }
@@ -4733,6 +4761,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       <label>שפת ההגשה<input name="language" value="${h(x.language||'')}" dir="auto"></label>
       <label class="wide">תיאור קצר<textarea name="description" rows="3" dir="auto">${h(x.description||'')}</textarea></label>
       <label class="wide">נושאים <span class="hint">(קובעים למי הקול הקורא מתאים)</span>${topicsPick(x.topics||[])}</label>
+      <div class="wide"><span style="font-size:13px">מסמכים מצורפים <span class="hint">(אפשר כמה, עד 4MB לקובץ)</span></span>${(x.files||[]).map(fl=>`<label style="display:flex;flex-direction:row;gap:6px;align-items:center"><input type="checkbox" name="keepfile" value="${h(JSON.stringify({key:fl.key,name:fl.name}))}" checked> 📎 ${h(fl.name)}</label>`).join('')}<input type="file" name="newfiles" multiple style="margin-top:4px"></div>
       ${isInbox?'':`<label class="wide">🏆 סיפור הצלחה <span class="hint">(למשל: "זכינו! ד״ר … וד״ר …") — יוצג בארכיון</span><input name="outcome" value="${h(x.outcome||'')}" dir="auto"></label>`}
       <div class="wide ch-actions">${isInbox?`<button class="ch-btn primary" data-act="approve">אישור ופרסום</button><button type="button" class="ch-btn danger" data-act="reject" data-key="${h(x.key)}">לא רלוונטי</button>`:`<button class="ch-btn primary" data-act="save">שמירה</button>`}</div></form>`;
     function notifyBox(c){
@@ -4747,12 +4776,15 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const isAdmin=d.role!=='calls';
       const tabs=[['inbox',`📥 לאישור (${d.inbox.length})`],['calls','📢 מפורסמים'],...(isAdmin?[['teams',`🤝 קבוצות (${(A.teams||[]).length})`]]:[]),['sources','🔎 מקורות לאיסוף'],...(isAdmin?[['mail','✉ מיילים']]:[])];
       let html=`<h2>ניהול קולות קוראים</h2>${isAdmin?'':'<p class="ch-credit">נכנסת כצוות אישור הקולות הקוראים. <button type="button" class="ch-btn small" data-act="calls-logout">יציאה</button></p>'}<nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
+      if(t==='inbox')html+=`<div class="ch-note" style="margin-bottom:12px"><strong>פרסום אוטומטי.</strong> כל יום ראשון בבוקר כל מה שממתין כאן עולה לאתר, בלי מיון, וחצי שעה אחר כך יוצא הסיכום השבועי לחוקרים ולחוקרות. קול קורא שהמועד שלו עבר לא עולה. אפשר גם לפרסם ולשלוח עכשיו:
+        <div class="ch-actions" style="margin-top:8px"><button type="button" class="ch-btn primary" data-act="publish-all"${d.inbox.length?'':' disabled'}>📤 פרסום כל הממתינים (${d.inbox.length}) ושליחה עכשיו</button></div></div>`;
       if(t==='inbox')html+=d.inbox.length?d.inbox.map(x=>`<div class="ch-admin-item"><h4 dir="auto">${h(x.title)}</h4><p class="ch-credit">${x.source==='member'?`הוצע על ידי ${h(x.suggestedBy||'')}${x.suggestedEmail?' · '+h(x.suggestedEmail):''}`:`נמצא אוטומטית · ${h(x.sourceName)}`} · <a href="${h(x.url)}" target="_blank" rel="noopener">פתיחת המקור לבדיקה</a></p>${editor(x,true)}</div>`).join(''):'<p class="ch-empty">אין קולות קוראים שמחכים לאישור.</p>';
       if(t==='calls'){
         html+=`<details class="ch-admin-item"><summary><strong>＋ הוספת קול קורא ידנית</strong></summary>${editor({},false).replace('data-kind="call"','data-kind="new"').replace('>שמירה<','>פרסום<')}</details>`;
         html+=d.calls.length?d.calls.map(c=>`<details class="ch-admin-item"${c.open?'':' style="opacity:.75"'}><summary><strong dir="auto">${h(c.title)}</strong> <span class="ch-credit">${c.endDate?'עד '+fmt(c.endDate):'בלי מועד'} · ${h(d.categories[c.category]||c.category)}${c.open?'':' · נסגר'} · ${c.matches.length} מתאימות</span></summary>${editor(c,false)}${c.open?notifyBox(c):''}</details>`).join(''):'<p class="ch-empty">עדיין אין קולות קוראים מפורסמים.</p>';
       }
       if(t==='teams')html+=(A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מובילה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} חברות · ${x.callTitle?'קול קורא: '+h(x.callTitle):'קול קורא פנימי'}</p>
+        <p class="ch-credit" style="margin:4px 0">${(x.members||[]).map(n=>`<button type="button" class="ch-btn small" data-act="member-out" data-id="${h(x.id)}" data-name="${h(n)}" title="הוצאה מהקבוצה">${h(n)} ✕</button>`).join(' ')}</p>
         <div class="ch-actions"><button type="button" class="ch-btn small" data-act="rekey" data-id="${h(x.id)}">קישור חדש לסביבת העבודה</button><button type="button" class="ch-btn small danger" data-act="team-delete" data-id="${h(x.id)}">מחיקת הקבוצה</button></div><div data-rekey="${h(x.id)}"></div></div>`).join(''):'<p class="ch-empty">עדיין לא הוקמו קבוצות משימה.</p>';
       if(t==='sources'){
         const st=Object.fromEntries((d.sourceStatus||[]).map(s=>[s.url,s]));
@@ -4765,7 +4797,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       }
       if(t==='mail')html+=`<div class="ch-note">${d.mail.configured?'<strong>✅ חיבור Gmail פעיל.</strong> מיילים אישיים נשלחים ישירות, וכל יום ראשון בבוקר יוצא סיכום שבועי אישי לכל חוקרת.':`<strong>עדיין אין חיבור מיילים — וזה בסדר.</strong> בינתיים כל שליחה פותחת טיוטה מוכנה ב-Gmail, עם הנמענות בעותק מוסתר. נשאר רק ללחוץ "שליחה".
           <br><br><strong>חיבור חינמי לשליחה אוטומטית (5 דקות, פעם אחת):</strong><ol><li>בחשבון Google: אבטחה ← אימות דו־שלבי (אם עוד לא מופעל).</li><li>אבטחה ← "סיסמאות לאפליקציות" ← יצירת סיסמה בשם "אתר חוסן".</li><li>ב-Netlify: Site configuration ← Environment variables ← להוסיף <code>GMAIL_USER</code> (כתובת ה-Gmail) ו-<code>GMAIL_APP_PASSWORD</code> (הסיסמה שנוצרה).</li><li>פריסה מחדש של האתר. מכאן המיילים יוצאים לבד — עד 500 ביום, בחינם.</li></ol>`}</div>
-        <div class="ch-admin-item" style="margin-top:12px"><h4>📢 מנהלת הקולות הקוראים</h4><p class="ch-credit">מקבלת כל בוקר, אחרי האיסוף, סיכום של הקולות הקוראים החדשים שמחכים לאישור — רק כשיש חדשים.</p>
+        <div class="ch-admin-item" style="margin-top:12px"><h4>📢 מנהלת הקולות הקוראים</h4><p class="ch-credit">הקולות הקוראים עולים לאתר אוטומטית כל יום ראשון, ולכן כבר לא נשלח סיכום יומי של ממתינים. אפשר לשלוח סיכום כזה בלחיצה.</p>
           <div class="ch-inline" style="grid-template-columns:1fr 1.4fr auto auto"><input id="chMgrName" placeholder="שם" value="${h(d.manager?.name||'')}"><input id="chMgrEmail" type="email" dir="ltr" placeholder="מייל" value="${h(d.manager?.email||'')}"><button type="button" class="ch-btn small primary" data-act="manager-save">שמירה</button><button type="button" class="ch-btn small" data-act="manager-test"${d.manager?.email?'':' disabled'}>שליחת סיכום עכשיו</button></div></div>
         <div class="ch-admin-item"><h4>סיכום שבועי</h4><p class="ch-credit">מה מתאים לכל חוקרת, מה נסגר בשבועיים הקרובים, מה חדש, ואילו קבוצות משימה מחפשות שותפות.</p>
           <div class="ch-actions"><button type="button" class="ch-btn small" data-act="digest">${d.mail.configured?'שליחת הסיכום עכשיו':'פתיחת הסיכום כטיוטה ב-Gmail'}</button></div></div>
@@ -4776,13 +4808,30 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const srcRow=(s,st)=>`<div class="ch-row" data-src><input class="grow" name="name" value="${h(s.name)}" placeholder="שם המקור" style="max-width:200px" dir="auto"><input class="grow" name="url" value="${h(s.url)}" placeholder="https://… (פיד או עמוד)" dir="ltr"><label class="ch-toggle"><input type="checkbox" name="nofilter"${s.filter===false?' checked':''}>בלי סינון</label><label class="ch-toggle"><input type="checkbox" name="enabled"${s.enabled!==false?' checked':''}>פעיל</label>${st?`<span class="ch-tag" title="${h(st.error||'')}">${st.ok?`✓ ${st.found} נמצאו · ${st.added} חדשים`:'✗ '+h(st.error||'שגיאה')} · ${new Date(st.at).toLocaleDateString('he-IL')}</span>`:''}<button type="button" class="ch-btn small danger" data-act="src-remove">✕</button></div>`;
     // ההודעה נשמרת גם כשהחלון מתרענן אחרי הפעולה.
     const amsg=(t,k)=>{A.msg=[t,k];const el=m.querySelector('#chAdmMsg');if(el){setStatus(el,t,k);el.scrollIntoView({block:'nearest'})}};
-    const fields=f=>{const d=formData(f);d.topics=[...f.querySelectorAll('input[name=topics]:checked')].map(i=>i.value);return d};
+    const fields=f=>{const d=formData(f);delete d.newfiles;delete d.keepfile;d.topics=[...f.querySelectorAll('input[name=topics]:checked')].map(i=>i.value);return d};
+    const withFiles=async(f,d)=>{const keep=[...f.querySelectorAll('input[name=keepfile]:checked')].map(i=>JSON.parse(i.value));const add=await uploadFiles(f.querySelector('input[name=newfiles]'),token);d.files=[...keep,...add];return d};
     m.addEventListener('click',async e=>{
       const tb=e.target.closest('[data-atab]');if(tb){A.tab=tb.dataset.atab;A.msg=null;render();return}
       const b=e.target.closest('[data-act]');if(!b||b.tagName==='BUTTON'&&b.closest('form')&&!b.type.includes('button'))return;
       const a=b.dataset.act;
       try{
         if(a==='calls-logout'){sessionStorage.removeItem('hosen_calls_token');m.close();document.getElementById('chAdminBtn').hidden=true;return}
+        if(a==='publish-all'){
+          if(!confirm(`לפרסם באתר את כל ${A.d.inbox.length} הקולות הקוראים הממתינים, ולשלוח עכשיו את הסיכום השבועי לחוקרים ולחוקרות?`))return;
+          b.disabled=true;amsg('מפרסם…');
+          const p=await call('publish-all',{});await reload();A.tab='calls';render();
+          const pub=`פורסמו ${p.published} קולות קוראים${p.expired?` (${p.expired} שהמועד שלהם עבר לא עלו)`:''}.`;
+          const j=await call('digest',{send:true});
+          if(j.mode==='compose'){window.open(j.href,'_blank','noopener');amsg(pub+' הסיכום נפתח כטיוטה ב-Gmail, נשאר ללחוץ "שליחה".','ok')}
+          else if(j.mode==='empty')amsg(pub+' אין מה לשלוח בסיכום.','ok');
+          else amsg(`${pub} הסיכום נשלח ל־${j.sent} חוקרים/ות.${j.failed?` ${j.failed} נכשלו.${j.reason?' הסיבה: '+j.reason:''}`:''}`,j.failed?'err':'ok');
+          load();return;
+        }
+        if(a==='member-out'){
+          if(!confirm(`להוציא את ${b.dataset.name} מהקבוצה?`))return;
+          const j=await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-member-remove',id:b.dataset.id,member:b.dataset.name})});
+          await reload();render();amsg(`${b.dataset.name} יצא/ה מהקבוצה. מוביל/ה: ${j.lead}.`,'ok');refreshTeams();return;
+        }
         if(a==='reject'){await call('reject',{id:b.dataset.key});await reload();render();amsg('הוסר מהתיבה. הוא לא יחזור באיסוף הבא.','ok')}
         if(a==='notify'){
           const ids=[...m.querySelectorAll(`[data-notify="${CSS.escape(b.dataset.id)}"] input:checked`)].map(i=>i.value);
@@ -4815,6 +4864,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const f=e.target.closest('[data-edit]');if(!f)return;e.preventDefault();
       const d=fields(f),kind=f.dataset.kind;
       try{
+        if(f.querySelector('input[name=newfiles]')?.files.length)amsg('מעלה מסמכים…');
+        await withFiles(f,d);
         if(kind==='inbox'){const j=await call('approve',{id:f.dataset.edit,call:d});await reload();A.tab='calls';render();
           const det=[...m.querySelectorAll('details')].find(x=>x.querySelector(`[data-edit="${CSS.escape(j.call.id)}"]`));if(det){det.open=true;det.scrollIntoView({block:'start'})}
           amsg('פורסם ✓ עכשיו אפשר לשלוח אותו לחוקרות הרלוונטיות.','ok')}

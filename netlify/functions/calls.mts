@@ -1,10 +1,10 @@
 import type { Config } from "@netlify/functions";
-import { json, looksHuman, tokenRole, validToken } from "../lib/shared.mts";
+import { communityCodeOK, json, looksHuman, tokenRole, validToken } from "../lib/shared.mts";
 import { addRequest } from "../lib/requests.mts";
 import {
   CALL_CATEGORIES, CATEGORY_LABELS, THEME_LABELS, type Call, addMemberSuggestion, buildIcs, callEmail, callEmailGeneric, callTopics,
   cleanCallFields, collectFromSources, sendAll, getCallsManager, saveCallsManager, sendManagerDigest, daysBetween, getCall, getOptOut, getSourceStatus, getSources, isOpen, israelToday, listCalls,
-  listInbox, loadPeople, mailConfigured, matchPeople, newCall, personTopics, saveCall, saveOptOut, saveSources, sendMail,
+  listInbox, loadPeople, publishInbox, publishMemberCall, mailConfigured, matchPeople, newCall, personTopics, saveCall, saveOptOut, saveSources, sendMail,
   sendWeeklyDigests, setInboxStatus, siteUrl, weeklyDigest,
 } from "../lib/calls.mts";
 import { listTeams } from "../lib/teams.mts";
@@ -17,6 +17,7 @@ function publicCall(c: Call, today: string, people: Awaited<ReturnType<typeof lo
   return {
     ...rest,
     fileUrl: fileKey ? `/api/file?key=${encodeURIComponent(fileKey)}` : "",
+    files: (c.files || []).map(f => ({ ...f, url: `/api/file?key=${encodeURIComponent(f.key)}` })),
     topics: callTopics(c),
     daysLeft: c.endDate ? daysBetween(today, c.endDate) : null,
     matches: matchPeople(c, people).slice(0, 6).map(m => ({ id: m.id, name: m.name })),
@@ -100,6 +101,17 @@ export default async (req: Request) => {
     if (!name) return json({ error: "missing_fields", message: "נא למלא שם." }, 400);
 
     const title = t(body.title, 300), url = t(body.url, 1200);
+    // בקוד הקהילה: עולה לאתר מיד, וגם עם מסמכים מצורפים במקום קישור.
+    if (String(body.communityCode || "").trim()) {
+      if (!communityCodeOK(body.communityCode)) return json({ error: "invalid_code", message: "קוד הקהילה שגוי. אפשר לשלוח גם בלי קוד, והקול הקורא יעלה לאתר בפרסום השבועי." }, 401);
+      if (!title) return json({ error: "missing_fields", message: "נשמח לכותרת." }, 400);
+      try {
+        const r = await publishMemberCall({ title, url, endDate: t(body.endDate, 10), funder: t(body.funder, 200), description: t(body.description, 3000), name, email: t(body.email, 240), files: body.files });
+        return json({ ok: true, duplicate: r.duplicate, published: !r.duplicate, id: r.call?.id || "" });
+      } catch (e) {
+        return json({ error: "missing_fields", message: (e as Error).message === "invalid_url" ? "הקישור לא תקין." : "נשמח לקישור או למסמך מצורף." }, 400);
+      }
+    }
     if (!title || !url) return json({ error: "missing_fields", message: "נא למלא כותרת וקישור." }, 400);
     try {
       const r = await addMemberSuggestion({ title, url, endDate: t(body.endDate, 10), funder: t(body.funder, 200), description: t(body.description, 3000), name, email: t(body.email, 240) });
@@ -126,6 +138,9 @@ export default async (req: Request) => {
     await setInboxStatus(key, "approved", call.id);
     return json({ ok: true, call });
   }
+
+  // פרסום כל מה שמחכה בתיבה, בלי מיון ידני (גם אוטומטית כל יום ראשון).
+  if (action === "publish-all") return json({ ok: true, ...(await publishInbox()) });
 
   if (action === "reject") {
     await setInboxStatus(t(body.id, 80), "rejected");
