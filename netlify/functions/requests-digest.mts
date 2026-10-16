@@ -21,7 +21,7 @@ export default async () => {
   const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:620px;margin:auto;line-height:1.7;color:#1d3445">
 <p>בוקר טוב,</p>${fresh.length ? `<p>יש <strong>${fresh.length} פניות חדשות</strong> מאז הסיכום הקודם, ובסך הכול <strong>${open.length} פניות פתוחות</strong>.</p>
 <ul>${fresh.slice(0, 30).map(r => `<li>${esc(line(r))}</li>`).join("")}</ul>${fresh.length > 30 ? `<p>ועוד ${fresh.length - 30}…</p>` : ""}` : ""}
-${lib.length ? `<p>📚 מחכים לאישור <strong>${lib.length} מחקרים חדשים</strong>${libFresh.length ? ` (${libFresh.length} חדשים מאז הסיכום הקודם)` : ""}. בכל מחקר כבר מוכנים מדור מוצע ב"חידושים במחקר", "מה חדש" ו"התרומה" בעברית, ואפשר לערוך לפני האישור.</p>
+${lib.length ? `<p>📚 מחכים לאישור <strong>${lib.length} מחקרים חדשים</strong>${libFresh.length ? ` (${libFresh.length} חדשים מאז הסיכום הקודם)` : ""}. בכל מחקר אפשר להכין בלחיצה מדור מוצע ב"חידושים במחקר", "מה חדש" ו"התרומה" בעברית, ולערוך לפני האישור.</p>
 <ul>${libFresh.slice(0, 10).map(x => `<li dir="auto">${esc(x.title)}</li>`).join("")}</ul>${libFresh.length > 10 ? `<p>ועוד ${libFresh.length - 10}…</p>` : ""}
 <p><a href="${site}/library#library-admin" style="display:inline-block;padding:9px 16px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none;font-weight:700">📥 למחקרים החדשים לאישור</a></p>` : ""}
 <p><a href="${site}/now#requests" style="display:inline-block;padding:9px 16px;border-radius:999px;background:#245f82;color:#fff;text-decoration:none;font-weight:700">לתיבת הפניות באתר</a></p></div>`;

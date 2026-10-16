@@ -3882,7 +3882,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     const reload=async()=>{V.d=await api('GET')};
     function render(){
       const d=V.d;
-      let html=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status">כל בוקר נאספים מקורות חדשים בנושאי הקהילה מ-OpenAlex ומ-ERIC (ומפידים שתוסיפי). כל מקור מגיע עם ציטוט APA7, ובנוסף מדור מוצע ב"חידושים במחקר", "מה חדש" ו"התרומה" בעברית. אפשר לערוך, ובאישור המחקר נכנס לספרייה ולמדור שלו ב"חידושים במחקר".</p>${d.hebrewWaiting?`<p class="nv-status">⏳ העברית מוכנה ל־${d.inbox.length-d.hebrewWaiting} מתוך ${d.inbox.length} מחקרים. השאר בהכנה, והתיבה מתעדכנת לבד.</p>`:''}
+      let html=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status">כל בוקר נאספים מקורות חדשים בנושאי הקהילה מ-OpenAlex ומ-ERIC (ומפידים שתוסיפי). כל מקור מגיע עם ציטוט APA7. "✨ הכנה בעברית" מציע מדור ב"חידושים במחקר", "מה חדש" ו"התרומה" בעברית, ואפשר גם לכתוב בעצמך. באישור המחקר נכנס לספרייה ולמדור שלו ב"חידושים במחקר".</p>
         <nav class="nv-tabs"><button type="button" data-t="inbox" class="${V.tab==='inbox'?'active':''}">📥 מחקרים חדשים לאישור (${d.inbox.length})</button><button type="button" data-t="sources" class="${V.tab==='sources'?'active':''}">🔎 מקורות לאיסוף</button></nav>`;
       if(V.tab==='inbox'){
         html+=d.inbox.length?`<div class="nv-row" style="margin:8px 0"><label class="nv-row"><input type="checkbox" data-all> בחירת הכול</label><button type="button" class="nv-btn small primary" data-bulk="approve">✓ אישור הנבחרים</button><button type="button" class="nv-btn small danger" data-bulk="reject">לא רלוונטיים</button></div>
@@ -3892,8 +3892,9 @@ html[data-page="tasks"] #tasks{display:block!important}
             ${x.abstract?`<details><summary class="nv-status" style="cursor:pointer">תקציר</summary><p dir="auto" style="margin:6px 0">${h(x.abstract)}</p></details>`:''}
             <div class="la-he" style="margin-top:8px;padding:10px 12px;border:1px solid #d7e3e7;border-radius:10px;background:#f7fafb;display:grid;gap:6px">
               <label class="nv-row" style="gap:6px"><span class="nv-status">מדור ב"חידושים במחקר":</span><select data-rcat style="width:auto">${Object.entries(d.researchCats||{}).map(([k,l])=>`<option value="${k}"${((x.he&&x.he.cat)||x.cat)===k?' selected':''}>${h(l)}</option>`).join('')}<option value="none">רק בספרייה, לא ב"חידושים במחקר"</option></select></label>
-              <label style="display:grid;gap:3px"><span class="nv-status">מה חדש (בעברית)</span><textarea data-hsum rows="2" dir="rtl" placeholder="${x.he?'':'⏳ בהכנה…'}">${h(x.he?x.he.summary:'')}</textarea></label>
-              <label style="display:grid;gap:3px"><span class="nv-status">התרומה (בעברית)</span><textarea data-hwhy rows="2" dir="rtl" placeholder="${x.he?'':'⏳ בהכנה…'}">${h(x.he?x.he.why:'')}</textarea></label>
+              <label style="display:grid;gap:3px"><span class="nv-status">מה חדש (בעברית)</span><textarea data-hsum rows="2" dir="rtl" placeholder="אפשר לכתוב, או ללחוץ ✨ הכנה בעברית">${h(x.he?x.he.summary:'')}</textarea></label>
+              <label style="display:grid;gap:3px"><span class="nv-status">התרומה (בעברית)</span><textarea data-hwhy rows="2" dir="rtl" placeholder="אפשר לכתוב, או ללחוץ ✨ הכנה בעברית">${h(x.he?x.he.why:'')}</textarea></label>
+              <div class="nv-row"><button type="button" class="nv-btn small" data-he>${x.he?'✨ הכנה מחדש':'✨ הכנה בעברית'}</button><span class="nv-status" data-hest></span></div>
             </div>
             <div class="nv-row" style="margin-top:6px"><span class="nv-status">מדור בספרייה:</span><select data-section style="width:auto">${Object.entries(d.sections).map(([k,l])=>`<option value="${k}"${x.section===k?' selected':''}>${h(l)}</option>`).join('')}</select>
               <button type="button" class="nv-btn small primary" data-one="approve">✓ אישור</button><button type="button" class="nv-btn small danger" data-one="reject">לא רלוונטי</button></div></div>`).join('')}</div>`
@@ -3917,6 +3918,12 @@ html[data-page="tasks"] #tasks{display:block!important}
       try{
         const tb=t.closest('[data-t]');if(tb){V.tab=tb.dataset.t;V.msg=null;render();return}
         if(t.matches('[data-all]')){root.querySelectorAll('[data-sel]').forEach(i=>i.checked=t.checked);return}
+        const heb=t.closest('[data-he]');
+        if(heb){const card=heb.closest('[data-k]'),st=card.querySelector('[data-hest]');heb.disabled=true;st.textContent='מכינה… (כמה שניות)';
+          try{const j=await api('POST',{action:'hebrew',keys:[card.dataset.k]});card.querySelector('[data-hsum]').value=j.he.summary;card.querySelector('[data-hwhy]').value=j.he.why;
+            const sel=card.querySelector('[data-rcat]');if(sel&&j.he.cat)sel.value=j.he.cat;st.textContent='✓ מוכן. אפשר לערוך ולאשר.';heb.textContent='✨ הכנה מחדש';
+            const it=V.d.inbox.find(x=>x.key===card.dataset.k);if(it)it.he=j.he}
+          catch(err){st.textContent=err.message}finally{heb.disabled=false}return}
         const one=t.closest('[data-one]');
         if(one){const card=one.closest('[data-k]'),key=card.dataset.k;
           if(one.dataset.one==='approve'){const rc=card.querySelector('[data-rcat]')?.value||'none';const j=await api('POST',{action:'approve',keys:[key],edits:{section:card.querySelector('[data-section]').value,researchCat:rc,heSummary:card.querySelector('[data-hsum]')?.value.trim()||'',heWhy:card.querySelector('[data-hwhy]')?.value.trim()||''}});
@@ -3933,11 +3940,6 @@ html[data-page="tasks"] #tasks{display:block!important}
         if(t.matches('[data-savefeeds]')){const feeds=[...root.querySelectorAll('[data-feed]')].map(r=>({name:r.querySelector('[name=name]').value,url:r.querySelector('[name=url]').value,section:r.querySelector('[name=section]').value,enabled:r.querySelector('[name=enabled]').checked}));await api('POST',{action:'feeds',feeds});await reload();render();msg('הפידים נשמרו ✓','ok');return}
       }catch(err){msg(err.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':err.message,'err')}
     });
-    // העברית מוכנה ברקע: מרעננים כל 10 שניות (עד 10 דקות), כל עוד לא מקלידים בתיבה.
-    let dirty=false;root.addEventListener('input',()=>{dirty=true});
-    let polls=0;const poll=setInterval(async()=>{if(!document.body.contains(m)||++polls>60){clearInterval(poll);return}
-      if(V.tab!=='inbox'||dirty||!V.d||!V.d.hebrewWaiting)return;
-      try{await reload();render()}catch(_){}},10000);
     try{await reload();render()}catch(e){root.innerHTML=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status err">${e.status===401?'פג תוקף הכניסה. יש להיכנס שוב דרך "🔒 ניהול מערכת".':h(e.message)}</p>`}
   }
 

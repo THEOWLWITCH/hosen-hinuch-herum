@@ -1,13 +1,14 @@
-// מחקרים חדשים לאישור: לכל מקור שנאסף, מודל השפה מכין מדור מוצע ב"חידושים במחקר",
+// מחקרים חדשים לאישור: בלחיצה על "✨ הכנה בעברית" מודל השפה מכין מדור מוצע ב"חידושים במחקר",
 // "מה חדש" ו"התרומה" בעברית. מנהלת המערכת עורכת אם צריך ומאשרת, והמחקר נכנס למדור הנכון.
-// רץ בפונקציית רקע (library-hebrew-background), כי כמה מקורות ביחד לוקחים יותר זמן ממה שפונקציה רגילה מאפשרת.
+// רק לפי בקשה (16.10.2026: "1 וגם 2"), כדי לשלם רק על מחקרים שנבחרו, ובמודל הזול (Haiku).
+// מחקרים שאושרו יחד ("אישור הנבחרים") בלי עברית: פונקציית הרקע (library-hebrew-background) משלימה אותם.
 import Anthropic from "@anthropic-ai/sdk";
 import { store } from "./shared.mts";
 
 const data = () => store("hosen-data");
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 
-export const MODEL = "claude-opus-5-5";
+export const MODEL = "claude-haiku-5-5";
 export const RESEARCH_CATS: Record<string, string> = {
   preparedness: "מוכנות", resilience: "חוסן נפשי", continuity: "רציפות למידה",
   teachers: "צוותי חינוך ומנהיגות", tech: "טכנולוגיה AI וסימולציה בחירום", org: "חוסן ארגוני",
@@ -57,14 +58,11 @@ export async function hebrewFor(x: Source): Promise<Hebrew | null> {
     `תקציר: ${x.abstract || "(אין תקציר)"}`,
   ].filter(Boolean).join("\n");
   try {
-    const r: any = await client.beta.messages.create({
+    const r: any = await client.messages.create({
       model: MODEL,
       max_tokens: 4000,
       thinking: { type: "adaptive" },
       output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      // אם מסנן בטיחות יעצור בטעות תשובה לגיטימית, הבקשה עוברת אוטומטית למודל חלופי.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
       messages: [{ role: "user", content: text }],
     } as any);
