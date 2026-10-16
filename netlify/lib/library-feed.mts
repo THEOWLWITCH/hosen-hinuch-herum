@@ -2,6 +2,7 @@
 // מקורות: OpenAlex ו-ERIC (מאגרים פתוחים וחינמיים), ופידים (RSS) שמנהלת המערכת מוסיפה.
 import { id, store } from "./shared.mts";
 import { cleanLink, linkKey, parseFeed, plainText } from "./calls.mts";
+import { RESEARCH_CATS, type Hebrew } from "./library-hebrew.mts";
 
 const data = () => store("hosen-data");
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
@@ -28,6 +29,7 @@ export type LibInboxItem = {
   key: string; title: string; authors: string[]; year: string; date: string; journal: string; url: string; doi: string;
   abstract: string; type: string; section: LibSection; topic: string; cat: string; source: "openalex" | "eric" | "rss"; sourceName: string;
   foundAt: string; status: "new" | "approved" | "rejected";
+  he?: Hebrew; heTries?: number;
 };
 export type FeedSource = { name: string; url: string; section: LibSection; enabled: boolean };
 export type FeedStatus = { name: string; at: string; ok: boolean; found: number; added: number; error?: string };
@@ -226,8 +228,11 @@ export async function collect(): Promise<FeedStatus[]> {
   return status;
 }
 
-// אישור: הפריט נכנס לספרייה (אותו מבנה כמו מקור שמנהלת המערכת מוסיפה), עם ציטוט APA7 ומדור.
-export async function approve(key: string, edits: Partial<LibInboxItem> = {}) {
+// אישור: הפריט נכנס לספרייה (אותו מבנה כמו מקור שמנהלת המערכת מוסיפה), עם ציטוט APA7 ומדור,
+// וגם למדור שלו ב"חידושים במחקר", עם "מה חדש" ו"התרומה" בעברית (researchCat: "none" = ספרייה בלבד).
+// אם העברית עוד לא מוכנה, המחקר נשמר מוסתר (pendingHebrew), ופונקציית הרקע משלימה ומציגה אותו.
+export type ApproveEdits = Partial<LibInboxItem> & { researchCat?: string; heSummary?: string; heWhy?: string };
+export async function approve(key: string, edits: ApproveEdits = {}) {
   const st = data();
   const v = await st.get(`library-inbox/${key}.json`, { type: "json" }) as LibInboxItem | null;
   if (!v || v.status !== "new") return null;
@@ -241,8 +246,23 @@ export async function approve(key: string, edits: Partial<LibInboxItem> = {}) {
     origin: x.source, createdAt: now, updatedAt: now,
   };
   await st.setJSON(`library/${row.id}.json`, row);
+  let research: { id: string; category: string; pending: boolean } | null = null;
+  const rc = String(edits.researchCat ?? v.he?.cat ?? v.cat ?? "");
+  if (RESEARCH_CATS[rc]) {
+    const summary = clip(edits.heSummary ?? v.he?.summary ?? "", 2000), why = clip(edits.heWhy ?? v.he?.why ?? "", 2000);
+    const pending = !(summary && why);
+    const res = {
+      id: id(), title: row.title, authors: row.authors, year: x.year, source: x.journal, url: row.doi,
+      description: summary, whyImportant: why, abstract: row.abstract, category: `research-${rc}`, type: "link",
+      startDate: /^\d{4}-\d{2}-\d{2}$/.test(x.date || "") ? x.date : "",
+      active: !pending, pendingHebrew: pending, gallery: [], links: [], suggestedBy: "הספרייה המתחדשת", libraryId: row.id,
+      createdAt: now, updatedAt: now,
+    };
+    await st.setJSON(`resources/${res.id}.json`, res);
+    research = { id: res.id, category: res.category, pending };
+  }
   await st.setJSON(`library-inbox/${key}.json`, { ...v, status: "approved" });
-  return row;
+  return { ...row, research };
 }
 
 export async function reject(key: string) {
