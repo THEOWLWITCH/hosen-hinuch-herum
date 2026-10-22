@@ -7239,8 +7239,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה, שמופיע אחר כך ב"מרחבי עבודה".</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
-        <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
-        <li><strong>🙋 הצטרפות:</strong> לוחצים "אני רוצה להצטרף" וכותבים שם ומייל. מי שפרסמה את הבקשה מקבלת מייל וחוזרת אלייך. כשנמצאו שותפות, אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת.</li>
+        <li><strong>📣 פרסום יוזמה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. היוזמה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
+        <li><strong>🙋 הצטרפות:</strong> לוחצים "אני רוצה להצטרף" וכותבים שם ומייל. מי שפרסמה את היוזמה מקבלת מייל וחוזרת אלייך. כשנמצאו שותפות, אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת.</li>
         <li><strong>✏️ מה אני יכול/ה לקדם:</strong> נכנסים עם הקוד האישי שקיבלת בהצטרפות (ואם נשכח, הוא נשלח שוב למייל שבכרטיס).</li>
       </ol></details>
       <div class="cb-tabs" role="tablist"></div><div data-panel><p class="cb-empty">טוען…</p></div>`;
@@ -7315,7 +7315,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       (admin&&moved.length?`<details class="cb-admin" style="margin-top:14px"><summary><strong>ניהול:</strong> רעיונות שעברו למרחבי עבודה או נסגרו (${moved.length})</summary><div class="cb-rlist" style="margin-top:8px">${moved.map(researchRow).join('')}</div></details>`:'');
   }
 
-  // מי מתאימה לבקשה: מי שמקדמת לפחות אחד מסוגי הפעילות שלה, ועוד לא בפנים.
+  // מי מתאימה ליוזמה: מי שמקדמת לפחות אחד מסוגי הפעילות שלה, ועוד לא בפנים.
   function fitsFor(r){
     return S.people.filter(p=>p.id!==r.requesterId&&!r.joiners.includes(p.name)&&p.name!==r.requester)
       .map(p=>({p,shared:p.kinds.filter(k=>k!=='other'&&r.kinds.includes(k))})).filter(x=>x.shared.length)
@@ -7328,19 +7328,19 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     return `<article class="cb-card cb-req ${h(r.status)}" id="collab-req-${h(r.id)}">
       <div><span class="cb-badge ${h(r.status)}">${h(r.statusLabel)}</span>${r.deadline?` <span class="cb-meta">· עד ${fmt(r.deadline)}</span>`:''}</div>
       <h4 dir="auto" style="margin-top:6px">${h(r.title)}</h4>
-      <div class="cb-meta">מבקשת: ${h(r.requester)} · ${fmt(r.createdAt)}</div>
+      <div class="cb-meta">יוזם/ת: ${h(r.requester)} · ${fmt(r.createdAt)}</div>
       <div class="cb-tags">${r.kinds.map(k=>tag(k,S.kind===k)).join('')}</div>
       <p dir="auto">${h(r.description)}</p>
       ${r.need?`<p dir="auto"><strong>את מי מחפשות:</strong> ${h(r.need)}</p>`:''}
       ${r.joiners.length?`<p class="cb-meta"><strong>הצטרפו:</strong> ${admin?r.joiners.map(n=>`<button type="button" class="cb-btn small" data-cb="out" data-kind="collab" data-id="${h(r.id)}" data-name="${h(n)}" title="הוצאה מהרשימה">${h(n)} ✕</button>`).join(' '):r.joiners.map(h).join(', ')} <button type="button" class="cb-btn small" data-cb="leave" data-kind="collab" data-id="${h(r.id)}">🚪 יציאה מהרשימה</button></p>`:''}
-      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד שיתופי פעולה באתר הקהילה יש בקשה לשיתוף פעולה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
+      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד שיתופי פעולה באתר הקהילה יש יוזמה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="join" data-id="${h(r.id)}">🙋 אני רוצה להצטרף</button>`:''}
         <button type="button" class="cb-btn small" data-cb="share" data-id="${h(r.id)}">🔗 העתקת קישור</button>
         ${admin?`<button type="button" class="cb-btn small danger" data-cb="del" data-id="${h(r.id)}">🗑 מחיקה</button>`:''}
       </div></article>`;
   }
-  // בקשה מקופלת לשורה: כותרת, מבקשת, סוגי פעילות ומצטרפות. הלחיצה פותחת את כל הבקשה בחלון צף.
+  // יוזמה מקופלת לשורה: כותרת, מבקשת, סוגי פעילות ומצטרפות. הלחיצה פותחת את כל היוזמה בחלון צף.
   function requestRow(r){
     return `<button type="button" class="cb-rrow cb-qrow ${h(r.status)}" data-cb="rq-open" data-id="${h(r.id)}" id="collab-req-${h(r.id)}">
       <span class="cb-rrow-main"><strong dir="auto">${h(r.title)}</strong><span class="cb-meta">${h(r.requester)} · ${r.kinds.map(k=>h(K(k).icon)+' '+h(K(k).label)).join(' · ')}${r.joiners.length?` · 🙋 ${r.joiners.length} הצטרפו`:''}${r.deadline?` · עד ${fmt(r.deadline)}`:''}</span></span>
@@ -7358,8 +7358,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const used=new Set(live.flatMap(r=>r.kinds));
     const chips=used.size>1?`<div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול</button>${[...used].map(k=>`<button type="button" class="cb-chip${S.kind===k?' on':''}" data-cb="kind" data-k="${h(k)}">${h(K(k).icon)} ${h(K(k).label)}</button>`).join('')}</div>`:'';
     const pub='<p style="margin:0 0 12px"><button type="button" class="cb-btn primary" data-cb="new">📣 פרסום יוזמה משלי</button></p>';
-    if(!live.length)return pub+`<div class="cb-empty">עדיין אין בקשות לשיתוף פעולה. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם בקשה, ומי שמקדמת את אותו סוג פעילות תוכל להצטרף.<div style="margin-top:12px"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button></div></div>`;
-    return pub+chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין בקשות בסוג הפעילות הזה.</div>');
+    if(!live.length)return pub+`<div class="cb-empty">עדיין אין יוזמות. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם יוזמה, וחברי וחברות הקהילה שמקדמים את אותו סוג פעילות יוכלו להצטרף.<div style="margin-top:12px"></div></div>`;
+    return pub+chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין יוזמות בסוג הפעילות הזה.</div>');
   }
   function offerCard(p,why){
     const subject=S.kind?`שידוך מאתר הקהילה: ${K(S.kind).label}`:'שידוך מאתר הקהילה';
@@ -7377,8 +7377,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const rows=withOffer.filter(p=>!S.kind||p.kinds.includes(S.kind));
     const reqs=S.kind?S.requests.filter(r=>r.status==='open'&&r.kinds.includes(S.kind)).length:0;
     return `<p style="margin:0 0 12px"><button type="button" class="cb-btn" data-cb="offer">✏️ לעדכן מה אני יכול/ה לקדם</button></p><div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול <small>${withOffer.length}</small></button>${kinds.map(k=>`<button type="button" class="cb-chip${S.kind===k.key?' on':''}" data-cb="kind" data-k="${h(k.key)}">${h(k.icon)} ${h(k.label)} <small>${count(k.key)}</small></button>`).join('')}</div>
-      ${reqs?`<p class="cb-why">📣 יש ${reqs===1?'בקשה פתוחה אחת':reqs+' בקשות פתוחות'} בסוג הפעילות הזה. <a href="#" data-cb="tab" data-k="requests">לבקשות</a></p>`:''}
-      ${rows.length?`<div class="cb-grid">${rows.map(p=>offerCard(p)).join('')}</div>`:'<div class="cb-empty">עדיין אין מי שכתבה שהיא מקדמת את סוג הפעילות הזה. אולי זו את? אפשר לפרסם בקשה לשיתוף פעולה.</div>'}
+      ${reqs?`<p class="cb-why">📣 יש ${reqs===1?'יוזמה פתוחה אחת':reqs+' יוזמות פתוחות'} בסוג הפעילות הזה. <a href="#" data-cb="tab" data-k="requests">ליוזמות</a></p>`:''}
+      ${rows.length?`<div class="cb-grid">${rows.map(p=>offerCard(p)).join('')}</div>`:'<div class="cb-empty">עדיין אין מי שכתבה שהיא מקדמת את סוג הפעילות הזה. אולי זו את? אפשר לפרסם יוזמה.</div>'}
       ${later.length?`<p class="cb-later">עוד לא כתבו מה הן יכולות לקדם: ${later.map(p=>h(p.name)).join(', ')}. <button type="button" class="cb-btn small" data-cb="offer">✏️ זו אני, לעדכון</button></p>`:''}`;
   }
   // התאמה בין שתי חברות: סוגי פעילות משותפים שווים יותר מתחומי עניין משותפים.
@@ -7398,8 +7398,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const reqs=S.requests.filter(r=>r.status==='open'&&r.requesterId!==S.me&&r.kinds.some(k=>want.includes(k)));
     const noOffer=me&&!me.kinds.length&&!S.want.length?`<p class="cb-why">✏️ עוד לא כתבת מה את יכולה לקדם, ולכן ההתאמה לפי תחומי העניין שבכרטיס. <a href="#" data-cb="offer">לעדכון</a></p>`:'';
     return head+noOffer+
-      `<h4 class="cb-sub">💞 מי מתאימה לעבודה משותפת</h4>`+(scored.length?`<div class="cb-grid">${scored.map(x=>offerCard(x.p,why(x))).join('')}</div>`:'<div class="cb-empty">עדיין לא נמצאה התאמה. אפשר לבחור עוד סוגי פעילות, או לפרסם בקשה לשיתוף פעולה.</div>')+
-      (reqs.length?`<h4 class="cb-sub">📣 בקשות פתוחות שמתאימות לך</h4><div class="cb-rlist">${reqs.map(requestRow).join('')}</div>`:'');
+      `<h4 class="cb-sub">💞 מי מתאימה לעבודה משותפת</h4>`+(scored.length?`<div class="cb-grid">${scored.map(x=>offerCard(x.p,why(x))).join('')}</div>`:'<div class="cb-empty">עדיין לא נמצאה התאמה. אפשר לבחור עוד סוגי פעילות, או לפרסם יוזמה.</div>')+
+      (reqs.length?`<h4 class="cb-sub">📣 יוזמות פתוחות שמתאימות לך</h4><div class="cb-rlist">${reqs.map(requestRow).join('')}</div>`:'');
   }
 
   // בכרטיסי הנבחרת: מה כל אחת יכולה לקדם (גם בחיפוש ובחלון הכרטיס).
@@ -7470,14 +7470,14 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       try{await post({action:'admin-person-remove',kind:t.dataset.kind,id:t.dataset.id,name:t.dataset.name},{Authorization:'Bearer '+adminToken()});await load()}catch(err){alert(err.message)}
       return;
     }
-    if(a==='share'){const link=`${site()}/match#collab-req-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לבקשה:',link)}return}
+    if(a==='share'){const link=`${site()}/match#collab-req-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור ליוזמה:',link)}return}
     if(a==='del'){
-      const r=S.requests.find(x=>x.id===t.dataset.id);if(!r||!confirm(`למחוק את הבקשה "${r.title}"?`))return;
+      const r=S.requests.find(x=>x.id===t.dataset.id);if(!r||!confirm(`למחוק את היוזמה "${r.title}"?`))return;
       try{await post({action:'admin-delete',id:r.id},{Authorization:'Bearer '+adminToken()});await load()}catch(err){alert(err.message)}
     }
   }
 
-  // יציאה מרשימת המצטרפים לבקשה, או מרשימת היוזמים של רעיון למחקר: לפי המייל שאיתו נרשמו.
+  // יציאה מרשימת המצטרפים ליוזמה, או מרשימת היוזמים של רעיון למחקר: לפי המייל שאיתו נרשמו.
   function openLeave(kind,id){
     const root=modal('');
     root.innerHTML=`<h2>🚪 יציאה מהרשימה</h2><p class="nv-status">השם יוצא מהרשימה ${kind==='research'?'של היוזמים':'של המצטרפים'}. כדי לוודא שזו את/ה, נשמח למייל שאיתו הצטרפת.</p>
@@ -7492,8 +7492,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 
   function openNew(){
     const root=modal('');const opened=Date.now();
-    root.innerHTML=`<h2>📣 בקשה לשיתוף פעולה</h2>
-      <p class="nv-status">יש לך רעיון להרצאה, לסדנה, לקורס, למחקר או להגשה משותפת? כתבי מה הרעיון ואת מי את מחפשת. הבקשה תתפרסם בלשונית השידוכים, נציע מי מתאימה לה, ומי שתרצה תוכל להצטרף. לפרסום יש להזין את קוד הקהילה.</p>
+    root.innerHTML=`<h2>📣 פרסום יוזמה</h2>
+      <p class="nv-status">יש לך רעיון להרצאה, לסדנה, לקורס, למחקר או להגשה משותפת? כתבי מה הרעיון ואת מי את מחפשת. היוזמה תתפרסם בלשונית השידוכים, נציע מי מתאימה לה, ומי שתרצה תוכל להצטרף. לפרסום יש להזין את קוד הקהילה.</p>
       <form class="nv-form" novalidate>${whoFields()}
         <label class="wide">כותרת<input name="title" required placeholder="למשל: פאנל על AI וחוסן בכנס ICER 2027" dir="auto"></label>
         <div class="wide"><strong style="font-size:13px">סוג הפעילות</strong>${kindChecks([])}</div>
@@ -7502,7 +7502,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         <label>עד מתי? <span class="nv-status" style="display:inline">(לא חובה)</span><input name="deadline" type="date"></label>
         <label>קוד הקהילה<input name="communityCode" type="password" inputmode="numeric" autocomplete="off" required></label>
         <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <div class="wide nv-row"><button type="submit" class="nv-btn primary">פרסום הבקשה</button></div>
+        <div class="wide nv-row"><button type="submit" class="nv-btn primary">פרסום היוזמה</button></div>
       </form><div class="nv-status" data-st></div>`;
     const f=root.querySelector('form'),st=root.querySelector('[data-st]');bindWho(f);
     f.addEventListener('submit',async e=>{
@@ -7514,11 +7514,11 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       try{
         const who=f.elements.who.value;
         const j=await post({action:'create',personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),title:v('title'),kinds,description:v('description'),need:v('need'),deadline:v('deadline'),communityCode:v('communityCode'),website:f.elements.website.value,elapsed:Date.now()-opened});
-        root.innerHTML=`<h2>✓ הבקשה פורסמה</h2>
-          <p>הבקשה מופיעה עכשיו בלשונית השידוכים. כשמישהי מצטרפת${j.mailed?', יגיע אלייך מייל עם הפרטים שלה':', השם שלה יופיע בבקשה'}.</p>
-          <p><strong>קישור לניהול הבקשה</strong> ${j.mailed?'(נשלח גם למייל שלך)':'(כדאי לשמור אותו: הוא לא נשלח במייל)'}: בו רואים מי הצטרפה ואיך ליצור איתה קשר, מעדכנים או סוגרים את הבקשה, ופותחים קבוצת משימה עם סביבת עבודה משותפת.</p>
+        root.innerHTML=`<h2>✓ היוזמה פורסמה</h2>
+          <p>היוזמה מופיעה עכשיו בלשונית השידוכים. כשמישהי מצטרפת${j.mailed?', יגיע אלייך מייל עם הפרטים שלה':', השם שלה יופיע ביוזמה'}.</p>
+          <p><strong>קישור לניהול היוזמה</strong> ${j.mailed?'(נשלח גם למייל שלך)':'(כדאי לשמור אותו: הוא לא נשלח במייל)'}: בו רואים מי הצטרפה ואיך ליצור איתה קשר, מעדכנים או סוגרים את היוזמה, ופותחים קבוצת משימה עם סביבת עבודה משותפת.</p>
           <div class="cb-copy"><input readonly value="${h(j.link)}"><button type="button" class="nv-btn" data-copy>העתקה</button></div>
-          <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">לניהול הבקשה</a></div>`;
+          <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">לניהול היוזמה</a></div>`;
         root.querySelector('[data-copy]').onclick=async ev=>{try{await navigator.clipboard.writeText(j.link);ev.target.textContent='✓ הועתק'}catch(err){root.querySelector('.cb-copy input').select()}};
         S.tab='requests';S.kind='';await load();
       }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
@@ -7655,7 +7655,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       try{
         const j=await post({action:'join',id:r.id,name:v('name'),email:v('email'),note:v('note'),website:f.elements.website.value,elapsed:Date.now()-opened});
         const draft=j.requesterEmail?`<p>שליחת המיילים מהאתר עוד לא פעילה, ולכן כדאי לכתוב לה גם ישירות:</p><div class="nv-row"><a class="nv-btn primary" href="mailto:${h(j.requesterEmail)}?subject=${encodeURIComponent('הצטרפות: '+r.title)}&body=${encodeURIComponent(`שלום ${j.requesterName},\n\nאשמח להצטרף לשיתוף הפעולה "${r.title}".\n${v('note')}\n\n${v('name')}`)}">✉️ פתיחת מייל אליה</a></div>`:'';
-        root.innerHTML=j.already?`<h2>✓ כבר הצטרפת</h2><p>ההצטרפות שלך לבקשה הזאת כבר נשלחה.</p>`:`<h2>✓ ההצטרפות נשלחה</h2><p>${j.mailed?`${h(r.requester)} קיבלה מייל עם הפרטים שלך, ותחזור אלייך.`:`השם שלך נוסף לבקשה.`}</p>${draft}`;
+        root.innerHTML=j.already?`<h2>✓ כבר הצטרפת</h2><p>ההצטרפות שלך ליוזמה הזאת כבר נשלחה.</p>`:`<h2>✓ ההצטרפות נשלחה</h2><p>${j.mailed?`${h(r.requester)} קיבלה מייל עם הפרטים שלך, ותחזור אלייך.`:`השם שלך נוסף ליוזמה.`}</p>${draft}`;
         await load();
       }catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
     });
@@ -7684,7 +7684,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const current=()=>me?me.offer:(person(root.querySelector('[name=pid]')?.value)||{kinds:[],text:''});
     root.innerHTML=`<h2>✏️ מה אני יכול/ה לקדם</h2>
       ${pick?`<p class="nv-status">ניהול: עדכון הכרטיס של</p><select name="pid" style="min-height:36px;margin-bottom:8px">${S.people.map(p=>`<option value="${h(p.id)}">${h(p.name)}</option>`).join('')}</select>`:`<p>שלום ${h(me.name)}${me.institution?` · <span class="nv-status">${h(me.institution)}</span>`:''}</p>`}
-      <p class="nv-status">מה תרצי לקדם בקהילה? סמני את סוגי הפעילות וכתבי כמה מילים על הרעיון או הנושא. לפי זה נציע לך שותפות, ונציג אותך ליד בקשות שמתאימות לך.</p>
+      <p class="nv-status">מה תרצי לקדם בקהילה? סמני את סוגי הפעילות וכתבי כמה מילים על הרעיון או הנושא. לפי זה נציע לך שותפות, ונציג אותך ליד יוזמות שמתאימות לך.</p>
       <form novalidate><div data-k></div>
         <label style="display:flex;flex-direction:column;gap:4px;margin-top:10px;font-weight:700;font-size:13px">הפעילות, הרעיון או הנושא שאוכל לקדם<textarea name="text" rows="4" dir="auto" style="font:inherit;padding:8px;border:1px solid #cddbe3;border-radius:8px"></textarea></label>
         <div class="nv-row" style="margin-top:12px"><button type="submit" class="nv-btn primary">שמירה בכרטיס</button></div></form><div class="nv-status" data-st></div><div data-login></div>`;
@@ -7705,23 +7705,23 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     });
   }
 
-  // ניהול בקשה: בקישור הסודי שנשלח למבקשת.
+  // ניהול יוזמה: בקישור הסודי שנשלח למבקשת.
   async function openManage(cid,key){
     const root=modal('<p class="nv-status">טוען…</p>');
     const hdr={'x-collab-key':key};
     let c;
     try{const r=await fetch('/api/collab?id='+encodeURIComponent(cid),{headers:hdr});c=await r.json();if(!r.ok)throw new Error(c.message||'הקישור לא תקין.')}
-    catch(err){root.innerHTML=`<h2>ניהול הבקשה</h2><p class="nv-status err">${h(err.message)}</p>`;return}
+    catch(err){root.innerHTML=`<h2>ניהול היוזמה</h2><p class="nv-status err">${h(err.message)}</p>`;return}
     if(!S.kinds.length){try{await load()}catch(e){}}
     const draw=()=>{
-      root.innerHTML=`<h2>🗂 ניהול הבקשה</h2><p class="nv-status">רק מי שיש לה את הקישור הזה רואה את המסך. כדאי לשמור אותו.</p>
+      root.innerHTML=`<h2>🗂 ניהול היוזמה</h2><p class="nv-status">רק מי שיש לה את הקישור הזה רואה את המסך. כדאי לשמור אותו.</p>
         <h3 style="font-size:16px;margin:12px 0 6px">🙋 מי הצטרפה (${c.joiners.length})</h3>
-        ${c.joiners.length?c.joiners.map(j=>`<div class="cb-joiner"><div><strong>${h(j.name)}</strong> · <a href="mailto:${h(j.email)}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}" dir="ltr">${h(j.email)}</a> <span class="cb-meta">· ${fmt(j.at)}</span>${j.note?`<div class="cb-meta" dir="auto">${h(j.note)}</div>`:''}</div><button type="button" class="cb-btn small danger" data-rm="${h(j.id)}">הסרה</button></div>`).join(''):'<p class="cb-meta">עדיין אין מצטרפות. אפשר להעתיק את הקישור לבקשה ולשלוח אותו למי שמתאימה.</p>'}
+        ${c.joiners.length?c.joiners.map(j=>`<div class="cb-joiner"><div><strong>${h(j.name)}</strong> · <a href="mailto:${h(j.email)}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}" dir="ltr">${h(j.email)}</a> <span class="cb-meta">· ${fmt(j.at)}</span>${j.note?`<div class="cb-meta" dir="auto">${h(j.note)}</div>`:''}</div><button type="button" class="cb-btn small danger" data-rm="${h(j.id)}">הסרה</button></div>`).join(''):'<p class="cb-meta">עדיין אין מצטרפות. אפשר להעתיק את הקישור ליוזמה ולשלוח אותו למי שמתאימה.</p>'}
         ${c.joiners.length?`<div class="nv-row" style="margin:8px 0"><a class="nv-btn" href="mailto:${h(c.joiners.map(j=>j.email).join(','))}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}">✉️ מייל לכל המצטרפות</a></div>`:''}
         <div style="margin:14px 0;padding:12px 14px;border-radius:10px;background:#f4f9f6">
           ${c.teamId?'<strong>🤝 נפתח מרחב עבודה.</strong> <span class="nv-status">הוא מופיע ב<a href="#teams">"מרחבי עבודה"</a>.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע ברשימת קבוצות המשימה, למטה בעמוד.</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
           <div data-teamst class="nv-status"></div></div>
-        <h3 style="font-size:16px;margin:12px 0 6px">✏️ עדכון הבקשה</h3>
+        <h3 style="font-size:16px;margin:12px 0 6px">✏️ עדכון היוזמה</h3>
         <form class="nv-form" novalidate>
           <label>מצב<select name="status">${Object.entries(c.statuses).map(([k,l])=>`<option value="${h(k)}"${k===c.status?' selected':''}>${h(l)}</option>`).join('')}</select></label>
           <label>עד מתי?<input name="deadline" type="date" value="${h(c.deadline)}"></label>
@@ -7729,7 +7729,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
           <div class="wide"><strong style="font-size:13px">סוג הפעילות</strong>${kindChecks(c.kinds)}</div>
           <label class="wide">מה הרעיון?<textarea name="description" rows="3" dir="auto">${h(c.description)}</textarea></label>
           <label class="wide">את מי את מחפשת?<textarea name="need" rows="2" dir="auto">${h(c.need)}</textarea></label>
-          <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירה</button><a class="nv-btn" href="/match#collab-req-${h(c.id)}" data-view>לבקשה בעמוד</a></div>
+          <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירה</button><a class="nv-btn" href="/match#collab-req-${h(c.id)}" data-view>ליוזמה בעמוד</a></div>
         </form><div class="nv-status" data-st></div>`;
       const f=root.querySelector('form'),st=root.querySelector('[data-st]');
       f.addEventListener('submit',async e=>{
@@ -7739,7 +7739,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       });
       root.querySelector('[data-view]').onclick=()=>root.close();
       root.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{
-        if(!confirm('להסיר את המצטרפת מהבקשה?'))return;
+        if(!confirm('להסיר את המצטרפת מהיוזמה?'))return;
         try{const j=await post({action:'joiner-remove',id:c.id,joinerId:b.dataset.rm},hdr);c=j.collab;draw();load().catch(()=>{})}catch(err){alert(err.message)}
       });
       root.querySelector('[data-team]')?.addEventListener('click',async ev=>{

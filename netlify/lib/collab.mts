@@ -52,7 +52,7 @@ export function offerOf(p: { id: string; offer?: Offer }): Offer {
 }
 
 export type CollabStatus = "open" | "matched" | "closed";
-export const STATUS_LABELS: Record<CollabStatus, string> = { open: "מחפשת שותפות", matched: "נמצאו שותפות", closed: "נסגרה" };
+export const STATUS_LABELS: Record<CollabStatus, string> = { open: "מחפשת שותפים/ות", matched: "נמצאו שותפים/ות", closed: "נסגרה" };
 
 export type Joiner = { id: string; name: string; email: string; note: string; at: string };
 export type Collab = {
