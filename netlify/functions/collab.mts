@@ -3,7 +3,7 @@ import { issueMemberToken, json, looksHuman, memberFromToken, store, validToken 
 import { THEME_LABELS, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addRequest } from "../lib/requests.mts";
 import { communityOK } from "../lib/member-code.mts";
-import { createTeam, deleteTeam, hashKey as teamHash, newKey as teamKey, saveTeam } from "../lib/teams.mts";
+import { createTeam, deleteTeam, getTeam, hashKey as teamHash, newKey as teamKey, saveTeam } from "../lib/teams.mts";
 import {
   KINDS, STATUS_LABELS, type CollabStatus, clip, cleanKinds, createCollab, deleteCollab, getCollab, hashKey, isDate, listCollabs, newKey,
   offerOf, openCollab, ownerCollab, publicCollab, saveCollab,
@@ -116,7 +116,17 @@ export default async (req: Request) => {
       return json(ownerCollab(c));
     }
     const admin = u.searchParams.get("admin") === "1" && (await validToken(req, "admin"));
-    const [people, collabs] = await Promise.all([loadPeople(u.origin), listCollabs()]);
+    const [people, collabs0, research0] = await Promise.all([loadPeople(u.origin), listCollabs(), listResearch()]);
+    // מרחב עבודה שנמחק: היוזמה נסגרת (יורדת מהאתר), והרעיון של המערכת חוזר להיות הצעה פתוחה.
+    const gone = async (teamId: string) => !!teamId && !(await getTeam(teamId));
+    const collabs = await Promise.all(collabs0.map(async c => {
+      if (!(await gone(c.teamId))) return c;
+      return await saveCollab({ ...c, teamId: "", status: "closed" });
+    }));
+    const research = await Promise.all(research0.map(async r => {
+      if (!(await gone(r.teamId))) return r;
+      return await saveResearch({ ...r, teamId: "", status: "open" });
+    }));
     return json({
       kinds: KINDS,
       themes: THEME_LABELS,
@@ -129,7 +139,7 @@ export default async (req: Request) => {
         };
       }),
       requests: collabs.filter(c => admin || c.status !== "closed").map(publicCollab),
-      research: (await listResearch()).filter(r => admin || (r.status !== "draft" && r.status !== "closed")).map(publicResearch),
+      research: research.filter(r => admin || (r.status !== "draft" && r.status !== "closed")).map(publicResearch),
       admin,
     });
   }
