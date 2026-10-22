@@ -19,7 +19,7 @@ export type Task = { id: string; text: string; owner?: string; due?: string; don
 export type Message = { id: string; name: string; text: string; at: string };
 export type Link = { id: string; label: string; url: string };
 export type Team = {
-  id: string; keyHash: string; memberKeys?: string[]; title: string; summary: string; need: string;
+  id: string; keyHash: string; memberKeys?: string[]; leadKeys?: string[]; keyOwners?: Record<string, string>; title: string; summary: string; need: string;
   callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean; origin?: string;
   status: TeamStatus; lead: { name: string; email?: string };
   members: Member[]; requests: JoinRequest[]; sections: Section[]; tasks: Task[]; messages: Message[]; links: Link[];
@@ -82,12 +82,34 @@ export async function listTeams(): Promise<Team[]> {
   return rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-export async function openTeam(teamId: string, key: string): Promise<Team | null> {
+// תפקיד בסביבת העבודה: "lead" — מי שמנהל/ת את המרחב (מפתח ההקמה, או כניסה חוזרת עם המייל של המוביל/ה);
+// "member" — חבר/ה בצוות: כותב/ת, מוסיף/ה ומשתתף/ת בדיון, אבל לא מוחק/ת ולא מנהל/ת.
+export type TeamRole = "lead" | "member";
+export type TeamAccess = { team: Team; role: TeamRole; hash: string; me: string };
+
+export async function openTeamAccess(teamId: string, key: string): Promise<TeamAccess | null> {
   const t = await getTeam(teamId);
   if (!t || !key) return null;
   const h = await hashKey(key);
-  // מפתח הקבוצה, או מפתח אישי של מי שהצטרפה בכפתור "הצטרפות לצוות".
-  return h === t.keyHash || (t.memberKeys || []).includes(h) ? t : null;
+  const me = (t.keyOwners || {})[h] || "";
+  if (h === t.keyHash || (t.leadKeys || []).includes(h)) return { team: t, role: "lead", hash: h, me: me || t.lead.name };
+  if ((t.memberKeys || []).includes(h)) return { team: t, role: "member", hash: h, me };
+  return null;
+}
+
+export async function openTeam(teamId: string, key: string): Promise<Team | null> {
+  return (await openTeamAccess(teamId, key))?.team || null;
+}
+
+// מפתח אישי חדש: נשמר רק הגיבוב, יחד עם השם של מי שקיבל/ה אותו.
+export async function issueKey(t: Team, role: TeamRole, owner: string): Promise<string> {
+  const key = newKey();
+  const h = await hashKey(key);
+  if (role === "lead") t.leadKeys = [...(t.leadKeys || []), h].slice(-20);
+  else t.memberKeys = [...(t.memberKeys || []), h].slice(-80);
+  const live = new Set([t.keyHash, ...(t.leadKeys || []), ...(t.memberKeys || [])]);
+  t.keyOwners = Object.fromEntries(Object.entries({ ...(t.keyOwners || {}), [h]: owner }).filter(([k]) => live.has(k)));
+  return key;
 }
 
 // מה שכולם רואים: מי בקבוצה ומה היא מחפשת — בלי נוסח ההצעה ובלי כתובות מייל.
@@ -101,7 +123,7 @@ export function publicTeam(t: Team) {
 
 // מה שחברות הקבוצה רואות בסביבת העבודה.
 export function workspaceTeam(t: Team) {
-  const { keyHash, memberKeys, ...rest } = t;
+  const { keyHash, memberKeys, leadKeys, keyOwners, ...rest } = t;
   return { ...rest, statusLabel: TEAM_STATUS[t.status], statuses: TEAM_STATUS };
 }
 
