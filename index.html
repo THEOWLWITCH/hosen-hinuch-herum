@@ -4510,8 +4510,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const root=document.createElement('div');
     root.id='callsHub';
     root.innerHTML=`<section class="ch-section" id="teams" style="margin-top:0" aria-labelledby="chTeamsTitle">
-        <div class="ch-intro"><div><h3 id="chTeamsTitle">🤝 קבוצות משימה שמחפשות שותפות</h3>
-          <p>הגשות משותפות ומיזמי יישום — סביב קול קורא, קול קורא פנימי או רעיון מנבט 🌱. כל קבוצה עובדת בסביבת עבודה משלה, ומחכה לשותפות.</p></div>
+        <div class="ch-intro"><div><h3 id="chTeamsTitle">🤝 קבוצות משימה</h3>
+          <p>הגשות משותפות ומיזמי יישום, סביב קול קורא, קול קורא פנימי או רעיון מנבט 🌱. לכל קבוצה מרחב עבודה משלה, ואפשר להצטרף.</p></div>
           <div class="ch-actions"><button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button><button type="button" class="ch-btn" data-ch="teams-admin" hidden id="chTeamsAdminBtn">⚙ ניהול קבוצות משימה</button></div></div>
         <div class="ch-list" id="chTeams"><p class="ch-empty">טוען…</p></div></section>`;
     head.after(root);
@@ -4559,7 +4559,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
   // בעמוד שיתופי פעולה: קבוצה מקופלת לשורה, והפרטים בחלון צף.
   function teamLine(t){
     return `<button type="button" class="ch-trow" data-ch="team-open" data-id="${h(t.id)}">
-      <span class="ch-trow-main"><strong dir="auto">${h(t.title)}</strong><small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.deadline?` · עד ${fmt(t.deadline)}`:''}${teamKey(t.id)?' · ✓ את בקבוצה':''}</small></span>
+      <span class="ch-trow-main"><strong dir="auto">${h(t.title)}</strong><small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} בצוות`:''}${t.deadline?` · עד ${fmt(t.deadline)}`:''}${teamKey(t.id)?' · ✓ את בקבוצה':''}</small></span>
       <span class="ch-trow-side"><span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?'<span class="ch-badge green">🌱 מנבט</span>':''}<span class="ch-trow-open">לפרטים ›</span></span></button>`;
   }
   function openTeamCard(id){
@@ -4580,7 +4580,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const onMatch=document.documentElement.dataset.page==='match';
     if(onMatch)return teamLine(t);
     return `<div class="ch-team"><p><strong>${h(t.title)}</strong> <span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?' <span class="ch-badge green">🌱 מנבט</span>':''}${onMatch&&t.callId?` <a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a>`:''}${onMatch&&t.summary?`<small>${h(t.summary)}</small>`:''}
-      <small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} חברות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
+      <small>מובילה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} בצוות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
       <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:`<button type="button" class="ch-btn small primary" data-ch="enter" data-id="${h(t.id)}">🔑 כבר בצוות? כניסה</button>${t.status==='recruiting'||t.status==='writing'?` <button type="button" class="ch-btn small" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:''}`}</span></div>`;
   }
   function callCard(c,archived){
@@ -7242,7 +7242,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const root=document.getElementById('collabHub');if(!root||!S.loaded)return;
     const open=S.requests.filter(x=>x.status==='open').length;
     const ideas=S.research.filter(x=>x.status==='open').length;
-    const tabs=[['research',`🔬 רעיונות למחקר${ideas?` (${ideas})`:''}`],['requests',`📣 בקשות לשיתוף פעולה${open?` (${open})`:''}`],['who','🧭 מי מקדמת מה'],['me','💞 מי מתאימה לי?']];
+    const tabs=[['research',`💡 הצעות המערכת${ideas?` (${ideas})`:''}`],['requests',`📣 יוזמות של חברי הקהילה${open?` (${open})`:''}`],['who','🧭 מי מקדמת מה'],['me','💞 מי מתאימה לי?']];
     root.querySelector('.cb-tabs').innerHTML=tabs.map(([k,l])=>`<button type="button" role="tab" class="cb-tab" data-cb="tab" data-k="${k}" aria-selected="${S.tab===k}">${l}</button>`).join('');
     const p=root.querySelector('[data-panel]');
     p.innerHTML=S.tab==='research'?renderResearch():S.tab==='requests'?renderRequests():S.tab==='me'?renderMe():renderWho();
@@ -7265,7 +7265,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       ${r.initiators.length?`<p class="cb-meta"><strong>🙋 ברשימת היוזמים:</strong> ${admin?r.initiators.map(n=>`<button type="button" class="cb-btn small" data-cb="out" data-kind="research" data-id="${h(r.id)}" data-name="${h(n)}" title="הוצאה מהרשימה">${h(n)} ✕</button>`).join(' '):r.initiators.map(h).join(', ')} <button type="button" class="cb-btn small" data-cb="leave" data-kind="research" data-id="${h(r.id)}">🚪 יציאה מהרשימה</button></p>`:(r.status==='open'?'<p class="cb-meta">עדיין אין יוזמים. אפשר להיות הראשונים.</p>':'')}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="rs-join" data-id="${h(r.id)}">🙋 הצטרפות לרשימת היוזמים</button><button type="button" class="cb-btn small" data-cb="rs-team" data-id="${h(r.id)}">🤝 פתיחת מרחב עבודה</button>`:''}
-        ${r.status==='team'?`<a class="cb-btn small primary" href="#teams" onclick="document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});return false">🤝 לקבוצת המשימה, למטה בעמוד</a>`:''}
+        ${r.status==='team'?`<a class="cb-btn small primary" href="#teams">🛠 למרחב העבודה של הרעיון</a>`:''}
         ${draft?'':`<button type="button" class="cb-btn small" data-cb="rs-share" data-id="${h(r.id)}">🔗 העתקת קישור</button>`}
         ${admin&&draft?`<button type="button" class="cb-btn small primary" data-cb="rs-publish" data-id="${h(r.id)}">📨 פרסום ושליחה לצוות המוצע</button><button type="button" class="cb-btn small" data-cb="rs-publish-quiet" data-id="${h(r.id)}">פרסום בלי מייל</button>`:''}
         ${admin&&r.status==='open'?`<button type="button" class="cb-btn small" data-cb="rs-close" data-id="${h(r.id)}">סגירה</button>`:''}
@@ -7790,6 +7790,67 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     // כניסה או יציאה מהניהול אחרי שהעמוד נטען: טוענים מחדש, כדי שהטיוטות יופיעו (או ייעלמו).
     let lastTok=adminToken();setInterval(()=>{const t=adminToken();if(t!==lastTok){lastTok=t;load().catch(()=>{})}},2000);
   });
+})();
+</script>
+<style id="match-portal-css">
+.mp{margin:8px 0 26px}
+.mp-intro{color:var(--muted);margin:0 0 16px;font-size:16px}
+.mp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.mp-card{display:flex;flex-direction:column;gap:8px;text-align:right;padding:24px 24px 20px;border:1px solid #dfeaf1;border-radius:16px;background:#fff;cursor:pointer;font:inherit;color:inherit;box-shadow:0 2px 10px rgba(23,50,77,.06);transition:transform .15s,box-shadow .15s}
+.mp-card:hover,.mp-card:focus-visible{transform:translateY(-2px);box-shadow:0 8px 22px rgba(23,50,77,.12)}
+.mp-card .mp-ic{font-size:34px;line-height:1}
+.mp-card b{font-size:22px;color:#17324d}
+.mp-card span{color:#566b79;font-size:15px;line-height:1.55}
+.mp-card small{margin-top:auto;padding-top:8px;color:#246b8f;font-weight:700;font-size:14px}
+.mp-back{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.mp-back button{font:inherit;font-size:14px;border:1px solid #dfeaf1;background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;color:#17324d}
+.mp-back strong{font-size:18px;color:#17324d}
+.mp-back[hidden],.mp[hidden]{display:none}
+</style>
+<script id="match-portal">
+// מסך הכניסה של "שיתופי פעולה": קודם בוחרים — מרחבי עבודה, או הצעות לשיתופי פעולה — ורק אז רואים את הרשימה.
+(function(){
+  if(document.documentElement.dataset.page!=='match')return;
+  const WORK=/^#(workspaces|teams|team=|team-new|join-team=)/, PROP=/^#(proposals|research|collab=|collab-req-|my-offer=)/;
+  let portal,back,ready=false;
+  const hubs=()=>({work:document.getElementById('callsHub'),prop:document.getElementById('collabHub')});
+  function view(){const h=location.hash;return WORK.test(h)?'work':PROP.test(h)?'prop':''}
+  function apply(){
+    const {work,prop}=hubs();if(!work||!prop||!portal)return;
+    const v=view();
+    portal.hidden=!!v;back.hidden=!v;
+    work.hidden=v!=='work';prop.hidden=v!=='prop';
+    back.querySelector('strong').textContent=v==='work'?'🛠 מרחבי עבודה':v==='prop'?'💡 הצעות לשיתופי פעולה':'';
+  }
+  function go(v){if(v){location.hash=v==='work'?'#workspaces':'#proposals'}else{history.pushState(null,'',location.pathname);apply()}document.getElementById('match')?.scrollIntoView({behavior:'smooth'})}
+  async function counts(){
+    try{
+      const [t,c]=await Promise.all([fetch('/api/teams').then(r=>r.json()),fetch('/api/collab').then(r=>r.json())]);
+      const teams=Array.isArray(t)?t.length:0;
+      const ideas=(c.research||[]).filter(x=>x.status==='open').length,reqs=(c.requests||[]).filter(x=>x.status==='open').length;
+      portal.querySelector('[data-n="work"]').textContent=teams===1?'מרחב עבודה פעיל אחד ›':teams?`${teams} מרחבי עבודה פעילים ›`:'למרחבי העבודה ›';
+      portal.querySelector('[data-n="prop"]').textContent=`${ideas===1?'הצעה אחת':ideas+' הצעות'} של המערכת · ${reqs===1?'יוזמה אחת':reqs+' יוזמות'} של חברי הקהילה ›`;
+    }catch(e){}
+  }
+  function mount(){
+    const {work,prop}=hubs();
+    if(!work||!prop){if(!ready)setTimeout(mount,150);return}
+    ready=true;
+    portal=document.createElement('div');portal.className='mp';portal.id='matchPortal';
+    portal.innerHTML=`<p class="mp-intro">מה תרצו לעשות?</p><div class="mp-grid">
+      <button type="button" class="mp-card" data-go="work"><span class="mp-ic">🛠</span><b>מרחבי עבודה</b><span>קבוצות שכבר עובדות יחד: כתיבת הצעות, משימות ודיון. כאן נכנסים למרחב שלכם, מצטרפים לקבוצה קיימת או פותחים קבוצה חדשה.</span><small data-n="work">למרחבי העבודה ›</small></button>
+      <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה שמחפשות שותפים. כאן מצטרפים לרעיון או מפרסמים יוזמה.</span><small data-n="prop">להצעות ›</small></button>
+    </div>`;
+    back=document.createElement('div');back.className='mp-back';back.hidden=true;
+    back.innerHTML='<button type="button" data-go="">→ חזרה למסך הבחירה</button><strong></strong>';
+    work.before(portal);portal.after(back);
+    // סדר קבוע: מסך הבחירה, שורת החזרה, מרחבי העבודה, ההצעות.
+    back.after(work);work.after(prop);
+    document.getElementById('match').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;e.preventDefault();go(b.dataset.go)});
+    window.addEventListener('hashchange',apply);window.addEventListener('popstate',apply);
+    apply();counts();
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,0));
 })();
 </script>
 <style id="date-il-v1-css">
