@@ -4510,9 +4510,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const root=document.createElement('div');
     root.id='callsHub';
     root.innerHTML=`<section class="ch-section" id="teams" style="margin-top:0" aria-labelledby="chTeamsTitle">
-        <div class="ch-intro"><div><h3 id="chTeamsTitle">🤝 קבוצות משימה</h3>
-          <p>הגשות משותפות ומיזמי יישום, סביב קול קורא, קול קורא פנימי או רעיון מנבט 🌱. לכל קבוצה מרחב עבודה משלה, ואפשר להצטרף.</p></div>
-          <div class="ch-actions"><button type="button" class="ch-btn primary" data-ch="team-new">🤝 הקמת קבוצת משימה</button><button type="button" class="ch-btn" data-ch="teams-admin" hidden id="chTeamsAdminBtn">⚙ ניהול קבוצות משימה</button></div></div>
+        <div class="ch-intro"><div><h3 id="chTeamsTitle">🛠 צוותים שכבר עובדים</h3>
+          <p>לכל צוות מרחב עבודה משלו: כתיבת ההצעה, משימות ודיון. נכנסים למרחב שלכם, או מצטרפים לצוות קיים. קבוצה או יוזמה חדשה פותחים ב"הצעות לשיתופי פעולה", ומרחב העבודה שנפתח מופיע כאן.</p></div>
+          <div class="ch-actions"><button type="button" class="ch-btn" data-ch="teams-admin" hidden id="chTeamsAdminBtn">⚙ ניהול קבוצות משימה</button></div></div>
         <div class="ch-list" id="chTeams"><p class="ch-empty">טוען…</p></div></section>`;
     head.after(root);
     root.addEventListener('click',onClick);
@@ -4787,8 +4787,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
           <p class="ch-credit">הדפדפן הזה זוכר את הכניסה. ממכשיר אחר נכנסים בכפתור "כבר בצוות? כניסה", עם המייל וקוד הקהילה.</p>
           <button type="button" class="ch-btn primary" data-open>כניסה לסביבת העבודה</button>`;
         m.querySelector('[data-copy]').onclick=ev=>copy(j.link,ev.target);
-        m.querySelector('[data-open]').onclick=()=>{m.close();openWorkspace(j.id)};
+        m.querySelector('[data-open]').onclick=()=>{m.close();location.hash='#teams';openWorkspace(j.id)};
         await refreshTeams();
+        // הקבוצה החדשה עוברת ל"מרחבי עבודה".
+        location.hash='#teams';
       }catch(err){setStatus(st,err.message,'err')}
     });
   }
@@ -5313,6 +5315,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
   document.addEventListener('DOMContentLoaded',()=>{
     if(document.documentElement.dataset.page==='match'){
       window.addEventListener('hashchange',handleHash);
+      window.hosenTeamNew=()=>openTeamNew('');
       mountMatch();load();
       return;
     }
@@ -6969,7 +6972,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${field('facebookUrl','Facebook (רשות)','dir="ltr" placeholder="https://"')}
         ${field('instagramUrl','Instagram (רשות)','dir="ltr" placeholder="https://"')}
         <div class="wide"><strong style="font-size:13px">🎯 תחומי העניין שלי</strong> <span class="nv-status">לפיהם נשלחים קולות קוראים, מענקים וכנסים, והסיכום השבועי.</span>${checks(d.themes,d.topics)}</div>
-        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכולה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד שיתופי פעולה.</span><div class="jt-topics">${kinds}</div>
+        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכול/ה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד שיתופי פעולה.</span><div class="jt-topics">${kinds}</div>
           <textarea name="offer" rows="3" dir="auto" placeholder="הפעילות, הרעיון או הנושא שאוכל לקדם" style="width:100%;margin-top:8px;box-sizing:border-box">${h(d.offer?.text||'')}</textarea></div>
         <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירת הכרטיס</button><button type="button" class="nv-btn" data-out>יציאה</button></div>
       </form><div class="nv-status" data-st></div>`;
@@ -7230,16 +7233,16 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const head=document.querySelector('#match .section-head');
     if(!head||document.getElementById('collabHub'))return null;
     const root=document.createElement('section');root.id='collabHub';root.className='cb';root.setAttribute('aria-labelledby','cbTitle');
-    root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle">🤝 שידוכים בקהילה</h3>
-        <p>מי מקדמת מה, מי יכולה לעבוד עם מי, ובקשות פתוחות לשיתוף פעולה. אפשר לבקש שותפות לרעיון, להצטרף לבקשה של אחרת, או לעדכן מה את יכולה לקדם.</p></div>
-      <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכולה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
+    root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle">💡 פותחים שיתוף פעולה</h3>
+        <p>כאן פותחים שיתוף פעולה חדש: מצטרפים לרעיון של המערכת, מפרסמים יוזמה ומחפשים שותפים, או פותחים קבוצה חדשה. מרחב העבודה שנפתח עובר ל"מרחבי עבודה".</p></div>
+      <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 פרסום יוזמה</button><button type="button" class="cb-btn" onclick="window.hosenTeamNew?.()">🤝 פתיחת קבוצה חדשה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכול/ה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
-        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה: קבוצת משימה, למטה בעמוד הזה.</li>
+        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה, שמופיע אחר כך ב"מרחבי עבודה".</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
         <li><strong>📣 בקשה לשיתוף פעולה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. הבקשה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
         <li><strong>🙋 הצטרפות:</strong> לוחצים "אני רוצה להצטרף" וכותבים שם ומייל. מי שפרסמה את הבקשה מקבלת מייל וחוזרת אלייך. כשנמצאו שותפות, אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת.</li>
-        <li><strong>✏️ מה אני יכולה לקדם:</strong> נכנסים עם הקוד האישי שקיבלת בהצטרפות (ואם נשכח, הוא נשלח שוב למייל שבכרטיס).</li>
+        <li><strong>✏️ מה אני יכול/ה לקדם:</strong> נכנסים עם הקוד האישי שקיבלת בהצטרפות (ואם נשכח, הוא נשלח שוב למייל שבכרטיס).</li>
       </ol></details>
       <div class="cb-tabs" role="tablist"></div><div data-panel><p class="cb-empty">טוען…</p></div>`;
     (document.getElementById('callsHub')||head).after(root); // קבוצות המשימה קודם, השידוכים אחריהן
@@ -7255,7 +7258,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const root=document.getElementById('collabHub');if(!root||!S.loaded)return;
     const open=S.requests.filter(x=>x.status==='open').length;
     const ideas=S.research.filter(x=>x.status==='open').length;
-    const tabs=[['research',`💡 הצעות המערכת${ideas?` (${ideas})`:''}`],['requests',`📣 יוזמות של חברי הקהילה${open?` (${open})`:''}`],['who','🧭 מי מקדמת מה'],['me','💞 מי מתאימה לי?']];
+    const tabs=[['research',`💡 הצעות המערכת${ideas?` (${ideas})`:''}`],['requests',`📣 יוזמות של חברי הקהילה${open?` (${open})`:''}`],['who','🧭 מי מקדם/ת מה'],['me','💞 מי מתאים/ה לי?']];
     root.querySelector('.cb-tabs').innerHTML=tabs.map(([k,l])=>`<button type="button" role="tab" class="cb-tab" data-cb="tab" data-k="${k}" aria-selected="${S.tab===k}">${l}</button>`).join('');
     const p=root.querySelector('[data-panel]');
     p.innerHTML=S.tab==='research'?renderResearch():S.tab==='requests'?renderRequests():S.tab==='me'?renderMe():renderWho();
@@ -7302,12 +7305,15 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   function renderResearch(){
     const admin=!!adminToken();
     const drafts=S.research.filter(r=>r.status==='draft');
-    const live=S.research.filter(r=>r.status!=='draft');
+    // בהצעות רק מה שעוד מחפש יוזמים/ות. רעיון שנפתח לו מרחב עבודה עובר ל"מרחבי עבודה".
+    const live=S.research.filter(r=>r.status==='open');
+    const moved=S.research.filter(r=>r.status==='team'||r.status==='closed');
     const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><div class="cb-actions">${drafts.length?`<button type="button" class="cb-btn primary" data-cb="rs-publish-all">📨 פרסום כל הטיוטות ושליחה לצוותים (${drafts.length})</button>`:''}<button type="button" class="cb-btn${drafts.length?'':' primary'}" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div></div>`:'';
     const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים בקוד הקהילה, ומשם לפתוח מרחב עבודה לצוות.</p>';
     return bar+intro+
       (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-rlist">${drafts.map(researchRow).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
-      (live.length?`<div class="cb-rlist">${live.map(researchRow).join('')}</div>`:'<div class="cb-empty">עדיין אין רעיונות למחקר. בקרוב יופיעו כאן הצעות לשידוכים סביב נישות במחקר.</div>');
+      (live.length?`<div class="cb-rlist">${live.map(researchRow).join('')}</div>`:'<div class="cb-empty">כרגע אין הצעות פתוחות. רעיונות שנפתח להם מרחב עבודה נמצאים ב"מרחבי עבודה".</div>')+
+      (admin&&moved.length?`<details class="cb-admin" style="margin-top:14px"><summary><strong>ניהול:</strong> רעיונות שעברו למרחבי עבודה או נסגרו (${moved.length})</summary><div class="cb-rlist" style="margin-top:8px">${moved.map(researchRow).join('')}</div></details>`:'');
   }
 
   // מי מתאימה לבקשה: מי שמקדמת לפחות אחד מסוגי הפעילות שלה, ועוד לא בפנים.
@@ -7347,10 +7353,12 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     root.addEventListener('click',e=>{const t=e.target.closest('[data-cb]');if(!t)return;if(t.dataset.cb!=='share')root.close();onClick(e)});
   }
   function renderRequests(){
-    const rows=S.requests.filter(r=>!S.kind||r.kinds.includes(S.kind));
-    const used=new Set(S.requests.flatMap(r=>r.kinds));
+    // יוזמה שנפתח לה מרחב עבודה עוברת ל"מרחבי עבודה", ויוזמה שנסגרה יורדת מהרשימה.
+    const live=S.requests.filter(r=>!r.hasTeam&&r.status!=='closed');
+    const rows=live.filter(r=>!S.kind||r.kinds.includes(S.kind));
+    const used=new Set(live.flatMap(r=>r.kinds));
     const chips=used.size>1?`<div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול</button>${[...used].map(k=>`<button type="button" class="cb-chip${S.kind===k?' on':''}" data-cb="kind" data-k="${h(k)}">${h(K(k).icon)} ${h(K(k).label)}</button>`).join('')}</div>`:'';
-    if(!S.requests.length)return `<div class="cb-empty">עדיין אין בקשות לשיתוף פעולה. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם בקשה, ומי שמקדמת את אותו סוג פעילות תוכל להצטרף.<div style="margin-top:12px"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button></div></div>`;
+    if(!live.length)return `<div class="cb-empty">עדיין אין בקשות לשיתוף פעולה. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם בקשה, ומי שמקדמת את אותו סוג פעילות תוכל להצטרף.<div style="margin-top:12px"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button></div></div>`;
     return chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין בקשות בסוג הפעילות הזה.</div>');
   }
   function offerCard(p,why){
@@ -7602,7 +7610,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const r=S.research.find(x=>x.id===rid);if(!r)return;
     const root=modal('');const opened=Date.now();
     root.innerHTML=`<h2>🤝 פתיחת מרחב עבודה: ${h(r.title)}</h2>
-      <p class="nv-status">נפתחת קבוצת משימה (ברשימה למטה בעמוד הזה), עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
+      <p class="nv-status">נפתח מרחב עבודה (הוא יופיע ב"מרחבי עבודה"), עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
       <form class="nv-form" novalidate>${whoFields()}
         <label class="wide">קוד הקהילה<input name="communityCode" type="password" inputmode="numeric" autocomplete="off" required></label>
         <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -7618,7 +7626,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         const who=f.elements.who.value;
         const j=await post({action:'research-team',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),communityCode:v('communityCode'),website:f.elements.website.value,elapsed:Date.now()-opened});
         root.innerHTML=`<h2>✓ מרחב העבודה נפתח</h2>
-          <p>הקבוצה מופיעה עכשיו ברשימת קבוצות המשימה, למטה בעמוד${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
+          <p>מרחב העבודה מופיע עכשיו ב<a href="#teams">"מרחבי עבודה"</a>${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
           <p><strong>הקישור למרחב העבודה</strong> (כדאי לשמור אותו${j.mailed?'':' ולשלוח אותו לחברי הצוות'}: רק איתו נכנסים):</p>
           <div class="cb-copy"><input readonly value="${h(j.link)}"><button type="button" class="nv-btn" data-copy>העתקה</button></div>
           <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">כניסה למרחב העבודה</a></div>`;
@@ -7660,7 +7668,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(!tok&&!adminToken())tok=window.hosenMemberToken?window.hosenMemberToken():'';
     // בלי כניסה: הקוד האישי (ומנהלת המערכת: קוד הניהול, לעדכון כל כרטיס).
     const codeLogin=()=>{
-      window.hosenMemberLogin(root,'✏️ מה אני יכולה לקדם',t=>{root.close();openOffer(t)});
+      window.hosenMemberLogin(root,'✏️ מה אני יכול/ה לקדם',t=>{root.close();openOffer(t)});
       root.insertAdjacentHTML('beforeend','<p class="nv-status" style="margin-top:14px">מנהלת המערכת? <a href="#" data-admin>כניסה עם קוד הניהול</a>, לעדכון כל כרטיס.</p><div data-login></div>');
       root.querySelector('[data-admin]').onclick=ev=>{ev.preventDefault();adminLogin(root.querySelector('[data-login]'),()=>{root.close();openOffer()})};
     };
@@ -7669,12 +7677,12 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     try{
       if(tok){const r=await fetch('/api/collab?me=1',{headers:{'x-member-token':tok}});me=await r.json();if(r.status===403){if(window.hosenSetMemberToken)window.hosenSetMemberToken('');return codeLogin()}if(!r.ok)throw new Error(me.message||'הקישור לא תקין.');if(!S.kinds.length)S.kinds=me.kinds}
     }catch(err){
-      root.innerHTML=`<h2>✏️ מה אני יכולה לקדם</h2><p class="nv-status err">${h(err.message)}</p><button type="button" class="nv-btn primary" data-new>כניסה בקוד האישי</button>`;
+      root.innerHTML=`<h2>✏️ מה אני יכול/ה לקדם</h2><p class="nv-status err">${h(err.message)}</p><button type="button" class="nv-btn primary" data-new>כניסה בקוד האישי</button>`;
       root.querySelector('[data-new]').onclick=()=>{root.close();openOffer()};return;
     }
     const pick=!tok;
     const current=()=>me?me.offer:(person(root.querySelector('[name=pid]')?.value)||{kinds:[],text:''});
-    root.innerHTML=`<h2>✏️ מה אני יכולה לקדם</h2>
+    root.innerHTML=`<h2>✏️ מה אני יכול/ה לקדם</h2>
       ${pick?`<p class="nv-status">ניהול: עדכון הכרטיס של</p><select name="pid" style="min-height:36px;margin-bottom:8px">${S.people.map(p=>`<option value="${h(p.id)}">${h(p.name)}</option>`).join('')}</select>`:`<p>שלום ${h(me.name)}${me.institution?` · <span class="nv-status">${h(me.institution)}</span>`:''}</p>`}
       <p class="nv-status">מה תרצי לקדם בקהילה? סמני את סוגי הפעילות וכתבי כמה מילים על הרעיון או הנושא. לפי זה נציע לך שותפות, ונציג אותך ליד בקשות שמתאימות לך.</p>
       <form novalidate><div data-k></div>
@@ -7711,7 +7719,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${c.joiners.length?c.joiners.map(j=>`<div class="cb-joiner"><div><strong>${h(j.name)}</strong> · <a href="mailto:${h(j.email)}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}" dir="ltr">${h(j.email)}</a> <span class="cb-meta">· ${fmt(j.at)}</span>${j.note?`<div class="cb-meta" dir="auto">${h(j.note)}</div>`:''}</div><button type="button" class="cb-btn small danger" data-rm="${h(j.id)}">הסרה</button></div>`).join(''):'<p class="cb-meta">עדיין אין מצטרפות. אפשר להעתיק את הקישור לבקשה ולשלוח אותו למי שמתאימה.</p>'}
         ${c.joiners.length?`<div class="nv-row" style="margin:8px 0"><a class="nv-btn" href="mailto:${h(c.joiners.map(j=>j.email).join(','))}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}">✉️ מייל לכל המצטרפות</a></div>`:''}
         <div style="margin:14px 0;padding:12px 14px;border-radius:10px;background:#f4f9f6">
-          ${c.teamId?'<strong>🤝 נפתחה קבוצת משימה.</strong> <span class="nv-status">הקישור לסביבת העבודה נשלח במייל לכל החברות.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע ברשימת קבוצות המשימה, למטה בעמוד.</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
+          ${c.teamId?'<strong>🤝 נפתח מרחב עבודה.</strong> <span class="nv-status">הוא מופיע ב<a href="#teams">"מרחבי עבודה"</a>.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע ברשימת קבוצות המשימה, למטה בעמוד.</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
           <div data-teamst class="nv-status"></div></div>
         <h3 style="font-size:16px;margin:12px 0 6px">✏️ עדכון הבקשה</h3>
         <form class="nv-form" novalidate>
@@ -7825,7 +7833,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 // מסך הכניסה של "שיתופי פעולה": קודם בוחרים — מרחבי עבודה, או הצעות לשיתופי פעולה — ורק אז רואים את הרשימה.
 (function(){
   if(document.documentElement.dataset.page!=='match')return;
-  const WORK=/^#(workspaces|teams|team=|team-new|join-team=)/, PROP=/^#(proposals|research|collab=|collab-req-|my-offer=)/;
+  const WORK=/^#(workspaces|teams|team=|join-team=)/, PROP=/^#(proposals|research|collab=|collab-req-|my-offer=)/;
   let portal,back,ready=false;
   const hubs=()=>({work:document.getElementById('callsHub'),prop:document.getElementById('collabHub')});
   function view(){const h=location.hash;return WORK.test(h)?'work':PROP.test(h)?'prop':''}
@@ -7852,8 +7860,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     ready=true;
     portal=document.createElement('div');portal.className='mp';portal.id='matchPortal';
     portal.innerHTML=`<p class="mp-intro">מה תרצו לעשות?</p><div class="mp-grid">
-      <button type="button" class="mp-card" data-go="work"><span class="mp-ic">🛠</span><b>מרחבי עבודה</b><span>קבוצות שכבר עובדות יחד: כתיבת הצעות, משימות ודיון. כאן נכנסים למרחב שלכם, מצטרפים לקבוצה קיימת או פותחים קבוצה חדשה.</span><small data-n="work">למרחבי העבודה ›</small></button>
-      <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה שמחפשות שותפים. כאן מצטרפים לרעיון או מפרסמים יוזמה.</span><small data-n="prop">להצעות ›</small></button>
+      <button type="button" class="mp-card" data-go="work"><span class="mp-ic">🛠</span><b>מרחבי עבודה</b><span>צוותים ויוזמות שכבר עובדים יחד: כתיבת הצעות, משימות ודיון. כאן נכנסים למרחב שלכם, או מצטרפים לצוות שכבר עובד.</span><small data-n="work">למרחבי העבודה ›</small></button>
+      <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>כאן מתחיל כל שיתוף פעולה: רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה. מצטרפים לרעיון, מפרסמים יוזמה או פותחים קבוצה חדשה. מרחב העבודה שנפתח עובר ל"מרחבי עבודה".</span><small data-n="prop">להצעות ›</small></button>
     </div>`;
     back=document.createElement('div');back.className='mp-back';back.hidden=true;
     back.innerHTML='<button type="button" data-go="">→ חזרה למסך הבחירה</button><strong></strong>';
