@@ -4396,6 +4396,11 @@ html[data-page="calls"] #resourceArea{display:none!important}
 .ch-ws-head .ch-meta{margin:4px 0 0}
 .ch-ws-me{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ch-soft)}.ch-ws .ch-ws-me input{width:170px}.ch-ws #chWsStatus{width:auto}
 .ch-ws-end{margin-top:22px;padding-top:14px;border-top:1px dashed #e3b9b9}.ch-ws-end h4{margin:12px 0 4px}
+.ch-ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
+.ch-ov-box{text-align:right;display:flex;flex-direction:column;gap:3px;padding:12px 14px;border:1px solid var(--ch-line);border-radius:10px;background:#fff;cursor:pointer;font:inherit;color:inherit}
+.ch-ov-box b{font-size:24px}
+.ch-ov-box span{font-weight:700}
+.ch-ov-box small{color:#6b7d88;font-size:12px;line-height:1.5}
 .ch-sec{margin:0 0 14px;padding:12px 14px;border:1px solid var(--ch-line);border-radius:9px;background:#fff}
 .ch-sec-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .ch-sec h4{margin:0;font-size:15px}
@@ -4878,7 +4883,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     try{team=await api('/api/teams?id='+encodeURIComponent(teamId),{headers:{'x-team-key':key}})}
     catch(e){if(key)store.set('hosen.team.'+teamId,'');renderTeams();openEnter(teamId,'הדפדפן הזה עדיין לא מכיר את הכניסה שלך לקבוצה.');return}
     const m=modal('<div id="chWs" class="ch-ws"></div>',true);
-    const ws={team,tab:'write',drafts:{},conflicts:{}};
+    const ws={team,tab:'home',drafts:{},conflicts:{},openSecs:{}};
     const call=()=>state.open.find(c=>c.id===ws.team.callId)||state.archive.find(c=>c.id===ws.team.callId);
     const me=()=>ws.team.me||m.querySelector('#chWsMe')?.value.trim()||myName()||'';
     // מוביל/ה: כל הפעולות. חבר/ה: כותב/ת, מוסיף/ה ומשתתף/ת בדיון — בלי מחיקה ובלי ניהול.
@@ -4901,7 +4906,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <div class="ch-actions">${t.me?`<span class="ch-tag">${h(t.me)}${lead()?' · מוביל/ה':''}</span>`:`<label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>`}
         ${lead()?`<select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>`:`<span class="ch-badge gray">${h(t.statusLabel)}</span>`}
         ${t.members.some(x=>x.name===me())?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>${t.members.some(x=>x.name===me())?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
-        <nav class="ch-tabs">${[['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
+        <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
       const draft=ws.drafts[s.id]??s.text;const conflict=ws.conflicts[s.id];
@@ -4914,9 +4919,35 @@ html[data-page="calls"] #resourceArea{display:none!important}
     }
     function body(){
       const t=ws.team,c=call();
-      if(ws.tab==='write')return `<div class="ch-note" style="margin-bottom:12px">כל חברה כותבת בסעיף שלה ושומרת. אם שתיים עובדות על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בלשונית "קישורים וקבצים".</div>
-        ${t.sections.map(sectionHtml).join('')}
-        <form class="ch-inline" data-form="sec-add" style="grid-template-columns:1fr auto"><input name="title" placeholder="סעיף נוסף שהקול הקורא דורש" dir="auto"><button class="ch-btn small">הוספת סעיף</button></form>`;
+      if(ws.tab==='write'){
+        const filled=t.sections.filter(x=>x.text.trim()||ws.drafts[x.id]||ws.openSecs[x.id]);
+        const empty=t.sections.filter(x=>!filled.includes(x));
+        return `<div class="ch-note" style="margin-bottom:12px">כל אחד ואחת כותבים בסעיף שלהם ושומרים. אם שניים עובדים על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בלשונית "קישורים וקבצים".</div>
+        ${filled.length?filled.map(sectionHtml).join(''):'<p class="ch-empty">עדיין לא נכתב אף סעיף. בוחרים סעיף מהרשימה ומתחילים.</p>'}
+        ${empty.length?`<h4 style="margin:18px 0 6px">סעיפים שעוד לא נכתבו (${empty.length})</h4><div class="ch-rows">${empty.map(x=>`<div class="ch-row"><span class="grow"><strong>${h(x.title)}</strong>${x.hint?` <small class="ch-credit">${h(x.hint)}</small>`:''}</span><button type="button" class="ch-btn small" data-w="sec-open" data-id="${h(x.id)}">✍ לכתוב</button></div>`).join('')}</div>`:''}
+        <form class="ch-inline" data-form="sec-add" style="grid-template-columns:1fr auto;margin-top:14px"><input name="title" placeholder="סעיף נוסף שהקול הקורא דורש" dir="auto"><button class="ch-btn small">הוספת סעיף</button></form>`;
+      }
+      if(ws.tab==='home'){
+        const written=t.sections.filter(x=>x.text.trim());
+        const open=t.tasks.filter(k=>!k.done);
+        const last=t.messages.slice(-3).reverse();
+        const isMember=t.members.some(x=>x.name===me());
+        const when=d=>new Date(d).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'});
+        return `<div class="ch-ov">
+          ${t.summary?`<p dir="auto" style="white-space:pre-line;font-size:16px">${h(t.summary)}</p>`:''}
+          ${t.need?`<p dir="auto"><strong>מחפשים/ות:</strong> ${h(t.need)}</p>`:''}
+          <p class="ch-credit"><strong>מוביל/ה:</strong> ${h(t.lead.name)} · <strong>בצוות:</strong> ${t.members.map(x=>h(x.name)+(x.role&&x.name!==t.lead.name?` (${h(x.role)})`:'')).join(', ')}</p>
+          <div class="ch-ov-grid">
+            <button type="button" class="ch-ov-box" data-tab="write"><b>${written.length} / ${t.sections.length}</b><span>סעיפים כתובים</span><small>${written.length?written.slice(0,4).map(x=>h(x.title)).join(' · '):'עוד לא התחילו לכתוב'}</small></button>
+            <button type="button" class="ch-ov-box" data-tab="tasks"><b>${open.length}</b><span>משימות פתוחות</span><small>${open.length?open.slice(0,3).map(k=>h(k.text)+(k.owner?' — '+h(k.owner):'')).join(' · '):'אין משימות פתוחות'}</small></button>
+            <button type="button" class="ch-ov-box" data-tab="links"><b>${t.links.length}</b><span>קישורים וקבצים</span><small>${t.links.length?t.links.slice(0,3).map(l=>h(l.label)).join(' · '):'עוד לא צורפו'}</small></button>
+          </div>
+          <h4 style="margin:18px 0 6px">💬 מה קורה בדיון</h4>
+          ${last.length?`<div class="ch-rows">${last.map(x=>`<div class="ch-msg"><b>${h(x.name)}</b> <small>${when(x.at)}</small><p dir="auto">${h(x.text)}</p></div>`).join('')}</div><p><button type="button" class="ch-btn small" data-tab="talk">לכל הדיון</button></p>`:'<p class="ch-empty">הדיון עוד לא התחיל.</p>'}
+          ${isMember?`<div class="ch-note" style="margin-top:14px"><strong>איך להתחיל?</strong> כדאי להציג את עצמך בדיון ולכתוב במה תרצו לעזור, ואז לבחור סעיף או משימה.
+            <form class="ch-inline" data-form="message" style="grid-template-columns:1fr auto;margin-top:8px"><textarea name="text" rows="2" required dir="auto" placeholder="שלום לכולם, אני... ואשמח לעזור ב..."></textarea><button class="ch-btn small primary">שליחה לדיון</button></form></div>`:''}
+        </div>`;
+      }
       if(ws.tab==='tasks'){
         const names=t.members.map(x=>x.name);
         return `<div class="ch-rows">${t.tasks.length?t.tasks.map(k=>`<div class="ch-row${k.done?' done':''}"><input type="checkbox" data-w="task-toggle" data-id="${h(k.id)}"${k.done?' checked':''} aria-label="בוצע"><span class="grow" dir="auto">${h(k.text)}</span>${k.owner?`<span class="ch-tag">${h(k.owner)}</span>`:''}${k.due?`<span class="ch-tag">עד ${fmt(k.due)}</span>`:''}${lead()?`<button type="button" class="ch-btn small danger" data-w="task-remove" data-id="${h(k.id)}">מחיקה</button>`:''}</div>`).join(''):'<p class="ch-empty">עדיין אין משימות. התחילו מחלוקת הסעיפים בין חברות הקבוצה.</p>'}</div>
@@ -4997,6 +5028,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const tab=e.target.closest('[data-tab]');if(tab){ws.tab=tab.dataset.tab;render();return}
       const b=e.target.closest('[data-w]');if(!b)return;
       const w=b.dataset.w,id=b.dataset.id;
+      if(w==='sec-open'){ws.openSecs[id]=true;render(true);m.querySelector(`[data-sec-text="${CSS.escape(id)}"]`)?.focus();return}
       if(w==='sec-save')return saveSection(id);
       if(w==='sec-remove')return run(()=>act('section-remove',{sectionId:id}));
       if(w==='task-toggle')return run(()=>act('task-toggle',{taskId:id}));
