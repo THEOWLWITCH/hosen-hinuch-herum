@@ -3,7 +3,7 @@ import { issueMemberToken, json, looksHuman, memberFromToken, store, validToken 
 import { THEME_LABELS, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addRequest } from "../lib/requests.mts";
 import { communityOK } from "../lib/member-code.mts";
-import { createTeam, hashKey as teamHash, newKey as teamKey, saveTeam } from "../lib/teams.mts";
+import { createTeam, deleteTeam, hashKey as teamHash, newKey as teamKey, saveTeam } from "../lib/teams.mts";
 import {
   KINDS, STATUS_LABELS, type CollabStatus, clip, cleanKinds, createCollab, deleteCollab, getCollab, hashKey, isDate, listCollabs, newKey,
   offerOf, openCollab, ownerCollab, publicCollab, saveCollab,
@@ -287,6 +287,18 @@ export default async (req: Request) => {
   }
 
   // פרסום: הכרטיס גלוי לכולם, ונשלחת הודעה לחברים שהוצעו (בלי מי שהוסר/ה מרשימות הדיוור).
+  // ניהול: החזרת רעיון להצעה של המערכת. מרחב העבודה שנפתח לו נמחק, והרעיון שוב מחפש יוזמים/ות.
+  if (action === "research-reopen") {
+    if (!(await validToken(req, "admin"))) return json(ADMIN_EXPIRED, 401);
+    const r = await getResearch(clip(body.id, 80));
+    if (!r) return json({ error: "not_found", message: "הרעיון לא נמצא." }, 404);
+    if (r.teamId) await deleteTeam(r.teamId);
+    r.teamId = "";
+    r.status = "open";
+    await saveResearch(r);
+    return json({ ok: true });
+  }
+
   if (action === "research-publish" || action === "research-delete" || action === "research-close") {
     if (!(await validToken(req, "admin"))) return json(ADMIN_EXPIRED, 401);
     const r = await getResearch(clip(body.id, 80));

@@ -7269,6 +7269,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${draft?'':`<button type="button" class="cb-btn small" data-cb="rs-share" data-id="${h(r.id)}">🔗 העתקת קישור</button>`}
         ${admin&&draft?`<button type="button" class="cb-btn small primary" data-cb="rs-publish" data-id="${h(r.id)}">📨 פרסום ושליחה לצוות המוצע</button><button type="button" class="cb-btn small" data-cb="rs-publish-quiet" data-id="${h(r.id)}">פרסום בלי מייל</button>`:''}
         ${admin&&r.status==='open'?`<button type="button" class="cb-btn small" data-cb="rs-close" data-id="${h(r.id)}">סגירה</button>`:''}
+        ${admin&&r.status==='team'?`<button type="button" class="cb-btn small" data-cb="rs-reopen" data-id="${h(r.id)}">↩ החזרה להצעה ומחיקת המרחב</button>`:''}
         ${admin?`<button type="button" class="cb-btn small danger" data-cb="rs-del" data-id="${h(r.id)}">🗑 מחיקה</button>`:''}
       </div></article>`;
   }
@@ -7420,11 +7421,11 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(a==='rs-join')return openResearchJoin(t.dataset.id);
     if(a==='rs-team')return openResearchTeam(t.dataset.id);
     if(a==='rs-share'){const link=`${site()}/match#research-${t.dataset.id}`;try{await navigator.clipboard.writeText(link);t.textContent='✓ הועתק'}catch(err){prompt('הקישור לרעיון:',link)}return}
-    if(a==='rs-publish'||a==='rs-publish-quiet'||a==='rs-close'||a==='rs-del'){
+    if(a==='rs-publish'||a==='rs-publish-quiet'||a==='rs-close'||a==='rs-del'||a==='rs-reopen'){
       const r=S.research.find(x=>x.id===t.dataset.id);if(!r)return;
-      const ask={'rs-publish':`לפרסם את "${r.title}" ולשלוח הודעה ל-${r.researchers.length} החברים שהוצעו לצוות (${r.researchers.map(x=>x.name).join(', ')})?`,'rs-publish-quiet':`לפרסם את "${r.title}" בלי לשלוח מייל?`,'rs-close':`לסגור את "${r.title}"? הוא יוסתר מהעמוד.`,'rs-del':`למחוק את "${r.title}"?`}[a];
+      const ask={'rs-publish':`לפרסם את "${r.title}" ולשלוח הודעה ל-${r.researchers.length} החברים שהוצעו לצוות (${r.researchers.map(x=>x.name).join(', ')})?`,'rs-publish-quiet':`לפרסם את "${r.title}" בלי לשלוח מייל?`,'rs-close':`לסגור את "${r.title}"? הוא יוסתר מהעמוד.`,'rs-del':`למחוק את "${r.title}"?`,'rs-reopen':`להחזיר את "${r.title}" להצעה של המערכת? מרחב העבודה שנפתח לו יימחק לגמרי, כולל מה שנכתב בו.`}[a];
       if(!confirm(ask))return;
-      const action={'rs-publish':'research-publish','rs-publish-quiet':'research-publish','rs-close':'research-close','rs-del':'research-delete'}[a];
+      const action={'rs-publish':'research-publish','rs-publish-quiet':'research-publish','rs-close':'research-close','rs-del':'research-delete','rs-reopen':'research-reopen'}[a];
       t.disabled=true;
       try{const j=await post({action,id:r.id,notify:a==='rs-publish'},{Authorization:'Bearer '+adminToken()});
         if(a==='rs-publish')alert(j.mailConfigured===false?'פורסם. שליחת המיילים מהאתר עוד לא פעילה, ולכן לא נשלחה הודעה.':`פורסם. נשלחה הודעה ל-${j.mailed} מתוך ${j.total}.`);
