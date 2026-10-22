@@ -174,7 +174,7 @@ export default async (req: Request) => {
     if (!t) return json({ error: "not_found" }, 404);
     if (action === "admin-delete") { await deleteTeam(t.id); return json({ ok: true }); }
     const key = newKey();
-    await saveTeam({ ...t, keyHash: await hashKey(key) });
+    await saveTeam({ ...t, keyHash: await hashKey(key), keysV2: true, keyOwners: { ...(t.keyOwners || {}), [await hashKey(key)]: t.lead.name } });
     return json({ ok: true, link: workspaceLink(site, t, key) });
   }
 
@@ -216,6 +216,7 @@ export default async (req: Request) => {
       t.memberKeys = (t.memberKeys || []).filter(h => !nextKeys.includes(h));
       t.leadKeys = nextKeys;
       t.keyHash = await hashKey(newKey());
+      t.keysV2 = true;
       await mail(next.email, `את/ה מוביל/ה עכשיו את קבוצת המשימה: ${t.title}`,
         [`שלום ${next.name},`, `${m.name} יצא/ה מקבוצת המשימה "${t.title}" והעביר/ה אליך את ההובלה.`, "בקשות הצטרפות חדשות יגיעו מעכשיו אליך."],
         ["לאתר", `${site}/match#teams`]);

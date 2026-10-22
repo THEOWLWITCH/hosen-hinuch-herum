@@ -19,7 +19,7 @@ export type Task = { id: string; text: string; owner?: string; due?: string; don
 export type Message = { id: string; name: string; text: string; at: string };
 export type Link = { id: string; label: string; url: string };
 export type Team = {
-  id: string; keyHash: string; memberKeys?: string[]; leadKeys?: string[]; keyOwners?: Record<string, string>; title: string; summary: string; need: string;
+  id: string; keyHash: string; memberKeys?: string[]; leadKeys?: string[]; keyOwners?: Record<string, string>; keysV2?: boolean; title: string; summary: string; need: string;
   callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean; origin?: string;
   status: TeamStatus; lead: { name: string; email?: string };
   members: Member[]; requests: JoinRequest[]; sections: Section[]; tasks: Task[]; messages: Message[]; links: Link[];
@@ -92,7 +92,9 @@ export async function openTeamAccess(teamId: string, key: string): Promise<TeamA
   if (!t || !key) return null;
   const h = await hashKey(key);
   const me = (t.keyOwners || {})[h] || "";
-  if (h === t.keyHash || (t.leadKeys || []).includes(h)) return { team: t, role: "lead", hash: h, me: me || t.lead.name };
+  // קבוצות ותיקות (בלי keysV2): הקישור הישן של המוביל/ה הועבר בעבר גם לשותפים/ות, ולכן הוא כבר לא פותח את המרחב.
+  // המוביל/ה נכנס/ת שוב במייל ובקוד הקהילה, וחברים/ות עם קישור אישי ממשיכים/ות כרגיל.
+  if ((t.keysV2 && h === t.keyHash) || (t.leadKeys || []).includes(h)) return { team: t, role: "lead", hash: h, me: me || t.lead.name };
   if ((t.memberKeys || []).includes(h)) return { team: t, role: "member", hash: h, me };
   return null;
 }
@@ -141,7 +143,7 @@ export function createTeam(input: {
     members: [{ name: input.leadName, email: input.leadEmail || "", role: "מובילה", joinedAt: at }],
     requests: [], tasks: [], messages: [], links: [],
     sections: DEFAULT_SECTIONS.map(([sid, title, hint]) => ({ id: sid, title, hint, text: "", version: 0 })),
-    createdAt: at, updatedAt: at,
+    keysV2: true, createdAt: at, updatedAt: at,
   };
 }
 
