@@ -7090,7 +7090,15 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 /* שידוכים בקהילה (עמוד הנבחרת): מי מקדמת מה, מי מתאימה לי, ובקשות לשיתוף פעולה. */
 .cb{--cb-ink:#1f4256;--cb-soft:#5f7686;--cb-line:#d7e3e7;--cb-green:#2f6e4f;--cb-blue:#245f82;--cb-bg:#f4f9f6;margin:6px 0 26px;padding:20px 22px;border:1px solid var(--cb-line);border-radius:14px;background:#fff;color:var(--cb-ink)}
 .cb-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
-.cb-top h3{margin:0;font-size:21px}.cb-top p{margin:4px 0 0;color:var(--cb-soft);font-size:14px;max-width:640px}
+.cb-top h3{margin:0;font-size:21px}
+.cb-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cb-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+.cb-empty-cta{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.cb-empty-cta p{margin:0;max-width:560px;line-height:1.7}
+.cb-top>div:first-child{min-width:0;flex:1 1 280px}
+.cb-actions:empty{display:none}
+section#collabHub.cb{padding:20px 22px 24px!important}
+@media(max-width:640px){section#collabHub.cb{padding:16px 14px 20px!important}}.cb-top p{margin:4px 0 0;color:var(--cb-soft);font-size:14px;max-width:640px}
 .cb-actions{display:flex;flex-wrap:wrap;gap:8px}
 .cb-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:7px 15px;border:1px solid #9fc2b0;border-radius:999px;background:#fff;color:#2a6048;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;text-decoration:none}
 .cb-btn.primary{background:var(--cb-green);border-color:var(--cb-green);color:#fff}
@@ -7151,7 +7159,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .cb-hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;opacity:0}
 .person .cb-pk{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .person .cb-pk span{padding:1px 7px;border-radius:999px;background:#e9f3ee;color:#24563d;font-size:11.5px}
-@media(max-width:640px){.cb{padding:16px 14px}.cb-kinds{grid-template-columns:1fr}.cb-actions .cb-btn{flex:1 1 100%;justify-content:center}.cb-me select{min-width:0;width:100%}}
+@media(max-width:640px){.cb-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}.cb-tab{white-space:nowrap;flex:0 0 auto}.mp-back button{padding:5px 12px}.cb{padding:16px 14px}.cb-kinds{grid-template-columns:1fr}.cb-actions .cb-btn{flex:1 1 100%;justify-content:center}.cb-me select{min-width:0;width:100%}}
 @media print{.cb-actions,.cb-tabs,.cb-row{display:none!important}.cb-card{break-inside:avoid}}
 </style>
 <script id="collab-v1-js">
@@ -7232,7 +7240,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const head=document.querySelector('#match .section-head');
     if(!head||document.getElementById('collabHub'))return null;
     const root=document.createElement('section');root.id='collabHub';root.className='cb';root.setAttribute('aria-labelledby','cbTitle');
-    root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle">💡 הצעות לשיתופי פעולה</h3>
+    root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle" class="cb-sr">הצעות לשיתופי פעולה</h3>
         <p>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה שמחפשים שותפים. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם. כשנפתח מרחב עבודה, הוא עובר ל"מרחבי עבודה".</p></div>
       <div class="cb-actions"><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
@@ -7357,8 +7365,9 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const rows=live.filter(r=>!S.kind||r.kinds.includes(S.kind));
     const used=new Set(live.flatMap(r=>r.kinds));
     const chips=used.size>1?`<div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול</button>${[...used].map(k=>`<button type="button" class="cb-chip${S.kind===k?' on':''}" data-cb="kind" data-k="${h(k)}">${h(K(k).icon)} ${h(K(k).label)}</button>`).join('')}</div>`:'';
-    const pub='<p style="margin:0 0 12px"><button type="button" class="cb-btn primary" data-cb="new">📣 פרסום יוזמה משלי</button></p>';
-    if(!live.length)return pub+`<div class="cb-empty">עדיין אין יוזמות. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם יוזמה, וחברי וחברות הקהילה שמקדמים את אותו סוג פעילות יוכלו להצטרף.<div style="margin-top:12px"></div></div>`;
+    const btn='<button type="button" class="cb-btn primary" data-cb="new">📣 פרסום יוזמה משלי</button>';
+    if(!live.length)return `<div class="cb-empty cb-empty-cta"><p>עדיין אין יוזמות. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? מפרסמים יוזמה, וחברי וחברות הקהילה שמקדמים את אותו סוג פעילות יכולים להצטרף.</p>${btn}</div>`;
+    const pub=`<div class="cb-bar"><span class="cb-meta">יוזמות של חברי וחברות הקהילה שמחפשים שותפים</span>${btn}</div>`;
     return pub+chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין יוזמות בסוג הפעילות הזה.</div>');
   }
   function offerCard(p,why){
@@ -7376,7 +7385,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const kinds=S.kinds.filter(k=>count(k.key)).sort((a,b)=>count(b.key)-count(a.key));
     const rows=withOffer.filter(p=>!S.kind||p.kinds.includes(S.kind));
     const reqs=S.kind?S.requests.filter(r=>r.status==='open'&&r.kinds.includes(S.kind)).length:0;
-    return `<p style="margin:0 0 12px"><button type="button" class="cb-btn" data-cb="offer">✏️ לעדכן מה אני יכול/ה לקדם</button></p><div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול <small>${withOffer.length}</small></button>${kinds.map(k=>`<button type="button" class="cb-chip${S.kind===k.key?' on':''}" data-cb="kind" data-k="${h(k.key)}">${h(k.icon)} ${h(k.label)} <small>${count(k.key)}</small></button>`).join('')}</div>
+    return `<div class="cb-bar"><span class="cb-meta">מה כל אחד ואחת בקהילה יכולים לקדם</span><button type="button" class="cb-btn" data-cb="offer">✏️ לעדכן מה אני יכול/ה לקדם</button></div><div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול <small>${withOffer.length}</small></button>${kinds.map(k=>`<button type="button" class="cb-chip${S.kind===k.key?' on':''}" data-cb="kind" data-k="${h(k.key)}">${h(k.icon)} ${h(k.label)} <small>${count(k.key)}</small></button>`).join('')}</div>
       ${reqs?`<p class="cb-why">📣 יש ${reqs===1?'יוזמה פתוחה אחת':reqs+' יוזמות פתוחות'} בסוג הפעילות הזה. <a href="#" data-cb="tab" data-k="requests">ליוזמות</a></p>`:''}
       ${rows.length?`<div class="cb-grid">${rows.map(p=>offerCard(p)).join('')}</div>`:'<div class="cb-empty">עדיין אין מי שכתבה שהיא מקדמת את סוג הפעילות הזה. אולי זו את? אפשר לפרסם יוזמה.</div>'}
       ${later.length?`<p class="cb-later">עוד לא כתבו מה הן יכולות לקדם: ${later.map(p=>h(p.name)).join(', ')}. <button type="button" class="cb-btn small" data-cb="offer">✏️ זו אני, לעדכון</button></p>`:''}`;
@@ -7828,6 +7837,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
 .mp-back button{font:inherit;font-size:14px;border:1px solid #dfeaf1;background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;color:#17324d}
 .mp-back strong{font-size:18px;color:#17324d}
 .mp-back[hidden],.mp[hidden]{display:none}
+.mp-back button{white-space:nowrap}
+@media(max-width:640px){.mp-long{display:none}}
 </style>
 <script id="match-portal">
 // מסך הכניסה של "שיתופי פעולה": קודם בוחרים — מרחבי עבודה, או הצעות לשיתופי פעולה — ורק אז רואים את הרשימה.
@@ -7864,7 +7875,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם.</span><small data-n="prop">להצעות ›</small></button>
     </div>`;
     back=document.createElement('div');back.className='mp-back';back.hidden=true;
-    back.innerHTML='<button type="button" data-go="">→ חזרה למסך הבחירה</button><strong></strong>';
+    back.innerHTML='<button type="button" data-go="">→ חזרה<span class="mp-long"> למסך הבחירה</span></button><strong></strong>';
     work.before(portal);portal.after(back);
     // סדר קבוע: מסך הבחירה, שורת החזרה, מרחבי העבודה, ההצעות.
     back.after(work);work.after(prop);
