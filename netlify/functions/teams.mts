@@ -85,10 +85,7 @@ export default async (req: Request) => {
       t.keyOwners = { [t.keyHash]: name };
       await saveTeam(t);
       const link = workspaceLink(site, t, key);
-      const mailed = await mail(email, `סביבת העבודה של קבוצת המשימה: ${t.title}`,
-        [`שלום ${name},`, `קבוצת המשימה "${t.title}" הוקמה. זה הקישור לסביבת העבודה של הקבוצה.`, "שמרי אותו. רק מי שיש לה את הקישור יכולה להיכנס ולכתוב."],
-        ["כניסה לסביבת העבודה", link]);
-      return json({ ok: true, id: t.id, key, link, mailed });
+      return json({ ok: true, id: t.id, key, link, mailed: false });
     }
 
     const t = await getTeam(clip(body.id, 80));
@@ -124,10 +121,8 @@ export default async (req: Request) => {
     const key = await issueKey(t, isLead ? "lead" : "member", existing?.name || name);
     await saveTeam(t);
     const link = workspaceLink(site, t, key);
-    const mailed = existing ? false : await mail(email, `הצטרפת לקבוצת המשימה: ${t.title}`,
-      [`שלום ${name},`, `הצטרפת לקבוצת המשימה "${t.title}". זה הקישור שלך לסביבת העבודה.`, "כדאי לשמור אותו. אפשר גם להיכנס בכל עת מהאתר, עם המייל וקוד הקהילה."],
-      ["כניסה לסביבת העבודה", link]);
-    return json({ ok: true, id: t.id, key, link, mailed, name: existing?.name || name, returning: !!existing });
+    // בלי מייל: מי שמצטרף/ת נכנס/ת מיד, ובפעם הבאה במייל ובקוד הקהילה. מיילים יוצאים רק להזמנות.
+    return json({ ok: true, id: t.id, key, link, mailed: false, name: existing?.name || name, returning: !!existing });
   }
 
   // ----- כניסה חוזרת: מי שכבר בצוות (המוביל/ה או חבר/ה), ממכשיר או מדפדפן אחר -----
@@ -238,6 +233,21 @@ export default async (req: Request) => {
         [`שלום ${x.name},`, `${t.lead.name} מחק/ה את מרחב העבודה של קבוצת המשימה "${t.title}".`, "הקישור למרחב כבר לא פעיל."]);
     }
     return json({ ok: true, deleted: true });
+  }
+
+  // הזמנה במייל: חבר/ה בצוות שולח/ת קישור הצטרפות לאנשים שהוא/היא בוחר/ת. זה המייל היחיד שיוצא בהצטרפות.
+  if (action === "invite") {
+    const emails = [...new Set(String(body.emails ?? "").split(/[\s,;]+/).map(e => e.trim()).filter(e => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)))].slice(0, 10);
+    if (!emails.length) return json({ error: "missing_fields", message: "נשמח לכתובת מייל אחת לפחות." }, 400);
+    if (!mailConfigured()) return json({ ok: true, sent: 0, mailConfigured: false, link: `${site}/match#join-team=${t.id}` });
+    const note = clip(body.note, 600);
+    let sent = 0;
+    for (const to of emails) {
+      if (await mail(to, `${who} מזמין/ה אותך לקבוצת המשימה: ${t.title}`,
+        [`שלום,`, `${who} מזמין/ה אותך להצטרף לקבוצת המשימה "${t.title}" בקהילה "בינה מלאכותית: חוסן-חינוך-חרום".`, note, t.summary ? `על הקבוצה: ${clip(t.summary, 400)}` : "", "מצטרפים בקישור, עם השם, המייל וקוד הקהילה."].filter(Boolean),
+        ["להצטרפות לקבוצה", `${site}/match#join-team=${t.id}`])) sent++;
+    }
+    return json({ ok: true, sent, total: emails.length });
   }
 
   switch (action) {

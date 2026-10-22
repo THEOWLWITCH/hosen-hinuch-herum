@@ -4766,7 +4766,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <label data-internal>גוף מממן<input name="funder" dir="auto"></label>
         <label data-internal>מועד הגשה<input name="deadline" type="date"></label>
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
-        <label>מייל*<span class="hint">לשם יישלח הקישור לסביבת העבודה</span><input name="email" type="email" dir="ltr" required></label>
+        <label>מייל*<span class="hint">איתו נכנסים שוב מכל מכשיר, עם קוד הקהילה</span><input name="email" type="email" dir="ltr" required></label>
         ${codeField()}
         <div class="wide"><button class="ch-btn primary">הקמת הקבוצה</button><div class="ch-status"></div></div>
       </form>`);
@@ -4784,7 +4784,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         m.querySelector('.ch-dialog').innerHTML=`<button type="button" class="ch-x" aria-label="סגירה">×</button><h2>הקבוצה הוקמה 🎉</h2>
           <p><strong>זה הקישור לסביבת העבודה.</strong> רק מי שיש לה אותו יכולה להיכנס ולכתוב. שמרי אותו, ושלחי אותו לשותפות.</p>
           <div class="ch-linkbox"><input readonly value="${h(j.link)}"><button type="button" class="ch-btn small" data-copy>העתקה</button></div>
-          <p class="ch-credit">${j.mailed?'הקישור נשלח גם למייל שלך.':'בדפדפן הזה הקישור נשמר, ואפשר להיכנס מכאן.'}</p>
+          <p class="ch-credit">הדפדפן הזה זוכר את הכניסה. ממכשיר אחר נכנסים בכפתור "כבר בצוות? כניסה", עם המייל וקוד הקהילה.</p>
           <button type="button" class="ch-btn primary" data-open>כניסה לסביבת העבודה</button>`;
         m.querySelector('[data-copy]').onclick=ev=>copy(j.link,ev.target);
         m.querySelector('[data-open]').onclick=()=>{m.close();openWorkspace(j.id)};
@@ -4799,7 +4799,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const m=modal(`<h2>הצטרפות לצוות</h2><p><strong>${h(t.title)}</strong>${t.need?`<br><span class="ch-credit">מחפשות: ${h(t.need)}</span>`:''}</p>
       <form class="ch-form">
         <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
-        <label>מייל*<span class="hint">לשם יישלח הקישור האישי לסביבת העבודה</span><input name="email" type="email" dir="ltr" required></label>
+        <label>מייל*<span class="hint">איתו נכנסים שוב מכל מכשיר, עם קוד הקהילה</span><input name="email" type="email" dir="ltr" required></label>
         <label class="wide">התפקיד שלי בהצעה (רשות)<input name="role" dir="auto" placeholder="למשל: שיטות מחקר, כתיבה, קשר עם השטח"></label>
         ${codeField()}
         <div class="wide"><button class="ch-btn primary">🙋 הצטרפות</button><div class="ch-status"></div></div>
@@ -5050,7 +5050,20 @@ html[data-page="calls"] #resourceArea{display:none!important}
           catch(err){setStatus(jm.querySelector('.ch-status'),err.message,'err')}});
         return}
       if(w==='go-leave'){ws.tab='about';render();m.querySelector('#chWsLeave')?.scrollIntoView({behavior:'smooth',block:'center'});return}
-      if(w==='link')return modal(`<h2>הזמנת שותפים/ות לקבוצה</h2><p>זה קישור הזמנה. מי שמקבל/ת אותו נכנס/ת עם השם, המייל וקוד הקהילה, ומצטרף/ת לצוות כחבר/ה. הניהול והמחיקה נשארים אצל המוביל/ה.</p><div class="ch-linkbox"><input readonly value="${h(location.origin+'/match#join-team='+teamId)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
+      if(w==='link'){
+        const im=modal(`<h2>הזמנת שותפים/ות לקבוצה</h2><p>מי שמוזמן/ת מצטרף/ת עם השם, המייל וקוד הקהילה, כחבר/ה בצוות. הניהול והמחיקה נשארים אצל המוביל/ה.</p>
+          <form class="ch-form" data-invite><label class="wide">שליחת הזמנה במייל<span class="hint">כתובת אחת או כמה, מופרדות בפסיק (עד 10)</span><input name="emails" dir="ltr" required placeholder="name@example.com"></label>
+          <label class="wide">כמה מילים אישיות (רשות)<textarea name="note" rows="2" dir="auto"></textarea></label>
+          <div class="wide"><button class="ch-btn primary">📨 שליחת ההזמנה</button><div class="ch-status"></div></div></form>
+          <p class="ch-credit" style="margin-top:12px">או להעתיק את קישור ההזמנה ולשלוח בעצמך:</p>
+          <div class="ch-linkbox"><input readonly value="${h(location.origin+'/match#join-team='+teamId)}"><button type="button" class="ch-btn small" onclick="navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>this.textContent='הועתק ✓')">העתקה</button></div>`);
+        im.querySelector('[data-invite]').addEventListener('submit',async e=>{e.preventDefault();const st=im.querySelector('.ch-status');setStatus(st,'שולחת…');
+          try{const d=formData(e.target);const j=await act('invite',{emails:d.emails,note:d.note});
+            if(j.mailConfigured===false)return setStatus(st,'שליחת מיילים מהאתר עוד לא פעילה. אפשר להעתיק את הקישור ולשלוח בעצמך.','err');
+            setStatus(st,`✓ נשלחו ${j.sent} מתוך ${j.total} הזמנות.`,j.sent?'ok':'err');if(j.sent)e.target.reset();
+          }catch(err){setStatus(st,err.message,'err')}});
+        return;
+      }
       if(w==='print')return printProposal(ws.team,call());
       if(w==='word')return window.hosenAriadne?.wordProposal(ws.team,call());
     });
