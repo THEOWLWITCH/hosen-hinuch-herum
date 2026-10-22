@@ -7234,7 +7234,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const root=document.createElement('section');root.id='collabHub';root.className='cb';root.setAttribute('aria-labelledby','cbTitle');
     root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle">💡 הצעות לשיתופי פעולה</h3>
         <p>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה שמחפשים שותפים. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם. כשנפתח מרחב עבודה, הוא עובר ל"מרחבי עבודה".</p></div>
-      <div class="cb-actions"><button type="button" class="cb-btn primary" data-cb="new">📣 פרסום יוזמה</button><button type="button" class="cb-btn" data-cb="offer">✏️ מה אני יכול/ה לקדם</button><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
+      <div class="cb-actions"><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
         <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה, שמופיע אחר כך ב"מרחבי עבודה".</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
@@ -7357,8 +7357,9 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const rows=live.filter(r=>!S.kind||r.kinds.includes(S.kind));
     const used=new Set(live.flatMap(r=>r.kinds));
     const chips=used.size>1?`<div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול</button>${[...used].map(k=>`<button type="button" class="cb-chip${S.kind===k?' on':''}" data-cb="kind" data-k="${h(k)}">${h(K(k).icon)} ${h(K(k).label)}</button>`).join('')}</div>`:'';
-    if(!live.length)return `<div class="cb-empty">עדיין אין בקשות לשיתוף פעולה. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם בקשה, ומי שמקדמת את אותו סוג פעילות תוכל להצטרף.<div style="margin-top:12px"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button></div></div>`;
-    return chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין בקשות בסוג הפעילות הזה.</div>');
+    const pub='<p style="margin:0 0 12px"><button type="button" class="cb-btn primary" data-cb="new">📣 פרסום יוזמה משלי</button></p>';
+    if(!live.length)return pub+`<div class="cb-empty">עדיין אין בקשות לשיתוף פעולה. יש לך רעיון להרצאה, לקורס, למחקר או להגשה משותפת? אפשר לפרסם בקשה, ומי שמקדמת את אותו סוג פעילות תוכל להצטרף.<div style="margin-top:12px"><button type="button" class="cb-btn primary" data-cb="new">📣 בקשה לשיתוף פעולה</button></div></div>`;
+    return pub+chips+(rows.length?`<div class="cb-rlist">${rows.map(requestRow).join('')}</div>`:'<div class="cb-empty">אין בקשות בסוג הפעילות הזה.</div>');
   }
   function offerCard(p,why){
     const subject=S.kind?`שידוך מאתר הקהילה: ${K(S.kind).label}`:'שידוך מאתר הקהילה';
@@ -7375,7 +7376,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     const kinds=S.kinds.filter(k=>count(k.key)).sort((a,b)=>count(b.key)-count(a.key));
     const rows=withOffer.filter(p=>!S.kind||p.kinds.includes(S.kind));
     const reqs=S.kind?S.requests.filter(r=>r.status==='open'&&r.kinds.includes(S.kind)).length:0;
-    return `<div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול <small>${withOffer.length}</small></button>${kinds.map(k=>`<button type="button" class="cb-chip${S.kind===k.key?' on':''}" data-cb="kind" data-k="${h(k.key)}">${h(k.icon)} ${h(k.label)} <small>${count(k.key)}</small></button>`).join('')}</div>
+    return `<p style="margin:0 0 12px"><button type="button" class="cb-btn" data-cb="offer">✏️ לעדכן מה אני יכול/ה לקדם</button></p><div class="cb-chips"><button type="button" class="cb-chip${S.kind?'':' on'}" data-cb="kind" data-k="">הכול <small>${withOffer.length}</small></button>${kinds.map(k=>`<button type="button" class="cb-chip${S.kind===k.key?' on':''}" data-cb="kind" data-k="${h(k.key)}">${h(k.icon)} ${h(k.label)} <small>${count(k.key)}</small></button>`).join('')}</div>
       ${reqs?`<p class="cb-why">📣 יש ${reqs===1?'בקשה פתוחה אחת':reqs+' בקשות פתוחות'} בסוג הפעילות הזה. <a href="#" data-cb="tab" data-k="requests">לבקשות</a></p>`:''}
       ${rows.length?`<div class="cb-grid">${rows.map(p=>offerCard(p)).join('')}</div>`:'<div class="cb-empty">עדיין אין מי שכתבה שהיא מקדמת את סוג הפעילות הזה. אולי זו את? אפשר לפרסם בקשה לשיתוף פעולה.</div>'}
       ${later.length?`<p class="cb-later">עוד לא כתבו מה הן יכולות לקדם: ${later.map(p=>h(p.name)).join(', ')}. <button type="button" class="cb-btn small" data-cb="offer">✏️ זו אני, לעדכון</button></p>`:''}`;
