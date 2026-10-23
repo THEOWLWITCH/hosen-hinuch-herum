@@ -3687,11 +3687,25 @@ html[data-page="tasks"] #tasks{display:block!important}
 })();
 </script>
 <style id="survey-v1">
-.sv-card{margin:16px 0 0;padding:18px 20px;border:1px solid #e0d3b3;border-radius:14px;background:linear-gradient(135deg,#fffaf0 0%,#f1f7f9 100%);display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between}
+.sv-card{margin:16px 0 0;padding:16px 22px;border:5px solid transparent;border-radius:22px;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#8A1538 0%,#C2335E 22%,#FFC929 45%,#4A8FE8 70%,#2B63C4 85%,#8A1538 100%) border-box;box-shadow:0 14px 30px -22px rgba(43,99,196,.6);display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between}
 .sv-card h3{margin:0;font-size:19px;color:#173b5d}
 .sv-card p{margin:4px 0 0;color:#4f6577;font-size:14px;max-width:60ch}
-.sv-card button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:10px 20px;background:#8A1F3D;color:#fff;cursor:pointer;white-space:nowrap}
-.sv-card button:hover{background:#731933}
+.sv-go{display:inline-flex;align-items:center;gap:14px;flex:none;font:inherit;border:0;background:none;padding:0;cursor:pointer;color:inherit}
+.sv-go:focus-visible{outline:3px solid #2F6FD0;outline-offset:6px;border-radius:16px}
+.sv-art{width:190px;height:120px;flex:none;overflow:visible;filter:drop-shadow(0 4px 4px rgba(0,0,0,.14));animation:sv-bob 2.6s ease-in-out infinite}
+.sv-art .sv-slip{transform-box:view-box;transform-origin:76px 88px;animation:sv-wave 3s ease-in-out infinite}
+.sv-go:hover .sv-art .sv-slip{animation:sv-vote .7s ease-in-out infinite alternate}
+.sv-pill{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:999px;background:linear-gradient(135deg,#B3264F 0%,#8A1538 55%,#6E0F2C 100%);color:#fff;font-weight:800;font-size:1.15rem;line-height:1;white-space:nowrap;box-shadow:0 12px 22px -12px rgba(110,15,44,.9),inset 0 1px 0 rgba(255,255,255,.28);transition:transform .2s,box-shadow .2s}
+.sv-pill::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);background-size:250% 100%;background-position:120% 0;animation:sv-shine 4s ease-in-out 1s infinite}
+.sv-go:hover .sv-pill{transform:translateY(-2px);box-shadow:0 16px 26px -12px rgba(110,15,44,.95),inset 0 1px 0 rgba(255,255,255,.28)}
+.sv-go:active .sv-pill{transform:scale(.97)}
+.sv-arrow{transition:transform .2s}.sv-go:hover .sv-arrow{transform:translateX(-4px)}
+@keyframes sv-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes sv-wave{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(4deg)}60%{transform:rotate(0)}}
+@keyframes sv-vote{from{transform:translateY(-3px)}to{transform:translateY(5px)}}
+@keyframes sv-shine{0%{background-position:120% 0}60%,100%{background-position:-120% 0}}
+@media (max-width:640px){.sv-go{flex-direction:column;gap:8px}.sv-art{width:160px;height:101px}}
+@media (prefers-reduced-motion:reduce){.sv-art,.sv-art *,.sv-pill,.sv-pill::after{animation:none!important;transition:none!important}}
 .sv{color:#1f4256;font-size:14.5px;line-height:1.6}
 .sv h2{margin:0 0 4px;color:#173b5d}
 .sv .sv-lede{margin:0 0 10px;color:#4f6577}
@@ -3839,7 +3853,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     const host=document.querySelector('#now .top-now-content');
     if(!host||document.querySelector('.sv-card'))return;
     const c=document.createElement('div');c.className='sv-card';
-    c.innerHTML=`<div><h3>💡 מה תרצו שיהיה באתר?</h3><p>14 רעיונות לקהילה, בלי עלות נוספת. מסמנים מה הייתם רוצים, ומוסיפים רעיונות משלכם. בעילום שם, כ-3 דקות.</p></div>`+(done()?'<span>✓ השתתפת בסקר. תודה!</span>':'<button type="button">לסקר</button>');
+    c.innerHTML=`<div><h3>💡 מה תרצו שיהיה באתר?</h3><p>14 רעיונות לקהילה. מסמנים מה הייתם רוצים, ומוסיפים רעיונות משלכם. בעילום שם, כ-3 דקות.</p></div>`+(done()?'<span>✓ השתתפת בסקר. תודה!</span>':`<button type="button" class="sv-go" aria-label="לסקר: מה תרצו שיהיה באתר"><svg class="sv-art" viewBox="8 30 164 104" aria-hidden="true"><defs><radialGradient id="svBody" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#8CC4FF"/><stop offset=".6" stop-color="#4A8FE8"/><stop offset="1" stop-color="#2B63C4"/></radialGradient></defs><ellipse cx="95" cy="130" rx="76" ry="3.6" fill="#000" opacity=".1"/><g transform="translate(4 34) scale(1.2)"><ellipse cx="31" cy="70.5" rx="6.5" ry="3.6" fill="#1F4E9E"/><ellipse cx="49" cy="70.5" rx="6.5" ry="3.6" fill="#1F4E9E"/><path d="M19.5 50 Q11.5 47 12.5 39.5" fill="none" stroke="#2B63C4" stroke-width="5.5" stroke-linecap="round"/><circle cx="40" cy="48" r="22.5" fill="url(#svBody)"/><ellipse cx="31" cy="37" rx="7.5" ry="4" fill="#fff" opacity=".38" transform="rotate(-28 31 37)"/><circle cx="33" cy="46.5" r="3.3" fill="#13233F"/><circle cx="47" cy="46.5" r="3.3" fill="#13233F"/><circle cx="34.2" cy="45.3" r="1.1" fill="#fff"/><circle cx="48.2" cy="45.3" r="1.1" fill="#fff"/><ellipse cx="27.5" cy="53" rx="3.6" ry="2.2" fill="#FF8FA3" opacity=".75"/><ellipse cx="52.5" cy="53" rx="3.6" ry="2.2" fill="#FF8FA3" opacity=".75"/><path d="M34.5 54.5 Q40 60.5 45.5 54.5" fill="none" stroke="#13233F" stroke-width="2.4" stroke-linecap="round"/></g><polygon points="158,86 166,79 166,123 158,130" fill="#C8DAF5" stroke="#1F4E9E" stroke-width="1.6" stroke-linejoin="round"/><polygon points="92,86 158,86 166,79 100,79" fill="#DDE9FB" stroke="#1F4E9E" stroke-width="1.6" stroke-linejoin="round"/><rect x="92" y="86" width="66" height="44" rx="2" fill="#F6F9FF" stroke="#1F4E9E" stroke-width="1.8"/><rect x="92" y="97" width="66" height="7" fill="#2B63C4"/><text x="125" y="121" text-anchor="middle" font-family="Heebo,Arial,sans-serif" font-weight="700" font-size="12" fill="#1F4E9E">קלפי</text><rect x="103" y="80.6" width="26" height="3.2" rx="1.6" fill="#13233F"/><g class="sv-slip"><g transform="translate(4 34) scale(1.2) rotate(30 60 45)"><path d="M60 45 Q67.5 37 66 28" fill="none" stroke="#2B63C4" stroke-width="5.5" stroke-linecap="round"/><g transform="rotate(-28 66 16)"><rect x="56.5" y="3.5" width="19" height="23" rx="2.2" fill="#fff" stroke="#13233F" stroke-width="1.6"/><rect x="56.5" y="6.5" width="19" height="2.2" fill="#2B63C4"/><rect x="56.5" y="21.3" width="19" height="2.2" fill="#2B63C4"/><path d="M60.8 15 l3.6 3.6 l6.8-7.6" fill="none" stroke="#8A1538" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></g><circle cx="66" cy="27.5" r="3.8" fill="#2B63C4"/></g></g><path d="M150 50l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FFC929"/><path d="M24 40l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#FFC929"/></svg><span class="sv-pill">לסקר <span class="sv-arrow" aria-hidden="true">←</span></span></button>`);
     c.querySelector('button')?.addEventListener('click',openSurvey);
     const strip=host.querySelector('.join-strip');strip?host.insertBefore(c,strip):host.appendChild(c);
   }
