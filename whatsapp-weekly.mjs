@@ -4,6 +4,7 @@
 //     קורא את index.html (אחרי node research-weekly.mjs apply) ויוצר בתיקיית הפלט:
 //       whatsapp-message.txt  הודעה מוכנה להדבקה בווטסאפ
 //       whatsapp-image.png    תמונה 1080x1080: לוגו, הכותרת והתאריך, במסגרת צבעונית
+//     אם בתיקיית הפלט יש titles-he.json ({id: "תרגום קצר של הכותרת"}), התרגום מופיע לפני הכותרת המקורית.
 //     הפריטים של השבוע הם אלה שתאריך העדכון שלהם (id w<YYYYMMDD>) הוא של weeklyResearchWeek.
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -39,7 +40,9 @@ if (!items.length) throw new Error(`אין פריטים של ${label}`);
 const featured = items.filter(x => x.weeklyNew);
 const others = items.filter(x => !x.weeklyNew);
 
-const line = x => `🔹 *${CAT[x.cat] || x.cat}*: ${x.title}\n${x.why}`;
+const he = await readFile(`${resolve(process.argv[2] || "whatsapp-out")}/titles-he.json`, "utf8").then(JSON.parse, () => ({}));
+const title = x => (he[x.id] ? `${he[x.id]} (${x.title})` : x.title);
+const line = x => `🔹 *${CAT[x.cat] || x.cat}*: ${title(x)}\n${x.why}`;
 const message = [
   "*חידושים במחקר: עדכון שבועי* 📚",
   "",
@@ -48,7 +51,7 @@ const message = [
   "*מחקרי השבוע:*",
   "",
   ...featured.flatMap(x => [line(x), ""]),
-  ...(others.length ? ["*עוד בדף:*", ...others.map(x => `🔸 ${x.title}`), ""] : []),
+  ...(others.length ? ["*עוד בדף:*", ...others.map(x => `🔸 ${title(x)}`), ""] : []),
   "לכל מקור יש תקציר, משמעות מעשית וקישור למקור.",
   `👈 לקריאה: ${SITE}`,
 ].join("\n");
