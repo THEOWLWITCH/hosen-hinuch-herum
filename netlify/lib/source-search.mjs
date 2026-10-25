@@ -150,7 +150,7 @@ const rec = (o) => ({
 
 export const ENGINES = {
   openalex: {
-    name: "OpenAlex", info: "כ־250 מיליון פרסומים מכל התחומים",
+    name: "OpenAlex", info: "מאות מיליוני פרסומים מכל התחומים",
     async run(q, { per, from, ms }) {
       const u = new URL("https://api.openalex.org/works");
       u.searchParams.set("search", q); u.searchParams.set("per-page", String(per)); u.searchParams.set("mailto", MAIL);
@@ -166,7 +166,7 @@ export const ENGINES = {
     },
   },
   crossref: {
-    name: "Crossref", info: "רישום ה־DOI העולמי של כתבי העת וההוצאות",
+    name: "Crossref", info: "רישום DOI העולמי של כתבי העת וההוצאות",
     async run(q, { per, from, ms }) {
       const u = new URL("https://api.crossref.org/works");
       u.searchParams.set("query.bibliographic", q); u.searchParams.set("rows", String(per)); u.searchParams.set("mailto", MAIL);
