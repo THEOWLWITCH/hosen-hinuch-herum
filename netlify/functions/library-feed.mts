@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { json, store, validToken } from "../lib/shared.mts";
-import { QUALITY_INFO, SECTION_LABELS, TOPICS, approve, auditKeep, auditLibrary, collect, getFeeds, getHidden, getStatus, listInbox, purgeLowQuality, reject, removeFromLibrary, saveFeeds, setHidden } from "../lib/library-feed.mts";
+import { QUALITY_INFO, SECTION_LABELS, SUGGESTED_FEEDS, testFeed, TOPICS, approve, auditKeep, auditLibrary, collect, getFeeds, getHidden, getStatus, listInbox, purgeLowQuality, reject, removeFromLibrary, saveFeeds, setHidden } from "../lib/library-feed.mts";
 import { RESEARCH_CATS, hebrewFor, kickHebrew } from "../lib/library-hebrew.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
@@ -13,7 +13,7 @@ export default async (req: Request) => {
     if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     const [inbox, status, feeds] = await Promise.all([listInbox(), getStatus(), getFeeds()]);
     if (u.searchParams.get("audit") === "1") return json({ audit: await auditLibrary() });
-    return json({ inbox, status, feeds, sections: SECTION_LABELS, researchCats: RESEARCH_CATS, topics: TOPICS.map(t => ({ key: t.key, label: t.label })), quality: QUALITY_INFO });
+    return json({ inbox, status, feeds, sections: SECTION_LABELS, researchCats: RESEARCH_CATS, topics: TOPICS.map(t => ({ key: t.key, label: t.label })), quality: QUALITY_INFO, suggestedFeeds: SUGGESTED_FEEDS });
   }
   if (req.method !== "POST") return json({ error: "method" }, 405);
   if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
@@ -64,6 +64,7 @@ export default async (req: Request) => {
       return json({ ok: true, removed: n });
     }
     case "feeds": return json({ ok: true, feeds: await saveFeeds(body.feeds) });
+    case "testfeed": return json(await testFeed(String(body.url || "")));
     case "hide": return json({ ok: true, hidden: await setHidden(clip(body.id, 200), true) });
     case "unhide": return json({ ok: true, hidden: await setHidden(clip(body.id, 200), false) });
     case "delete": {

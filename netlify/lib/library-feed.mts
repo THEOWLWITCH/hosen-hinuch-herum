@@ -29,7 +29,7 @@ const FIELD = /educat|school|teacher|student|pupil|learning|classroom|kindergart
 
 export type LibInboxItem = {
   key: string; title: string; authors: string[]; year: string; date: string; journal: string; url: string; doi: string;
-  abstract: string; type: string; section: LibSection; topic: string; cat: string; source: "openalex" | "eric" | "rss"; sourceName: string;
+  abstract: string; type: string; section: LibSection; topic: string; cat: string; source: "openalex" | "eric" | "crossref" | "europepmc" | "rss"; sourceName: string;
   foundAt: string; status: "new" | "approved" | "rejected";
   he?: Hebrew; heTries?: number;
   issn?: string[]; peerReviewed?: boolean; quality?: string[]; rejectedFor?: string;
@@ -101,21 +101,27 @@ export function sinceDate(days = 120) {
 
 type Cand = Omit<LibInboxItem, "key" | "foundAt" | "status" | "section"> & { section?: LibSection };
 
+// OpenAlex מאפשר עד 100 ערכים בסינון אחד, ולכן רשימת ה-ISSN מחולקת לקבוצות.
+const chunk = <T,>(a: T[], n: number) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
+
 export async function fromOpenAlex(topic: typeof TOPICS[number]): Promise<Cand[]> {
   const mail = (Netlify.env.get("GMAIL_USER") || "").trim();
-  const u = new URL("works", OPENALEX().replace(/\/?$/, "/"));
-  u.searchParams.set("search", topic.q);
-  // רק כתבי העת שברשימה, רק מאמרים וסקירות עם תקציר, בלי טיוטות (preprints), בלי מאמרים שנמשכו. מיון לפי התאמה.
-  u.searchParams.set("filter", [
-    `from_publication_date:${sinceDate(240)}`, "type:article|review", "has_abstract:true", "is_retracted:false", "is_paratext:false",
-    `primary_location.source.issn:${ALL_ISSNS.join("|")}`,
-  ].join(","));
-  u.searchParams.set("per-page", "25");
-  if (mail) u.searchParams.set("mailto", mail);
   const key = (Netlify.env.get("OPENALEX_API_KEY") || "").trim();
-  if (key) u.searchParams.set("api_key", key);
-  const j: any = await (await getJson(u.toString())).json();
-  return (j.results || []).map((w: any) => {
+  const pages = await Promise.all(chunk(ALL_ISSNS, 90).map(async issns => {
+    const u = new URL("works", OPENALEX().replace(/\/?$/, "/"));
+    u.searchParams.set("search", topic.q);
+    // רק כתבי העת שברשימה, רק מאמרים וסקירות עם תקציר, בלי טיוטות (preprints), בלי מאמרים שנמשכו. מיון לפי התאמה.
+    u.searchParams.set("filter", [
+      `from_publication_date:${sinceDate(240)}`, "type:article|review", "has_abstract:true", "is_retracted:false", "is_paratext:false",
+      `primary_location.source.issn:${issns.join("|")}`,
+    ].join(","));
+    u.searchParams.set("per-page", "25");
+    if (mail) u.searchParams.set("mailto", mail);
+    if (key) u.searchParams.set("api_key", key);
+    const j: any = await (await getJson(u.toString())).json();
+    return (j.results || []) as any[];
+  }));
+  return pages.flat().map((w: any) => {
     const doi = clip(String(w.doi || "").replace(/^https?:\/\/doi\.org\//i, ""), 200);
     const journal = clip(w.primary_location?.source?.display_name || w.host_venue?.display_name || "", 300);
     const issn: string[] = (w.primary_location?.source?.issn || []).map((i: unknown) => clip(i, 12));
@@ -160,6 +166,52 @@ export async function fromEric(topic: typeof TOPICS[number]): Promise<Cand[]> {
   });
 }
 
+// Crossref: רישום ה-DOI של ההוצאות. מתעדכן מהר יותר מ-OpenAlex, ולכן מאמרים חדשים מכתבי העת שברשימה מגיעים ממנו קודם.
+// (סינון issn חוזר = "או"; from-pub-date ו-has-abstract מצמצמים לפריטים עם תקציר.)
+const jats = (x: string) => plainText(String(x || "").replace(/<jats:title>[^<]*<\/jats:title>/gi, " ").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+export async function fromCrossref(topic: typeof TOPICS[number]): Promise<Cand[]> {
+  const mail = (Netlify.env.get("GMAIL_USER") || "").trim();
+  const u = new URL("https://api.crossref.org/works");
+  u.searchParams.set("query.bibliographic", topic.q);
+  u.searchParams.set("filter", [`from-pub-date:${sinceDate(240)}`, "has-abstract:true", "type:journal-article", ...ALL_ISSNS.map(i => `issn:${i}`)].join(","));
+  u.searchParams.set("select", "DOI,title,author,issued,published,container-title,ISSN,type,URL,abstract");
+  u.searchParams.set("rows", "25");
+  if (mail) u.searchParams.set("mailto", mail);
+  const j: any = await (await getJson(u.toString(), 12000)).json();
+  return ((j.message?.items || []) as any[]).map(x => {
+    const dp: number[] = (x.published || x.issued)?.["date-parts"]?.[0] || [];
+    const date = dp.length ? dp.map((n, i) => i ? String(n).padStart(2, "0") : String(n)).join("-") : "";
+    const journal = clip((x["container-title"] || [])[0], 300);
+    return {
+      title: clip(plainText((x.title || [])[0] || ""), 400),
+      authors: (x.author || []).map((a: any) => clip([a.given, a.family].filter(Boolean).join(" ") || a.name, 120)).filter(Boolean).slice(0, 25),
+      year: String(dp[0] || ""), date: clip(date, 10), journal, issn: (x.ISSN || []).map((i: string) => clip(i, 12)),
+      url: cleanLink(x.DOI ? `https://doi.org/${x.DOI}` : x.URL || ""), doi: clip(x.DOI, 200),
+      abstract: clip(jats(x.abstract), 1500), type: "מאמר",
+      topic: topic.key, cat: topic.cat, source: "crossref" as const, sourceName: "Crossref",
+    };
+  });
+}
+
+// Europe PMC: כתבי העת של הפסיכולוגיה ובריאות הנפש שברשימה (חוסן, טראומה, בריאות נפשית בבית הספר), עם תקצירים מלאים.
+export async function fromEuropePmc(topic: typeof TOPICS[number]): Promise<Cand[]> {
+  const issns = QUALITY_JOURNALS.filter(j => j.area === "resilience").flatMap(j => j.issn);
+  const u = new URL("https://www.ebi.ac.uk/europepmc/webservices/rest/search");
+  // מילות הנושא ב"או", ובנוסף מילה מתחום החינוך, כי אלה כתבי עת של פסיכולוגיה. הסינון המדויק (must) נעשה אחר כך בקוד.
+  u.searchParams.set("query", `(${topic.q.split(/\s+/).join(" OR ")}) AND (school OR schools OR students OR teachers OR education OR classroom) AND (${issns.map(i => `ISSN:"${i}"`).join(" OR ")}) AND FIRST_PDATE:[${sinceDate(240)} TO 3000-01-01] AND HAS_ABSTRACT:Y AND SRC:MED`);
+  u.searchParams.set("format", "json"); u.searchParams.set("pageSize", "25"); u.searchParams.set("resultType", "core"); u.searchParams.set("sort", "RELEVANCE");
+  const j: any = await (await getJson(u.toString(), 12000)).json();
+  return ((j.resultList?.result || []) as any[]).map(x => ({
+    title: clip(plainText(x.title || ""), 400),
+    authors: String(x.authorString || "").replace(/\.$/, "").split(/,\s*/).map((a: string) => clip(a, 120)).filter(Boolean).slice(0, 25),
+    year: String(x.pubYear || ""), date: clip(x.firstPublicationDate || "", 10),
+    journal: clip(x.journalInfo?.journal?.title || x.journalTitle || "", 300), issn: [x.journalInfo?.journal?.issn, x.journalInfo?.journal?.essn].filter(Boolean).map((i: string) => clip(i, 12)),
+    url: cleanLink(x.doi ? `https://doi.org/${x.doi}` : `https://europepmc.org/article/${x.source}/${x.id}`), doi: clip(x.doi, 200),
+    abstract: clip(plainText(x.abstractText || ""), 1500), type: "מאמר",
+    topic: topic.key, cat: topic.cat, source: "europepmc" as const, sourceName: "Europe PMC",
+  }));
+}
+
 export async function fromFeed(f: FeedSource): Promise<Cand[]> {
   const body = await (await getJson(f.url)).text();
   return parseFeed(body, f.url).slice(0, 30).map(r => ({
@@ -200,7 +252,7 @@ export async function auditLibrary() {
   for (const b of res) { const r = await st.get(b.key, { type: "json" }) as any; if (r?.libraryId) linked.add(r.libraryId); }
   for (const b of blobs) {
     const v = await st.get(b.key, { type: "json" }) as any;
-    if (!v || !["openalex", "eric"].includes(v.origin) || keep.has(v.id)) continue;
+    if (!v || !["openalex", "eric", "crossref", "europepmc"].includes(v.origin) || keep.has(v.id)) continue;
     if (qualityJournal(v.journal || "")) continue;
     rows.push({ id: v.id, title: clip(v.title || v.apa, 400), journal: clip(v.journal, 200), year: clip(v.year, 10), origin: v.origin, url: clip(v.doi, 600), research: linked.has(v.id) });
   }
@@ -227,6 +279,26 @@ export async function removeFromLibrary(itemId: string): Promise<boolean> {
 }
 
 export const QUALITY_INFO = { areas: QUALITY_AREAS, journals: QUALITY_JOURNALS.map(j => ({ name: j.name, area: j.area })) };
+
+// פידים מומלצים של גופי מחקר (31.10.2026). "verified": הכתובת אומתה ככתובת פיד; אחרת היא לפי תבנית מוכרת של האתר, ו"בדיקה" מראה אם היא עובדת.
+export const SUGGESTED_FEEDS: (FeedSource & { note: string; verified: boolean })[] = [
+  { name: "RAND · חינוך", url: "https://www.rand.org/topics/education-and-literacy.xml", section: "policy", enabled: true, verified: true, note: "דוחות ומחקרים של RAND בחינוך (אנגלית)" },
+  { name: "Campbell Systematic Reviews", url: "https://onlinelibrary.wiley.com/feed/18911803/most-recent", section: "publications", enabled: true, verified: false, note: "סקירות שיטתיות חדשות (אנגלית)" },
+  { name: "ReliefWeb · חינוך", url: "https://reliefweb.int/updates/rss.xml?advanced-search=%28T4592%29", section: "policy", enabled: true, verified: false, note: "דוחות הומניטריים בנושא חינוך בחירום (אנגלית). אם לא עובד: באתר ReliefWeb מסננים Theme: Education ומעתיקים את קישור ה-RSS" },
+  { name: "מרכז טאוב", url: "https://www.taubcenter.org.il/feed/", section: "policy", enabled: true, verified: false, note: "מחקרי מדיניות על חינוך וחברה בישראל (עברית). כולל גם חדשות" },
+  { name: "מוסד שמואל נאמן", url: "https://www.neaman.org.il/feed/", section: "policy", enabled: true, verified: false, note: "מחקרי מדיניות, טכנולוגיה וחינוך (עברית)" },
+  { name: "World Bank · Education blog", url: "https://blogs.worldbank.org/education/rss.xml", section: "professional", enabled: false, verified: true, note: "בלוג (לא דוחות). כבוי כברירת מחדל" },
+];
+
+// בדיקת פיד לפני הוספה: כמה פריטים נקראים, ושלוש כותרות לדוגמה.
+export async function testFeed(url: string) {
+  const f: FeedSource = { name: "בדיקה", url: cleanLink(clip(url, 600)), section: "professional", enabled: true };
+  if (!/^https:\/\//.test(f.url)) return { ok: false, error: "כתובת לא תקינה (נדרש https)" };
+  try {
+    const rows = await fromFeed(f);
+    return { ok: rows.length > 0, found: rows.length, sample: rows.slice(0, 3).map(r => r.title), error: rows.length ? "" : "הכתובת נענתה אבל לא נמצאו בה פריטים (כנראה לא פיד RSS)" };
+  } catch (e) { return { ok: false, found: 0, error: String((e as Error)?.message || e).slice(0, 160) }; }
+}
 
 // ---------- אחסון ----------
 
@@ -276,6 +348,8 @@ export async function collect(): Promise<FeedStatus[]> {
   const jobs: { name: string; run: () => Promise<Cand[]>; strict: boolean; must?: RegExp }[] = [
     ...TOPICS.map(t => ({ name: `OpenAlex · ${t.label}`, run: () => fromOpenAlex(t), strict: true, must: t.must })),
     ...TOPICS.map(t => ({ name: `ERIC · ${t.label}`, run: () => fromEric(t), strict: true, must: t.must })),
+    ...TOPICS.map(t => ({ name: `Crossref · ${t.label}`, run: () => fromCrossref(t), strict: true, must: t.must })),
+    ...TOPICS.filter(t => ["resilience", "teachers", "parents", "emergency"].includes(t.key)).map(t => ({ name: `Europe PMC · ${t.label}`, run: () => fromEuropePmc(t), strict: true, must: t.must })),
     ...feeds.map(f => ({ name: `RSS · ${f.name}`, run: () => fromFeed(f), strict: false })),
   ];
   const results = await Promise.allSettled(jobs.map(j => j.run()));
