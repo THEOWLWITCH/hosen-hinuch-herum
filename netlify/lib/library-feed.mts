@@ -237,15 +237,16 @@ export function qualityOK(c: { title?: string; abstract?: string; journal?: stri
 }
 
 // ניקוי התיבה: מחקרים מהאיסוף הקודם שלא עומדים בסף מסומנים "נדחה" (לא נמחקים, כדי שלא יחזרו).
-export async function purgeLowQuality(): Promise<number> {
+// במנות (31.10.2026): עם מאות פריטים בתיבה, ניקוי בבת אחת חרג ממגבלת הזמן של הפונקציה ונעצר באמצע. הדפדפן קורא שוב עד ש-remaining=0.
+export async function purgeLowQuality(limit = 25): Promise<{ rejected: number; remaining: number }> {
   const st = data();
+  const bad = (await listInbox()).filter(v => v.source !== "rss" && (!qualityOK(v) || offTopic(v)));
   let n = 0;
-  for (const v of await listInbox()) {
-    if (v.source === "rss" || (qualityOK(v) && !offTopic(v))) continue;
+  for (const v of bad.slice(0, limit)) {
     await st.setJSON(`library-inbox/${v.key}.json`, { ...v, abstract: "", status: "rejected", rejectedFor: offTopic(v) ? "higher-ed" : "quality" });
     n++;
   }
-  return n;
+  return { rejected: n, remaining: bad.length - n };
 }
 
 // בדיקת איכות לספרייה: מקורות שנכנסו מהאיסוף האוטומטי ולא מכתב עת מהרשימה. מנהלת המערכת מחליטה מה להשאיר.

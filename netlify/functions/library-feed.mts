@@ -55,7 +55,7 @@ export default async (req: Request) => {
     }
     case "fetch": return json({ ok: true, status: await collect() });
     // סף האיכות (31.10.2026): ניקוי התיבה, ובדיקת איכות למקורות שכבר בספרייה.
-    case "purge": return json({ ok: true, rejected: await purgeLowQuality() });
+    case "purge": return json({ ok: true, ...(await purgeLowQuality()) });
     case "audit-keep": { const itemId = clip(body.id, 120); if (itemId) await auditKeep(itemId); return json({ ok: true }); }
     case "audit-remove": {
       const ids: string[] = (Array.isArray(body.ids) ? body.ids : [body.id]).map((x: unknown) => clip(x, 120)).filter((x: string) => /^[\w-]{6,120}$/.test(x)).slice(0, 300);

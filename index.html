@@ -3953,7 +3953,8 @@ html[data-page="tasks"] #tasks{display:block!important}
       const t=e.target;
       try{
         const tb=t.closest('[data-t]');if(tb){V.tab=tb.dataset.t;V.msg=null;render();if(V.tab==='audit'){V.audit=(await api('GET',null,'?audit=1')).audit;render()}return}
-        if(t.matches('[data-purge]')){msg('מנקה…');const j=await api('POST',{action:'purge'});await reload();render();msg(j.rejected?`הוסרו מהתיבה ${j.rejected} מחקרים: לא מכתבי עת מהרשימה, או על השכלה גבוהה.`:'הכול בתיבה עומד בסף. את השאר ממיינים ידנית: "בחירת הכול" ואז "לא רלוונטיים" מנקה את כל מה שלא אושר.','ok');return}
+        if(t.matches('[data-purge]')){t.disabled=true;let total=0,j;try{do{msg(`מנקה… הוסרו עד כה ${total}`);j=await api('POST',{action:'purge'});total+=j.rejected}while(j.remaining>0&&j.rejected>0)}finally{t.disabled=false}
+          await reload();render();msg(total?`הוסרו מהתיבה ${total} מחקרים: לא מכתבי עת מהרשימה, או על השכלה גבוהה.`:'הכול בתיבה עומד בסף. את השאר ממיינים ידנית: "בחירת הכול" ואז "לא רלוונטיים" מנקה את כל מה שלא אושר.','ok');return}
         const arm=t.closest('[data-arm],[data-akeep],[data-arm-sel]');
         if(arm){let ids;if(arm.matches('[data-arm-sel]')){ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו מקורות.','err')}else ids=[arm.closest('[data-aid]').dataset.aid];
           if(arm.matches('[data-akeep]')){await api('POST',{action:'audit-keep',id:ids[0]});V.audit=V.audit.filter(x=>x.id!==ids[0]);render();msg('נשאר בספרייה ✓','ok');return}
