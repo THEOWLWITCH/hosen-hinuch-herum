@@ -2546,6 +2546,7 @@ html[data-page="apps"] #apps{display:block!important}
 .nv-modal{position:fixed;inset:0;z-index:2100;display:flex;align-items:flex-start;justify-content:center;padding:5vh 12px;background:rgba(28,43,52,.38);backdrop-filter:blur(5px);overflow:auto}
 .nv-dialog{position:relative;width:min(640px,100%);padding:22px;border-radius:16px;background:#fff;box-shadow:0 28px 75px rgba(25,42,51,.18);color:#1f4256;font-size:14px;line-height:1.6}
 .nv-dialog.wide{width:min(1000px,100%)}
+.la-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:1001;max-width:min(92vw,720px);margin:0;padding:9px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(25,42,51,.18);background:#eef4f7;border:1px solid #cfdde4;color:#2d5064;font-size:13px}.la-toast.ok{background:#e9f5ee;border-color:#bfe0cb;color:#1f5e3a}.la-toast.err{background:#fdeeee;border-color:#f0c4c4;color:#8a2a2a}
 .nv-dialog h2{margin:0 0 6px;font-size:20px}
 .nv-x{position:absolute;top:10px;left:12px;border:0;background:transparent;font-size:24px;color:#7d898f;cursor:pointer}
 .nv-thinking{text-align:center;padding:10px 0}
@@ -3933,11 +3934,17 @@ html[data-page="tasks"] #tasks{display:block!important}
           ${(d.suggestedFeeds||[]).filter(sf=>!d.feeds.some(f=>f.url===sf.url)).length?`<details style="margin-top:10px"><summary style="cursor:pointer"><strong>פידים מומלצים של גופי מחקר</strong></summary><p class="nv-status">לחיצה על "הוספה" מכניסה את הפיד לרשימה למעלה (ואז "בדיקת הפידים" ו"שמירת הפידים"). פיד שלא אומת מסומן, וכדאי לבדוק אותו לפני השמירה.</p>${d.suggestedFeeds.filter(sf=>!d.feeds.some(f=>f.url===sf.url)).map(sf=>`<div class="nv-row" style="justify-content:space-between;margin:4px 0"><span dir="auto"><strong>${h(sf.name)}</strong> · <span class="nv-status">${h(sf.note)}${sf.verified?'':' · לא אומת'}</span></span><button type="button" class="nv-btn small" data-sugfeed='${h(JSON.stringify(sf))}'>הוספה</button></div>`).join('')}</details>`:''}</div>
           ${d.status.length?`<div class="nv-card"><h3>האיסוף האחרון</h3><table class="nv-table"><tr><th>מקור</th><th>תוצאה</th></tr>${d.status.map(s=>`<tr><td>${h(s.name)}</td><td>${s.ok?`✓ ${s.found} בתחום · ${s.added} חדשים`:'✗ '+h(s.error||'שגיאה')} · ${new Date(s.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</td></tr>`).join('')}</table></div>`:''}`;
       }
-      root.innerHTML=html+'<div class="nv-status" data-st></div>';
+      root.innerHTML='<div class="la-toast" data-st hidden></div>'+html;
       if(V.msg)msg(...V.msg);
     }
     const feedRow=f=>`<div class="nv-row" data-feed><input name="name" value="${h(f.name)}" placeholder="שם" style="max-width:180px"><input name="url" value="${h(f.url)}" placeholder="https://… (פיד RSS)" dir="ltr" style="flex:1;min-width:200px"><select name="section" style="width:auto">${Object.entries(V.d.sections).map(([k,l])=>`<option value="${k}"${f.section===k?' selected':''}>${h(l)}</option>`).join('')}</select><label class="nv-row"><input type="checkbox" name="enabled"${f.enabled!==false?' checked':''}> פעיל</label><button type="button" class="nv-btn small danger" data-rmfeed>✕</button></div>`;
-    const msg=(t,k)=>{V.msg=[t,k];const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t;el.scrollIntoView({block:'nearest'})}};
+    // ההודעה צפה למעלה ולא מזיזה את הגלילה. נעלמת לבד אחרי כמה שניות.
+    let msgTimer=null;
+    const msg=(t,k)=>{V.msg=[t,k];const el=root.querySelector('[data-st]');if(!el)return;el.className='la-toast'+(k?' '+k:'');el.textContent=t;el.hidden=!t;clearTimeout(msgTimer);if(k==='ok')msgTimer=setTimeout(()=>{el.hidden=true;V.msg=null},4000)};
+    // טיפול בכרטיס אחד: הכרטיס נעלם במקומו, השאר נשאר איפה שהוא (31.10.2026: "הרשימה קופצת").
+    const dropCards=(keys,label)=>{for(const k of keys){const card=root.querySelector(`[data-k="${CSS.escape(k)}"]`);if(!card)continue;card.style.transition='opacity .35s';card.innerHTML=`<p class="nv-status ok" style="margin:0">${h(label)}</p>`;setTimeout(()=>{card.style.opacity='0';setTimeout(()=>card.remove(),350)},700)}
+      V.d.inbox=V.d.inbox.filter(x=>!keys.includes(x.key));const tab=root.querySelector('[data-t="inbox"]');if(tab)tab.textContent=`📥 מחקרים חדשים לאישור (${V.d.inbox.length})`;
+      if(!V.d.inbox.length)setTimeout(()=>{reload().then(render)},1200)};
     const refreshLibrary=()=>{if(typeof loadLibrary==='function')loadLibrary(false).catch(()=>{})};
     root.addEventListener('click',async e=>{
       const t=e.target;
@@ -3961,11 +3968,11 @@ html[data-page="tasks"] #tasks{display:block!important}
           if(one.dataset.one==='approve'){const rc=card.querySelector('[data-rcat]')?.value||'none';const j=await api('POST',{action:'approve',keys:[key],edits:{section:card.querySelector('[data-section]').value,researchCat:rc,heSummary:card.querySelector('[data-hsum]')?.value.trim()||'',heWhy:card.querySelector('[data-hwhy]')?.value.trim()||''}});
             msg(j.research?(j.pending?`נוסף לספרייה ✓ ב"חידושים במחקר" הוא יופיע במדור ${(V.d.researchCats||{})[rc]||''} ברגע שהעברית תהיה מוכנה.`:`נוסף לספרייה ולמדור ${(V.d.researchCats||{})[rc]||''} ב"חידושים במחקר" ✓`):'נוסף לספרייה ✓','ok')}
           else{await api('POST',{action:'reject',keys:[key]});msg('הוסר. הוא לא יחזור באיסוף הבא.','ok')}
-          await reload();render();refreshLibrary();return}
+          dropCards([key],one.dataset.one==='approve'?'✓ נוסף לספרייה':'הוסר מהתיבה');refreshLibrary();return}
         const bulk=t.closest('[data-bulk]');
         if(bulk){const keys=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!keys.length)return msg('לא נבחרו מקורות.','err');
-          if(bulk.dataset.bulk==='approve'){const j=await api('POST',{action:'approve',keys});msg(`נוספו ${j.approved} מקורות לספרייה, ו־${j.research} מהם ל"חידושים במחקר" ✓${j.pending?` (${j.pending} יופיעו שם כשהעברית תהיה מוכנה)`:''}`,'ok')}else{const j=await api('POST',{action:'reject',keys});msg(`הוסרו ${j.rejected} מקורות.`,'ok')}
-          await reload();render();refreshLibrary();return}
+          if(bulk.dataset.bulk==='approve'){const j=await api('POST',{action:'approve',keys});msg(`נוספו ${j.approved} מקורות לספרייה, ו־${j.research} מהם ל"חידושים במחקר" ✓${j.pending?` (${j.pending} יופיעו שם כשהעברית תהיה מוכנה)`:''}`,'ok');dropCards(keys,'✓ נוסף לספרייה')}else{const j=await api('POST',{action:'reject',keys});msg(`הוסרו ${j.rejected} מקורות.`,'ok');dropCards(keys,'הוסר מהתיבה')}
+          const all=root.querySelector('[data-all]');if(all)all.checked=false;refreshLibrary();return}
         if(t.matches('[data-fetch]')){msg('אוסף… (עד חצי דקה)');const j=await api('POST',{action:'fetch'});const added=j.status.reduce((a,s)=>a+s.added,0);await reload();V.tab=added?'inbox':'sources';render();msg(`האיסוף הסתיים: ${added} מקורות חדשים מחכים לאישור.`,'ok');return}
         if(t.matches('[data-addfeed]')){root.querySelector('[data-feeds]').insertAdjacentHTML('beforeend',feedRow({name:'',url:'',section:'professional',enabled:true}));return}
         const sug=t.closest('[data-sugfeed]');
