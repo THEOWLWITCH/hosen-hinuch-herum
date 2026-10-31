@@ -1,6 +1,8 @@
 // ספרייה שמתחדשת: איסוף אוטומטי של מחקרים, דוחות ומשאבים לתיבת אישור.
 // מקורות: OpenAlex ו-ERIC (מאגרים פתוחים וחינמיים), ופידים (RSS) שמנהלת המערכת מוסיפה.
+// איכות (31.10.2026): מ-OpenAlex רק מאמרים מכתבי העת המובילים שב-quality-journals.mts, ומ-ERIC רק שיפוט עמיתים.
 import { id, store } from "./shared.mts";
+import { ALL_ISSNS, QUALITY_AREAS, QUALITY_JOURNALS, qualityBadges, qualityJournal } from "./quality-journals.mts";
 import { cleanLink, linkKey, parseFeed, plainText } from "./calls.mts";
 import { RESEARCH_CATS, type Hebrew } from "./library-hebrew.mts";
 
@@ -30,6 +32,7 @@ export type LibInboxItem = {
   abstract: string; type: string; section: LibSection; topic: string; cat: string; source: "openalex" | "eric" | "rss"; sourceName: string;
   foundAt: string; status: "new" | "approved" | "rejected";
   he?: Hebrew; heTries?: number;
+  issn?: string[]; peerReviewed?: boolean; quality?: string[]; rejectedFor?: string;
 };
 export type FeedSource = { name: string; url: string; section: LibSection; enabled: boolean };
 export type FeedStatus = { name: string; at: string; ok: boolean; found: number; added: number; error?: string };
@@ -102,15 +105,22 @@ export async function fromOpenAlex(topic: typeof TOPICS[number]): Promise<Cand[]
   const mail = (Netlify.env.get("GMAIL_USER") || "").trim();
   const u = new URL("works", OPENALEX().replace(/\/?$/, "/"));
   u.searchParams.set("search", topic.q);
-  u.searchParams.set("filter", `from_publication_date:${sinceDate()},type:article|report|book|book-chapter|preprint`);
-  u.searchParams.set("sort", "publication_date:desc");
-  u.searchParams.set("per-page", "15");
+  // רק כתבי העת שברשימה, רק מאמרים וסקירות עם תקציר, בלי טיוטות (preprints), בלי מאמרים שנמשכו. מיון לפי התאמה.
+  u.searchParams.set("filter", [
+    `from_publication_date:${sinceDate(240)}`, "type:article|review", "has_abstract:true", "is_retracted:false", "is_paratext:false",
+    `primary_location.source.issn:${ALL_ISSNS.join("|")}`,
+  ].join(","));
+  u.searchParams.set("per-page", "25");
   if (mail) u.searchParams.set("mailto", mail);
+  const key = (Netlify.env.get("OPENALEX_API_KEY") || "").trim();
+  if (key) u.searchParams.set("api_key", key);
   const j: any = await (await getJson(u.toString())).json();
   return (j.results || []).map((w: any) => {
     const doi = clip(String(w.doi || "").replace(/^https?:\/\/doi\.org\//i, ""), 200);
     const journal = clip(w.primary_location?.source?.display_name || w.host_venue?.display_name || "", 300);
+    const issn: string[] = (w.primary_location?.source?.issn || []).map((i: unknown) => clip(i, 12));
     return {
+      issn,
       title: clip(plainText(w.display_name || w.title || ""), 400),
       authors: (w.authorships || []).map((a: any) => clip(a.author?.display_name, 120)).filter(Boolean).slice(0, 25),
       year: String(w.publication_year || ""), date: clip(w.publication_date, 10), journal,
@@ -123,13 +133,19 @@ export async function fromOpenAlex(topic: typeof TOPICS[number]): Promise<Cand[]
 
 export async function fromEric(topic: typeof TOPICS[number]): Promise<Cand[]> {
   const year = new Date().getFullYear();
-  const u = new URL(ERIC());
-  u.searchParams.set("search", `${topic.q} AND (publicationdateyear:${year} OR publicationdateyear:${year - 1})`);
-  u.searchParams.set("format", "json");
-  u.searchParams.set("rows", "15");
-  u.searchParams.set("fields", "id,title,author,description,publicationdateyear,source,url,publicationtype,peerreviewed");
-  const j: any = await (await getJson(u.toString())).json();
-  return (j.response?.docs || []).map((d: any) => {
+  const ask = async (peer: boolean) => {
+    const u = new URL(ERIC());
+    u.searchParams.set("search", `${topic.q} AND (publicationdateyear:${year} OR publicationdateyear:${year - 1})${peer ? " AND peerreviewed:T" : ""}`);
+    u.searchParams.set("format", "json");
+    u.searchParams.set("rows", "40");
+    u.searchParams.set("fields", "id,title,author,description,publicationdateyear,source,url,publicationtype,peerreviewed,issn");
+    const j: any = await (await getJson(u.toString())).json();
+    return (j.response?.docs || []) as any[];
+  };
+  // רק שיפוט עמיתים. אם המאגר לא מכיר את הסינון בשאילתה, מסננים לפי השדה עצמו.
+  let docs = await ask(true);
+  if (!docs.length) docs = await ask(false);
+  return docs.filter(d => String(d.peerreviewed || "").toUpperCase().startsWith("T")).map((d: any) => {
     const pt = Array.isArray(d.publicationtype) ? d.publicationtype.join(" ") : String(d.publicationtype || "");
     return {
       title: clip(plainText(d.title || ""), 400), authors: (Array.isArray(d.author) ? d.author : [d.author]).filter(Boolean).map((a: string) => {
@@ -138,6 +154,7 @@ export async function fromEric(topic: typeof TOPICS[number]): Promise<Cand[]> {
       year: String(d.publicationdateyear || ""), date: "", journal: clip(d.source || "", 300),
       url: cleanLink(d.url || (d.id ? `https://eric.ed.gov/?id=${d.id}` : "")), doi: "",
       abstract: clip(plainText(d.description || ""), 1500), type: typeOf(pt, d.source || ""),
+      issn: (Array.isArray(d.issn) ? d.issn : d.issn ? [d.issn] : []).map((i: string) => clip(String(i).replace(/^ISSN-?/i, ""), 12)), peerReviewed: true,
       topic: topic.key, cat: topic.cat, source: "eric" as const, sourceName: "ERIC",
     };
   });
@@ -151,6 +168,65 @@ export async function fromFeed(f: FeedSource): Promise<Cand[]> {
     topic: "", cat: "", source: "rss" as const, sourceName: f.name, section: f.section,
   }));
 }
+
+// ---------- סף איכות ----------
+
+// מחקר מהמאגרים נכנס לתיבה רק אם הוא מכתב עת מהרשימה או עבר שיפוט עמיתים (ERIC), ויש לו תקציר של ממש.
+export function qualityOK(c: { title?: string; abstract?: string; journal?: string; issn?: string[]; peerReviewed?: boolean; type?: string }) {
+  if (String(c.abstract || "").length < 300) return false;
+  return !!qualityJournal(c.journal || "", c.issn || []) || !!c.peerReviewed;
+}
+
+// ניקוי התיבה: מחקרים מהאיסוף הקודם שלא עומדים בסף מסומנים "נדחה" (לא נמחקים, כדי שלא יחזרו).
+export async function purgeLowQuality(): Promise<number> {
+  const st = data();
+  let n = 0;
+  for (const v of await listInbox()) {
+    if (v.source === "rss" || qualityOK(v)) continue;
+    await st.setJSON(`library-inbox/${v.key}.json`, { ...v, abstract: "", status: "rejected", rejectedFor: "quality" });
+    n++;
+  }
+  return n;
+}
+
+// בדיקת איכות לספרייה: מקורות שנכנסו מהאיסוף האוטומטי ולא מכתב עת מהרשימה. מנהלת המערכת מחליטה מה להשאיר.
+export async function auditLibrary() {
+  const st = data();
+  const keep = new Set(await getAuditKeep());
+  const { blobs } = await st.list({ prefix: "library/" });
+  const rows: { id: string; title: string; journal: string; year: string; origin: string; url: string; research: boolean }[] = [];
+  const { blobs: res } = await st.list({ prefix: "resources/" });
+  const linked = new Set<string>();
+  for (const b of res) { const r = await st.get(b.key, { type: "json" }) as any; if (r?.libraryId) linked.add(r.libraryId); }
+  for (const b of blobs) {
+    const v = await st.get(b.key, { type: "json" }) as any;
+    if (!v || !["openalex", "eric"].includes(v.origin) || keep.has(v.id)) continue;
+    if (qualityJournal(v.journal || "")) continue;
+    rows.push({ id: v.id, title: clip(v.title || v.apa, 400), journal: clip(v.journal, 200), year: clip(v.year, 10), origin: v.origin, url: clip(v.doi, 600), research: linked.has(v.id) });
+  }
+  return rows.sort((a, b) => b.year.localeCompare(a.year));
+}
+export async function getAuditKeep(): Promise<string[]> {
+  const v = await data().get("library-feed/audit-keep.json", { type: "json" }) as string[] | null;
+  return Array.isArray(v) ? v : [];
+}
+export async function auditKeep(itemId: string) {
+  const cur = new Set(await getAuditKeep()); cur.add(clip(itemId, 120));
+  await data().setJSON("library-feed/audit-keep.json", [...cur].slice(-5000));
+}
+// הסרה מהספרייה, וגם מ"חידושים במחקר" אם המחקר פורסם שם.
+export async function removeFromLibrary(itemId: string): Promise<boolean> {
+  const st = data();
+  const old = await st.get(`library/${itemId}.json`, { type: "json" }) as any;
+  if (!old) return false;
+  if (old.fileKey) await store("hosen-files").delete(old.fileKey);
+  await st.delete(`library/${itemId}.json`);
+  const { blobs } = await st.list({ prefix: "resources/" });
+  for (const b of blobs) { const r = await st.get(b.key, { type: "json" }) as any; if (r?.libraryId === itemId) await st.delete(b.key); }
+  return true;
+}
+
+export const QUALITY_INFO = { areas: QUALITY_AREAS, journals: QUALITY_JOURNALS.map(j => ({ name: j.name, area: j.area })) };
 
 // ---------- אחסון ----------
 
@@ -214,11 +290,12 @@ export async function collect(): Promise<FeedStatus[]> {
       if (!c.title || !c.url) continue;
       const text = `${c.title} ${c.abstract}`;
       if (j.strict && (!FIELD.test(text) || (j.must && !j.must.test(text)))) continue;
+      if (j.strict && !qualityOK(c)) continue;
       found++;
       const dk = c.doi ? "d:" + norm(c.doi) : "", tk = "t:" + norm(c.title), key = linkKey(c.doi || c.url);
       if (known.has(key) || (dk && known.has(dk)) || known.has(tk)) continue;
       known.add(key); if (dk) known.add(dk); known.add(tk);
-      const item: LibInboxItem = { ...c, key, section: c.section || sectionOfType(c.type), foundAt: at, status: "new" };
+      const item: LibInboxItem = { ...c, key, section: c.section || sectionOfType(c.type), foundAt: at, status: "new", quality: qualityBadges(c) };
       await data().setJSON(`library-inbox/${key}.json`, item);
       added++;
     }

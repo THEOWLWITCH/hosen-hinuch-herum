@@ -3876,8 +3876,8 @@ html[data-page="tasks"] #tasks{display:block!important}
 (function(){
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
-  async function api(method,body){
-    const r=await fetch('/api/library-feed',{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
+  async function api(method,body,qs){
+    const r=await fetch('/api/library-feed'+(qs||''),{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
     const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה.');e.status=r.status;throw e}return j;
   }
   // לשונית "📚 ספרייה" בחלון הניהול של האתר.
@@ -3899,12 +3899,15 @@ html[data-page="tasks"] #tasks{display:block!important}
     const reload=async()=>{V.d=await api('GET')};
     function render(){
       const d=V.d;
-      let html=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status">כל בוקר נאספים מקורות חדשים בנושאי הקהילה מ-OpenAlex ומ-ERIC (ומפידים שתוסיפי). כל מקור מגיע עם ציטוט APA7. "✨ הכנה בעברית" מציע מדור ב"חידושים במחקר", "מה חדש" ו"התרומה" בעברית, ואפשר גם לכתוב בעצמך. באישור המחקר נכנס לספרייה ולמדור שלו ב"חידושים במחקר".</p>
-        <nav class="nv-tabs"><button type="button" data-t="inbox" class="${V.tab==='inbox'?'active':''}">📥 מחקרים חדשים לאישור (${d.inbox.length})</button><button type="button" data-t="sources" class="${V.tab==='sources'?'active':''}">🔎 מקורות לאיסוף</button></nav>`;
+      let html=`<h2>📚 הספרייה המתחדשת</h2><p class="nv-status">כל בוקר נאספים מחקרים חדשים בנושאי הקהילה: מ-OpenAlex רק מכתבי העת המובילים שברשימה, ומ-ERIC רק מאמרים שעברו שיפוט עמיתים (ועוד פידים שתוסיפי). כל מקור מגיע עם ציטוט APA7. "✨ הכנה בעברית" מציע מדור ב"חידושים במחקר", "מה חדש" ו"התרומה" בעברית, ואפשר גם לכתוב בעצמך. באישור המחקר נכנס לספרייה ולמדור שלו ב"חידושים במחקר".</p>
+        <nav class="nv-tabs"><button type="button" data-t="inbox" class="${V.tab==='inbox'?'active':''}">📥 מחקרים חדשים לאישור (${d.inbox.length})</button><button type="button" data-t="sources" class="${V.tab==='sources'?'active':''}">🔎 מקורות לאיסוף</button><button type="button" data-t="audit" class="${V.tab==='audit'?'active':''}">🔍 בדיקת איכות</button></nav>`;
       if(V.tab==='inbox'){
+        const low=d.inbox.filter(x=>x.source!=='rss'&&!(x.quality||[]).some(q=>q==='כתב עת מוביל'||q==='שיפוט עמיתים')).length;
+        if(low)html+=`<div class="nv-card" style="margin:8px 0;background:#fff8ec;border-color:#f0d9a8"><strong>${low} מחקרים בתיבה נאספו לפני סף האיכות החדש</strong> ולא מכתבי עת מהרשימה או משיפוט עמיתים. <button type="button" class="nv-btn small" data-purge>🧹 הסרתם מהתיבה</button></div>`;
         html+=d.inbox.length?`<div class="nv-row" style="margin:8px 0"><label class="nv-row"><input type="checkbox" data-all> בחירת הכול</label><button type="button" class="nv-btn small primary" data-bulk="approve">✓ אישור הנבחרים</button><button type="button" class="nv-btn small danger" data-bulk="reject">לא רלוונטיים</button></div>
           <div class="nv-list">${d.inbox.map(x=>`<div class="nv-card" style="margin:0" data-k="${h(x.key)}">
             <div class="nv-row" style="justify-content:space-between;align-items:flex-start"><label class="nv-row" style="align-items:flex-start;flex:1"><input type="checkbox" data-sel="${h(x.key)}" style="margin-top:5px"> <strong dir="auto">${h(x.title)}</strong></label><span class="nv-badge">${h(x.sourceName)}</span></div>
+            ${(x.quality||[]).length?`<div class="nv-row" style="gap:4px;margin:4px 0">${x.quality.map(q=>`<span class="nv-tag" style="background:#e9f5ee;border-color:#bfe0cb;color:#1f5e3a">✓ ${h(q)}</span>`).join('')}</div>`:''}
             <p class="nv-status" style="margin:4px 0" dir="auto">${h(x.authors.slice(0,4).join(', '))}${x.authors.length>4?' ועוד':''} · ${h(x.date||x.year)} · ${h(x.journal)} · <a href="${h(x.url)}" target="_blank" rel="noopener">למקור</a></p>
             ${x.abstract?`<details><summary class="nv-status" style="cursor:pointer">תקציר</summary><p dir="auto" style="margin:6px 0">${h(x.abstract)}</p></details>`:''}
             <div class="la-he" style="margin-top:8px;padding:10px 12px;border:1px solid #d7e3e7;border-radius:10px;background:#f7fafb;display:grid;gap:6px">
@@ -3916,9 +3919,14 @@ html[data-page="tasks"] #tasks{display:block!important}
             <div class="nv-row" style="margin-top:6px"><span class="nv-status">מדור בספרייה:</span><select data-section style="width:auto">${Object.entries(d.sections).map(([k,l])=>`<option value="${k}"${x.section===k?' selected':''}>${h(l)}</option>`).join('')}</select>
               <button type="button" class="nv-btn small primary" data-one="approve">✓ אישור</button><button type="button" class="nv-btn small danger" data-one="reject">לא רלוונטי</button></div></div>`).join('')}</div>`
           :'<p class="nv-status">אין מקורות חדשים שמחכים לאישור. אפשר להריץ איסוף בלשונית "מקורות לאיסוף".</p>';
+      }else if(V.tab==='audit'){
+        const a=V.audit;
+        html+=`<p class="nv-status" style="margin-top:8px">מקורות שכבר בספרייה, שנכנסו מהאיסוף האוטומטי ולא מכתב עת מהרשימה. כדאי לעבור עליהם: מה שחלש אפשר להסיר (הוא יוסר גם מ"חידושים במחקר"), ומה שטוב אפשר להשאיר, והוא לא יופיע כאן שוב.</p>`;
+        html+=!a?'<p class="nv-status">בודקת…</p>':a.length?`<div class="nv-row" style="margin:8px 0"><label class="nv-row"><input type="checkbox" data-all> בחירת הכול</label><button type="button" class="nv-btn small danger" data-arm-sel>הסרת הנבחרים</button></div><div class="nv-list">${a.map(x=>`<div class="nv-card" style="margin:0" data-aid="${h(x.id)}"><div class="nv-row" style="justify-content:space-between;align-items:flex-start"><label class="nv-row" style="align-items:flex-start;flex:1"><input type="checkbox" data-sel="${h(x.id)}" style="margin-top:5px"> <strong dir="auto">${h(x.title)}</strong></label><span class="nv-badge">${h(x.origin==='eric'?'ERIC':'OpenAlex')}</span></div><p class="nv-status" style="margin:4px 0" dir="auto">${h(x.journal||'כתב עת לא ידוע')} · ${h(x.year)}${x.research?' · מופיע גם ב"חידושים במחקר"':''}${x.url?` · <a href="${h(x.url)}" target="_blank" rel="noopener">למקור</a>`:''}</p><div class="nv-row"><button type="button" class="nv-btn small danger" data-arm>הסרה</button><button type="button" class="nv-btn small" data-akeep>השארה</button></div></div>`).join('')}</div>`:'<p class="nv-status ok">✓ כל המקורות מהאיסוף האוטומטי שבספרייה הם מכתבי עת מהרשימה, או שכבר בדקת אותם.</p>';
       }else{
-        html+=`<div class="nv-card"><h3>הנושאים שהספרייה עוקבת אחריהם</h3><div>${d.topics.map(t=>`<span class="nv-tag">${h(t.label)}</span>`).join('')}</div><p class="nv-status">בכל נושא נאספים מחקרים מ־4 החודשים האחרונים, מ-OpenAlex (מאגר מחקר עולמי) ומ-ERIC (מאגר מחקר החינוך). רק מקורות שעוסקים בחינוך, ושעוד לא קיימים בספרייה.</p>
+        html+=`<div class="nv-card"><h3>הנושאים שהספרייה עוקבת אחריהם</h3><div>${d.topics.map(t=>`<span class="nv-tag">${h(t.label)}</span>`).join('')}</div><p class="nv-status">בכל נושא נאספים מחקרים חדשים: מ-OpenAlex רק מאמרים וסקירות עם תקציר מכתבי העת שברשימה למטה (בלי טיוטות שלא עברו שיפוט ובלי מאמרים שנמשכו), ומ-ERIC רק מאמרים שעברו שיפוט עמיתים. רק מקורות שעוסקים בחינוך, ושעוד לא קיימים בספרייה. בכל כרטיס מופיעים סימני איכות: כתב עת מוביל, סקירה שיטתית, ניסוי מבוקר, מחקר אורך.</p>
           <button type="button" class="nv-btn primary" data-fetch>🔎 איסוף עכשיו</button></div>
+          ${d.quality?`<div class="nv-card"><details><summary style="cursor:pointer"><strong>כתבי העת שהאיסוף נשען עליהם (${d.quality.journals.length})</strong></summary>${Object.entries(d.quality.areas).map(([k,l])=>`<p style="margin:8px 0 2px"><strong>${h(l)}</strong></p><p class="nv-status" dir="ltr" style="text-align:left;margin:0">${d.quality.journals.filter(j=>j.area===k).map(j=>h(j.name)).join(' · ')}</p>`).join('')}<p class="nv-status" style="margin-top:8px">להוספת כתב עת לרשימה: netlify/lib/quality-journals.mts.</p></details></div>`:''}
           <div class="nv-card"><h3>פידים נוספים (RSS)</h3><p class="nv-status">למשל דפי פרסומים של ארגונים ומכונים. לכל פיד בוחרים מדור.</p>
           <div class="nv-list" data-feeds>${(d.feeds.length?d.feeds:[{name:'',url:'',section:'professional',enabled:true}]).map(feedRow).join('')}</div>
           <div class="nv-row" style="margin-top:8px"><button type="button" class="nv-btn small" data-addfeed>＋ פיד</button><button type="button" class="nv-btn small primary" data-savefeeds>שמירת הפידים</button></div></div>
@@ -3933,7 +3941,13 @@ html[data-page="tasks"] #tasks{display:block!important}
     root.addEventListener('click',async e=>{
       const t=e.target;
       try{
-        const tb=t.closest('[data-t]');if(tb){V.tab=tb.dataset.t;V.msg=null;render();return}
+        const tb=t.closest('[data-t]');if(tb){V.tab=tb.dataset.t;V.msg=null;render();if(V.tab==='audit'){V.audit=(await api('GET',null,'?audit=1')).audit;render()}return}
+        if(t.matches('[data-purge]')){const j=await api('POST',{action:'purge'});await reload();render();msg(`הוסרו מהתיבה ${j.rejected} מחקרים שלא עומדים בסף האיכות.`,'ok');return}
+        const arm=t.closest('[data-arm],[data-akeep],[data-arm-sel]');
+        if(arm){let ids;if(arm.matches('[data-arm-sel]')){ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו מקורות.','err')}else ids=[arm.closest('[data-aid]').dataset.aid];
+          if(arm.matches('[data-akeep]')){await api('POST',{action:'audit-keep',id:ids[0]});V.audit=V.audit.filter(x=>x.id!==ids[0]);render();msg('נשאר בספרייה ✓','ok');return}
+          if(!confirm(ids.length>1?`להסיר ${ids.length} מקורות מהספרייה (וגם מ"חידושים במחקר")?`:'להסיר את המקור מהספרייה (וגם מ"חידושים במחקר")?'))return;
+          const j=await api('POST',{action:'audit-remove',ids});V.audit=V.audit.filter(x=>!ids.includes(x.id));render();msg(`הוסרו ${j.removed} מקורות ✓`,'ok');refreshLibrary();return}
         if(t.matches('[data-all]')){root.querySelectorAll('[data-sel]').forEach(i=>i.checked=t.checked);return}
         const heb=t.closest('[data-he]');
         if(heb){const card=heb.closest('[data-k]'),st=card.querySelector('[data-hest]');heb.disabled=true;st.textContent='מכינה… (כמה שניות)';

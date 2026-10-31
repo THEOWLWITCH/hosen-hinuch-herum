@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { json, store, validToken } from "../lib/shared.mts";
-import { SECTION_LABELS, TOPICS, approve, collect, getFeeds, getHidden, getStatus, listInbox, reject, saveFeeds, setHidden } from "../lib/library-feed.mts";
+import { QUALITY_INFO, SECTION_LABELS, TOPICS, approve, auditKeep, auditLibrary, collect, getFeeds, getHidden, getStatus, listInbox, purgeLowQuality, reject, removeFromLibrary, saveFeeds, setHidden } from "../lib/library-feed.mts";
 import { RESEARCH_CATS, hebrewFor, kickHebrew } from "../lib/library-hebrew.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
@@ -12,7 +12,8 @@ export default async (req: Request) => {
     if (u.searchParams.get("hidden") === "1") return json(await getHidden());
     if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     const [inbox, status, feeds] = await Promise.all([listInbox(), getStatus(), getFeeds()]);
-    return json({ inbox, status, feeds, sections: SECTION_LABELS, researchCats: RESEARCH_CATS, topics: TOPICS.map(t => ({ key: t.key, label: t.label })) });
+    if (u.searchParams.get("audit") === "1") return json({ audit: await auditLibrary() });
+    return json({ inbox, status, feeds, sections: SECTION_LABELS, researchCats: RESEARCH_CATS, topics: TOPICS.map(t => ({ key: t.key, label: t.label })), quality: QUALITY_INFO });
   }
   if (req.method !== "POST") return json({ error: "method" }, 405);
   if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
@@ -53,6 +54,15 @@ export default async (req: Request) => {
       return json({ ok: true, rejected: n });
     }
     case "fetch": return json({ ok: true, status: await collect() });
+    // סף האיכות (31.10.2026): ניקוי התיבה, ובדיקת איכות למקורות שכבר בספרייה.
+    case "purge": return json({ ok: true, rejected: await purgeLowQuality() });
+    case "audit-keep": { const itemId = clip(body.id, 120); if (itemId) await auditKeep(itemId); return json({ ok: true }); }
+    case "audit-remove": {
+      const ids: string[] = (Array.isArray(body.ids) ? body.ids : [body.id]).map((x: unknown) => clip(x, 120)).filter((x: string) => /^[\w-]{6,120}$/.test(x)).slice(0, 300);
+      let n = 0;
+      for (const itemId of ids) if (await removeFromLibrary(itemId)) n++;
+      return json({ ok: true, removed: n });
+    }
     case "feeds": return json({ ok: true, feeds: await saveFeeds(body.feeds) });
     case "hide": return json({ ok: true, hidden: await setHidden(clip(body.id, 200), true) });
     case "unhide": return json({ ok: true, hidden: await setHidden(clip(body.id, 200), false) });
