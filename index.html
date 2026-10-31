@@ -3911,14 +3911,16 @@ html[data-page="tasks"] #tasks{display:block!important}
             ${(x.quality||[]).length?`<div class="nv-row" style="gap:4px;margin:4px 0">${x.quality.map(q=>`<span class="nv-tag" style="background:#e9f5ee;border-color:#bfe0cb;color:#1f5e3a">✓ ${h(q)}</span>`).join('')}</div>`:''}
             <p class="nv-status" style="margin:4px 0" dir="auto">${h(x.authors.slice(0,4).join(', '))}${x.authors.length>4?' ועוד':''} · ${h(x.date||x.year)} · ${h(x.journal)} · <a href="${h(x.url)}" target="_blank" rel="noopener">למקור</a></p>
             ${x.abstract?`<details><summary class="nv-status" style="cursor:pointer">תקציר</summary><p dir="auto" style="margin:6px 0">${h(x.abstract)}</p></details>`:''}
+            <div class="nv-row" style="margin-top:6px"><span class="nv-status">מדור בספרייה:</span><select data-section style="width:auto">${Object.entries(d.sections).map(([k,l])=>`<option value="${k}"${x.section===k?' selected':''}>${h(l)}</option>`).join('')}</select>
+              <button type="button" class="nv-btn small primary" data-one="approve">✓ אישור</button><button type="button" class="nv-btn small danger" data-one="reject">לא רלוונטי</button></div>
+            <details class="la-he-wrap"${x.he?' open':''}><summary class="nv-status" style="cursor:pointer;margin-top:6px">✨ הכנה בעברית ומדור ב"חידושים במחקר"${x.he?' (מוכן)':''}</summary>
             <div class="la-he" style="margin-top:8px;padding:10px 12px;border:1px solid #d7e3e7;border-radius:10px;background:#f7fafb;display:grid;gap:6px">
               <label class="nv-row" style="gap:6px"><span class="nv-status">מדור ב"חידושים במחקר":</span><select data-rcat style="width:auto">${Object.entries(d.researchCats||{}).map(([k,l])=>`<option value="${k}"${((x.he&&x.he.cat)||x.cat)===k?' selected':''}>${h(l)}</option>`).join('')}<option value="none">רק בספרייה, לא ב"חידושים במחקר"</option></select></label>
               <label style="display:grid;gap:3px"><span class="nv-status">מה חדש (בעברית)</span><textarea data-hsum rows="2" dir="rtl" placeholder="אפשר לכתוב, או ללחוץ ✨ הכנה בעברית">${h(x.he?x.he.summary:'')}</textarea></label>
               <label style="display:grid;gap:3px"><span class="nv-status">התרומה (בעברית)</span><textarea data-hwhy rows="2" dir="rtl" placeholder="אפשר לכתוב, או ללחוץ ✨ הכנה בעברית">${h(x.he?x.he.why:'')}</textarea></label>
               <div class="nv-row"><button type="button" class="nv-btn small" data-he>${x.he?'✨ הכנה מחדש':'✨ הכנה בעברית'}</button><span class="nv-status" data-hest></span></div>
             </div>
-            <div class="nv-row" style="margin-top:6px"><span class="nv-status">מדור בספרייה:</span><select data-section style="width:auto">${Object.entries(d.sections).map(([k,l])=>`<option value="${k}"${x.section===k?' selected':''}>${h(l)}</option>`).join('')}</select>
-              <button type="button" class="nv-btn small primary" data-one="approve">✓ אישור</button><button type="button" class="nv-btn small danger" data-one="reject">לא רלוונטי</button></div></div>`).join('')}</div>`
+            </details></div>`).join('')}</div>`
           :'<p class="nv-status">אין מקורות חדשים שמחכים לאישור. אפשר להריץ איסוף בלשונית "מקורות לאיסוף".</p>';
       }else if(V.tab==='audit'){
         const a=V.audit;
