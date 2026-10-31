@@ -112,7 +112,7 @@ export async function fromOpenAlex(topic: typeof TOPICS[number]): Promise<Cand[]
     u.searchParams.set("search", topic.q);
     // רק כתבי העת שברשימה, רק מאמרים וסקירות עם תקציר, בלי טיוטות (preprints), בלי מאמרים שנמשכו. מיון לפי התאמה.
     u.searchParams.set("filter", [
-      `from_publication_date:${sinceDate(240)}`, "type:article|review", "has_abstract:true", "is_retracted:false", "is_paratext:false",
+      `from_publication_date:${sinceDate(120)}`, "type:article|review", "has_abstract:true", "is_retracted:false", "is_paratext:false",
       `primary_location.source.issn:${issns.join("|")}`,
     ].join(","));
     u.searchParams.set("per-page", "25");
@@ -173,7 +173,7 @@ export async function fromCrossref(topic: typeof TOPICS[number]): Promise<Cand[]
   const mail = (Netlify.env.get("GMAIL_USER") || "").trim();
   const u = new URL("https://api.crossref.org/works");
   u.searchParams.set("query.bibliographic", topic.q);
-  u.searchParams.set("filter", [`from-pub-date:${sinceDate(240)}`, "has-abstract:true", "type:journal-article", ...ALL_ISSNS.map(i => `issn:${i}`)].join(","));
+  u.searchParams.set("filter", [`from-pub-date:${sinceDate(120)}`, "has-abstract:true", "type:journal-article", ...ALL_ISSNS.map(i => `issn:${i}`)].join(","));
   u.searchParams.set("select", "DOI,title,author,issued,published,container-title,ISSN,type,URL,abstract");
   u.searchParams.set("rows", "25");
   if (mail) u.searchParams.set("mailto", mail);
@@ -198,7 +198,7 @@ export async function fromEuropePmc(topic: typeof TOPICS[number]): Promise<Cand[
   const issns = QUALITY_JOURNALS.filter(j => j.area === "resilience").flatMap(j => j.issn);
   const u = new URL("https://www.ebi.ac.uk/europepmc/webservices/rest/search");
   // מילות הנושא ב"או", ובנוסף מילה מתחום החינוך, כי אלה כתבי עת של פסיכולוגיה. הסינון המדויק (must) נעשה אחר כך בקוד.
-  u.searchParams.set("query", `(${topic.q.split(/\s+/).join(" OR ")}) AND (school OR schools OR students OR teachers OR education OR classroom) AND (${issns.map(i => `ISSN:"${i}"`).join(" OR ")}) AND FIRST_PDATE:[${sinceDate(240)} TO 3000-01-01] AND HAS_ABSTRACT:Y AND SRC:MED`);
+  u.searchParams.set("query", `(${topic.q.split(/\s+/).join(" OR ")}) AND (school OR schools OR students OR teachers OR education OR classroom) AND (${issns.map(i => `ISSN:"${i}"`).join(" OR ")}) AND FIRST_PDATE:[${sinceDate(120)} TO 3000-01-01] AND HAS_ABSTRACT:Y AND SRC:MED`);
   u.searchParams.set("format", "json"); u.searchParams.set("pageSize", "25"); u.searchParams.set("resultType", "core"); u.searchParams.set("sort", "RELEVANCE");
   const j: any = await (await getJson(u.toString(), 12000)).json();
   return ((j.resultList?.result || []) as any[]).map(x => ({
@@ -339,7 +339,9 @@ export async function listInbox(): Promise<LibInboxItem[]> {
   const { blobs } = await st.list({ prefix: "library-inbox/" });
   const rows: LibInboxItem[] = [];
   for (const b of blobs) { const v = await st.get(b.key, { type: "json" }) as LibInboxItem | null; if (v?.status === "new") rows.push(v); }
-  return rows.sort((a, b) => (b.date || b.year).localeCompare(a.date || a.year) || b.foundAt.localeCompare(a.foundAt));
+  // האיכותיים קודם (סקירות שיטתיות, כתבי עת מובילים), ואז לפי תאריך.
+  const q = (x: LibInboxItem) => (x.quality || qualityBadges(x)).length;
+  return rows.sort((a, b) => q(b) - q(a) || (b.date || b.year).localeCompare(a.date || a.year) || b.foundAt.localeCompare(a.foundAt));
 }
 
 // איסוף: כל נושא משני המאגרים, ועוד הפידים. רק פריטים חדשים, בתחום, ושעוד לא קיימים בספרייה.
@@ -360,12 +362,19 @@ export async function collect(): Promise<FeedStatus[]> {
     const j = jobs[i], r = results[i];
     if (r.status === "rejected") { status.push({ name: j.name, at, ok: false, found: 0, added: 0, error: String((r.reason as Error)?.message || r.reason).slice(0, 160) }); continue; }
     let found = 0, added = 0;
+    // סינון, ואז דירוג: התאמה לנושא בכותרת, סימני איכות, ותאריך. מכל מאגר נכנסים לתיבה עד 8 לנושא, כדי שהתיבה תישאר קריאה.
+    const pass: Cand[] = [];
     for (const c of r.value) {
       if (!c.title || !c.url) continue;
       const text = `${c.title} ${c.abstract}`;
       if (j.strict && (!FIELD.test(text) || (j.must && !j.must.test(text)))) continue;
       if (j.strict && !qualityOK(c)) continue;
-      found++;
+      pass.push(c);
+    }
+    found = pass.length;
+    const score = (c: Cand) => (j.must && j.must.test(c.title) ? 3 : 0) + (FIELD.test(c.title) ? 1 : 0) + qualityBadges(c).length * 2;
+    pass.sort((a, b) => score(b) - score(a) || String(b.date || b.year).localeCompare(String(a.date || a.year)));
+    for (const c of j.strict ? pass.slice(0, 8) : pass) {
       const dk = c.doi ? "d:" + norm(c.doi) : "", tk = "t:" + norm(c.title), key = linkKey(c.doi || c.url);
       if (known.has(key) || (dk && known.has(dk)) || known.has(tk)) continue;
       known.add(key); if (dk) known.add(dk); known.add(tk);
