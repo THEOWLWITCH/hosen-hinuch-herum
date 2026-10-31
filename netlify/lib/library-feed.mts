@@ -26,6 +26,13 @@ export const TOPICS: { key: string; label: string; cat: string; q: string; must:
   { key: "parents", label: "הורים וקהילה", cat: "resilience", q: "parent family community engagement school crisis", must: /parent|famil|communit/i },
 ];
 const FIELD = /educat|school|teacher|student|pupil|learning|classroom|kindergarten|principal|חינוך|בית ספר|מורים|תלמיד/i;
+// לא רלוונטי לקהילה (31.10.2026): השכלה גבוהה. מחקר שהכותרת שלו עוסקת באוניברסיטה או בסטודנטים לא נכנס, אלא אם הוא עוסק גם בבית ספר או בצוותי חינוך.
+const HIGHER_ED = /higher education|universit|undergraduate|postgraduate|graduate students?|college students?|medical students?|nursing students?|academic staff|faculty members?|campus|השכלה גבוהה|אוניברסיט|סטודנט/i;
+const K12 = /school|teacher|pupil|kindergarten|preschool|early childhood|principal|classroom|adolescen|children|בית ספר|מורים|תלמיד|גן/i;
+export function offTopic(c: { title?: string; abstract?: string }) {
+  const t = String(c.title || "");
+  return HIGHER_ED.test(t) && !K12.test(t);
+}
 
 export type LibInboxItem = {
   key: string; title: string; authors: string[]; year: string; date: string; journal: string; url: string; doi: string;
@@ -234,8 +241,8 @@ export async function purgeLowQuality(): Promise<number> {
   const st = data();
   let n = 0;
   for (const v of await listInbox()) {
-    if (v.source === "rss" || qualityOK(v)) continue;
-    await st.setJSON(`library-inbox/${v.key}.json`, { ...v, abstract: "", status: "rejected", rejectedFor: "quality" });
+    if (v.source === "rss" || (qualityOK(v) && !offTopic(v))) continue;
+    await st.setJSON(`library-inbox/${v.key}.json`, { ...v, abstract: "", status: "rejected", rejectedFor: offTopic(v) ? "higher-ed" : "quality" });
     n++;
   }
   return n;
@@ -253,7 +260,7 @@ export async function auditLibrary() {
   for (const b of blobs) {
     const v = await st.get(b.key, { type: "json" }) as any;
     if (!v || !["openalex", "eric", "crossref", "europepmc"].includes(v.origin) || keep.has(v.id)) continue;
-    if (qualityJournal(v.journal || "")) continue;
+    if (qualityJournal(v.journal || "") && !offTopic(v)) continue;
     rows.push({ id: v.id, title: clip(v.title || v.apa, 400), journal: clip(v.journal, 200), year: clip(v.year, 10), origin: v.origin, url: clip(v.doi, 600), research: linked.has(v.id) });
   }
   return rows.sort((a, b) => b.year.localeCompare(a.year));
@@ -368,7 +375,7 @@ export async function collect(): Promise<FeedStatus[]> {
       if (!c.title || !c.url) continue;
       const text = `${c.title} ${c.abstract}`;
       if (j.strict && (!FIELD.test(text) || (j.must && !j.must.test(text)))) continue;
-      if (j.strict && !qualityOK(c)) continue;
+      if (j.strict && (!qualityOK(c) || offTopic(c))) continue;
       pass.push(c);
     }
     found = pass.length;

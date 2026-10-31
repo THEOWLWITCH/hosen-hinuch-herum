@@ -12,7 +12,7 @@ export const QUALITY_AREAS: Record<string, string> = {
   teachers: "מורים, מנהלות ומנהלים, מנהיגות חינוכית",
   policy: "מדיניות ומערכת החינוך",
   tech: "טכנולוגיה, AI, סימולציה ולמידה מרחוק",
-  general: "מחקר חינוכי מוביל, למידה והשכלה גבוהה",
+  general: "מחקר חינוכי מוביל ולמידה",
   evidence: "סקירות שיטתיות וסינתזות מחקר",
   israel: "כתבי עת ישראליים (עברית)",
 };
@@ -53,7 +53,6 @@ export const QUALITY_JOURNALS: QualityJournal[] = [
   { name: "Computers and Education: Artificial Intelligence", issn: ["2666-920X"], area: "tech" },
   { name: "British Journal of Educational Technology", issn: ["0007-1013", "1467-8535"], area: "tech" },
   { name: "International Journal of Artificial Intelligence in Education", issn: ["1560-4292", "1560-4306"], area: "tech" },
-  { name: "International Journal of Educational Technology in Higher Education", issn: ["2365-9440"], area: "tech" },
   // חינוך בחירום (המשך), אסונות
   { name: "International Journal of Disaster Risk Science", issn: ["2095-0055", "2192-6395"], area: "eie" },
   { name: "Disaster Prevention and Management", issn: ["0965-3562", "1758-6100"], area: "eie" },
@@ -99,8 +98,6 @@ export const QUALITY_JOURNALS: QualityJournal[] = [
   { name: "Journal of Educational Psychology", issn: ["0022-0663", "1939-2176"], area: "general" },
   { name: "Learning and Instruction", issn: ["0959-4752", "1873-3263"], area: "general" },
   { name: "Contemporary Educational Psychology", issn: ["0361-476X", "1090-2384"], area: "general" },
-  { name: "Higher Education", issn: ["0018-1560", "1573-174X"], area: "general" },
-  { name: "Studies in Higher Education", issn: ["0307-5079", "1470-174X"], area: "general" },
   // סקירות שיטתיות וסינתזות מחקר
   { name: "Campbell Systematic Reviews", issn: ["1891-1803"], area: "evidence" },
   { name: "Educational Research Review", issn: ["1747-938X", "1878-0385"], area: "evidence" },
