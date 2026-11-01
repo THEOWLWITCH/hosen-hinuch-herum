@@ -2501,6 +2501,8 @@ html[data-page="apps"] #apps{display:block!important}
 .nv-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .nv-form label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;font-weight:650;color:#456071}
 .nv-form .wide{grid-column:1/-1}
+.mc-photo-img{width:56px;height:56px;border-radius:50%;overflow:hidden;border:1px solid #d6e2e8;background:linear-gradient(145deg,#f7fafb,#eaf1f4);display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#647a88;text-align:center;flex:0 0 56px}
+.mc-photo-img img{width:100%;height:100%;object-fit:cover;display:block}
 .nv-form .hint{font-weight:400;color:#7b8d98}
 .nv-form input,.nv-form select,.nv-form textarea{font-weight:400!important}
 .nv-form .nv-checks label{flex-direction:row;align-items:center;font-weight:400;color:inherit}
@@ -7093,6 +7095,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       <form class="nv-form" novalidate>
         ${field('name','שם (כפי שיופיע בכרטיס)','autocomplete="name"')}
         ${field('institution','מוסד או ארגון','autocomplete="organization"')}
+        <div class="wide mc-photo"><strong style="font-size:13px">📷 תמונה בכרטיס</strong> <span class="nv-status">רשות. התמונה מוצגת בעיגול קטן בכרטיס בנבחרת.</span>
+          <div class="nv-row" style="align-items:center;margin-top:6px"><span class="mc-photo-img" data-ph></span><button type="button" class="nv-btn" data-phpick>בחירת תמונה</button><input type="file" accept="image/*" data-phfile hidden><button type="button" class="nv-btn" data-phdel>הסרת התמונה</button></div></div>
         <label class="wide">תחומי עיסוק ומחקר<textarea name="description" rows="5" dir="auto">${h(d.description)}</textarea></label>
         ${field('email','מייל','type="email" dir="ltr" autocomplete="email"')}
         ${field('phone','נייד','type="tel" dir="ltr" autocomplete="tel"')}
@@ -7108,6 +7112,23 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       </form><div class="nv-status" data-st></div>`;
     const f=root.querySelector('form'),st=root.querySelector('[data-st]');
     root.querySelector('[data-out]').onclick=()=>{setMemberToken('');root.closest('.nv-modal').remove()};
+    // תמונה: נבחרת בטופס, מוקטנת בדפדפן, ועולה לאתר רק בלחיצה על "שמירת הכרטיס".
+    let photoFile=null,photoRemoved=false,photoPreview='';
+    const phBox=root.querySelector('[data-ph]'),phInput=root.querySelector('[data-phfile]'),phDel=root.querySelector('[data-phdel]');
+    const drawPhoto=()=>{const src=photoPreview||(!photoRemoved&&d.photoUrl)||'';phBox.innerHTML=src?`<img src="${h(src)}" alt="">`:'<span>אין תמונה</span>';phDel.style.display=src?'':'none'};
+    drawPhoto();
+    root.querySelector('[data-phpick]').onclick=()=>phInput.click();
+    phInput.onchange=()=>{const file=phInput.files[0];if(!file)return;
+      if(!String(file.type||'').startsWith('image/')){st.className='nv-status err';st.textContent='אפשר לבחור רק קובץ תמונה.';phInput.value='';return}
+      photoFile=file;photoRemoved=false;if(photoPreview)URL.revokeObjectURL(photoPreview);photoPreview=URL.createObjectURL(file);st.className='nv-status';st.textContent='התמונה תישמר בלחיצה על "שמירת הכרטיס".';drawPhoto()};
+    phDel.onclick=()=>{photoFile=null;photoRemoved=true;phInput.value='';if(photoPreview)URL.revokeObjectURL(photoPreview);photoPreview='';drawPhoto()};
+    // הקטנה לריבוע של עד 800 פיקסלים בצד הארוך, בפורמט JPEG. מספיק לעיגול שבכרטיס, וחוסך זמן העלאה.
+    const shrinkPhoto=file=>new Promise(res=>{const img=new Image(),u=URL.createObjectURL(file);
+      img.onload=()=>{try{const sc=Math.min(1,800/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*sc));c.height=Math.max(1,Math.round(img.height*sc));c.getContext('2d').drawImage(img,0,0,c.width,c.height);c.toBlob(b=>{URL.revokeObjectURL(u);res(b?new File([b],(file.name||'photo').replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg'}):file)},'image/jpeg',0.86)}catch(e){URL.revokeObjectURL(u);res(file)}};
+      img.onerror=()=>{URL.revokeObjectURL(u);res(file)};img.src=u});
+    const uploadPhoto=async file=>{const fd=new FormData();fd.append('file',await shrinkPhoto(file));
+      const r=await fetch('/api/member',{method:'POST',headers:{'x-member-token':tok},body:fd});const j=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(j.message||'העלאת התמונה לא הצליחה. אפשר לנסות שוב.');return j};
     f.addEventListener('submit',async e=>{
       e.preventDefault();const v=k=>(f.elements[k].value||'').trim();
       const topics=[...f.querySelectorAll('[name=topics]:checked')].map(i=>i.value);
@@ -7116,7 +7137,13 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='שומרת…';
       const data={action:'card-save',topics,offer:{kinds:[...f.querySelectorAll('[name=kinds]:checked')].map(i=>i.value),text:v('offer')}};
       ['name','institution','description','email','phone','motto','websiteUrl','linkedinUrl','facebookUrl','instagramUrl'].forEach(k=>data[k]=v(k));
-      try{await post('/api/member',data,{'x-member-token':tok});btn.disabled=false;st.className='nv-status ok';st.textContent='✓ הכרטיס נשמר.';if(typeof loadPeople==='function')loadPeople().catch(()=>{})}
+      try{
+        if(photoFile){st.textContent='מעלה את התמונה…';const up=await uploadPhoto(photoFile);data.photoKey=up.key;data.photoName=up.name}
+        else if(photoRemoved)data.photoKey='';
+        st.textContent='שומרת…';
+        const j=await post('/api/member',data,{'x-member-token':tok});
+        d.photoUrl=j.photoUrl||'';photoFile=null;photoRemoved=false;phInput.value='';if(photoPreview)URL.revokeObjectURL(photoPreview);photoPreview='';drawPhoto();
+        btn.disabled=false;st.className='nv-status ok';st.textContent='✓ הכרטיס נשמר.';if(typeof loadPeople==='function')loadPeople().catch(()=>{})}
       catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
     });
   }

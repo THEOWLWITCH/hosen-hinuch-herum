@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { issueMemberToken, json, looksHuman, memberFromToken, store, validToken } from "../lib/shared.mts";
+import { id, issueMemberToken, json, looksHuman, memberFromToken, safeName, store, validToken } from "../lib/shared.mts";
 import { THEMES, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { KINDS, cleanKinds, offerOf } from "../lib/collab.mts";
 import { codeFor, codeMail, formatCode, hasCode, pidFromCode } from "../lib/member-code.mts";
@@ -66,6 +66,21 @@ export default async (req: Request) => {
   }
 
   if (req.method !== "POST") return json({ error: "method" }, 405);
+
+  // העלאת תמונה לכרטיס (קובץ, לא JSON). התמונה נשמרת בכרטיס רק בלחיצה על "שמירת הכרטיס".
+  if ((req.headers.get("content-type") || "").toLowerCase().startsWith("multipart/form-data")) {
+    const pid = await me(req);
+    if (!pid) return json(EXPIRED, 403);
+    const form = await req.formData().catch(() => null);
+    const f = form?.get("file");
+    if (!(f instanceof File)) return json({ error: "missing_file", message: "לא נבחרה תמונה." }, 400);
+    if (!String(f.type || "").startsWith("image/")) return json({ error: "not_image", message: "אפשר להעלות רק קובץ תמונה." }, 400);
+    if (f.size > 4_000_000) return json({ error: "file_too_large", message: "התמונה גדולה מדי (עד 4MB). אפשר לנסות תמונה קטנה יותר." }, 413);
+    const key = `files/member-${pid}-${id()}-${safeName(f.name)}`;
+    await store("hosen-files").set(key, f, { metadata: { contentType: f.type, filename: f.name } });
+    return json({ key, name: f.name, url: `/api/file?key=${encodeURIComponent(key)}` }, 201);
+  }
+
   const body = await req.json().catch(() => ({} as any));
   const action = clip(body.action, 30);
 
@@ -123,13 +138,23 @@ export default async (req: Request) => {
         motto: clip(body.motto, 600), websiteUrl: cleanUrl(body.websiteUrl), linkedinUrl: cleanUrl(body.linkedinUrl),
         facebookUrl: cleanUrl(body.facebookUrl), instagramUrl: cleanUrl(body.instagramUrl),
       });
+      // תמונה: "" = הסרה. מותר רק קובץ שהועלה מהכרטיס הזה, או התמונה שכבר בכרטיס.
+      if ("photoKey" in body) {
+        const key = clip(body.photoKey, 400);
+        if (key && key !== p.photoKey && !key.startsWith(`files/member-${pid}-`)) return json({ error: "bad_photo", message: "התמונה לא נשמרה. אפשר לבחור אותה שוב." }, 400);
+        if (key !== (p.photoKey || "")) {
+          next.photoKey = key;
+          next.photoName = key ? clip(body.photoName, 240) : "";
+          if (p.photoKey) { try { await store("hosen-files").delete(p.photoKey); } catch {} }
+        }
+      }
       if (body.offer && typeof body.offer === "object") {
         const offer = { kinds: cleanKinds(body.offer.kinds), text: clip(body.offer.text, 1500), updatedAt: now };
         if (offer.kinds.length || offer.text) next.offer = offer;
       }
     }
     await store("hosen-data").setJSON(`people/${pid}.json`, next);
-    return json({ ok: true, topics: next.topics || personTopics(next) });
+    return json({ ok: true, topics: next.topics || personTopics(next), photoUrl: next.photoKey ? `/api/file?key=${encodeURIComponent(next.photoKey)}` : "" });
   }
 
   // ----- מנהלת המערכת -----
