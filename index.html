@@ -3147,7 +3147,7 @@ html[data-page="tasks"] #tasks{display:block!important}
   const daysTo=iso=>Math.round((Date.parse(iso+'T12:00:00')-Date.parse(today()+'T12:00:00'))/86400000);
   const DOW=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
   const isHe=s=>/[\u0590-\u05FF]/.test(String(s||''));
-  const norm=s=>String(s||'').toLowerCase().replace(/[״"׳'`]/g,'').replace(/\s+/g,' ').trim();
+  const norm=s=>String(s||'').toLowerCase().replace(/[״"׳'`]/g,'').replace(/חרום/g,'חירום').replace(/\s+/g,' ').trim();
 
   // ---------- נתוני האתר ----------
   const g=name=>{try{return Function('return typeof '+name+'!=="undefined"?'+name+':undefined')()}catch(e){return undefined}};

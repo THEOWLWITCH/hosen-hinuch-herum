@@ -74,9 +74,15 @@ function lookup(word) {
   return null;
 }
 
+// כתיב חסר ← כתיב מלא לפני התרגום (31/10/2026: "את מחפשת על בחירה והמושג הוא חרום").
+// "בחרום" לא נמצא במילון ונשלח למודל, שקרא אותו כשורש ב-ח-ר (בחירה). עכשיו "חרום" = "חירום" בכל צורה.
+export function normalizeSpelling(q) {
+  return String(q || "").replace(/חרום/g, "חירום");
+}
+
 // מתרגם לפי המילון. מחזיר { english, unknown[] } — unknown: מילים בעברית שלא נמצאו.
 export function translateByDictionary(q) {
-  const words = String(q || "").replace(/[״"'`,.:;!?()\[\]{}־–—\/\\]/g, " ").split(/\s+/).filter(Boolean);
+  const words = normalizeSpelling(q).replace(/[״"'`,.:;!?()\[\]{}־–—\-\/\\]/g, " ").split(/\s+/).filter(Boolean);
   const out = [], unknown = [];
   for (let i = 0; i < words.length;) {
     let hit = null, len = 0;
@@ -107,8 +113,8 @@ async function translateByModel(q, env, ms) {
       headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
       body: JSON.stringify({
         model: "claude-haiku-5-5", max_tokens: 120,
-        system: "Translate the user's Hebrew research topic into a concise English academic search query (keywords only, 3-10 words, no quotes, no explanation). The field is education, resilience and emergencies. Reply with the query only.",
-        messages: [{ role: "user", content: clip(q, 400) }],
+        system: "Translate the user's Hebrew research topic into a concise English academic search query (keywords only, 3-10 words, no quotes, no explanation). The field is education, resilience and emergencies. The Hebrew words חירום / חרום / בחירום / בחרום always mean emergency (never choice or election). Reply with the query only.",
+        messages: [{ role: "user", content: clip(normalizeSpelling(q), 400) }],
       }),
     });
     if (!r.ok) return "";
