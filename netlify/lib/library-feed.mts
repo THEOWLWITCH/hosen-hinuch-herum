@@ -239,11 +239,10 @@ export function qualityOK(c: { title?: string; abstract?: string; journal?: stri
 // ניקוי התיבה: מחקרים מהאיסוף הקודם שלא עומדים בסף מסומנים "נדחה" (לא נמחקים, כדי שלא יחזרו).
 // במנות (31.10.2026): עם מאות פריטים בתיבה, ניקוי בבת אחת חרג ממגבלת הזמן של הפונקציה ונעצר באמצע. הדפדפן קורא שוב עד ש-remaining=0.
 export async function purgeLowQuality(limit = 25): Promise<{ rejected: number; remaining: number }> {
-  const st = data();
   const bad = (await listInbox()).filter(v => v.source !== "rss" && (!qualityOK(v) || offTopic(v)));
   let n = 0;
   for (const v of bad.slice(0, limit)) {
-    await st.setJSON(`library-inbox/${v.key}.json`, { ...v, abstract: "", status: "rejected", rejectedFor: offTopic(v) ? "higher-ed" : "quality" });
+    await archive(v.key, { status: "rejected", rejectedFor: offTopic(v) ? "higher-ed" : "quality" });
     n++;
   }
   return { rejected: n, remaining: bad.length - n };
@@ -330,23 +329,47 @@ const norm = (s: string) => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]
 
 async function knownKeys(): Promise<Set<string>> {
   const st = data(), keys = new Set<string>();
-  for (const prefix of ["library-inbox/", "library/"]) {
+  for (const prefix of ["library-inbox/", "library-seen/"]) {
     const { blobs } = await st.list({ prefix });
-    for (const b of blobs) {
-      if (prefix === "library-inbox/") { keys.add(b.key.slice(prefix.length).replace(/\.json$/, "")); continue; }
-      const v = await st.get(b.key, { type: "json" }) as any;
-      if (v?.doi) keys.add("d:" + norm(String(v.doi).replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")));
-      if (v?.title) keys.add("t:" + norm(v.title));
-    }
+    for (const b of blobs) keys.add(b.key.slice(prefix.length).replace(/\.json$/, ""));
+  }
+  const { blobs } = await st.list({ prefix: "library/" });
+  const rows = await pool(blobs, b => st.get(b.key, { type: "json" }).catch(() => null) as Promise<any>);
+  for (const v of rows) {
+    if (v?.doi) keys.add("d:" + norm(String(v.doi).replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")));
+    if (v?.title) keys.add("t:" + norm(v.title));
   }
   return keys;
+}
+
+// קריאה במקביל (עד n בכל רגע). קריאה אחת-אחת של מאות פריטים חרגה ממגבלת הזמן, והספרייה לא נפתחה (4.11.2026).
+async function pool<T, R>(rows: T[], run: (x: T) => Promise<R>, n = 40): Promise<R[]> {
+  const out: R[] = new Array(rows.length);
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, rows.length) }, async () => { while (i < rows.length) { const k = i++; out[k] = await run(rows[k]); } }));
+  return out;
+}
+
+// מחקר שאושר או נדחה יוצא מהתיבה ונשאר רק כסימון קטן ב-library-seen/, כדי שלא יחזור באיסוף.
+// כך התיבה מכילה רק את מה שמחכה לאישור, ונשארת קטנה ומהירה.
+async function archive(key: string, v: { status: string; rejectedFor?: string }) {
+  const st = data();
+  await st.setJSON(`library-seen/${key}.json`, { status: v.status, rejectedFor: v.rejectedFor || "", at: new Date().toISOString() });
+  await st.delete(`library-inbox/${key}.json`);
 }
 
 export async function listInbox(): Promise<LibInboxItem[]> {
   const st = data();
   const { blobs } = await st.list({ prefix: "library-inbox/" });
+  const all = await pool(blobs, b => st.get(b.key, { type: "json" }).catch(() => null) as Promise<LibInboxItem | null>);
   const rows: LibInboxItem[] = [];
-  for (const b of blobs) { const v = await st.get(b.key, { type: "json" }) as LibInboxItem | null; if (v?.status === "new") rows.push(v); }
+  const done: { key: string; v: LibInboxItem }[] = [];
+  all.forEach((v, i) => {
+    if (v?.status === "new") rows.push(v);
+    else if (v) done.push({ key: blobs[i].key.slice("library-inbox/".length).replace(/\.json$/, ""), v });
+  });
+  // פינוי הדרגתי של מה שכבר טופל (מלפני התיקון): עד 150 בכל פתיחה, כדי לא לחרוג מהזמן.
+  if (done.length) await pool(done.slice(0, 150), ({ key, v }) => archive(key, v).catch(() => {}), 20);
   // האיכותיים קודם (סקירות שיטתיות, כתבי עת מובילים), ואז לפי תאריך.
   const q = (x: LibInboxItem) => (x.quality || qualityBadges(x)).length;
   return rows.sort((a, b) => q(b) - q(a) || (b.date || b.year).localeCompare(a.date || a.year) || b.foundAt.localeCompare(a.foundAt));
@@ -429,7 +452,7 @@ export async function approve(key: string, edits: ApproveEdits = {}) {
     await st.setJSON(`resources/${res.id}.json`, res);
     research = { id: res.id, category: res.category, pending };
   }
-  await st.setJSON(`library-inbox/${key}.json`, { ...v, status: "approved" });
+  await archive(key, { status: "approved" });
   return { ...row, research };
 }
 
@@ -437,8 +460,8 @@ export async function reject(key: string) {
   const st = data();
   const v = await st.get(`library-inbox/${key}.json`, { type: "json" }) as LibInboxItem | null;
   if (!v) return false;
-  // נשאר כ"נדחה" כדי שלא יחזור באיסוף הבא; התקציר נמחק לחיסכון במקום.
-  await st.setJSON(`library-inbox/${key}.json`, { ...v, abstract: "", status: "rejected" });
+  // יוצא מהתיבה ונשאר כסימון "נדחה" כדי שלא יחזור באיסוף הבא.
+  await archive(key, { status: "rejected" });
   return true;
 }
 

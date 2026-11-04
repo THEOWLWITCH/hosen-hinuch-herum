@@ -65,10 +65,10 @@ export async function getRequest(rid: string): Promise<InboxRequest | null> {
   return await data().get(`requests/${rid}.json`, { type: "json" }) as InboxRequest | null;
 }
 
-export async function getDigestState(): Promise<{ lastAt: string }> {
-  return (await data().get("requests-meta/digest.json", { type: "json" }) as { lastAt: string } | null) || { lastAt: "" };
+export async function getDigestState(): Promise<{ lastAt: string; sentDay?: string }> {
+  return (await data().get("requests-meta/digest.json", { type: "json" }) as { lastAt: string; sentDay?: string } | null) || { lastAt: "" };
 }
 
-export async function setDigestState(lastAt: string) {
-  await data().setJSON("requests-meta/digest.json", { lastAt });
+export async function setDigestState(lastAt: string, sentDay?: string) {
+  await data().setJSON("requests-meta/digest.json", { lastAt, sentDay: sentDay || "" });
 }

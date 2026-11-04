@@ -3881,7 +3881,7 @@ html[data-page="tasks"] #tasks{display:block!important}
   const token=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
   async function api(method,body,qs){
     const r=await fetch('/api/library-feed'+(qs||''),{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token()},body:body?JSON.stringify(body):undefined});
-    const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.message||'הפעולה לא הצליחה.');e.status=r.status;throw e}return j;
+    const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.message||(r.status>=500?'השרת לא הספיק לענות. אפשר לרענן את העמוד ולנסות שוב.':'הפעולה לא הצליחה.')+` (שגיאה ${r.status})`);e.status=r.status;throw e}return j;
   }
   // לשונית "📚 ספרייה" בחלון הניהול של האתר.
   function addTab(){

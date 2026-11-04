@@ -26,11 +26,20 @@ ${lib.length ? `<p>📚 מחכים לאישור <strong>${lib.length} מחקרי
 <p><a href="${site}/library#library-admin" style="display:inline-block;padding:9px 16px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none;font-weight:700">📥 למחקרים החדשים לאישור</a></p>` : ""}
 <p><a href="${site}/now#requests" style="display:inline-block;padding:9px 16px;border-radius:999px;background:#245f82;color:#fff;text-decoration:none;font-weight:700">לתיבת הפניות באתר</a></p></div>`;
   const text = `${fresh.length ? `יש ${fresh.length} פניות חדשות, ובסך הכול ${open.length} פתוחות.\n\n${fresh.slice(0, 30).map(r => "- " + line(r)).join("\n")}\n\nלתיבת הפניות: ${site}/now#requests` : ""}${lib.length ? `\n\nמחכים לאישור ${lib.length} מחקרים חדשים: ${site}/library#library-admin` : ""}`;
+  // מייל אחד ביום בלבד (4.11.2026: הגיע שלוש פעמים). קודם מסמנים שהסיכום של היום נשלח, ורק אז שולחים —
+  // כך הפעלה חוזרת של אותה פונקציה (ניסיון חוזר של השרת) לא שולחת שוב.
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jerusalem" });
+  if (state.sentDay === today) return new Response(null, { status: 204 });
+  const nextAt = [state.lastAt, fresh[0]?.at || "", ...libFresh.map(x => x.foundAt)].sort().pop()!;
+  await setDigestState(nextAt, today);
   try {
     const subject = fresh.length ? `📥 ${fresh.length} פניות חדשות באתר (${open.length} פתוחות)${libFresh.length ? ` · 📚 ${libFresh.length} מחקרים חדשים לאישור` : ""}` : `📚 ${libFresh.length} מחקרים חדשים מחכים לאישור`;
     await sendMail(admin, subject, html, text);
-    await setDigestState([fresh[0]?.at || "", ...libFresh.map(x => x.foundAt)].sort().pop()!);
-  } catch {}
+  } catch (e) {
+    // השליחה נכשלה: מחזירים את המצב הקודם, כדי שהסיכום יישלח בהפעלה הבאה.
+    console.error("digest mail failed", String((e as Error)?.message || e));
+    await setDigestState(state.lastAt, state.sentDay || "").catch(() => {});
+  }
   return new Response(null, { status: 204 });
 };
 
