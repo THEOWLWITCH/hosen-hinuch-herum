@@ -4456,6 +4456,7 @@ document.addEventListener('DOMContentLoaded',()=>{rolesRender();if(location.hash
 </script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
 <style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
+<style id="teams-title-v2">.sr-only-ch{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
 <style id="team-invite-v1">.ch-invite{display:inline-block;padding:3px 10px;border-radius:999px;background:#fff4dc;border:1px solid #e7c06a;color:#7a5200;font-size:12.5px;font-weight:700;white-space:nowrap}.ch-trow-title{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.ch-trow.inviting,.ch-team.inviting{border-color:#e7c06a!important;background:#fffcf3!important;box-shadow:0 0 0 2px rgba(231,192,106,.25)}</style>
 <style id="team-live-v1">.ch-live{display:inline-block;width:10px;height:10px;border-radius:50%;background:#c9d3d7;vertical-align:middle;margin-inline-end:4px}.ch-live.on{background:#2fae5b;box-shadow:0 0 0 3px rgba(47,174,91,.18),0 0 8px rgba(47,174,91,.7)}.ch-live-wrap{display:inline-flex;align-items:center;white-space:nowrap}.ch-live-txt{font-size:11.5px;color:#5f7686;margin-inline-end:8px;white-space:nowrap}</style>
 <style id="calls-hub-v66">
@@ -4643,8 +4644,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const root=document.createElement('div');
     root.id='callsHub';
     root.innerHTML=`<section class="ch-section" id="teams" style="margin-top:0" aria-labelledby="chTeamsTitle">
-        <div class="ch-intro"><div><h3 id="chTeamsTitle">🛠 צוותים שכבר עובדים</h3>
-          <p>לכל צוות מרחב עבודה משלו: כתיבת ההצעה, משימות ודיון. ההצטרפות לצוות וניהול הקבוצה נעשים מתוך המרחב. <span class="ch-live on"></span> הנורית דולקת שבוע מאז הפעם האחרונה שמישהו פתח את המרחב או עבד בו.</p></div>
+        <div class="ch-intro"><div><h3 id="chTeamsTitle" class="sr-only-ch">צוותים פעילים</h3>
+          <p>לכל צוות מרחב עבודה משלו: כתיבת ההצעה, משימות ודיון. ההצטרפות לצוות וניהול הקבוצה נעשים מתוך המרחב. כשהצוות התגבש, מי שמוביל/ה אותו יכול/ה לסגור את המרחב בקוד צוות: אין יותר הצטרפות, והדיון והחומרים פתוחים רק לחברי וחברות הצוות. בכרטיס הצוות נשארים גלויים לכולם השם, התקציר ושמות החוקרים והחוקרות. צוות שעוד לא נסגר מסומן <span class="ch-invite">🙋 מוזמנות.ים להצטרף</span>, ו<span class="ch-live on"></span> נורית ירוקה מסמנת צוות שהיה פעיל השבוע.</p></div>
           </div>
         <div class="ch-list" id="chTeams"><p class="ch-empty">טוען…</p></div></section>`;
     head.after(root);
@@ -4934,7 +4935,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         m.querySelector('[data-copy]').onclick=ev=>copy(j.link,ev.target);
         m.querySelector('[data-open]').onclick=()=>{m.close();location.hash='#teams';openWorkspace(j.id)};
         await refreshTeams();
-        // הקבוצה החדשה עוברת ל"מרחבי עבודה פעילים".
+        // הקבוצה החדשה עוברת ל"צוותים פעילים".
         location.hash='#teams';
       }catch(err){setStatus(st,err.message,'err')}
     });
@@ -7640,10 +7641,10 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     if(!head||document.getElementById('collabHub'))return null;
     const root=document.createElement('section');root.id='collabHub';root.className='cb';root.setAttribute('aria-labelledby','cbTitle');
     root.innerHTML=`<div class="cb-top"><div><h3 id="cbTitle" class="cb-sr">הצעות לשיתופי פעולה</h3>
-        <p>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה שמחפשים שותפים. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם. כשנפתח מרחב עבודה, הוא עובר ל"מרחבי עבודה פעילים".</p></div>
+        <p>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה שמחפשים שותפים. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם. כשנפתח מרחב עבודה, הוא עובר ל"צוותים פעילים".</p></div>
       <div class="cb-actions"><button type="button" class="cb-btn" data-cb="invite-all" hidden title="ניהול: קישור אישי במייל לכל מי שיש לה מייל בכרטיס">📨 קישור לעדכון לכל הנבחרת</button></div></div>
       <details class="cb-how"><summary>איך זה עובד?</summary><ol>
-        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה, שמופיע אחר כך ב"מרחבי עבודה פעילים".</li>
+        <li><strong>🔬 רעיונות למחקר:</strong> הצעות לשידוכים סביב נישות שהמחקר העדכני עוד לא ענה עליהן, עם צוות מוצע מתוך הנבחרת וקישורים למאמרים עדכניים. מי שהוצע לצוות מקבל הודעה במייל, וכל חברי הקהילה יכולים להצטרף לרשימת היוזמים (בקוד הקהילה) ולפתוח מרחב עבודה, שמופיע אחר כך ב"צוותים פעילים".</li>
         <li><strong>🧭 מי מקדמת מה:</strong> מה כל אחת ואחד בקהילה יכולים לקדם: הרצאות, סדנאות, פיתוח קורס, קולות קוראים, שת״פ בינלאומי, מחקר ועוד. אפשר לסנן לפי סוג פעילות ולפנות ישירות במייל או בטלפון.</li>
         <li><strong>💞 מי מתאימה לי?:</strong> בוחרים את השם שלך, ומקבלים מי מתאימים לעבודה משותפת, ולמה.</li>
         <li><strong>📣 פרסום יוזמה:</strong> יש לך רעיון? כותבים מה הרעיון ואת מי מחפשים, ומפרסמים עם קוד הקהילה. היוזמה מופיעה כאן, עם הצעה למי היא מתאימה.</li>
@@ -7711,14 +7712,14 @@ section#collabHub.cb{padding:20px 22px 24px!important}
   function renderResearch(){
     const admin=!!adminToken();
     const drafts=S.research.filter(r=>r.status==='draft');
-    // בהצעות רק מה שעוד מחפש יוזמים/ות. רעיון שנפתח לו מרחב עבודה עובר ל"מרחבי עבודה פעילים".
+    // בהצעות רק מה שעוד מחפש יוזמים/ות. רעיון שנפתח לו מרחב עבודה עובר ל"צוותים פעילים".
     const live=S.research.filter(r=>r.status==='open');
     const moved=S.research.filter(r=>r.status==='team'||r.status==='closed');
     const bar=admin?`<div class="cb-admin"><div><strong>ניהול:</strong> רעיונות חדשים נוצרים מכרטיסי הנבחרת ומהמאמרים העדכניים באתר, ונשמרים כטיוטה. רק אחרי פרסום הם גלויים לכולם, ונשלחת הודעה לצוות המוצע.</div><div class="cb-actions">${drafts.length?`<button type="button" class="cb-btn primary" data-cb="rs-publish-all">📨 פרסום כל הטיוטות ושליחה לצוותים (${drafts.length})</button>`:''}<button type="button" class="cb-btn${drafts.length?'':' primary'}" data-cb="rs-gen">✨ רעיונות חדשים למחקר</button></div></div>`:'';
     const intro='<p class="cb-meta" style="margin:0 0 12px">כל רעיון נשען על נישה ריקה במחקר העדכני, עם צוות מוצע מתוך הנבחרת ומאמרים עדכניים בתחום. כל חברי הקהילה מוזמנים להצטרף לרשימת היוזמים בקוד הקהילה, ומשם לפתוח מרחב עבודה לצוות.</p>';
     return bar+intro+
       (drafts.length?`<h4 class="cb-sub">📝 טיוטות לבדיקה (${drafts.length})</h4><div class="cb-rlist">${drafts.map(researchRow).join('')}</div><h4 class="cb-sub">🔬 רעיונות שפורסמו</h4>`:'')+
-      (live.length?`<div class="cb-rlist">${live.map(researchRow).join('')}</div>`:'<div class="cb-empty">כרגע אין הצעות פתוחות. רעיונות שנפתח להם מרחב עבודה נמצאים ב"מרחבי עבודה פעילים".</div>')+
+      (live.length?`<div class="cb-rlist">${live.map(researchRow).join('')}</div>`:'<div class="cb-empty">כרגע אין הצעות פתוחות. רעיונות שנפתח להם מרחב עבודה נמצאים ב"צוותים פעילים".</div>')+
       (admin&&moved.length?`<details class="cb-admin" style="margin-top:14px"><summary><strong>ניהול:</strong> רעיונות שעברו למרחבי עבודה או נסגרו (${moved.length})</summary><div class="cb-rlist" style="margin-top:8px">${moved.map(researchRow).join('')}</div></details>`:'');
   }
 
@@ -7759,7 +7760,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     root.addEventListener('click',e=>{const t=e.target.closest('[data-cb]');if(!t)return;if(t.dataset.cb!=='share')root.close();onClick(e)});
   }
   function renderRequests(){
-    // יוזמה שנפתח לה מרחב עבודה עוברת ל"מרחבי עבודה פעילים", ויוזמה שנסגרה יורדת מהרשימה.
+    // יוזמה שנפתח לה מרחב עבודה עוברת ל"צוותים פעילים", ויוזמה שנסגרה יורדת מהרשימה.
     const live=S.requests.filter(r=>!r.hasTeam&&r.status!=='closed');
     const rows=live.filter(r=>!S.kind||r.kinds.includes(S.kind));
     const used=new Set(live.flatMap(r=>r.kinds));
@@ -8018,7 +8019,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     const r=S.research.find(x=>x.id===rid);if(!r)return;
     const root=modal('');const opened=Date.now();
     root.innerHTML=`<h2>🤝 פתיחת מרחב עבודה: ${h(r.title)}</h2>
-      <p class="nv-status">נפתח מרחב עבודה (הוא יופיע ב"מרחבי עבודה פעילים"), עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
+      <p class="nv-status">נפתח מרחב עבודה (הוא יופיע ב"צוותים פעילים"), עם סביבת עבודה משותפת: סעיפים לכתיבת הצעת המחקר, משימות, הודעות, והמאמרים מהכרטיס. מי שפותח/ת מוביל/ה את הקבוצה, ו${r.initiators.length?`${r.initiators.length===1?'היוזם/ת שברשימה מקבל/ת':`${r.initiators.length} היוזמים שברשימה מקבלים`}`:'כל מי שיצטרף בהמשך יקבל'} קישור במייל. לפתיחה יש להזין את קוד הקהילה.</p>
       <form class="nv-form" novalidate>${whoFields()}
         <label class="wide">קוד הקהילה<input name="communityCode" type="password" inputmode="numeric" autocomplete="off" required></label>
         <input name="website" class="cb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -8034,7 +8035,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
         const who=f.elements.who.value;
         const j=await post({action:'research-team',id:r.id,personId:who&&who!=='other'?who:'',name:v('name'),email:v('email'),communityCode:v('communityCode'),website:f.elements.website.value,elapsed:Date.now()-opened});
         root.innerHTML=`<h2>✓ מרחב העבודה נפתח</h2>
-          <p>מרחב העבודה מופיע עכשיו ב<a href="#teams">"מרחבי עבודה פעילים"</a>${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
+          <p>מרחב העבודה מופיע עכשיו ב<a href="#teams">"צוותים פעילים"</a>${j.mailed?`, ונשלח מייל עם הקישור ל-${j.mailed} חברי הצוות`:''}.</p>
           <p><strong>הקישור למרחב העבודה</strong> (כדאי לשמור אותו${j.mailed?'':' ולשלוח אותו לחברי הצוות'}: רק איתו נכנסים):</p>
           <div class="cb-copy"><input readonly value="${h(j.link)}"><button type="button" class="nv-btn" data-copy>העתקה</button></div>
           <div class="nv-row"><a class="nv-btn primary" href="${h(j.link)}">כניסה למרחב העבודה</a></div>`;
@@ -8127,7 +8128,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
         ${c.joiners.length?c.joiners.map(j=>`<div class="cb-joiner"><div><strong>${h(j.name)}</strong> · <a href="mailto:${h(j.email)}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}" dir="ltr">${h(j.email)}</a> <span class="cb-meta">· ${fmt(j.at)}</span>${j.note?`<div class="cb-meta" dir="auto">${h(j.note)}</div>`:''}</div><button type="button" class="cb-btn small danger" data-rm="${h(j.id)}">הסרה</button></div>`).join(''):'<p class="cb-meta">עדיין אין מצטרפות. אפשר להעתיק את הקישור ליוזמה ולשלוח אותו למי שמתאימה.</p>'}
         ${c.joiners.length?`<div class="nv-row" style="margin:8px 0"><a class="nv-btn" href="mailto:${h(c.joiners.map(j=>j.email).join(','))}?subject=${encodeURIComponent('שיתוף פעולה: '+c.title)}">✉️ מייל לכל המצטרפות</a></div>`:''}
         <div style="margin:14px 0;padding:12px 14px;border-radius:10px;background:#f4f9f6">
-          ${c.teamId?'<strong>🤝 נפתח מרחב עבודה.</strong> <span class="nv-status">הוא מופיע ב<a href="#teams">"מרחבי עבודה פעילים"</a>.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע ברשימת קבוצות המשימה, למטה בעמוד.</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
+          ${c.teamId?'<strong>🤝 נפתח מרחב עבודה.</strong> <span class="nv-status">הוא מופיע ב<a href="#teams">"צוותים פעילים"</a>.</span>':`<strong>🤝 מוכנות להתחיל לעבוד יחד?</strong><p class="nv-status" style="margin:4px 0 8px">אפשר לפתוח קבוצת משימה עם סביבת עבודה משותפת: סעיפים לכתיבה, משימות, הודעות וקישורים. כל המצטרפות נכנסות אליה, והקבוצה תופיע ברשימת קבוצות המשימה, למטה בעמוד.</p><button type="button" class="nv-btn primary" data-team>פתיחת קבוצת משימה</button>`}
           <div data-teamst class="nv-status"></div></div>
         <h3 style="font-size:16px;margin:12px 0 6px">✏️ עדכון היוזמה</h3>
         <form class="nv-form" novalidate>
@@ -8252,7 +8253,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     const v=view();
     portal.hidden=!!v;back.hidden=!v;
     work.hidden=v!=='work';prop.hidden=v!=='prop';
-    back.querySelector('strong').textContent=v==='work'?'🛠 מרחבי עבודה פעילים':v==='prop'?'💡 הצעות לשיתופי פעולה':'';
+    back.querySelector('strong').textContent=v==='work'?'🛠 צוותים פעילים':v==='prop'?'💡 הצעות לשיתופי פעולה':'';
   }
   function go(v){if(v){location.hash=v==='work'?'#workspaces':'#proposals'}else{history.pushState(null,'',location.pathname);apply()}document.getElementById('match')?.scrollIntoView({behavior:'smooth'})}
   async function counts(){
@@ -8260,7 +8261,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
       const [t,c]=await Promise.all([fetch('/api/teams').then(r=>r.json()),fetch('/api/collab').then(r=>r.json())]);
       const teams=Array.isArray(t)?t.length:0;
       const ideas=(c.research||[]).filter(x=>x.status==='open').length,reqs=(c.requests||[]).filter(x=>x.status==='open').length;
-      portal.querySelector('[data-n="work"]').textContent=teams===1?'מרחב עבודה פעיל אחד ›':teams?`${teams} מרחבי עבודה פעילים ›`:'למרחבי העבודה הפעילים ›';
+      portal.querySelector('[data-n="work"]').textContent=teams===1?'צוות פעיל אחד ›':teams?`${teams} צוותים פעילים ›`:'לצוותים הפעילים ›';
       portal.querySelector('[data-n="prop"]').textContent=`${ideas===1?'הצעה אחת':ideas+' הצעות'} של המערכת · ${reqs===1?'יוזמה אחת':reqs+' יוזמות'} של חברי הקהילה ›`;
     }catch(e){}
   }
@@ -8270,7 +8271,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     ready=true;
     portal=document.createElement('div');portal.className='mp';portal.id='matchPortal';
     portal.innerHTML=`<p class="mp-intro">מה תרצו לעשות?</p><div class="mp-grid">
-      <button type="button" class="mp-card" data-go="work"><span class="mp-ic">🛠</span><b>מרחבי עבודה פעילים</b><span>צוותים שכבר עובדים יחד: כתיבת הצעות, משימות ודיון. ההצטרפות לצוות וניהול הקבוצה נעשים מתוך המרחב.</span><small data-n="work">למרחבי העבודה ›</small></button>
+      <button type="button" class="mp-card" data-go="work"><span class="mp-ic">🛠</span><b>צוותים פעילים</b><span>צוותים שכבר עובדים יחד: כתיבת הצעות, משימות ודיון. ההצטרפות לצוות וניהול הקבוצה נעשים מתוך המרחב.</span><small data-n="work">למרחבי העבודה ›</small></button>
       <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם.</span><small data-n="prop">להצעות ›</small></button>
     </div>`;
     back=document.createElement('div');back.className='mp-back';back.hidden=true;
