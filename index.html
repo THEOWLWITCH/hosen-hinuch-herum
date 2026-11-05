@@ -4458,11 +4458,13 @@ document.addEventListener('DOMContentLoaded',()=>{
  rolesRender();if(location.hash==='#roles')setTimeout(()=>document.getElementById('roles')?.scrollIntoView({behavior:'smooth'}),300)});
 </script>
 <style id="admin-menu-v1">
+#adminModal .admin-card{padding:22px 28px 28px!important;box-sizing:border-box}#adminModal .admin-card>.close{top:14px;left:16px}
 #adminMenu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 14px}
 #adminMenu .am-group{border:1px solid #d6e4e8;border-radius:10px;padding:10px 12px;background:#fbfdfd}
 #adminMenu h4{margin:0 0 8px;font-size:14.5px;color:#1f4b60}
 #adminMenu .am-btns{display:flex;flex-wrap:wrap;gap:6px}
 #adminMenu button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid #9ec3cf;background:#fff;color:#21516a;cursor:pointer}
+#adminMenu [data-am="tabTeams"]{background:#fff4dc;border-color:#e7c06a;color:#7a5200;font-weight:700}
 #adminMenu button:hover{background:#eef6f8}#adminMenu button.active{background:#2d617a;color:#fff;border-color:#2d617a}
 html.admin-menu-on #adminTabs,html.admin-menu-on .admin-head-actions .admin-community-mail{display:none!important}
 @media(max-width:700px){#adminMenu{grid-template-columns:1fr}}
