@@ -4441,6 +4441,7 @@ function rolesOpen(id){const r=COMMUNITY_ROLES.find(x=>x.id===id)||COMMUNITY_ROL
 document.addEventListener('DOMContentLoaded',()=>{rolesRender();if(location.hash==='#roles')setTimeout(()=>document.getElementById('roles')?.scrollIntoView({behavior:'smooth'}),300)});
 </script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
+<style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
 <style id="team-live-v1">.ch-live{display:inline-block;width:10px;height:10px;border-radius:50%;background:#c9d3d7;vertical-align:middle;margin-inline-end:4px}.ch-live.on{background:#2fae5b;box-shadow:0 0 0 3px rgba(47,174,91,.18),0 0 8px rgba(47,174,91,.7)}.ch-live-wrap{display:inline-flex;align-items:center;white-space:nowrap}.ch-live-txt{font-size:11.5px;color:#5f7686;margin-inline-end:8px;white-space:nowrap}</style>
 <style id="calls-hub-v66">
 html[data-resource-page="1"] #libraryAcademicHub,
@@ -4673,12 +4674,13 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const details=[c.funder?'גוף מממן: '+c.funder:'',c.url?'לפרטים ולהגשה: '+c.url:'',location.origin+'/calls#call-'+c.id].filter(Boolean).join('\n');
     return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('מועד אחרון: '+c.title)+'&dates='+d+'/'+next+'&details='+encodeURIComponent(details);
   }
-  // נורית פעילות (5.11.2026): דולקת שבוע מאז שמישהו פתח את המרחב או עבד בו.
+  // נורית פעילות (5.11.2026): דולקת שבוע מאז שמישהו פתח את המרחב או עבד בו. בלי סימון למרחב שקט.
   function liveLight(t){
     const at=Date.parse(t.activeAt||'');if(!at)return '';
     const days=Math.floor((Date.now()-at)/86400000);
     if(days<7)return `<span class="ch-live-wrap" title="פעיל השבוע${days?` (לפני ${days} ימים)`:' (היום)'}"><span class="ch-live on"></span><span class="ch-live-txt">פעיל השבוע</span></span>`;
-    return `<span class="ch-live-wrap" title="הפעילות האחרונה: ${new Date(at).toLocaleDateString('he-IL')}"><span class="ch-live"></span><span class="ch-live-txt">שקט ${days>=30?'יותר מחודש':`${days} ימים`}</span></span>`;
+    // 5.11.2026: אין סימון למרחב שלא היה פעיל — רק נורית ירוקה למרחב פעיל. מועד הפעילות האחרונה מוצג רק למנהלת המערכת.
+    return '';
   }
   // בעמוד שיתופי פעולה: קבוצה מקופלת לשורה, והפרטים בחלון צף.
   function teamLine(t){
@@ -4884,7 +4886,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const m=modal(`<h2>הקמת קבוצת משימה להגשה</h2>
       <p class="ch-credit">הקבוצה תופיע באתר עם השם שלך ועם מה שאתן מחפשות. נוסח ההצעה יהיה גלוי רק לחברות הקבוצה.</p>
       <form class="ch-form">
-        <label class="wide">סביב איזה קול קורא?<select name="callId"><option value="">קול קורא פנימי / קול קורא שלא מופיע ברשימה</option>${options}</select></label>
+        <label class="wide">סביב איזה קול קורא?<select name="callId"><option value="">בלי קול קורא / קול קורא שלא מופיע ברשימה</option>${options}</select></label>
         <label class="wide">שם הקבוצה או ההצעה${call?'':'*'}<input name="title" dir="auto" placeholder="${call?'הגשה משותפת: '+h(call.title.replace(/^\s*(קול קורא|call for [a-z]+)\s*[:\-–—]\s*/i,'')):'למשל: רציפות למידה בפינוי — הצעה ל־ISF'}"></label>
         <label class="wide">הרעיון בקצרה<textarea name="summary" rows="3" dir="auto" placeholder="מה רוצות לחקור, ולמה זה חשוב עכשיו"></textarea></label>
         <label class="wide">את מי מחפשות?<input name="need" dir="auto" placeholder="למשל: חוקרת עם ניסיון בשיטות כמותיות, שותפה מרשות מקומית"></label>
@@ -5038,25 +5040,53 @@ html[data-page="calls"] #resourceArea{display:none!important}
       return j;
     }
     function words(t){return (String(t||'').trim().match(/\S+/g)||[]).length}
+    // קבצים וקישורים במרחב (5.11.2026). קובץ עולה ל-/api/team-files ונפתח רק עם הקישור של הצוות.
+    const kb=n=>n?(n>1048576?(n/1048576).toFixed(1)+'MB':Math.max(1,Math.round(n/1024))+'KB'):'';
+    async function uploadFiles(input){
+      const out=[];for(const f of [...(input?.files||[])].slice(0,5)){
+        const fd=new FormData();fd.append('file',f);
+        const r=await fetch('/api/team-files?id='+encodeURIComponent(teamId),{method:'POST',headers:hdr(),body:fd});
+        const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||('העלאת הקובץ '+f.name+' לא הצליחה.'));
+        out.push({kind:'file',key:j.key,label:j.name||f.name,size:j.size})}
+      return out;
+    }
+    async function openFile(key,name){
+      try{const r=await fetch('/api/team-files?id='+encodeURIComponent(teamId)+'&key='+encodeURIComponent(key),{headers:hdr()});if(!r.ok)throw 0;
+        const url=URL.createObjectURL(await r.blob());const a=document.createElement('a');a.href=url;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+      catch(e){msg('לא הצלחתי לפתוח את הקובץ. אפשר לרענן ולנסות שוב.','err')}
+    }
+    function attList(rows,canRemove){
+      if(!rows?.length)return '';
+      return `<ul class="ch-att">${rows.map(a=>`<li>${a.kind==='file'?`<button type="button" class="ch-att-file" data-w="file-open" data-key="${h(a.key)}" data-name="${h(a.label)}">📄 ${h(a.label)}</button>${a.size?` <small>${kb(a.size)}</small>`:''}`:`<a href="${h(a.url)}" target="_blank" rel="noopener" dir="auto">🔗 ${h(a.label)}</a>`}${a.by?` <small>· ${h(a.by)}</small>`:''}${canRemove&&canRemove(a)?` <button type="button" class="ch-btn small danger" data-w="${canRemove.w}" data-id="${h(a.id)}" data-sec="${h(canRemove.sec||'')}">הסרה</button>`:''}</li>`).join('')}</ul>`;
+    }
+    // שורת צירוף: קובץ (עד 4MB) או קישור.
+    const attachRow=(form,extra='')=>`<div class="ch-attach-row" data-attach="${form}"><label class="ch-btn small">📎 קובץ<input type="file" name="files" multiple hidden></label><input name="linkUrl" type="url" dir="ltr" placeholder="או קישור: https://"><input name="linkLabel" dir="auto" placeholder="שם הקישור (רשות)"><span class="ch-att-picked"></span>${extra}</div>`;
+    async function collectAttach(scope){
+      const files=await uploadFiles(scope.querySelector('input[name=files]'));
+      const url=scope.querySelector('input[name=linkUrl]')?.value.trim(),label=scope.querySelector('input[name=linkLabel]')?.value.trim();
+      return url?[...files,{kind:'link',url,label}]:files;
+    }
     function head(){
       const t=ws.team,c=call();
       const deadline=t.deadline||c?.endDate||'';
       const left=deadline?Math.round((Date.parse(deadline)-Date.parse(new Date().toISOString().slice(0,10)))/86400000):null;
-      return `<div class="ch-ws-head"><div><h2 dir="auto">${h(t.title)}</h2>
-        <ul class="ch-meta">${c?`<li><strong>קול קורא:</strong> ${c.url?`<a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.title)}</a>`:h(c.title)}</li>`:'<li><strong>קול קורא פנימי</strong></li>'}
+      return `<div class="ch-ws-head"><div>${ws.editTitle?`<form class="ch-inline" data-form="title" style="grid-template-columns:1fr auto auto"><input name="title" value="${h(t.title)}" required dir="auto" aria-label="שם הקבוצה או כותרת המחקר"><button class="ch-btn small primary">שמירה</button><button type="button" class="ch-btn small" data-w="title-cancel">ביטול</button></form>`:`<h2 dir="auto">${h(t.title)}${lead()?` <button type="button" class="ch-btn small" data-w="title-edit" title="שינוי הכותרת">✏️ שינוי הכותרת</button>`:''}</h2>`}
+        <ul class="ch-meta">${c?`<li><strong>קול קורא:</strong> ${c.url?`<a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.title)}</a>`:h(c.title)}</li>`:''}
         ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
         <div class="ch-actions">${t.me?`<span class="ch-tag">${h(t.me)}${lead()?' · מוביל/ה':''}</span>`:`<label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>`}
         ${lead()?`<select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>`:`<span class="ch-badge gray">${h(t.statusLabel)}</span>`}
         ${t.locked?'<span class="ch-badge gray" title="אין הצטרפות חדשה. הדיון והחומרים נפתחים רק עם קוד הצוות.">🔒 מרחב סגור לצוות</span>':''}
         ${t.members.some(x=>x.name===me())||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}${t.locked?'':'<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>'}${lead()?`<button type="button" class="ch-btn small" data-w="go-lock">${t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות'}</button>`:''}${t.members.some(x=>x.name===me())?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="compass" title="חיפוש מקורות במאגר הקהילה ובמאגרים בעולם, עם דו״ח מסכם">🧭 מצפן המחקר</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
-        <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['about','ℹ על הקבוצה']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
+        <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
       const draft=ws.drafts[s.id]??s.text;const conflict=ws.conflicts[s.id];
       return `<div class="ch-sec" data-sec="${h(s.id)}"><div class="ch-sec-head"><h4>${h(s.title)}</h4>${lead()&&!s.text.trim()&&!draft.trim()?`<button type="button" class="ch-btn small danger" data-w="sec-remove" data-id="${h(s.id)}">הסרה</button>`:''}</div>
         ${s.hint?`<p class="hint">${h(s.hint)}</p>`:''}
         <textarea dir="auto" data-sec-text="${h(s.id)}">${h(draft)}</textarea>
-        ${conflict?`<div class="ch-conflict"><strong>${h(conflict.updatedBy||'חברה אחרת')} עדכנה את הסעיף בזמן שכתבת.</strong> הנוסח שלך נשאר בתיבה. זה הנוסח שלה — שלבי ביניהם ושמרי שוב:<pre dir="auto">${h(conflict.text)}</pre></div>`:''}
+        ${conflict?`<div class="ch-conflict"><strong>${h(conflict.updatedBy||'חבר/ה אחר/ת בצוות')} עדכן/ה את הסעיף בזמן שכתבת.</strong> הנוסח שלך נשאר בתיבה. זה הנוסח האחר — אפשר לשלב ביניהם ולשמור שוב:<pre dir="auto">${h(conflict.text)}</pre></div>`:''}
+        ${attList(s.attachments,Object.assign(a=>lead()||a.by===me(),{w:'sec-detach',sec:s.id}))}
+        <form class="ch-sec-attach" data-form="sec-attach" data-id="${h(s.id)}">${attachRow('sec','<button class="ch-btn small">צירוף לסעיף</button>')}</form>
         <div class="ch-sec-foot"><span>${words(draft)} מילים${s.updatedAt?` · עודכן ע״י ${h(s.updatedBy||'')} ב־${new Date(s.updatedAt).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}`:''}</span>
         <span><span data-saved="${h(s.id)}"></span> <button type="button" class="ch-btn small primary" data-w="sec-save" data-id="${h(s.id)}">שמירה</button></span></div></div>`;
     }
@@ -5077,8 +5107,15 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const isMember=t.members.some(x=>x.name===me());
         const when=d=>new Date(d).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'});
         return `<div class="ch-ov">
-          ${t.summary?`<p dir="auto" style="white-space:pre-line;font-size:16px">${h(t.summary)}</p>`:''}
+          ${ws.editMeta&&lead()?`<form class="ch-form" data-form="meta">
+            <label class="wide">הרעיון בקצרה<span class="hint">מוצג באתר לכל הקהילה</span><textarea name="summary" rows="3" dir="auto">${h(t.summary)}</textarea></label>
+            <label class="wide">את מי מחפשים/ות<span class="hint">מוצג באתר לכל הקהילה. אחרי שהצוות התגבש אפשר להשאיר ריק, והשורה תיעלם.</span><input name="need" value="${h(t.need)}" dir="auto"></label>
+            <label>גוף מממן<input name="funder" value="${h(t.funder||'')}" dir="auto"></label>
+            <label>מועד הגשה<input name="deadline" type="date" value="${h(t.deadline||'')}"></label>
+            <div class="wide"><button class="ch-btn primary">שמירה</button> <button type="button" class="ch-btn" data-w="meta-cancel">ביטול</button></div></form>`
+          :`${t.summary?`<p dir="auto" style="white-space:pre-line;font-size:16px">${h(t.summary)}</p>`:''}
           ${t.need?`<p dir="auto"><strong>מחפשים/ות:</strong> ${h(t.need)}</p>`:''}
+          ${lead()?`<p><button type="button" class="ch-btn small" data-w="meta-edit">✏️ עריכת התקציר, "מחפשים/ות", גוף מממן ומועד</button></p>`:''}`}
           <p class="ch-credit"><strong>מוביל/ה:</strong> ${h(t.lead.name)} · <strong>בצוות:</strong> ${t.members.map(x=>h(x.name)+(x.role&&x.name!==t.lead.name?` (${h(x.role)})`:'')).join(', ')}</p>
           <div class="ch-ov-grid">
             <button type="button" class="ch-ov-box" data-tab="write"><b>${written.length} / ${t.sections.length}</b><span>סעיפים כתובים</span><small>${written.length?written.slice(0,4).map(x=>h(x.title)).join(' · '):'עוד לא התחילו לכתוב'}</small></button>
@@ -5096,27 +5133,20 @@ html[data-page="calls"] #resourceArea{display:none!important}
         return `<div class="ch-rows">${t.tasks.length?t.tasks.map(k=>`<div class="ch-row${k.done?' done':''}"><input type="checkbox" data-w="task-toggle" data-id="${h(k.id)}"${k.done?' checked':''} aria-label="בוצע"><span class="grow" dir="auto">${h(k.text)}</span>${k.owner?`<span class="ch-tag">${h(k.owner)}</span>`:''}${k.due?`<span class="ch-tag">עד ${fmt(k.due)}</span>`:''}${lead()?`<button type="button" class="ch-btn small danger" data-w="task-remove" data-id="${h(k.id)}">מחיקה</button>`:''}</div>`).join(''):'<p class="ch-empty">עדיין אין משימות. התחילו מחלוקת הסעיפים בין חברות הקבוצה.</p>'}</div>
           <form class="ch-inline" data-form="task-add"><input name="text" required placeholder="משימה" dir="auto"><select name="owner"><option value="">אחראית</option>${names.map(n=>`<option>${h(n)}</option>`).join('')}</select><input name="due" type="date" aria-label="עד מתי"><button class="ch-btn small">הוספה</button></form>`;
       }
-      if(ws.tab==='talk')return `<div class="ch-rows">${t.messages.length?t.messages.map(x=>`<div class="ch-msg"><b>${h(x.name)}</b> <small>${new Date(x.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</small><p dir="auto">${h(x.text)}</p></div>`).join(''):'<p class="ch-empty">כאן מתייעצות, מחליטות ומעדכנות.</p>'}</div>
-        <form class="ch-inline" data-form="message" style="grid-template-columns:1fr auto"><textarea name="text" rows="2" required dir="auto" placeholder="הודעה לקבוצה"></textarea><button class="ch-btn small">שליחה</button></form>`;
+      if(ws.tab==='talk')return `<div class="ch-rows">${t.messages.length?t.messages.map(x=>`<div class="ch-msg"><b>${h(x.name)}</b> <small>${new Date(x.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</small>${x.text?`<p dir="auto">${h(x.text)}</p>`:''}${attList(x.attachments)}</div>`).join(''):'<p class="ch-empty">כאן מתייעצות, מחליטות ומעדכנות.</p>'}</div>
+        <form class="ch-inline" data-form="message" data-full style="grid-template-columns:1fr auto"><textarea name="text" rows="2" dir="auto" placeholder="הודעה לקבוצה"></textarea><button class="ch-btn small">שליחה</button><div style="grid-column:1/-1">${attachRow('msg')}</div></form>`;
       if(ws.tab==='team'){
         const invite=(c?.matches||[]).filter(x=>!t.members.some(mm=>mm.name===x.name));
         return `<h4 style="margin:0 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong>${lead()||x.name===me()?`<input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקר/ת ראשי/ת, שיטות)" dir="auto">`:`<span class="grow" dir="auto">${h(x.role||'')}</span>`}${x.name===t.lead.name?'<span class="ch-tag">מוביל/ה</span>':lead()?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:''}</div>`).join('')}</div>
           <h4 style="margin:16px 0 6px">בקשות הצטרפות</h4>${t.requests.length?`<div class="ch-rows">${t.requests.map(r=>`<div class="ch-row"><span class="grow"><strong>${h(r.name)}</strong>${r.note?` — ${h(r.note)}`:''}</span>${lead()?`<button type="button" class="ch-btn small primary" data-w="req-approve" data-id="${h(r.id)}">אישור</button><button type="button" class="ch-btn small" data-w="req-decline" data-id="${h(r.id)}">לא הפעם</button>`:'<span class="ch-tag">ממתין/ה לאישור המוביל/ה</span>'}</div>`).join('')}</div>`:'<p class="ch-credit">אין בקשות חדשות.</p>'}
-          ${invite.length?`<h4 style="margin:16px 0 6px">חוקרות מהקהילה שהקול הקורא מתאים להן</h4><p class="ch-credit">${invite.map(x=>h(x.name)).join(' · ')} — אפשר להזמין אותן להצטרף לצוות.</p>`:''}`;
+          ${invite.length?`<h4 style="margin:16px 0 6px">חוקרות מהקהילה שהקול הקורא מתאים להן</h4><p class="ch-credit">${invite.map(x=>h(x.name)).join(' · ')} — אפשר להזמין אותן להצטרף לצוות.</p>`:''}${endZone()}`;
       }
-      if(ws.tab==='links')return `<div class="ch-rows">${t.links.length?t.links.map(l=>`<div class="ch-row"><a class="grow" href="${h(l.url)}" target="_blank" rel="noopener" dir="auto">${h(l.label)}</a>${lead()?`<button type="button" class="ch-btn small danger" data-w="link-remove" data-id="${h(l.id)}">הסרה</button>`:''}</div>`).join(''):'<p class="ch-empty">קישורים למסמך משותף, לנוסח הקול הקורא, לטפסים ולתקציב.</p>'}</div>
-        <form class="ch-inline" data-form="link-add" style="grid-template-columns:1fr 1.4fr auto"><input name="label" placeholder="שם (למשל: טיוטה ב־Google Docs)" dir="auto"><input name="url" required type="url" dir="ltr" placeholder="https://"><button class="ch-btn small">הוספה</button></form>`;
-      if(!lead())return `<p dir="auto" style="white-space:pre-line">${h(t.summary||'')}</p>${t.need?`<p dir="auto"><strong>מחפשים/ות:</strong> ${h(t.need)}</p>`:''}<p class="ch-credit">את פרטי הקבוצה מעדכן/ת המוביל/ה (${h(t.lead.name)}).</p>${endZone()}`;
-      return `<form class="ch-form" data-form="meta">
-        <label class="wide">שם הקבוצה<input name="title" value="${h(t.title)}" dir="auto"></label>
-        <label class="wide">הרעיון בקצרה<span class="hint">מוצג באתר לכל הקהילה</span><textarea name="summary" rows="3" dir="auto">${h(t.summary)}</textarea></label>
-        <label class="wide">את מי מחפשות<span class="hint">מוצג באתר לכל הקהילה</span><input name="need" value="${h(t.need)}" dir="auto"></label>
-        <label>גוף מממן<input name="funder" value="${h(t.funder||'')}" dir="auto"></label>
-        <label>מועד הגשה<input name="deadline" type="date" value="${h(t.deadline||'')}"></label>
-        <div class="wide"><button class="ch-btn primary">שמירה</button></div></form>
-        ${endZone()}`;
+      if(ws.tab==='links')return `<div class="ch-rows">${t.links.length?t.links.map(l=>`<div class="ch-row">${l.key?`<button type="button" class="ch-att-file grow" data-w="file-open" data-key="${h(l.key)}" data-name="${h(l.label)}">📄 ${h(l.label)}${l.size?` <small>${kb(l.size)}</small>`:''}</button>`:`<a class="grow" href="${h(l.url)}" target="_blank" rel="noopener" dir="auto">🔗 ${h(l.label)}</a>`}${lead()?`<button type="button" class="ch-btn small danger" data-w="link-remove" data-id="${h(l.id)}">הסרה</button>`:''}</div>`).join(''):'<p class="ch-empty">קישורים למסמך משותף, לנוסח הקול הקורא, לטפסים ולתקציב.</p>'}</div>
+        <form class="ch-inline" data-form="link-add" style="grid-template-columns:1fr 1.4fr auto"><input name="label" placeholder="שם (למשל: טיוטה ב־Google Docs)" dir="auto"><input name="url" required type="url" dir="ltr" placeholder="https://"><button class="ch-btn small">הוספה</button></form>
+        <form class="ch-inline" data-form="file-add" style="grid-template-columns:1fr auto;margin-top:8px"><label class="ch-btn small" style="justify-self:start">📎 העלאת קובץ (עד 4MB)<input type="file" name="files" multiple hidden></label><span class="ch-att-picked"></span><button class="ch-btn small">העלאה</button></form>`;
+      return '';
     }
-    // יציאה מהמרחב ומחיקת המרחב, בתחתית "על הקבוצה".
+    // סגירת המרחב, יציאה ומחיקה: בתחתית לשונית "הצוות" (5.11.2026: הלשונית "על הקבוצה" הוסרה).
     function endZone(){
       const t=ws.team,name=me();
       const others=t.members.filter(x=>x.name!==t.lead.name);
@@ -5179,6 +5209,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     m.addEventListener('input',e=>{const id=e.target.dataset?.secText;if(id)ws.drafts[id]=e.target.value;if(e.target.id==='chWsMe')store.set('hosen.team.myname',e.target.value.trim())});
     m.addEventListener('change',async e=>{
       if(e.target.id==='chWsStatus')run(()=>act('meta',{status:e.target.value}));
+      if(e.target.type==='file'){const box=e.target.closest('form')?.querySelector('.ch-att-picked');if(box)box.textContent=[...e.target.files].map(f=>f.name).join(', ')}
       const role=e.target.dataset?.role;if(role!==undefined)run(()=>act('member-update',{member:role,role:e.target.value}));
     });
     m.addEventListener('click',async e=>{
@@ -5212,9 +5243,15 @@ html[data-page="calls"] #resourceArea{display:none!important}
         if(typeof openCompassFromLibrary==='function')openCompassFromLibrary();
         const q=document.getElementById('compassQuestion');if(q&&!q.value.trim())q.value=ws.team.title;
         return}
-      if(w==='go-lock'){ws.tab='about';render();m.querySelector('#chWsLock')?.scrollIntoView({behavior:'smooth',block:'center'});return}
+      if(w==='title-edit'){ws.editTitle=true;render(true);m.querySelector('[data-form="title"] input')?.focus();return}
+      if(w==='title-cancel'){ws.editTitle=false;render(true);return}
+      if(w==='meta-edit'){ws.editMeta=true;render(true);return}
+      if(w==='meta-cancel'){ws.editMeta=false;render(true);return}
+      if(w==='file-open')return openFile(b.dataset.key,b.dataset.name);
+      if(w==='sec-detach'){if(confirm('להסיר את המצורף מהסעיף?'))run(()=>act('section-detach',{sectionId:b.dataset.sec,attachmentId:id}));return}
+      if(w==='go-lock'){ws.tab='team';render();m.querySelector('#chWsLock')?.scrollIntoView({behavior:'smooth',block:'center'});return}
       if(w==='unlock'){if(confirm('לפתוח את המרחב מחדש? אחרי הפתיחה אפשר יהיה להצטרף לצוות, ולהיכנס בלי קוד הצוות.'))run(async()=>{await act('unlock');msg('✓ המרחב נפתח מחדש להצטרפות.','ok');refreshTeams()});return}
-      if(w==='go-leave'){ws.tab='about';render();m.querySelector('#chWsLeave')?.scrollIntoView({behavior:'smooth',block:'center'});return}
+      if(w==='go-leave'){ws.tab='team';render();m.querySelector('#chWsLeave')?.scrollIntoView({behavior:'smooth',block:'center'});return}
       if(w==='link'){
         const im=modal(`<h2>הזמנת שותפים/ות לקבוצה</h2><p>מי שמוזמן/ת מצטרף/ת עם השם, המייל וקוד הקהילה, כחבר/ה בצוות. הניהול והמחיקה נשארים אצל המוביל/ה.</p>
           <form class="ch-form" data-invite><label class="wide">שליחת הזמנה במייל<span class="hint">כתובת אחת או כמה, מופרדות בפסיק (עד 10)</span><input name="emails" dir="ltr" required placeholder="name@example.com"></label>
@@ -5246,6 +5283,17 @@ html[data-page="calls"] #resourceArea{display:none!important}
         }catch(err){msg(err.message,'err')}
         return;
       }
+      if(kind==='title'){const title=String(d.title||'').trim();if(!title)return msg('הכותרת לא יכולה להיות ריקה.','err');
+        try{await act('meta',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
+      // צירוף קבצים וקישורים: לסעיף, להודעה בדיון, וללשונית הקישורים.
+      if(kind==='sec-attach'||kind==='file-add'||(kind==='message'&&f.hasAttribute('data-full'))){
+        const btn=f.querySelector('button:not([type=button])');if(btn)btn.disabled=true;msg('מעלה…');
+        try{
+          if(kind==='sec-attach'){const att=await collectAttach(f);if(!att.length)return msg('יש לבחור קובץ או להזין קישור.','err');await act('section-attach',{sectionId:f.dataset.id,attachments:att});render(true);msg('✓ צורף לסעיף ונשמר.','ok')}
+          else if(kind==='file-add'){const files=await uploadFiles(f.querySelector('input[name=files]'));if(!files.length)return msg('יש לבחור קובץ.','err');for(const x of files)await act('link-add',{key:x.key,label:x.label,size:x.size});render(true);msg('✓ הקובץ נשמר במרחב.','ok')}
+          else{const att=await collectAttach(f);const text=String(d.text||'').trim();if(!text&&!att.length)return msg('אפשר לכתוב הודעה, לצרף קובץ או קישור.','err');await act('message',{text,attachments:att});render(true)}
+        }catch(err){msg(err.message,'err')}finally{if(btn)btn.disabled=false}
+        return}
       if(kind==='lock'){
         const code=String(d.teamCode||'').trim();
         if(code.length<4)return msg('קוד הצוות צריך להיות באורך 4 תווים לפחות.','err');
@@ -5261,7 +5309,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       }
       const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['meta',d]};
       // ההודעה "נשמר" מוצגת אחרי שהמסך מצויר מחדש, אחרת הציור מוחק אותה ונראה כאילו לא נשמר.
-      if(kind==='meta'){(async()=>{try{await act(...map[kind]);render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
+      if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
       run(async()=>{await act(...map[kind])});
     });
     render();
@@ -5350,7 +5398,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         html+=`<details class="ch-admin-item"><summary><strong>＋ הוספת קול קורא ידנית</strong></summary>${editor({},false).replace('data-kind="call"','data-kind="new"').replace('>שמירה<','>פרסום<')}</details>`;
         html+=d.calls.length?d.calls.map(c=>`<details class="ch-admin-item"${c.open?'':' style="opacity:.75"'}><summary><strong dir="auto">${h(c.title)}</strong> <span class="ch-credit">${c.endDate?'עד '+fmt(c.endDate):'בלי מועד'} · ${h(d.categories[c.category]||c.category)}${c.open?'':' · נסגר'} · ${c.matches.length} מתאימות</span></summary>${editor(c,false)}${c.open?notifyBox(c):''}</details>`).join(''):'<p class="ch-empty">עדיין אין קולות קוראים מפורסמים.</p>';
       }
-      if(t==='teams')html+=(A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מובילה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} חברות · ${x.callTitle?'קול קורא: '+h(x.callTitle):'קול קורא פנימי'}</p>
+      if(t==='teams')html+=(A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מוביל/ה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} בצוות${x.callTitle?' · קול קורא: '+h(x.callTitle):''}${x.activeAt?` · פעילות אחרונה: ${new Date(x.activeAt).toLocaleDateString('he-IL')}`:''}</p>
         <p class="ch-credit" style="margin:4px 0">${(x.members||[]).map(n=>`<button type="button" class="ch-btn small" data-act="member-out" data-id="${h(x.id)}" data-name="${h(n)}" title="הוצאה מהקבוצה">${h(n)} ✕</button>`).join(' ')}</p>
         <div class="ch-actions"><button type="button" class="ch-btn small" data-act="rekey" data-id="${h(x.id)}">קישור חדש לסביבת העבודה</button><button type="button" class="ch-btn small danger" data-act="team-delete" data-id="${h(x.id)}">מחיקת הקבוצה</button></div><div data-rekey="${h(x.id)}"></div></div>`).join(''):'<p class="ch-empty">עדיין לא הוקמו קבוצות משימה.</p>';
       if(t==='sources'){

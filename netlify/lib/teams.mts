@@ -14,10 +14,12 @@ export const TEAM_STATUS: Record<TeamStatus, string> = {
 
 export type Member = { name: string; email?: string; role?: string; joinedAt: string };
 export type JoinRequest = { id: string; name: string; email?: string; note?: string; at: string };
-export type Section = { id: string; title: string; hint?: string; text: string; version: number; updatedBy?: string; updatedAt?: string };
+// קובץ או קישור מצורף (5.11.2026): בסעיף של ההצעה, בהודעה בדיון או בלשונית הקישורים.
+export type Attachment = { id: string; kind: "file" | "link"; label: string; key?: string; url?: string; size?: number; by?: string; at?: string };
+export type Section = { id: string; title: string; hint?: string; text: string; version: number; updatedBy?: string; updatedAt?: string; attachments?: Attachment[] };
 export type Task = { id: string; text: string; owner?: string; due?: string; done: boolean };
-export type Message = { id: string; name: string; text: string; at: string };
-export type Link = { id: string; label: string; url: string };
+export type Message = { id: string; name: string; text: string; at: string; attachments?: Attachment[] };
+export type Link = { id: string; label: string; url: string; key?: string; size?: number };
 export type Team = {
   id: string; keyHash: string; memberKeys?: string[]; leadKeys?: string[]; keyOwners?: Record<string, string>; keysV2?: boolean; title: string; summary: string; need: string;
   callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean; origin?: string;
@@ -167,6 +169,21 @@ export function cleanUrl(raw: unknown): string {
   } catch {
     return "";
   }
+}
+
+// מצורפים מהדפדפן: קבצים רק מהתיקייה של הקבוצה, קישורים רק http/https. עד 10.
+export function cleanAttachments(teamId: string, rows: unknown, by: string): Attachment[] {
+  const at = new Date().toISOString();
+  return (Array.isArray(rows) ? rows : []).slice(0, 10).map((r: any) => {
+    if (r?.kind === "file") {
+      const key = clip(r.key, 400);
+      if (!key.startsWith(`teamfiles/${teamId}/`)) return null;
+      return { id: newItemId(), kind: "file", label: clip(r.label || r.name, 200) || "קובץ", key, size: Number(r.size) || 0, by, at } as Attachment;
+    }
+    const url = cleanUrl(r?.url);
+    if (!url) return null;
+    return { id: newItemId(), kind: "link", label: clip(r.label, 200) || url, url, by, at } as Attachment;
+  }).filter(Boolean) as Attachment[];
 }
 
 export function newItemId() {

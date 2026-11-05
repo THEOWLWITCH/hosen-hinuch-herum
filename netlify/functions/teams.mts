@@ -1,10 +1,10 @@
 import type { Config } from "@netlify/functions";
-import { json, looksHuman, validToken } from "../lib/shared.mts";
+import { json, looksHuman, store, validToken } from "../lib/shared.mts";
 import { communityOK } from "../lib/member-code.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamAccess, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, issueKey, listTeams, newItemId, newKey,
-  openTeamAccess, publicTeam, saveTeam, workspaceTeam, hashLock, lockOK,
+  openTeamAccess, publicTeam, saveTeam, workspaceTeam, hashLock, lockOK, cleanAttachments,
 } from "../lib/teams.mts";
 
 // מה שסביבת העבודה מקבלת: הקבוצה, התפקיד של מי שנכנס/ה (מוביל/ה או חבר/ה) והשם שלו/ה.
@@ -238,6 +238,7 @@ export default async (req: Request) => {
     if (!t.lead.email || norm(body.email) !== norm(t.lead.email))
       return json({ error: "forbidden", message: "רק מי שמוביל/ה את הקבוצה יכול/ה למחוק את המרחב, עם המייל שאיתו הקבוצה הוקמה." }, 403);
     await deleteTeam(t.id);
+    try { const fs = store("hosen-files"); const { blobs } = await fs.list({ prefix: `teamfiles/${t.id}/` }); for (const b of blobs) await fs.delete(b.key); } catch {}
     for (const x of t.members) {
       if (norm(x.email) === norm(t.lead.email)) continue;
       await mail(x.email, `מרחב העבודה "${t.title}" נמחק`,
@@ -265,7 +266,7 @@ export default async (req: Request) => {
   }
 
   if (action === "invite") {
-    if (t.locked) return json({ error: "locked", message: "המרחב סגור לצוות. כדי להזמין שותפים/ות חדשים/ות, המוביל/ה פותח/ת אותו מחדש (בלשונית \"על הקבוצה\")." }, 423);
+    if (t.locked) return json({ error: "locked", message: "המרחב סגור לצוות. כדי להזמין שותפים/ות חדשים/ות, המוביל/ה פותח/ת אותו מחדש (בלשונית \"הצוות\")." }, 423);
     const emails = [...new Set(String(body.emails ?? "").split(/[\s,;]+/).map(e => e.trim()).filter(e => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)))].slice(0, 10);
     if (!emails.length) return json({ error: "missing_fields", message: "נשמח לכתובת מייל אחת לפחות." }, 400);
     if (!mailConfigured()) return json({ ok: true, sent: 0, mailConfigured: false, link: `${site}/match#join-team=${t.id}` });
@@ -316,15 +317,40 @@ export default async (req: Request) => {
       break;
     case "message": {
       const text = clip(body.text, 4000);
-      if (!text) return json({ error: "missing_fields" }, 400);
-      t.messages.push({ id: newItemId(), name: who, text, at });
+      const attachments = cleanAttachments(t.id, body.attachments, who);
+      if (!text && !attachments.length) return json({ error: "missing_fields" }, 400);
+      t.messages.push({ id: newItemId(), name: who, text, at, ...(attachments.length ? { attachments } : {}) });
       t.messages = t.messages.slice(-300);
       break;
     }
     case "link-add": {
+      // קובץ שהועלה למרחב, או קישור.
+      const key = clip(body.key, 400);
+      if (key) {
+        if (!key.startsWith(`teamfiles/${t.id}/`)) return json({ error: "bad_key" }, 400);
+        t.links.push({ id: newItemId(), label: clip(body.label, 160) || "קובץ", url: "", key, size: Number(body.size) || 0 });
+        break;
+      }
       const url = cleanUrl(body.url);
       if (!url) return json({ error: "invalid_url", message: "יש להזין קישור תקין." }, 400);
       t.links.push({ id: newItemId(), label: clip(body.label, 160) || url, url });
+      break;
+    }
+    // מצורפים לסעיף בהצעה: כל חבר/ה מצרף/ת. מסיר/ה: המוביל/ה, או מי שצירף/ה.
+    case "section-attach": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      if (!s) return json({ error: "not_found" }, 404);
+      const add = cleanAttachments(t.id, body.attachments, who);
+      if (!add.length) return json({ error: "missing_fields", message: "יש לבחור קובץ או להזין קישור תקין." }, 400);
+      s.attachments = [...(s.attachments || []), ...add].slice(-40);
+      break;
+    }
+    case "section-detach": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      const a = s?.attachments?.find(x => x.id === clip(body.attachmentId, 20));
+      if (!s || !a) return json({ error: "not_found" }, 404);
+      if (!isLead && a.by !== who) return json({ error: "forbidden", message: "רק מי שצירף/ה, או המוביל/ה, יכול/ה להסיר." }, 403);
+      s.attachments = (s.attachments || []).filter(x => x !== a);
       break;
     }
     case "link-remove":

@@ -1,5 +1,5 @@
 // חיפוש מקורות במאגרים אקדמיים פתוחים בעולם (25/10/2026: "פתח את החיפוש והרחב אותו למנועי חיפוש נוספים").
-// אותו קובץ בדיוק משמש את אתר חוסן-חינוך-חירום ואת Be Good — שינוי כאן מעתיקים לשניהם.
+// הקובץ שייך לאתר חוסן-חינוך-חירום בלבד (5.11.2026: "תהיה הפרדה בין המערכות"). לא מעתיקים אליו מ-Be Good ולא ממנו.
 //
 // מאגרים: OpenAlex, Crossref, ERIC, Semantic Scholar, Europe PMC, DOAJ, ו-CORE (רק אם הוגדר CORE_API_KEY).
 // כולם חינמיים ובלי מפתח, חוץ מ-CORE. כל מאגר עם הגבלת זמן משלו: מאגר שלא עונה לא מפיל את החיפוש.
@@ -9,7 +9,7 @@
 // התוצאות מאוחדות (אותו DOI או אותה כותרת = פריט אחד, עם כל המאגרים שמצאו אותו) ומדורגות לפי התאמה.
 // אלה רשומות אמיתיות מהמאגרים — שום דבר כאן לא נכתב בידי מודל שפה.
 
-const UA = "hosen-hinuch-herum/be-good source search (mailto:yael.sade@gmail.com)";
+const UA = "hosen-hinuch-herum source search (mailto:yael.sade@gmail.com)";
 const MAIL = "yael.sade@gmail.com";
 const clip = (v, n) => String(v == null ? "" : v).replace(/\s+/g, " ").trim().slice(0, n);
 const strip = (s) => String(s || "").replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
