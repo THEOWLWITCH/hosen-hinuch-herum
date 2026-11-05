@@ -67,6 +67,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
     ...newIdeas.slice(0, 3).map(r => `רעיון חדש למחקר: ${clip(r.title, 110)}`),
     ...newCollabs.slice(0, 3).map(c => `יוזמה חדשה: ${clip(c.title, 110)}${c.need ? ` — מחפשים: ${clip(c.need, 80)}` : ""}`),
     ...newTeams.slice(0, 3).map(t => `נפתח מרחב עבודה: ${clip(t.title, 110)}`),
+    ...(teams as any[]).filter(t => !t.locked && t.status !== "closed" && !newTeams.includes(t)).slice(0, 5).map(t => `מוזמנות.ים להצטרף: ${clip(t.title, 110)}${t.need ? ` — מחפשים: ${clip(t.need, 80)}` : ""}`),
     ...(activeTeams.length ? [`${activeTeams.length === 1 ? "מרחב עבודה אחד היה פעיל" : `${activeTeams.length} מרחבי עבודה היו פעילים`} השבוע`] : []),
   ], ["לשיתופי פעולה", `${site}/match`]);
 
