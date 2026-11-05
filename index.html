@@ -55,6 +55,8 @@
     if(tok())_fetch('/api/member',{headers:{'x-member-token':tok()}}).then(r=>{if(r.status===403){try{localStorage.removeItem(KEY);localStorage.removeItem(NAME)}catch(e){}decorate()}else if(r.ok)return r.json().then(d=>{try{localStorage.setItem(NAME,d.name||'')}catch(e){}decorate()})}).catch(()=>{});
   });
   // ביקור יומי (5.11.2026): פעם ביום, מי שמחובר/ת עם הקוד האישי נספר/ת ב"נכנסו השבוע" שבעדכון השבועי.
+  // ספירת מבקרים (5.11.2026): פעם ביום לכל דפדפן, עם מזהה אקראי בלי פרטים אישיים.
+  try{const d=new Date().toISOString().slice(0,10);if(get('hosen_visit_day')!==d){let v=get('hosen_visit_id');if(!/^[a-z0-9]{10,32}$/.test(v)){v=(crypto.randomUUID?crypto.randomUUID():String(Math.random())+Date.now()).replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,24);localStorage.setItem('hosen_visit_id',v)}localStorage.setItem('hosen_visit_day',d);setTimeout(()=>fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({v,m:tok()?1:0})}).catch(()=>{}),2500)}}catch(e){}
   try{const d=new Date().toISOString().slice(0,10);if(tok()&&get('hosen_member_seen')!==d){localStorage.setItem('hosen_member_seen',d);setTimeout(()=>fetch('/api/member?ping=1').catch(()=>{}),4000)}}catch(e){}
 })();
 </script>

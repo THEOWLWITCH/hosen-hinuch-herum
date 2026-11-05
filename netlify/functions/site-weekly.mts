@@ -1,11 +1,12 @@
 import type { Config } from "@netlify/functions";
 import { israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import { renderHtml, plainText } from "../lib/community-mail.mts";
-import { buildSiteWeekly, getWeeklyState, setWeeklyState } from "../lib/site-weekly.mts";
+import { buildSiteWeekly, getWeeklyState, pruneVisits, setWeeklyState } from "../lib/site-weekly.mts";
 
 // כל יום ראשון בבוקר: טיוטת "מה חדש באתר השבוע" נשלחת רק למנהלת המערכת (GMAIL_USER), לקריאה ולאישור.
 // לכל הקהילה העדכון יוצא רק כשהמנהלת שולחת אותו בחלון "עדכון לקהילה" (/#weekly-mail). פעם אחת בשבוע לכל היותר.
 export default async () => {
+  await pruneVisits().catch(() => 0);
   if (!mailConfigured()) return new Response(null, { status: 204 });
   const today = israelToday();
   if ((await getWeeklyState()).draftSentDay === today) return new Response(null, { status: 204 });

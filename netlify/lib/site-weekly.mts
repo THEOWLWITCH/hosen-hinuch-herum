@@ -89,7 +89,13 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const comments = (discussions as any[]).filter(isNew).length;
   const roles = (requests as any[]).filter(r => r.type === "role" && isNew(r)).length;
   const boardNew = messages.filter(isNew).length;
+  // מבקרים (visits/<יום>/<מזהה>): כמה דפדפנים שונים ביקרו בשבעת הימים האחרונים.
+  const visitDays = Array.from({ length: days }, (_, i) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date(Date.now() - i * 86400000)));
+  const vst = data();
+  const visitKeys = (await Promise.all(visitDays.map(d => vst.list({ prefix: `visits/${d}/` }).then(r => r.blobs.map(b => b.key)).catch(() => [] as string[])))).flat();
+  const visitors = new Set(visitKeys.map(k => k.split("/").pop())).size;
   const stats = [
+    ...(visitors ? [`${q(visitors, "אדם אחד ביקר", "אנשים שונים ביקרו")} באתר השבוע (${q(visitKeys.length, "ביקור יומי אחד", "ביקורים יומיים")})`] : []),
     `${q(people.length, "חבר/ה אחד/ת בנבחרת", "חברות וחברים בנבחרת")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
     `${q(library.length, "מקור אחד בספרייה", "מקורות בספרייה")}${added(lib.length)}`,
     ...(rw?.total ? [`${q(rw.total, "מחקר אחד", "מחקרים")} ב"חידושים במחקר"${fresh ? added(rw.added) : ""}${comments ? `. ${q(comments, "תגובה אחת", "תגובות")} בדיון השבוע` : ""}`] : []),
@@ -116,6 +122,15 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
 }
 
 // מצב השליחה השבועית: מתי נשלחה הטיוטה למנהלת, כדי לא לשלוח פעמיים באותו שבוע.
+// ניקוי ספירת המבקרים: נשמרים רק 60 הימים האחרונים.
+export async function pruneVisits(keepDays = 60) {
+  const st = data(), cut = new Date(Date.now() - keepDays * 86400000).toISOString().slice(0, 10);
+  const { blobs } = await st.list({ prefix: "visits/" });
+  const old = blobs.filter(b => (b.key.split("/")[1] || "9999") < cut);
+  await pool(old, b => st.delete(b.key).catch(() => {}), 20);
+  return old.length;
+}
+
 export async function getWeeklyState(): Promise<{ draftSentDay?: string }> {
   return (await data().get("site-weekly/state.json", { type: "json" }) as any) || {};
 }
