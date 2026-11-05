@@ -356,8 +356,11 @@ export default async (req: Request) => {
     case "link-remove":
       t.links = t.links.filter(l => l.id !== clip(body.linkId, 20));
       break;
+    // פרטי הקבוצה (כותרת, תקציר, "מחפשים/ות", גוף מממן, מועד): כל חבר/ה בצוות יכול/ה לעדכן (5.11.2026).
+    // הסטטוס, הסגירה והמחיקה נשארים בידי המוביל/ה.
+    case "details":
     case "meta": {
-      if (body.status && TEAM_STATUS[body.status as TeamStatus]) t.status = body.status;
+      if (action === "meta" && body.status && TEAM_STATUS[body.status as TeamStatus]) t.status = body.status;
       if (body.title !== undefined) t.title = clip(body.title, 200) || t.title;
       if (body.summary !== undefined) t.summary = clip(body.summary, 1500);
       if (body.need !== undefined) t.need = clip(body.need, 600);

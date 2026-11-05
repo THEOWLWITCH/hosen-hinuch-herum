@@ -5096,7 +5096,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const t=ws.team,c=call();
       const deadline=t.deadline||c?.endDate||'';
       const left=deadline?Math.round((Date.parse(deadline)-Date.parse(new Date().toISOString().slice(0,10)))/86400000):null;
-      return `<div class="ch-ws-head"><div>${ws.editTitle?`<form class="ch-inline" data-form="title" style="grid-template-columns:1fr auto auto"><input name="title" value="${h(t.title)}" required dir="auto" aria-label="שם הקבוצה או כותרת המחקר"><button class="ch-btn small primary">שמירה</button><button type="button" class="ch-btn small" data-w="title-cancel">ביטול</button></form>`:`<h2 dir="auto">${h(t.title)}${lead()?` <button type="button" class="ch-btn small" data-w="title-edit" title="שינוי הכותרת">✏️ שינוי הכותרת</button>`:''}</h2>`}
+      return `<div class="ch-ws-head"><div>${ws.editTitle?`<form class="ch-inline" data-form="title" style="grid-template-columns:1fr auto auto"><input name="title" value="${h(t.title)}" required dir="auto" aria-label="שם הקבוצה או כותרת המחקר"><button class="ch-btn small primary">שמירה</button><button type="button" class="ch-btn small" data-w="title-cancel">ביטול</button></form>`:`<h2 dir="auto">${h(t.title)}${isMember()||lead()?` <button type="button" class="ch-btn small" data-w="title-edit" title="שינוי הכותרת">✏️ שינוי הכותרת</button>`:''}</h2>`}
         <ul class="ch-meta">${c?`<li><strong>קול קורא:</strong> ${c.url?`<a href="${h(c.url)}" target="_blank" rel="noopener">${h(c.title)}</a>`:h(c.title)}</li>`:''}
         ${t.funder?`<li><strong>גוף מממן:</strong> ${h(t.funder)}</li>`:''}${deadline?`<li><strong>הגשה:</strong> ${fmt(deadline)}${left!==null&&left>=0?` (עוד ${left} ימים)`:''}</li>`:''}</ul></div>
         <div class="ch-actions">${t.me?`<span class="ch-tag">${h(t.me)}${lead()?' · מוביל/ה':''}</span>`:`<label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>`}
@@ -5133,7 +5133,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const isMember_=isMember();
         const when=d=>new Date(d).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'});
         return `<div class="ch-ov">
-          ${ws.editMeta&&lead()?`<form class="ch-form" data-form="meta">
+          ${ws.editMeta&&(isMember()||lead())?`<form class="ch-form" data-form="meta">
             <label class="wide">הרעיון בקצרה<span class="hint">מוצג באתר לכל הקהילה</span><textarea name="summary" rows="3" dir="auto">${h(t.summary)}</textarea></label>
             <label class="wide">את מי מחפשים/ות<span class="hint">מוצג באתר לכל הקהילה. אחרי שהצוות התגבש אפשר להשאיר ריק, והשורה תיעלם.</span><input name="need" value="${h(t.need)}" dir="auto"></label>
             <label>גוף מממן<input name="funder" value="${h(t.funder||'')}" dir="auto"></label>
@@ -5141,7 +5141,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
             <div class="wide"><button class="ch-btn primary">שמירה</button> <button type="button" class="ch-btn" data-w="meta-cancel">ביטול</button></div></form>`
           :`${t.summary?`<p dir="auto" style="white-space:pre-line;font-size:16px">${h(t.summary)}</p>`:''}
           ${t.need?`<p dir="auto"><strong>מחפשים/ות:</strong> ${h(t.need)}</p>`:''}
-          ${lead()?`<p><button type="button" class="ch-btn small" data-w="meta-edit">✏️ עריכת התקציר, "מחפשים/ות", גוף מממן ומועד</button></p>`:''}`}
+          ${isMember()||lead()?`<p><button type="button" class="ch-btn small" data-w="meta-edit">✏️ עריכת התקציר, "מחפשים/ות", גוף מממן ומועד</button></p>`:''}`}
           <p class="ch-credit"><strong>מוביל/ה:</strong> ${h(t.lead.name)} · <strong>בצוות:</strong> ${t.members.map(x=>h(x.name)+(x.role&&x.name!==t.lead.name?` (${h(x.role)})`:'')).join(', ')}</p>
           <div class="ch-ov-grid">
             <button type="button" class="ch-ov-box" data-tab="write"><b>${written.length} / ${t.sections.length}</b><span>סעיפים כתובים</span><small>${written.length?written.slice(0,4).map(x=>h(x.title)).join(' · '):'עוד לא התחילו לכתוב'}</small></button>
@@ -5310,7 +5310,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         return;
       }
       if(kind==='title'){const title=String(d.title||'').trim();if(!title)return msg('הכותרת לא יכולה להיות ריקה.','err');
-        try{await act('meta',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
+        try{await act('details',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
       // צירוף קבצים וקישורים: לסעיף, להודעה בדיון, וללשונית הקישורים.
       if(kind==='sec-attach'||kind==='file-add'||(kind==='message'&&f.hasAttribute('data-full'))){
         const btn=f.querySelector('button:not([type=button])');if(btn)btn.disabled=true;msg('מעלה…');
@@ -5333,7 +5333,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         try{await act('delete',{email:d.email});forget('המרחב נמחק')}catch(err){msg(err.message,'err')}
         return;
       }
-      const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['meta',d]};
+      const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['details',d]};
       // ההודעה "נשמר" מוצגת אחרי שהמסך מצויר מחדש, אחרת הציור מוחק אותה ונראה כאילו לא נשמר.
       if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
       run(async()=>{await act(...map[kind])});
