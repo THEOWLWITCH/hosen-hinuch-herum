@@ -96,7 +96,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const visitKeys = (await Promise.all(visitDays.map(d => vst.list({ prefix: `visits/${d}/` }).then(r => r.blobs.map(b => b.key)).catch(() => [] as string[])))).flat();
   const visitors = new Set(visitKeys.map(k => k.split("/").pop())).size;
   const stats = [
-    ...(visitors ? [`${q(visitors, "אדם אחד ביקר", "אנשים שונים ביקרו")} באתר השבוע (${q(visitKeys.length, "ביקור יומי אחד", "ביקורים יומיים")})`] : []),
+    ...(visitors ? [`${q(visitKeys.length, "כניסה אחת", "כניסות")} לאתר השבוע, ${visitors === 1 ? "ממכשיר אחד" : `מ־${n(visitors)} מכשירים שונים`} (כל מכשיר נספר פעם אחת ביום)`] : []),
     `${q(people.length, "חבר/ה אחד/ת בנבחרת", "חברות וחברים בנבחרת")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
     `${q(library.length, "מקור אחד בספרייה", "מקורות בספרייה")}${added(lib.length)}`,
     ...(rw?.total ? [`${q(rw.total, "מחקר אחד", "מחקרים")} ב"חידושים במחקר"${fresh ? added(rw.added) : ""}${comments ? `. ${q(comments, "תגובה אחת", "תגובות")} בדיון השבוע` : ""}`] : []),
