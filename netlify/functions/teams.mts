@@ -8,7 +8,7 @@ import {
 } from "../lib/teams.mts";
 
 // מה שסביבת העבודה מקבלת: הקבוצה, התפקיד של מי שנכנס/ה (מוביל/ה או חבר/ה) והשם שלו/ה.
-const view = (t: Team, a: Pick<TeamAccess, "role" | "me">) => ({ ...workspaceTeam(t), role: a.role, me: a.me });
+const view = (t: Team, a: Pick<TeamAccess, "role" | "me">) => ({ ...workspaceTeam(t), role: a.role, me: a.me, ...(a.role === "lead" && t.locked ? { lockCode: t.lockCode || "" } : {}) });
 
 // פעולות שרק המוביל/ה עושה: מחיקה, ניהול הקבוצה והחברים/ות, אישור בקשות.
 const LEAD_ONLY = new Set(["section-remove", "task-remove", "link-remove", "meta", "request-approve", "request-decline", "delete", "lock", "unlock"]);
@@ -49,7 +49,7 @@ export default async (req: Request) => {
   if (req.method === "GET") {
     if (u.searchParams.get("admin") === "1") {
       if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
-      return json((await listTeams()).map(t => ({ ...publicTeam(t), leadEmail: t.lead.email || "", updatedAt: t.updatedAt })));
+      return json((await listTeams()).map(t => ({ ...publicTeam(t), leadEmail: t.lead.email || "", updatedAt: t.updatedAt, lockCode: t.locked ? (t.lockCode || "") : "" })));
     }
     const teamId = clip(u.searchParams.get("id"), 80);
     if (teamId) {
@@ -172,6 +172,27 @@ export default async (req: Request) => {
     return json({ ok: true, lead: t.lead.name });
   }
 
+  // מנהלת המערכת: סגירת צוות בקוד, החלפת קוד, ופתיחה מחדש (5.11.2026: "תן לי אפשרות לסגור קבוצות ולהחליט על קוד").
+  if (action === "admin-lock" || action === "admin-unlock") {
+    if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+    const t = await getTeam(clip(body.id, 80));
+    if (!t) return json({ error: "not_found" }, 404);
+    const at = new Date().toISOString();
+    if (action === "admin-unlock") {
+      t.locked = false; delete t.lockHash; delete t.lockCode; t.lockedAt = "";
+      t.messages.push({ id: newItemId(), name: "מנהלת האתר", text: "🔓 המרחב נפתח מחדש להצטרפות.", at });
+    } else {
+      const code = clip(body.teamCode, 60);
+      if (code.length < 4) return json({ error: "short_code", message: "קוד הצוות צריך להיות באורך 4 תווים לפחות." }, 400);
+      const was = !!t.locked;
+      t.locked = true; t.lockHash = await hashLock(t.id, code); t.lockCode = code; t.lockedAt = at; t.requests = [];
+      t.messages.push({ id: newItemId(), name: "מנהלת האתר", text: was ? "🔒 קוד הצוות הוחלף." : "🔒 הצוות התגבש והמרחב נסגר: אין הצטרפות חדשה, והדיון והחומרים נפתחים רק עם קוד הצוות.", at });
+    }
+    t.messages = t.messages.slice(-300);
+    await saveTeam(t);
+    return json({ ok: true, locked: !!t.locked });
+  }
+
   if (action === "admin-delete" || action === "admin-rekey") {
     if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
     const t = await getTeam(clip(body.id, 80));
@@ -253,14 +274,14 @@ export default async (req: Request) => {
     const code = clip(body.teamCode, 60);
     if (code.length < 4) return json({ error: "short_code", message: "קוד הצוות צריך להיות באורך 4 תווים לפחות." }, 400);
     const was = !!t.locked;
-    t.locked = true; t.lockHash = await hashLock(t.id, code); t.lockedAt = at;
+    t.locked = true; t.lockHash = await hashLock(t.id, code); t.lockCode = code; t.lockedAt = at;
     t.requests = [];
     t.messages.push({ id: newItemId(), name: who, text: was ? "🔒 קוד הצוות הוחלף. הקוד החדש נשלח לחברי/ות הצוות בנפרד." : "🔒 הצוות התגבש והמרחב נסגר: אין הצטרפות חדשה, והדיון והחומרים נפתחים רק עם קוד הצוות. בעמוד שיתופי פעולה מוצגים רק התקציר ושמות החוקרים/ות.", at });
     t.messages = t.messages.slice(-300);
     return json({ ok: true, team: view(await saveTeam(t), access) });
   }
   if (action === "unlock") {
-    t.locked = false; delete t.lockHash; t.lockedAt = "";
+    t.locked = false; delete t.lockHash; delete t.lockCode; t.lockedAt = "";
     t.messages.push({ id: newItemId(), name: who, text: "🔓 המרחב נפתח מחדש להצטרפות.", at });
     return json({ ok: true, team: view(await saveTeam(t), access) });
   }

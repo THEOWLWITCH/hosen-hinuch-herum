@@ -27,6 +27,8 @@ export type Team = {
   // מרחב סגור (5.11.2026): אחרי שהצוות התגבש, המוביל/ה סוגר/ת את המרחב בקוד צוות. אין הצטרפות חדשה,
   // והדיון והחומרים נפתחים לחברי/ות הצוות רק עם הקוד. בכרטיס הציבורי נשארים התקציר ושמות החוקרים/ות.
   locked?: boolean; lockHash?: string; lockedAt?: string;
+  // הקוד עצמו נשמר כדי שמנהלת המערכת והמוביל/ה יוכלו לראות אותו ולעזור (5.11.2026). לא נשלח לחברי/ות הצוות ולא לכרטיס הציבורי.
+  lockCode?: string;
   // הפעילות האחרונה במרחב (פתיחה או עבודה בו). הנורית בכרטיס דולקת שבוע מאז (5.11.2026).
   activeAt?: string;
   members: Member[]; requests: JoinRequest[]; sections: Section[]; tasks: Task[]; messages: Message[]; links: Link[];
@@ -140,7 +142,7 @@ export function publicTeam(t: Team) {
 
 // מה שחברות הקבוצה רואות בסביבת העבודה.
 export function workspaceTeam(t: Team) {
-  const { keyHash, memberKeys, leadKeys, keyOwners, lockHash, ...rest } = t;
+  const { keyHash, memberKeys, leadKeys, keyOwners, lockHash, lockCode, ...rest } = t;
   return { ...rest, statusLabel: TEAM_STATUS[t.status], statuses: TEAM_STATUS };
 }
 

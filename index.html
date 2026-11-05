@@ -5207,6 +5207,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <p class="ch-credit">אחרי הסגירה צריך לשלוח את הקוד לחברי וחברות הצוות (במייל, בווטסאפ או בטלפון). המוביל/ה נכנס/ת בלי הקוד.</p></div>`;
       return `<div class="ch-ws-end" id="chWsLock">
         <h4>🔒 המרחב סגור לצוות</h4>
+        ${t.lockCode?`<p>קוד הצוות: <code dir="ltr" style="font-size:15px">${h(t.lockCode)}</code></p>`:''}
         <p class="ch-credit">נסגר ב־${t.lockedAt?new Date(t.lockedAt).toLocaleDateString('he-IL'):''}. אין הצטרפות חדשה, וחברי וחברות הצוות נכנסים עם קוד הצוות. בעמוד שיתופי פעולה מוצגים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
         <form class="ch-inline" data-form="lock" style="grid-template-columns:1fr auto"><input name="teamCode" required minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="קוד צוות חדש" aria-label="קוד צוות חדש"><button class="ch-btn small">החלפת הקוד</button></form>
         <p><button type="button" class="ch-btn small" data-w="unlock">🔓 פתיחת המרחב מחדש להצטרפות</button></p></div>`;
@@ -5426,6 +5427,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
       }
       if(t==='teams')html+=(A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מוביל/ה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} בצוות${x.callTitle?' · קול קורא: '+h(x.callTitle):''}${x.activeAt?` · פעילות אחרונה: ${new Date(x.activeAt).toLocaleDateString('he-IL')}`:''}</p>
         <p class="ch-credit" style="margin:4px 0">${(x.members||[]).map(n=>`<button type="button" class="ch-btn small" data-act="member-out" data-id="${h(x.id)}" data-name="${h(n)}" title="הוצאה מהקבוצה">${h(n)} ✕</button>`).join(' ')}</p>
+        <div class="ch-admin-lock">${x.locked?`<p class="ch-credit">🔒 <strong>סגור לצוות</strong>${x.lockCode?` · קוד הצוות: <code dir="ltr" style="font-size:14px">${h(x.lockCode)}</code>`:' · הקוד נקבע לפני שהמערכת שמרה קודים. אפשר לקבוע קוד חדש.'}</p>`:'<p class="ch-credit">🙋 פתוח להצטרפות</p>'}
+          <form class="ch-inline" data-lockform="${h(x.id)}" style="grid-template-columns:1fr auto"><input name="teamCode" minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="${x.locked?'קוד צוות חדש':'קוד צוות (4 תווים לפחות)'}" aria-label="קוד צוות"><button class="ch-btn small primary">${x.locked?'החלפת הקוד':'🔒 סגירה בקוד'}</button></form>
+          ${x.locked?`<button type="button" class="ch-btn small" data-act="admin-unlock" data-id="${h(x.id)}">🔓 פתיחה מחדש להצטרפות</button>`:''}</div>
         <div class="ch-actions"><button type="button" class="ch-btn small" data-act="rekey" data-id="${h(x.id)}">קישור חדש לסביבת העבודה</button><button type="button" class="ch-btn small danger" data-act="team-delete" data-id="${h(x.id)}">מחיקת הקבוצה</button></div><div data-rekey="${h(x.id)}"></div></div>`).join(''):'<p class="ch-empty">עדיין לא הוקמו קבוצות משימה.</p>';
       if(t==='sources'){
         const st=Object.fromEntries((d.sourceStatus||[]).map(s=>[s.url,s]));
@@ -5501,10 +5505,16 @@ html[data-page="calls"] #resourceArea{display:none!important}
         if(a==='optout'){await call('optout',{optout:m.querySelector('#chOptout').value.split(/\s+/)});amsg('נשמר.','ok')}
         if(a==='rekey'){const j=await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-rekey',id:b.dataset.id})});
           m.querySelector(`[data-rekey="${CSS.escape(b.dataset.id)}"]`).innerHTML=`<div class="ch-linkbox"><input readonly value="${h(j.link)}"></div><p class="ch-credit">הקישור הישן כבר לא פותח את סביבת העבודה. שלחי את החדש לחברות הקבוצה.</p>`}
+        if(a==='admin-unlock'&&confirm('לפתוח את הצוות מחדש? אפשר יהיה להצטרף, ולהיכנס בלי קוד הצוות.')){await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-unlock',id:b.dataset.id})});await reload();render();refreshTeams();amsg('✓ הצוות נפתח מחדש להצטרפות.','ok')}
         if(a==='team-delete'&&confirm('למחוק את הקבוצה ואת כל מה שנכתב בה? אי אפשר לשחזר.')){await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-delete',id:b.dataset.id})});await reload();render();refreshTeams()}
       }catch(err){amsg(err.message,'err')}
     });
     m.addEventListener('submit',async e=>{
+      // סגירת צוות בקוד בידי מנהלת המערכת (5.11.2026).
+      const lf=e.target.closest('[data-lockform]');
+      if(lf){e.preventDefault();const code=lf.elements.teamCode.value.trim();if(code.length<4)return amsg('קוד הצוות צריך להיות באורך 4 תווים לפחות.','err');
+        try{await api('/api/teams',{method:'POST',headers:{Authorization:'Bearer '+token},body:JSON.stringify({action:'admin-lock',id:lf.dataset.lockform,teamCode:code})});await reload();render();refreshTeams();amsg(`✓ הצוות סגור. קוד הצוות: ${code}. אפשר לשלוח אותו לחברי וחברות הצוות.`,'ok')}catch(err){amsg(err.message,'err')}
+        return}
       const f=e.target.closest('[data-edit]');if(!f)return;e.preventDefault();
       const d=fields(f),kind=f.dataset.kind;
       try{
