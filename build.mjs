@@ -16,6 +16,12 @@ await copyFile("index.html", "dist/index.html");
 // מחקרי השבוע, לעדכון השבועי במייל (netlify/lib/site-weekly.mts).
 await writeFile("dist/research-weekly.json", JSON.stringify(weeklySnapshot(await readFile("index.html", "utf8"))));
 await copyFile("guide.html", "dist/guide.html"); // המדריך לקהילה: /guide
+// מה השתנה באתר, למדור "🛠 מה חדש באתר עצמו" בעדכון השבועי (netlify/lib/site-weekly.mts).
+JSON.parse(await readFile("site-changes.json", "utf8")); // קובץ שבור עוצר את הבנייה
+await copyFile("site-changes.json", "dist/site-changes.json");
+// גוגל: robots.txt ו-sitemap.xml
+await copyFile("robots.txt", "dist/robots.txt");
+await copyFile("sitemap.xml", "dist/sitemap.xml");
 
 try {
   await access("_redirects");

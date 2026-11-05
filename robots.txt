@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://hosen-hinuch-herum.netlify.app/sitemap.xml

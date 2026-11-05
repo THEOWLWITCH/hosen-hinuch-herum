@@ -63,6 +63,16 @@
 <style id="member-session-css">.mc-on{font-size:13px;color:#2f6e4f;background:#eef6f2;border-radius:8px;padding:7px 10px;align-self:end}.mc-hint{display:block;font-size:11px;font-weight:400;color:#6b7d88;margin-top:3px}</style>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>בינה מלאכותית: חוסן-חינוך-חרום</title>
+<meta name="description" content="קהילה אקדמית-מקצועית לחינוך בחירום: חוקרים וחוקרות, אנשי ונשות חינוך ומובילי ומובילות מדיניות בנושאי בינה מלאכותית, חוסן, חינוך וחירום. מחקרים חדשים מדי שבוע, ספריית מקורות, קולות קוראים, כנסים ומרחבי עבודה משותפים.">
+<link rel="canonical" href="https://hosen-hinuch-herum.netlify.app/" id="canonicalLink">
+<meta property="og:type" content="website"><meta property="og:locale" content="he_IL">
+<meta property="og:site_name" content="בינה מלאכותית: חוסן-חינוך-חרום">
+<meta property="og:title" content="בינה מלאכותית: חוסן-חינוך-חרום · קהילה אקדמית-מקצועית לחינוך בחירום">
+<meta property="og:description" content="קהילה אקדמית-מקצועית לחינוך בחירום: חוקרים וחוקרות, אנשי ונשות חינוך ומובילי ומובילות מדיניות בנושאי בינה מלאכותית, חוסן, חינוך וחירום. מחקרים חדשים מדי שבוע, ספריית מקורות, קולות קוראים, כנסים ומרחבי עבודה משותפים.">
+<meta property="og:url" content="https://hosen-hinuch-herum.netlify.app/">
+<meta property="og:image" content="https://hosen-hinuch-herum.netlify.app/assets/hosen-social-ai-banner-v2-q50.webp">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"בינה מלאכותית: חוסן-חינוך-חרום","alternateName":"קהילה אקדמית-מקצועית לחינוך בחירום","url":"https://hosen-hinuch-herum.netlify.app/","logo":"https://hosen-hinuch-herum.netlify.app/assets/community-logo-email.jpg","description":"קהילה אקדמית-מקצועית לחינוך בחירום: חוקרים וחוקרות, אנשי ונשות חינוך ומובילי ומובילות מדיניות בנושאי בינה מלאכותית, חוסן, חינוך וחירום. מחקרים חדשים מדי שבוע, ספריית מקורות, קולות קוראים, כנסים ומרחבי עבודה משותפים.","inLanguage":"he"}</script>
 <style>
 :root{--ink:#17324d;--blue:#246b8f;--sky:#eaf5f8;--sand:#f7f4ec;--white:#fff;--muted:#657786;--accent:#d99a43}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,"Noto Sans Hebrew",sans-serif;color:var(--ink);background:#fbfcfd;line-height:1.6}
@@ -6864,6 +6874,10 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
   document.documentElement.dataset.page=resolved;
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
+  // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
+  try{const T={match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
+    if(T[resolved])document.title=T[resolved]+' · '+base;
+    const c=document.getElementById('canonicalLink');if(c)c.href='https://hosen-hinuch-herum.netlify.app/'+(resolved==='now'?'':resolved);}catch(e){}
 
   document.addEventListener('DOMContentLoaded',async()=>{
     document.querySelectorAll('.site-tab[data-route]').forEach(a=>{
