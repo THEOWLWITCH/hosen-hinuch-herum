@@ -5,7 +5,7 @@ import { id, store, pool } from "./shared.mts";
 
 export type TeamStatus = "recruiting" | "writing" | "submitted" | "won" | "closed";
 export const TEAM_STATUS: Record<TeamStatus, string> = {
-  recruiting: "מגייסת שותפות",
+  recruiting: "מחפשים שותפים ושותפות", // 5.11.2026: היה "מגייסת שותפות" (לשון נקבה בלבד)
   writing: "בכתיבה",
   submitted: "ההצעה הוגשה",
   won: "🏆 זכתה במענק",
