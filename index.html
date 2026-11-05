@@ -4409,7 +4409,7 @@ https://hosen-hinuch-herum.netlify.app/apps
 })();
 </script>
 <style id="roles-v1">
-.roles-frame{margin:6px 0 22px;padding:20px 22px;border:2px solid #9ec3cf;border-radius:14px;background:linear-gradient(135deg,#ffffff 0%,#f1f8f6 100%)}
+.roles-frame{margin:26px 0 10px;padding:20px 22px;border:2px solid #9ec3cf;border-radius:14px;background:linear-gradient(135deg,#ffffff 0%,#f1f8f6 100%)}
 .roles-eyebrow{font-size:12px;color:#7a5a12;font-weight:700}.roles-head h3{margin:2px 0 6px;font-size:21px;color:#1f4b60}.roles-head p{margin:0 0 14px;color:#4f6772;max-width:760px}
 .roles-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .role-card{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid #d6e4e8;border-radius:10px;background:#fff}
@@ -4452,7 +4452,10 @@ function rolesOpen(id){const r=COMMUNITY_ROLES.find(x=>x.id===id)||COMMUNITY_ROL
    f.innerHTML='<p class="rs ok" style="font-size:15px">✓ תודה! הפנייה הגיעה להנהלת הקהילה, ונחזור אליך בהקדם.</p><div class="ra"><button type="button" data-close>סגירה</button></div>';}
   catch(err){st.className='rs err';st.textContent='השליחה לא הצליחה. אפשר לנסות שוב.'}});
 }
-document.addEventListener('DOMContentLoaded',()=>{rolesRender();if(location.hash==='#roles')setTimeout(()=>document.getElementById('roles')?.scrollIntoView({behavior:'smooth'}),300)});
+document.addEventListener('DOMContentLoaded',()=>{
+ // 5.11.2026: המסגרת מתחת לכרטיסים האישיים של הנבחרת.
+ const fr=document.getElementById('roles'),pg=document.getElementById('peopleGrid');if(fr&&pg)pg.after(fr);
+ rolesRender();if(location.hash==='#roles')setTimeout(()=>document.getElementById('roles')?.scrollIntoView({behavior:'smooth'}),300)});
 </script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
 <style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
