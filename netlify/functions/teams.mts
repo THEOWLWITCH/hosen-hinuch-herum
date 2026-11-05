@@ -4,14 +4,18 @@ import { communityOK } from "../lib/member-code.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamAccess, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, issueKey, listTeams, newItemId, newKey,
-  openTeamAccess, publicTeam, saveTeam, workspaceTeam,
+  openTeamAccess, publicTeam, saveTeam, workspaceTeam, hashLock, lockOK,
 } from "../lib/teams.mts";
 
 // מה שסביבת העבודה מקבלת: הקבוצה, התפקיד של מי שנכנס/ה (מוביל/ה או חבר/ה) והשם שלו/ה.
 const view = (t: Team, a: Pick<TeamAccess, "role" | "me">) => ({ ...workspaceTeam(t), role: a.role, me: a.me });
 
 // פעולות שרק המוביל/ה עושה: מחיקה, ניהול הקבוצה והחברים/ות, אישור בקשות.
-const LEAD_ONLY = new Set(["section-remove", "task-remove", "link-remove", "meta", "request-approve", "request-decline", "delete"]);
+const LEAD_ONLY = new Set(["section-remove", "task-remove", "link-remove", "meta", "request-approve", "request-decline", "delete", "lock", "unlock"]);
+
+// מרחב סגור: ההודעה למי שמנסה להצטרף, ולמי שנכנס/ת בלי קוד הצוות.
+const closedMsg = (t: Team) => `הצוות התגבש, והמרחב סגור להצטרפות. אפשר לפנות ל${t.lead.name}, שמוביל/ה את הצוות.`;
+const lockedRes = () => json({ error: "locked", message: "המרחב סגור לצוות. כדי להיכנס צריך את קוד הצוות שקיבלת מהמוביל/ה." }, 423);
 
 
 function workspaceLink(site: string, t: Team, key: string) {
@@ -51,6 +55,9 @@ export default async (req: Request) => {
     if (teamId) {
       const a = await openTeamAccess(teamId, clip(req.headers.get("x-team-key"), 200));
       if (!a) return json({ error: "forbidden", message: "הקישור לסביבת העבודה לא תקין." }, 403);
+      if (!(await lockOK(a.team, a.role, req.headers.get("x-team-code")))) return lockedRes();
+      // פתיחת המרחב נחשבת פעילות (נורית "פעיל השבוע"). נשמר לכל היותר פעם בשעה.
+      if (Date.now() - Date.parse(a.team.activeAt || "1970-01-01") > 3600_000) { a.team.activeAt = new Date().toISOString(); a.team = await saveTeam(a.team); }
       return json(view(a.team, a));
     }
     const all = (await listTeams()).filter(t => t.status !== "closed");
@@ -90,6 +97,7 @@ export default async (req: Request) => {
 
     const t = await getTeam(clip(body.id, 80));
     if (!t || t.status === "closed") return json({ error: "not_found", message: "הקבוצה לא נמצאה." }, 404);
+    if (t.locked && !t.members.some(m => m.name === name)) return json({ error: "locked", message: closedMsg(t) }, 423);
     if (t.members.some(m => m.name === name) || t.requests.some(r => r.name === name))
       return json({ ok: true, already: true });
     t.requests.push({ id: newItemId(), name, email, note: clip(body.note, 600), at: new Date().toISOString() });
@@ -113,6 +121,7 @@ export default async (req: Request) => {
     const at = new Date().toISOString();
     // מי שכבר בצוות (לפי שם או מייל) לא נוסף/ה שוב: מקבל/ת קישור חדש ונכנס/ת.
     const existing = t.members.find(m => m.name === name || (!!m.email && sameEmail(m.email, email)));
+    if (t.locked && !existing) return json({ error: "locked", message: closedMsg(t) }, 423);
     if (!existing) t.members.push({ name, email, role: clip(body.role, 120), joinedAt: at });
     else if (!existing.email) existing.email = email;
     t.requests = t.requests.filter(r => r.name !== name);
@@ -179,6 +188,8 @@ export default async (req: Request) => {
   if (!access) return json({ error: "forbidden", message: "הקישור לסביבת העבודה לא תקין." }, 403);
   const t = access.team;
   const isLead = access.role === "lead";
+  if (!(await lockOK(t, access.role, req.headers.get("x-team-code")))) return lockedRes();
+  t.activeAt = new Date().toISOString(); // כל פעולה במרחב היא פעילות
   if (LEAD_ONLY.has(action) && !isLead)
     return json({ error: "lead_only", message: `רק מי שמוביל/ה את הקבוצה (${t.lead.name}) יכול/ה לעשות את זה. אפשר לכתוב, להוסיף ולהשתתף בדיון.` }, 403);
   const who = access.me || clip(body.name, 160) || "חבר/ת קבוצה";
@@ -236,7 +247,25 @@ export default async (req: Request) => {
   }
 
   // הזמנה במייל: חבר/ה בצוות שולח/ת קישור הצטרפות לאנשים שהוא/היא בוחר/ת. זה המייל היחיד שיוצא בהצטרפות.
+  // סגירת המרחב בקוד צוות / פתיחה מחדש. רק המוביל/ה.
+  if (action === "lock") {
+    const code = clip(body.teamCode, 60);
+    if (code.length < 4) return json({ error: "short_code", message: "קוד הצוות צריך להיות באורך 4 תווים לפחות." }, 400);
+    const was = !!t.locked;
+    t.locked = true; t.lockHash = await hashLock(t.id, code); t.lockedAt = at;
+    t.requests = [];
+    t.messages.push({ id: newItemId(), name: who, text: was ? "🔒 קוד הצוות הוחלף. הקוד החדש נשלח לחברי/ות הצוות בנפרד." : "🔒 הצוות התגבש והמרחב נסגר: אין הצטרפות חדשה, והדיון והחומרים נפתחים רק עם קוד הצוות. בעמוד שיתופי פעולה מוצגים רק התקציר ושמות החוקרים/ות.", at });
+    t.messages = t.messages.slice(-300);
+    return json({ ok: true, team: view(await saveTeam(t), access) });
+  }
+  if (action === "unlock") {
+    t.locked = false; delete t.lockHash; t.lockedAt = "";
+    t.messages.push({ id: newItemId(), name: who, text: "🔓 המרחב נפתח מחדש להצטרפות.", at });
+    return json({ ok: true, team: view(await saveTeam(t), access) });
+  }
+
   if (action === "invite") {
+    if (t.locked) return json({ error: "locked", message: "המרחב סגור לצוות. כדי להזמין שותפים/ות חדשים/ות, המוביל/ה פותח/ת אותו מחדש (בלשונית \"על הקבוצה\")." }, 423);
     const emails = [...new Set(String(body.emails ?? "").split(/[\s,;]+/).map(e => e.trim()).filter(e => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)))].slice(0, 10);
     if (!emails.length) return json({ error: "missing_fields", message: "נשמח לכתובת מייל אחת לפחות." }, 400);
     if (!mailConfigured()) return json({ ok: true, sent: 0, mailConfigured: false, link: `${site}/match#join-team=${t.id}` });
@@ -332,6 +361,7 @@ export default async (req: Request) => {
       // הצטרפות מתוך סביבת העבודה: מי שיש לה את הקישור מצטרפת לרשימת חברות הצוות.
       const name = clip(body.member, 160);
       if (!name) return json({ error: "missing_fields", message: "נשמח לשם." }, 400);
+      if (t.locked && !t.members.some(x => x.name === name)) return json({ error: "locked", message: closedMsg(t) }, 423);
       if (!t.members.some(x => x.name === name)) {
         t.members.push({ name, email: clip(body.email, 240), role: clip(body.role, 120), joinedAt: at });
         t.requests = t.requests.filter(r => r.name !== name);

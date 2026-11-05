@@ -128,3 +128,28 @@ export function id() {
 export function safeName(name: string) {
   return name.replace(/[^\p{L}\p{N}._-]+/gu, "-").slice(0, 120) || "file";
 }
+
+// ---------- קריאת הספרייה כולה (5.11.2026) ----------
+// קריאה של כל פריט בנפרד חרגה ממגבלת הזמן (504) כשהספרייה גדלה, והספרייה ומצפן המחקר לא נטענו.
+// עכשיו: קריאה במקביל, ותמונת מצב אחת (library-meta/snapshot.json) שנבנית מחדש אחרי כל שינוי בספרייה
+// (libraryChanged) או אחרי שעה.
+export async function pool<T, R>(rows: T[], run: (x: T) => Promise<R>, n = 40): Promise<R[]> {
+  const out: R[] = new Array(rows.length);
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, rows.length) }, async () => { while (i < rows.length) { const k = i++; out[k] = await run(rows[k]); } }));
+  return out;
+}
+const LIB_SNAPSHOT = "library-meta/snapshot.json";
+export async function readLibrary(): Promise<any[]> {
+  const st = store("hosen-data");
+  const snap = await st.get(LIB_SNAPSHOT, { type: "json" }).catch(() => null) as { at: number; items: any[] } | null;
+  if (snap && Array.isArray(snap.items) && Date.now() - Number(snap.at || 0) < 3600_000) return snap.items;
+  const { blobs } = await st.list({ prefix: "library/" });
+  const rows = await pool(blobs, b => (st.get(b.key, { type: "json" }) as Promise<any>).catch(() => null));
+  const items = rows.filter(Boolean);
+  await st.setJSON(LIB_SNAPSHOT, { at: Date.now(), items }).catch(() => {});
+  return items;
+}
+export async function libraryChanged() {
+  await store("hosen-data").delete(LIB_SNAPSHOT).catch(() => {});
+}

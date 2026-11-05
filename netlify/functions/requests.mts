@@ -19,7 +19,7 @@ export default async (req: Request) => {
   // העתק של טפסי האתר (פידבק, הצעת שיתוף פעולה, הצעת מקור) — כדי שיופיעו גם בתיבת הפניות.
   if (body.action === "add") {
     if (!looksHuman(body)) return json({ ok: true });
-    const type = ["feedback", "idea", "source"].includes(body.type) ? body.type : "feedback";
+    const type = ["feedback", "idea", "source", "role"].includes(body.type) ? body.type : "feedback";
     const fields = body.fields && typeof body.fields === "object" ? body.fields : {};
     const pick = (...keys: string[]) => keys.map(k => clip(fields[k], 300)).find(Boolean) || "";
     const name = pick("name", "submitterName", "fullName", "שם");
@@ -30,7 +30,7 @@ export default async (req: Request) => {
     const text = Object.entries(fields)
       .filter(([k, v]) => !["name", "email", "submitterName", "communityCode", "bot-field", "form-name", "website"].includes(k) && String(v || "").trim())
       .map(([k, v]) => `${k}: ${clip(v, 2000)}`).join("\n").slice(0, 6000);
-    await addRequest({ type, name, email, subject, body: text, link: type === "source" ? "/articles" : "" });
+    await addRequest({ type, name, email, subject, body: text, link: type === "source" ? "/articles" : type === "role" ? "/people#roles" : "" });
     return json({ ok: true });
   }
 

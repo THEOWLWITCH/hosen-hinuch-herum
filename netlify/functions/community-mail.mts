@@ -2,6 +2,7 @@ import type { Config } from "@netlify/functions";
 import { json, validToken } from "../lib/shared.mts";
 import { getOptOut, loadPeople, mailConfigured, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addLog, listLog, personalize, plainText, renderHtml } from "../lib/community-mail.mts";
+import { buildSiteWeekly } from "../lib/site-weekly.mts";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 
@@ -9,6 +10,12 @@ export default async (req: Request) => {
   if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
   const u = new URL(req.url);
   const site = siteUrl(u.origin);
+
+  // "מה חדש באתר השבוע": טיוטה מוכנה מהשבוע האחרון, נטענת לחלון "עדכון לקהילה" לעריכה ולשליחה.
+  if (req.method === "GET" && u.searchParams.get("weekly") === "1") {
+    const w = await buildSiteWeekly(site, Math.min(Math.max(Number(u.searchParams.get("days")) || 7, 1), 31));
+    return json(w);
+  }
 
   if (req.method === "GET") {
     const [people, optout, log] = await Promise.all([loadPeople(u.origin), getOptOut(), listLog()]);

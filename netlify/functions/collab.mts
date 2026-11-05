@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { issueMemberToken, json, looksHuman, memberFromToken, store, validToken } from "../lib/shared.mts";
+import { issueMemberToken, json, looksHuman, memberFromToken, store, validToken, readLibrary } from "../lib/shared.mts";
 import { THEME_LABELS, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addRequest } from "../lib/requests.mts";
 import { communityOK } from "../lib/member-code.mts";
@@ -69,9 +69,7 @@ async function collectArticles(fromClient: unknown): Promise<RunArticle[]> {
   };
   for (const x of (Array.isArray(fromClient) ? fromClient : []).slice(0, 80)) add(x);
   const st = store("hosen-data");
-  const { blobs } = await st.list({ prefix: "library/" });
-  const lib: any[] = [];
-  for (const b of blobs) { const v = await st.get(b.key, { type: "json" }) as any; if (v?.title) lib.push(v); }
+  const lib: any[] = (await readLibrary()).filter((v: any) => v?.title);
   const yearOf = (x: any) => Number(String(x.publicationDate || x.year || "").slice(0, 4)) || 0;
   const minYear = new Date().getFullYear() - 3;
   lib.filter(x => yearOf(x) >= minYear).sort((a, b) => String(b.publicationDate || b.year || "").localeCompare(String(a.publicationDate || a.year || ""))).slice(0, 60).forEach(add);

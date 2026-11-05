@@ -176,7 +176,7 @@ export const ENGINES = {
     async run(q, { per, from, ms }) {
       const u = new URL("https://api.crossref.org/works");
       u.searchParams.set("query.bibliographic", q); u.searchParams.set("rows", String(per)); u.searchParams.set("mailto", MAIL);
-      u.searchParams.set("select", "DOI,title,author,issued,container-title,type,URL,abstract,is-referenced-by-count,language");
+      u.searchParams.set("select", "DOI,title,author,issued,container-title,type,URL,abstract,is-referenced-by-count"); // "language" לא קיים ב-select של Crossref (HTTP 400, 5.11.2026)
       if (from) u.searchParams.set("filter", `from-pub-date:${from}`);
       const j = await getJson(u, ms);
       return ((j.message && j.message.items) || []).map((x) => rec({

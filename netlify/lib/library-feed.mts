@@ -1,7 +1,7 @@
 // ספרייה שמתחדשת: איסוף אוטומטי של מחקרים, דוחות ומשאבים לתיבת אישור.
 // מקורות: OpenAlex ו-ERIC (מאגרים פתוחים וחינמיים), ופידים (RSS) שמנהלת המערכת מוסיפה.
 // איכות (31.10.2026): מ-OpenAlex רק מאמרים מכתבי העת המובילים שב-quality-journals.mts, ומ-ERIC רק שיפוט עמיתים.
-import { id, store } from "./shared.mts";
+import { id, store, libraryChanged } from "./shared.mts";
 import { ALL_ISSNS, QUALITY_AREAS, QUALITY_JOURNALS, qualityBadges, qualityJournal } from "./quality-journals.mts";
 import { cleanLink, linkKey, parseFeed, plainText } from "./calls.mts";
 import { RESEARCH_CATS, type Hebrew } from "./library-hebrew.mts";
@@ -280,6 +280,7 @@ export async function removeFromLibrary(itemId: string): Promise<boolean> {
   if (!old) return false;
   if (old.fileKey) await store("hosen-files").delete(old.fileKey);
   await st.delete(`library/${itemId}.json`);
+  await libraryChanged();
   const { blobs } = await st.list({ prefix: "resources/" });
   for (const b of blobs) { const r = await st.get(b.key, { type: "json" }) as any; if (r?.libraryId === itemId) await st.delete(b.key); }
   return true;
@@ -437,6 +438,7 @@ export async function approve(key: string, edits: ApproveEdits = {}) {
     origin: x.source, createdAt: now, updatedAt: now,
   };
   await st.setJSON(`library/${row.id}.json`, row);
+  await libraryChanged();
   let research: { id: string; category: string; pending: boolean } | null = null;
   const rc = String(edits.researchCat ?? v.he?.cat ?? v.cat ?? "");
   if (RESEARCH_CATS[rc]) {

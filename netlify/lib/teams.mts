@@ -1,7 +1,7 @@
 // זירת קבוצות משימה להגשות משותפות.
 // אין באתר חשבונות משתמשות, ולכן סביבת העבודה של כל קבוצה נפתחת בקישור סודי (מפתח).
 // בשרת נשמר רק גיבוב של המפתח.
-import { id, store } from "./shared.mts";
+import { id, store, pool } from "./shared.mts";
 
 export type TeamStatus = "recruiting" | "writing" | "submitted" | "won" | "closed";
 export const TEAM_STATUS: Record<TeamStatus, string> = {
@@ -22,6 +22,11 @@ export type Team = {
   id: string; keyHash: string; memberKeys?: string[]; leadKeys?: string[]; keyOwners?: Record<string, string>; keysV2?: boolean; title: string; summary: string; need: string;
   callId?: string; callTitle?: string; funder?: string; deadline?: string; internal: boolean; origin?: string;
   status: TeamStatus; lead: { name: string; email?: string };
+  // מרחב סגור (5.11.2026): אחרי שהצוות התגבש, המוביל/ה סוגר/ת את המרחב בקוד צוות. אין הצטרפות חדשה,
+  // והדיון והחומרים נפתחים לחברי/ות הצוות רק עם הקוד. בכרטיס הציבורי נשארים התקציר ושמות החוקרים/ות.
+  locked?: boolean; lockHash?: string; lockedAt?: string;
+  // הפעילות האחרונה במרחב (פתיחה או עבודה בו). הנורית בכרטיס דולקת שבוע מאז (5.11.2026).
+  activeAt?: string;
   members: Member[]; requests: JoinRequest[]; sections: Section[]; tasks: Task[]; messages: Message[]; links: Link[];
   createdAt: string; updatedAt: string;
 };
@@ -74,11 +79,8 @@ export async function deleteTeam(teamId: string) {
 export async function listTeams(): Promise<Team[]> {
   const st = data();
   const { blobs } = await st.list({ prefix: "teams/" });
-  const rows: Team[] = [];
-  for (const b of blobs) {
-    const v = await st.get(b.key, { type: "json" }) as Team | null;
-    if (v?.id) rows.push(v);
-  }
+  // קריאה במקביל: קריאה אחת-אחת מאטה ככל שיש יותר קבוצות (5.11.2026).
+  const rows = (await pool(blobs, b => (st.get(b.key, { type: "json" }) as Promise<Team | null>).catch(() => null))).filter((v): v is Team => !!v?.id);
   return rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
@@ -97,6 +99,16 @@ export async function openTeamAccess(teamId: string, key: string): Promise<TeamA
   if ((t.keysV2 && h === t.keyHash) || (t.leadKeys || []).includes(h)) return { team: t, role: "lead", hash: h, me: me || t.lead.name };
   if ((t.memberKeys || []).includes(h)) return { team: t, role: "member", hash: h, me };
   return null;
+}
+
+export async function hashLock(teamId: string, code: string): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("teamlock:" + teamId + ":" + String(code || "").trim()));
+  return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+// מרחב סגור: חבר/ה בצוות צריך/ה גם את קוד הצוות. המוביל/ה נכנס/ת בקישור האישי שלו/ה.
+export async function lockOK(t: Team, role: TeamRole, code: unknown): Promise<boolean> {
+  if (!t.locked || !t.lockHash || role === "lead") return true;
+  return !!String(code || "").trim() && (await hashLock(t.id, String(code))) === t.lockHash;
 }
 
 export async function openTeam(teamId: string, key: string): Promise<Team | null> {
@@ -120,12 +132,13 @@ export function publicTeam(t: Team) {
     id: t.id, title: t.title, summary: t.summary, need: t.need, status: t.status, statusLabel: TEAM_STATUS[t.status],
     callId: t.callId || "", callTitle: t.callTitle || "", funder: t.funder || "", deadline: t.deadline || "", internal: t.internal, origin: t.origin || "",
     lead: t.lead.name, members: t.members.map(m => m.name), requests: t.requests.length, createdAt: t.createdAt,
+    locked: !!t.locked, activeAt: t.activeAt || t.updatedAt || t.createdAt,
   };
 }
 
 // מה שחברות הקבוצה רואות בסביבת העבודה.
 export function workspaceTeam(t: Team) {
-  const { keyHash, memberKeys, leadKeys, keyOwners, ...rest } = t;
+  const { keyHash, memberKeys, leadKeys, keyOwners, lockHash, ...rest } = t;
   return { ...rest, statusLabel: TEAM_STATUS[t.status], statuses: TEAM_STATUS };
 }
 

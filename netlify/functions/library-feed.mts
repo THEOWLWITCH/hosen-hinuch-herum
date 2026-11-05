@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { json, store, validToken } from "../lib/shared.mts";
+import { json, store, validToken, libraryChanged } from "../lib/shared.mts";
 import { QUALITY_INFO, SECTION_LABELS, SUGGESTED_FEEDS, testFeed, TOPICS, approve, auditKeep, auditLibrary, collect, getFeeds, getHidden, getStatus, listInbox, purgeLowQuality, reject, removeFromLibrary, saveFeeds, setHidden } from "../lib/library-feed.mts";
 import { RESEARCH_CATS, hebrewFor, kickHebrew } from "../lib/library-hebrew.mts";
 
@@ -76,6 +76,7 @@ export default async (req: Request) => {
       if (!old) return json({ ok: true, hidden: await setHidden(itemId, true) });
       if (old.fileKey) await store("hosen-files").delete(old.fileKey);
       await st.delete(`library/${itemId}.json`);
+      await libraryChanged();
       return json({ ok: true, deleted: true });
     }
   }
