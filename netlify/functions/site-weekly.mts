@@ -26,5 +26,5 @@ export default async () => {
   return new Response(null, { status: 204 });
 };
 
-// יום ראשון 07:40 שעון ישראל (בחורף UTC+2).
-export const config: Config = { schedule: "40 5 * * 0" };
+// יום ראשון 11:40 שעון ישראל (בחורף UTC+2): אחרי העדכון השבועי של "חידושים במחקר" (08:23) והפריסה, כדי שמחקרי השבוע ייכנסו לטיוטה.
+export const config: Config = { schedule: "40 9 * * 0" };

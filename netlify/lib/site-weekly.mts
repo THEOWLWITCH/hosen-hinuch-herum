@@ -33,11 +33,19 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   add("board", "📣 דברי קהילה", messages.filter(isNew).filter(m => !m.expiresAt || m.expiresAt >= new Date().toISOString())
     .slice(0, 6).map(m => `${clip(m.title || m.message, 90)}${m.name ? ` (${clip(m.name, 60)})` : ""}`), ["לכל ההודעות", `${site}/now`]);
 
+  // חידושים במחקר: מחקרי השבוע מהעדכון של יום ראשון (research-weekly.json נוצר בבנייה), ומחקרים שחברי הקהילה הוסיפו.
+  const rw = await fetch(`${site}/research-weekly.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : null).catch(() => null) as
+    { week: string; added: number; highlights: { title: string; source: string; summary: string; why: string; url: string; note: string }[] } | null;
+  const fresh = !!rw?.week && rw.week >= since.slice(0, 10);
   const research_ = resources.filter(isNew).filter(r => String(r.category || "").startsWith("research-") && r.active !== false && !r.pendingHebrew);
-  add("research", "🔬 חידושים במחקר", [
-    "מחקרי השבוע, עם נקודה לדיון מקצועי",
-    ...research_.slice(0, 5).map(r => clip(r.title, 120)),
-  ], ["לחידושים במחקר", `${site}/articles`]);
+  const rLines: string[] = [];
+  if (fresh && rw!.highlights.length) {
+    if (rw!.added > rw!.highlights.length) rLines.push(`השבוע נוספו ${rw!.added} מחקרים חדשים. אלה מחקרי השבוע:`);
+    for (const x of rw!.highlights) rLines.push(`**${clip(x.title, 160)}** (${clip(x.source, 90)}). ${clip(x.summary, 320)}${x.why ? ` ${clip(x.why, 220)}` : ""}${x.note ? ` נקודה לדיון: ${clip(x.note, 200)}` : ""} ${x.url}`);
+  }
+  for (const r of research_.slice(0, 4)) rLines.push(`נוסף בידי הקהילה: ${clip(r.title, 120)}`);
+  if (!rLines.length) rLines.push("השבוע לא נוספו מחקרים חדשים. אפשר לקרוא את מחקרי השבועות הקודמים ולהגיב בדיון");
+  S.unshift({ key: "research", title: "🔬 חידושים במחקר: מחקרי השבוע", lines: rLines, link: ["לכל המחקרים ולדיון", `${site}/articles`] });
 
   const lib = library.filter(isNew);
   add("library", `📚 נכנסו לספרייה${lib.length > 1 ? ` (${lib.length} מקורות חדשים)` : ""}`, lib.slice(0, 4).map(x => clip(x.title || x.apa, 120)), ["לספרייה", `${site}/library`]);
@@ -66,7 +74,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const albums = gallery.filter(isNew).filter(g => g.active !== false);
   add("gallery", "📷 בגלריה", albums.slice(0, 4).map(g => clip(g.title, 100)), ["לגלריה", `${site}/gallery`]);
 
-  const count = S.filter(s => s.key !== "research").reduce((n, s) => n + s.lines.length, 0);
+  const count = S.filter(s => s.key !== "research").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
   const from = formatDate(since.slice(0, 10)), to = formatDate(today);
   const blocks = S.map(s => [`**${s.title}**`, ...s.lines.map(l => "- " + l), s.link ? `${s.link[0]}: ${s.link[1]}` : ""].filter(Boolean).join("\n"));
   const body = [

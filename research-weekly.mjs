@@ -79,6 +79,17 @@ export function check(src) {
   return { errors, world: world.length, weekly: weekly.length, week };
 }
 
+// מחקרי השבוע לעדכון השבועי במייל (5.11.2026: "חידושים במחקר יהיה חלק מהעדכון השבועי").
+// build.mjs כותב את זה ל-dist/research-weekly.json, ו-netlify/lib/site-weekly.mts קורא משם.
+export function weeklySnapshot(src) {
+  const world = grab(src, "researchWorldItems");
+  const notes = grab(src, "weeklyResearchNotes");
+  const week = weekOf(src) || "";
+  const tag = "w" + week.replace(/-/g, "");
+  const pick = x => ({ id: x.id, title: x.title, authors: x.authors, source: x.source, year: x.year, cat: x.cat, summary: x.summary, why: x.why, url: x.url, note: notes[x.id] || "" });
+  return { week, highlights: world.filter(x => x.weeklyNew).slice(0, 5).map(pick), added: world.filter(x => String(x.id || "").startsWith(tag)).length };
+}
+
 export function apply(src, items, notes, iso) {
   const ids = items.map(x => x.id);
   if (!items.length) throw new Error("אין פריטים חדשים");
