@@ -109,11 +109,15 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   S.splice(1, 0, { key: "stats", title: "📊 הקהילה במספרים", lines: stats });
 
   // 🛠 מה חדש באתר עצמו: מתוך site-changes.json שבמאגר (כל שינוי שהקהילה רואה נרשם שם).
-  const changes = await fetch(`${site}/site-changes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => []) as { date: string; items: string[] }[];
+  const changes = await fetch(`${site}/site-changes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => []) as { date: string; items: string[]; guides?: { title: string; lines: string[] }[] }[];
   const changed = (Array.isArray(changes) ? changes : []).filter(c => String(c?.date || "") >= sinceDay).flatMap(c => Array.isArray(c.items) ? c.items : []).map(x => clip(x, 300)).filter(Boolean);
   if (changed.length) S.splice(2, 0, { key: "site", title: "🛠 מה חדש באתר עצמו", lines: changed.slice(0, 15), link: ["לאתר", site] });
+  // הסבר מורחב על שינוי (guides ב-site-changes.json): מדור משלו מיד אחרי "מה חדש באתר עצמו" (5.11.2026).
+  const guides = (Array.isArray(changes) ? changes : []).filter(c => String(c?.date || "") >= sinceDay).flatMap(c => Array.isArray(c.guides) ? c.guides : [])
+    .filter(g => g?.title && Array.isArray(g.lines) && g.lines.length).slice(0, 3);
+  guides.forEach((g, i) => S.splice((changed.length ? 3 : 2) + i, 0, { key: "guide", title: clip(g.title, 120), lines: g.lines.slice(0, 10).map(x => clip(x, 400)) }));
 
-  const count = S.filter(s => s.key !== "research" && s.key !== "stats").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
+  const count = S.filter(s => s.key !== "research" && s.key !== "stats" && s.key !== "guide").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
   const from = formatDate(since.slice(0, 10)), to = formatDate(today);
   const blocks = S.map(s => [`**${s.title}**`, ...s.lines.map(l => "- " + l), s.link ? `${s.link[0]}: ${s.link[1]}` : ""].filter(Boolean).join("\n"));
   const body = [
