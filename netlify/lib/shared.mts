@@ -153,3 +153,13 @@ export async function readLibrary(): Promise<any[]> {
 export async function libraryChanged() {
   await store("hosen-data").delete(LIB_SNAPSHOT).catch(() => {});
 }
+
+// חברי וחברות נבחרת שנכנסו לאתר עם הקוד האישי (5.11.2026, למספרים בעדכון השבועי).
+// נשמר רק היום האחרון, לכל היותר כתיבה אחת ביום לכל כרטיס.
+export async function markSeen(personId: string) {
+  if (!/^[\w-]{1,80}$/.test(personId)) return;
+  const day = new Date().toISOString().slice(0, 10);
+  const st = store("hosen-data"), key = `member-seen/${personId}.json`;
+  const v = await st.get(key, { type: "json" }).catch(() => null) as { day?: string } | null;
+  if (v?.day !== day) await st.setJSON(key, { day }).catch(() => {});
+}

@@ -22,10 +22,11 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const today = israelToday();
   const isNew = (x: any) => String(x?.createdAt || "") >= since;
-  const [messages, resources, gallery, library, calls, teams, collabs, research, people] = await Promise.all([
+  const [messages, resources, gallery, library, calls, teams, collabs, research, people, seen, discussions, requests] = await Promise.all([
     listPrefix("messages/"), listPrefix("resources/"), listPrefix("gallery/"), readLibrary(),
     listCalls().catch(() => []), listTeams().catch(() => []), listCollabs().catch(() => []), listResearch().catch(() => []),
     loadPeople(site).catch(() => []),
+    listPrefix("member-seen/"), listPrefix("research-discussions/"), listPrefix("requests/"),
   ]);
   const S: WeeklySection[] = [];
   const add = (key: string, title: string, lines: string[], link?: [string, string]) => { if (lines.length) S.push({ key, title, lines, link }); };
@@ -35,7 +36,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
 
   // חידושים במחקר: מחקרי השבוע מהעדכון של יום ראשון (research-weekly.json נוצר בבנייה), ומחקרים שחברי הקהילה הוסיפו.
   const rw = await fetch(`${site}/research-weekly.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : null).catch(() => null) as
-    { week: string; added: number; highlights: { title: string; source: string; summary: string; why: string; url: string; note: string }[] } | null;
+    { week: string; added: number; total?: number; highlights: { title: string; source: string; summary: string; why: string; url: string; note: string }[] } | null;
   const fresh = !!rw?.week && rw.week >= since.slice(0, 10);
   const research_ = resources.filter(isNew).filter(r => String(r.category || "").startsWith("research-") && r.active !== false && !r.pendingHebrew);
   const rLines: string[] = [];
@@ -46,6 +47,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   for (const r of research_.slice(0, 4)) rLines.push(`נוסף בידי הקהילה: ${clip(r.title, 120)}`);
   if (!rLines.length) rLines.push("השבוע לא נוספו מחקרים חדשים. אפשר לקרוא את מחקרי השבועות הקודמים ולהגיב בדיון");
   S.unshift({ key: "research", title: "🔬 חידושים במחקר: מחקרי השבוע", lines: rLines, link: ["לכל המחקרים ולדיון", `${site}/articles`] });
+
 
   const lib = library.filter(isNew);
   add("library", `📚 נכנסו לספרייה${lib.length > 1 ? ` (${lib.length} מקורות חדשים)` : ""}`, lib.slice(0, 4).map(x => clip(x.title || x.apa, 120)), ["לספרייה", `${site}/library`]);
@@ -74,7 +76,32 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const albums = gallery.filter(isNew).filter(g => g.active !== false);
   add("gallery", "📷 בגלריה", albums.slice(0, 4).map(g => clip(g.title, 100)), ["לגלריה", `${site}/gallery`]);
 
-  const count = S.filter(s => s.key !== "research").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
+  // 📊 הקהילה במספרים (5.11.2026). "נכנסו השבוע" = מי שנכנס/ה לאתר עם הקוד האישי (member-seen/), כי בלי קוד אין דרך לדעת מי ביקר.
+  const n = (x: number) => x.toLocaleString("he-IL");
+  const sinceDay = since.slice(0, 10);
+  const liveTeams = (teams as any[]).filter(t => t.status !== "closed");
+  const ideasOpen = (research as any[]).filter(r => r.status === "open").length + (collabs as any[]).filter(c => c.status === "open").length;
+  const closingSoon = open.filter(c => c.endDate && c.endDate >= today && c.endDate <= new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10)).length;
+  // ניסוח נכון ליחיד ולרבים.
+  const q = (x: number, one: string, many: string) => x === 1 ? one : `${n(x)} ${many}`;
+  const added = (x: number) => x ? ` (${x === 1 ? "אחד נוסף" : `${n(x)} נוספו`} השבוע)` : "";
+  const seenWeek = (seen as any[]).filter(x => String(x.day || "") >= sinceDay).length;
+  const comments = (discussions as any[]).filter(isNew).length;
+  const roles = (requests as any[]).filter(r => r.type === "role" && isNew(r)).length;
+  const boardNew = messages.filter(isNew).length;
+  const stats = [
+    `${q(people.length, "חבר/ה אחד/ת בנבחרת", "חברות וחברים בנבחרת")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
+    `${q(library.length, "מקור אחד בספרייה", "מקורות בספרייה")}${added(lib.length)}`,
+    ...(rw?.total ? [`${q(rw.total, "מחקר אחד", "מחקרים")} ב"חידושים במחקר"${fresh ? added(rw.added) : ""}${comments ? `. ${q(comments, "תגובה אחת", "תגובות")} בדיון השבוע` : ""}`] : []),
+    `${q(liveTeams.length, "מרחב עבודה אחד", "מרחבי עבודה")}${added(newTeams.length)}${activeTeams.length ? (liveTeams.length === 1 ? ", והוא היה פעיל השבוע" : `. ${activeTeams.length === 1 ? "אחד מהם היה פעיל" : `${n(activeTeams.length)} מהם היו פעילים`} השבוע`) : ""}`,
+    ...(ideasOpen ? [`${q(ideasOpen, "רעיון או יוזמה אחת שמחפשים", "רעיונות למחקר ויוזמות שמחפשים")} שותפים`] : []),
+    `${q(open.length, "קול קורא פתוח אחד", "קולות קוראים פתוחים")}${added(freshCalls.length)}${closingSoon ? `. ${closingSoon === 1 ? "אחד נסגר" : `${n(closingSoon)} נסגרים`} בשבועיים הקרובים` : ""}`,
+    ...(boardNew ? [`${q(boardNew, "הודעה חדשה אחת", "הודעות חדשות")} בדברי קהילה`] : []),
+    ...(roles ? [`${roles === 1 ? "חבר/ת קהילה אחד/ת התנדב/ה" : `${n(roles)} חברי וחברות קהילה התנדבו`} השבוע לתפקיד`] : []),
+  ];
+  S.splice(1, 0, { key: "stats", title: "📊 הקהילה במספרים", lines: stats });
+
+  const count = S.filter(s => s.key !== "research" && s.key !== "stats").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
   const from = formatDate(since.slice(0, 10)), to = formatDate(today);
   const blocks = S.map(s => [`**${s.title}**`, ...s.lines.map(l => "- " + l), s.link ? `${s.link[0]}: ${s.link[1]}` : ""].filter(Boolean).join("\n"));
   const body = [

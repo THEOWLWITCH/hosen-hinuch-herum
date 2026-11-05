@@ -1,4 +1,4 @@
-import { communityCodeOK, memberFromToken, store } from "./shared.mts";
+import { communityCodeOK, markSeen, memberFromToken, store } from "./shared.mts";
 import { loadPeople, sendMail } from "./calls.mts";
 
 // קוד אישי לחברות וחברי הקהילה: נכנסים איתו לעדכון הכרטיס, בלי קישור במייל.
@@ -127,7 +127,9 @@ export async function memberIdFromRequest(req: Request, code?: unknown): Promise
   if (!pid) pid = await memberFromToken(String(req.headers.get("x-member-token") || "").slice(0, 400));
   if (!pid) return null;
   const people = await loadPeople(new URL(req.url).origin);
-  return people.some(p => p.id === pid) ? pid : null;
+  if (!people.some(p => p.id === pid)) return null;
+  await markSeen(pid); // פעולה באתר עם הקוד האישי נחשבת ביקור (למספרים בעדכון השבועי)
+  return pid;
 }
 
 export async function communityOK(req: Request, code: unknown): Promise<boolean> {

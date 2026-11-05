@@ -54,6 +54,8 @@
     // כניסה שפג תוקפה: חוזרים לשדה הקוד.
     if(tok())_fetch('/api/member',{headers:{'x-member-token':tok()}}).then(r=>{if(r.status===403){try{localStorage.removeItem(KEY);localStorage.removeItem(NAME)}catch(e){}decorate()}else if(r.ok)return r.json().then(d=>{try{localStorage.setItem(NAME,d.name||'')}catch(e){}decorate()})}).catch(()=>{});
   });
+  // ביקור יומי (5.11.2026): פעם ביום, מי שמחובר/ת עם הקוד האישי נספר/ת ב"נכנסו השבוע" שבעדכון השבועי.
+  try{const d=new Date().toISOString().slice(0,10);if(tok()&&get('hosen_member_seen')!==d){localStorage.setItem('hosen_member_seen',d);setTimeout(()=>fetch('/api/member?ping=1').catch(()=>{}),4000)}}catch(e){}
 })();
 </script>
 <style id="member-session-css">.mc-on{font-size:13px;color:#2f6e4f;background:#eef6f2;border-radius:8px;padding:7px 10px;align-self:end}.mc-hint{display:block;font-size:11px;font-weight:400;color:#6b7d88;margin-top:3px}</style>

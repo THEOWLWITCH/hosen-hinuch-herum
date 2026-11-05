@@ -1,5 +1,5 @@
 import type { Config } from "@netlify/functions";
-import { id, issueMemberToken, json, looksHuman, memberFromToken, safeName, store, validToken } from "../lib/shared.mts";
+import { id, issueMemberToken, json, looksHuman, markSeen, memberFromToken, safeName, store, validToken } from "../lib/shared.mts";
 import { THEMES, getOptOut, loadPeople, mailConfigured, mailErrorHint, personTopics, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { KINDS, cleanKinds, offerOf } from "../lib/collab.mts";
 import { codeFor, codeMail, formatCode, hasCode, pidFromCode } from "../lib/member-code.mts";
@@ -54,7 +54,10 @@ export default async (req: Request) => {
   // הכרטיס המלא של מי שנכנס/ה.
   if (req.method === "GET") {
     const pid = await me(req);
+    // ביקור יומי של מי שמחובר/ת עם הקוד האישי (למספרים בעדכון השבועי).
+    if (u.searchParams.get("ping") === "1") { if (pid) await markSeen(pid); return json({ ok: true }); }
     if (!pid) return json(EXPIRED, 403);
+    await markSeen(pid);
     const p = (await loadPeople(u.origin)).find(x => x.id === pid) as any;
     if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
     return json({
@@ -90,6 +93,7 @@ export default async (req: Request) => {
     if (!pid) return json({ error: "bad_code", message: "הקוד לא מתאים. כדאי לבדוק אותו שוב, או לבקש אותו למייל בכפתור \"שכחתי את הקוד\"." }, 401);
     const p = (await loadPeople(u.origin)).find(x => x.id === pid);
     if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+    await markSeen(pid);
     return json({ ok: true, token: await issueMemberToken(pid, SESSION_DAYS), name: p.name });
   }
 
