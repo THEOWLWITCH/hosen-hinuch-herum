@@ -4457,6 +4457,59 @@ document.addEventListener('DOMContentLoaded',()=>{
  const fr=document.getElementById('roles'),pg=document.getElementById('peopleGrid');if(fr&&pg)pg.after(fr);
  rolesRender();if(location.hash==='#roles')setTimeout(()=>document.getElementById('roles')?.scrollIntoView({behavior:'smooth'}),300)});
 </script>
+<style id="admin-menu-v1">
+#adminMenu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 14px}
+#adminMenu .am-group{border:1px solid #d6e4e8;border-radius:10px;padding:10px 12px;background:#fbfdfd}
+#adminMenu h4{margin:0 0 8px;font-size:14.5px;color:#1f4b60}
+#adminMenu .am-btns{display:flex;flex-wrap:wrap;gap:6px}
+#adminMenu button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid #9ec3cf;background:#fff;color:#21516a;cursor:pointer}
+#adminMenu button:hover{background:#eef6f8}#adminMenu button.active{background:#2d617a;color:#fff;border-color:#2d617a}
+html.admin-menu-on #adminTabs,html.admin-menu-on .admin-head-actions .admin-community-mail{display:none!important}
+@media(max-width:700px){#adminMenu{grid-template-columns:1fr}}
+</style>
+<script id="admin-menu-v1-js">
+// ניהול מערכת בארבעה אזורים (5.11.2026: "אתה חייב לעבוד על פישוט המערכת").
+// הכפתורים המקוריים נשארים (מוסתרים), והתפריט רק מסדר אותם בקבוצות ובשמות ברורים ומפעיל אותם.
+// כפתור או לשונית חדשים שלא מופיעים כאן נכנסים אוטומטית ל"תוכן באתר", כדי ששום דבר לא ייעלם.
+(function(){
+  const GROUPS=[
+    ['🤝 צוותים ושיתופי פעולה',[['tabTeams','🔒 צוותים: סגירה בקוד וניהול'],['adminResearch','🔬 רעיונות למחקר'],['tabSurvey','📊 סקר רעיונות']]],
+    ['👥 הנבחרת',[['tabPeople','כרטיסי הנבחרת: עריכה והוספה'],['adminMemberCode','👤 קוד כניסה אישי לחבר/ה אחד/ת'],['adminMemberCodes','👤 שליחת קודי כניסה לכולם'],['adminTopicsInvite','🎯 קישור לבחירת נושאים']]],
+    ['📚 תוכן באתר',[['tabRes','כל החומרים: העלאה ועריכה'],['tabLib','מאגר מקורות'],['tabLibraryFeed','מקורות חדשים לספרייה'],['tabCalls','📢 קולות קוראים'],['tabMsg','הודעות לקהילה'],['tabGal','גלריה']]],
+    ['✉ מיילים ופניות',[['adminCommunityMail','✉ עדכון לקהילה והעדכון השבועי'],['adminRequests',null]]],
+  ];
+  const HIDE=new Set(['tabNevet']); // נבט מוסתר באתר (5.11.2026)
+  function build(){
+    const head=document.querySelector('#adminModal .admin-head');const tabs=document.getElementById('adminTabs');
+    if(!head||!tabs)return;
+    const isAdmin=typeof currentAccessRole!=='undefined'&&currentAccessRole==='admin';
+    document.documentElement.classList.toggle('admin-menu-on',isAdmin);
+    let menu=document.getElementById('adminMenu');
+    if(!isAdmin){if(menu)menu.remove();return}
+    if(!menu){menu=document.createElement('div');menu.id='adminMenu';(document.getElementById('communityMailStatus')||head).after(menu)}
+    const known=new Set(GROUPS.flatMap(g=>g[1].map(x=>x[0])));
+    const extra=[...tabs.querySelectorAll('button')].filter(b=>b.id&&!known.has(b.id)&&!HIDE.has(b.id)).map(b=>[b.id,null]);
+    const activeId=[...tabs.querySelectorAll('button.active')].map(b=>b.id)[0]||'';
+    const html=GROUPS.map(([title,items],gi)=>{
+      const rows=(gi===2?items.concat(extra):items).filter(([id])=>{const el=document.getElementById(id);return el&&!el.hidden});
+      if(!rows.length)return '';
+      return `<section class="am-group"><h4>${title}</h4><div class="am-btns">${rows.map(([id,label])=>{const el=document.getElementById(id);const t=label||el.textContent.trim();return `<button type="button" data-am="${id}" class="${id===activeId?'active':''}">${t.replace(/[<>&]/g,'')}</button>`}).join('')}</div></section>`;
+    }).join('');
+    if(menu._html!==html){menu._html=html;menu.innerHTML=html}
+  }
+  let pending=0;const later=()=>{if(pending)return;pending=requestAnimationFrame(()=>{pending=0;build()})};
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('#adminMenu [data-am]');if(!b)return;
+    const el=document.getElementById(b.dataset.am);if(el)el.click();
+    setTimeout(build,50);
+  });
+  document.addEventListener('DOMContentLoaded',()=>{
+    const modal=document.getElementById('adminModal');if(!modal)return;
+    new MutationObserver(recs=>{if(recs.some(r=>!r.target.closest?.('#adminMenu')&&r.target.id!=='adminMenu'))later()}).observe(modal,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']});
+    build();
+  });
+})();
+</script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
 <style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
 <style id="teams-title-v2">.sr-only-ch{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
