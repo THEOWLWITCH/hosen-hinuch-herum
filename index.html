@@ -4580,6 +4580,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const b=document.createElement('button');b.id='tabCalls';b.type='button';b.textContent='קולות קוראים';
     b.onclick=()=>{if(document.documentElement.dataset.page==='calls'){if(typeof closeAdmin==='function')closeAdmin();window.hosenCallsAdmin?.()}else location.href='/calls#calls-admin'};
     tabs.appendChild(b);
+    // 5.11.2026: כניסה ישירה לצוותים (סגירה בקוד, קוד הצוות, קישורים), בלי לחפש בתוך הקולות הקוראים.
+    const t=document.createElement('button');t.id='tabTeams';t.type='button';t.textContent='🔒 צוותים: סגירה בקוד';
+    t.onclick=()=>{if(typeof closeAdmin==='function')closeAdmin();if(window.hosenCallsAdmin)window.hosenCallsAdmin('teams');else location.href='/match#teams-admin'};
+    b.after(t);
   }
   document.addEventListener('DOMContentLoaded',()=>{
     const tabs=document.getElementById('adminTabs');
@@ -5417,7 +5421,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const d=A.d,t=A.tab;
       const isAdmin=d.role!=='calls';
       const tabs=teamsOnly?[['teams',`🤝 קבוצות (${(A.teams||[]).length})`]]:[['inbox',`📥 ממתינים (${d.inbox.length})`],['calls','📢 מפורסמים'],['sources','🔎 מקורות לאיסוף'],...(isAdmin?[['mail','✉ מיילים']]:[])];
-      let html=`<h2>${teamsOnly?'ניהול קבוצות משימה':'ניהול קולות קוראים'}</h2>${isAdmin?'':'<p class="ch-credit">נכנסת כצוות אישור הקולות הקוראים. <button type="button" class="ch-btn small" data-act="calls-logout">יציאה</button></p>'}<nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
+      let html=`<h2>${teamsOnly?'🔒 צוותים פעילים: סגירה בקוד':'ניהול קולות קוראים'}</h2>${isAdmin?'':'<p class="ch-credit">נכנסת כצוות אישור הקולות הקוראים. <button type="button" class="ch-btn small" data-act="calls-logout">יציאה</button></p>'}<nav class="ch-tabs">${tabs.map(([k,v])=>`<button type="button" data-atab="${k}" class="${t===k?'active':''}">${v}</button>`).join('')}</nav>`;
       if(t==='inbox')html+=`<div class="ch-note" style="margin-bottom:12px"><strong>פרסום אוטומטי.</strong> כל יום ראשון בבוקר כל מה שממתין כאן עולה לאתר, בלי מיון, וחצי שעה אחר כך יוצא הסיכום השבועי לחוקרים ולחוקרות. קול קורא שהמועד שלו עבר לא עולה. אפשר גם לפרסם ולשלוח עכשיו:
         <div class="ch-actions" style="margin-top:8px"><button type="button" class="ch-btn primary" data-act="publish-all"${d.inbox.length?'':' disabled'}>📤 פרסום כל הממתינים (${d.inbox.length}) ושליחה עכשיו</button></div></div>`;
       if(t==='inbox')html+=d.inbox.length?d.inbox.map(x=>`<div class="ch-admin-item"><h4 dir="auto">${h(x.title)}</h4><p class="ch-credit">${x.source==='member'?`הוצע על ידי ${h(x.suggestedBy||'')}${x.suggestedEmail?' · '+h(x.suggestedEmail):''}`:`נמצא אוטומטית · ${h(x.sourceName)}`} · <a href="${h(x.url)}" target="_blank" rel="noopener">פתיחת המקור לבדיקה</a></p>${editor(x,true)}</div>`).join(''):'<p class="ch-empty">אין קולות קוראים שמחכים לאישור.</p>';
@@ -5425,12 +5429,12 @@ html[data-page="calls"] #resourceArea{display:none!important}
         html+=`<details class="ch-admin-item"><summary><strong>＋ הוספת קול קורא ידנית</strong></summary>${editor({},false).replace('data-kind="call"','data-kind="new"').replace('>שמירה<','>פרסום<')}</details>`;
         html+=d.calls.length?d.calls.map(c=>`<details class="ch-admin-item"${c.open?'':' style="opacity:.75"'}><summary><strong dir="auto">${h(c.title)}</strong> <span class="ch-credit">${c.endDate?'עד '+fmt(c.endDate):'בלי מועד'} · ${h(d.categories[c.category]||c.category)}${c.open?'':' · נסגר'} · ${c.matches.length} מתאימות</span></summary>${editor(c,false)}${c.open?notifyBox(c):''}</details>`).join(''):'<p class="ch-empty">עדיין אין קולות קוראים מפורסמים.</p>';
       }
-      if(t==='teams')html+=(A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מוביל/ה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} בצוות${x.callTitle?' · קול קורא: '+h(x.callTitle):''}${x.activeAt?` · פעילות אחרונה: ${new Date(x.activeAt).toLocaleDateString('he-IL')}`:''}</p>
-        <p class="ch-credit" style="margin:4px 0">${(x.members||[]).map(n=>`<button type="button" class="ch-btn small" data-act="member-out" data-id="${h(x.id)}" data-name="${h(n)}" title="הוצאה מהקבוצה">${h(n)} ✕</button>`).join(' ')}</p>
-        <div class="ch-admin-lock">${x.locked?`<p class="ch-credit">🔒 <strong>סגור לצוות</strong>${x.lockCode?` · קוד הצוות: <code dir="ltr" style="font-size:14px">${h(x.lockCode)}</code>`:' · הקוד נקבע לפני שהמערכת שמרה קודים. אפשר לקבוע קוד חדש.'}</p>`:'<p class="ch-credit">🙋 פתוח להצטרפות</p>'}
+      if(t==='teams')html+=`<div class="ch-note"><strong>סגירת צוות בקוד:</strong> כל כרטיס כאן הוא צוות אחד, ושמו כתוב בראש הכרטיס. כדי לסגור צוות שהתגבש: בכרטיס שלו מקלידים קוד (4 תווים לפחות) ולוחצים "🔒 סגירה בקוד". הקוד מופיע אחר כך בכרטיס, ואותו שולחים לחברי וחברות הצוות.</div>`+((A.teams||[]).length?(A.teams||[]).map(x=>`<div class="ch-admin-item"><h4>🤝 ${h(x.title)} <span class="ch-badge gray">${h(x.statusLabel)}</span></h4><p class="ch-credit">מוביל/ה: ${h(x.lead)}${x.leadEmail?' · '+h(x.leadEmail):''} · ${x.members.length} בצוות${x.callTitle?' · קול קורא: '+h(x.callTitle):''}${x.activeAt?` · פעילות אחרונה: ${new Date(x.activeAt).toLocaleDateString('he-IL')}`:''}</p>
+        <p class="ch-credit" style="margin:4px 0">בצוות (לחיצה על ✕ מוציאה מהצוות): ${(x.members||[]).map(n=>`<button type="button" class="ch-btn small" data-act="member-out" data-id="${h(x.id)}" data-name="${h(n)}" title="הוצאה מהקבוצה">${h(n)} ✕</button>`).join(' ')}</p>
+        <div class="ch-admin-lock" style="margin:8px 0;padding:10px 12px;border:1px solid #e7d7a8;border-radius:8px;background:#fffcf3">${x.locked?`<p class="ch-credit">🔒 <strong>סגור לצוות</strong>${x.lockCode?` · קוד הצוות: <code dir="ltr" style="font-size:14px">${h(x.lockCode)}</code>`:' · הקוד נקבע לפני שהמערכת שמרה קודים. אפשר לקבוע קוד חדש.'}</p>`:'<p class="ch-credit">🙋 פתוח להצטרפות</p>'}
           <form class="ch-inline" data-lockform="${h(x.id)}" style="grid-template-columns:1fr auto"><input name="teamCode" minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="${x.locked?'קוד צוות חדש':'קוד צוות (4 תווים לפחות)'}" aria-label="קוד צוות"><button class="ch-btn small primary">${x.locked?'החלפת הקוד':'🔒 סגירה בקוד'}</button></form>
           ${x.locked?`<button type="button" class="ch-btn small" data-act="admin-unlock" data-id="${h(x.id)}">🔓 פתיחה מחדש להצטרפות</button>`:''}</div>
-        <div class="ch-actions"><button type="button" class="ch-btn small" data-act="rekey" data-id="${h(x.id)}">קישור חדש לסביבת העבודה</button><button type="button" class="ch-btn small danger" data-act="team-delete" data-id="${h(x.id)}">מחיקת הקבוצה</button></div><div data-rekey="${h(x.id)}"></div></div>`).join(''):'<p class="ch-empty">עדיין לא הוקמו קבוצות משימה.</p>';
+        <div class="ch-actions"><button type="button" class="ch-btn small" data-act="rekey" data-id="${h(x.id)}">קישור חדש לסביבת העבודה</button><button type="button" class="ch-btn small danger" data-act="team-delete" data-id="${h(x.id)}">מחיקת הקבוצה</button></div><div data-rekey="${h(x.id)}"></div></div>`).join(''):'<p class="ch-empty">עדיין לא הוקמו קבוצות משימה.</p>');
       if(t==='sources'){
         const st=Object.fromEntries((d.sourceStatus||[]).map(s=>[s.url,s]));
         html+=`<div class="ch-note"><strong>איך מוסיפים מקור?</strong> כל מקור הוא כתובת של פיד (RSS / Atom) או של עמוד שמרכז קולות קוראים. כל בוקר המערכת סורקת את המקורות, ומעבירה ללשונית "לאישור" רק פריטים חדשים שנראים כמו קול קורא בתחום.
@@ -5568,6 +5572,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     if(location.hash==='#team-new'){history.replaceState(null,'',location.pathname+'#teams');openTeamNew('');return}
     if(location.hash==='#calls-admin'){history.replaceState(null,'',location.pathname);openCallsAdmin()}
     if(location.hash==='#teams')document.getElementById('teams')?.scrollIntoView({behavior:'smooth'});
+    if(location.hash==='#teams-admin'){history.replaceState(null,'',location.pathname);openCallsAdmin('teams')}
   }
   document.addEventListener('DOMContentLoaded',()=>{
     if(document.documentElement.dataset.page==='match'){
@@ -7446,7 +7451,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
   // קוד לכרטיס אחד (לפי שם): מוצג כאן, ונשלח גם במייל כשאפשר.
   async function codeOne(){
     let people=[];try{people=await (await fetch('/api/people')).json()}catch(e){}
-    const q=(prompt('קוד אישי לכרטיס אחד. שם או חלק מהשם:')||'').trim();if(!q)return;
+    const q=(prompt('קוד כניסה אישי לחבר/ת נבחרת (לא קוד צוות).\nשם החבר/ה, או חלק מהשם:')||'').trim();if(!q)return;
     const hit=people.filter(p=>String(p.name||'').includes(q));
     if(hit.length!==1){alert(hit.length?`נמצאו ${hit.length} כרטיסים: ${hit.map(p=>p.name).join(', ')}. אפשר לדייק את השם.`:'לא נמצא כרטיס בשם הזה.');return}
     const fresh=confirm(`${hit[0].name}\n\nאישור = קוד חדש (הקוד הקודם יפסיק לפעול).\nביטול = הקוד הקיים (או קוד ראשון, אם עוד אין).`);
@@ -7477,8 +7482,8 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
     if(mail&&!document.getElementById('adminTopicsInvite')){
       const b=document.createElement('button');b.id='adminTopicsInvite';b.type='button';b.className='admin-community-mail';b.textContent='🎯 קישור לבחירת נושאים לנבחרת';b.onclick=inviteAll;
       (document.getElementById('adminRequests')||mail).after(b);
-      const c=document.createElement('button');c.id='adminMemberCodes';c.type='button';c.className='admin-community-mail';c.textContent='🔑 קודים אישיים לנבחרת';c.onclick=codesAll;b.after(c);
-      const c1=document.createElement('button');c1.id='adminMemberCode';c1.type='button';c1.className='admin-community-mail';c1.textContent='🔑 קוד לכרטיס אחד';c1.onclick=codeOne;c.after(c1);
+      const c=document.createElement('button');c.id='adminMemberCodes';c.type='button';c.className='admin-community-mail';c.textContent='👤 שליחת קודי כניסה אישיים לחברי וחברות הנבחרת';c.onclick=codesAll;b.after(c);
+      const c1=document.createElement('button');c1.id='adminMemberCode';c1.type='button';c1.className='admin-community-mail';c1.textContent='👤 קוד כניסה אישי לחבר/ת נבחרת אחד/ת';c1.onclick=codeOne;c.after(c1);
       const sync=()=>{b.hidden=c.hidden=c1.hidden=!!mail.hidden};new MutationObserver(sync).observe(mail,{attributes:true,attributeFilter:['hidden']});sync();
     }
   });
