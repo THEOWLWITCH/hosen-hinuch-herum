@@ -4456,7 +4456,7 @@ document.addEventListener('DOMContentLoaded',()=>{rolesRender();if(location.hash
 </script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
 <style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
-<style id="team-invite-v1">.ch-invite{display:inline-block;padding:3px 10px;border-radius:999px;background:#fff4dc;border:1px solid #e7c06a;color:#7a5200;font-size:12.5px;font-weight:700;white-space:nowrap}.ch-trow.inviting,.ch-team.inviting{border-color:#e7c06a!important;background:#fffcf3!important;box-shadow:0 0 0 2px rgba(231,192,106,.25)}</style>
+<style id="team-invite-v1">.ch-invite{display:inline-block;padding:3px 10px;border-radius:999px;background:#fff4dc;border:1px solid #e7c06a;color:#7a5200;font-size:12.5px;font-weight:700;white-space:nowrap}.ch-trow-title{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.ch-trow.inviting,.ch-team.inviting{border-color:#e7c06a!important;background:#fffcf3!important;box-shadow:0 0 0 2px rgba(231,192,106,.25)}</style>
 <style id="team-live-v1">.ch-live{display:inline-block;width:10px;height:10px;border-radius:50%;background:#c9d3d7;vertical-align:middle;margin-inline-end:4px}.ch-live.on{background:#2fae5b;box-shadow:0 0 0 3px rgba(47,174,91,.18),0 0 8px rgba(47,174,91,.7)}.ch-live-wrap{display:inline-flex;align-items:center;white-space:nowrap}.ch-live-txt{font-size:11.5px;color:#5f7686;margin-inline-end:8px;white-space:nowrap}</style>
 <style id="calls-hub-v66">
 html[data-resource-page="1"] #libraryAcademicHub,
@@ -4703,8 +4703,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
   const inviteTag='<span class="ch-invite">🙋 מוזמנות.ים להצטרף</span>';
   function teamLine(t){
     return `<button type="button" class="ch-trow${inviting(t)?' inviting':''}" data-ch="team-open" data-id="${h(t.id)}">
-      <span class="ch-trow-main"><strong dir="auto">${h(t.title)}</strong><small>מוביל/ה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} בצוות`:''}${t.deadline?` · עד ${fmt(t.deadline)}`:''}${teamKey(t.id)?' · ✓ את בקבוצה':''}</small></span>
-      <span class="ch-trow-side">${inviting(t)?inviteTag:''}${liveLight(t)}${t.locked?'<span class="ch-badge gray">🔒 צוות סגור</span>':''}<span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?'<span class="ch-badge green">🌱 מנבט</span>':''}<span class="ch-trow-open">לפרטים ›</span></span></button>`;
+      <span class="ch-trow-main"><span class="ch-trow-title"><strong dir="auto">${h(t.title)}</strong>${inviting(t)?inviteTag:''}</span><small>מוביל/ה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} בצוות`:''}${t.deadline?` · עד ${fmt(t.deadline)}`:''}${teamKey(t.id)?' · ✓ את בקבוצה':''}</small></span>
+      <span class="ch-trow-side">${liveLight(t)}${t.locked?'<span class="ch-badge gray">🔒 צוות סגור</span>':''}<span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?'<span class="ch-badge green">🌱 מנבט</span>':''}<span class="ch-trow-open">לפרטים ›</span></span></button>`;
   }
   function openTeamCard(id){
     const t=state.teams.find(x=>x.id===id);if(!t)return;
