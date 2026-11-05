@@ -5059,6 +5059,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
       return j;
     }
     function words(t){return (String(t||'').trim().match(/\S+/g)||[]).length}
+    // זיהוי החבר/ה ברשימה גם כשהשם נכתב מעט אחרת (למשל "ד״ר יעל שדה" מול "יעל שדה"), 5.11.2026.
+    const nameKey=v=>String(v||'').replace(/(^|\s)(ד["״׳']?ר|דר['׳]|פרופ['׳]?|פרופסור|dr\.?|prof\.?)(?=\s|$)/gi,' ').replace(/[\s"״׳'.\-־]+/g,'').toLowerCase();
+    const myMember=()=>{const t=ws.team,n=me();return t.members.find(x=>x.name===n)||(nameKey(n)?t.members.find(x=>nameKey(x.name)===nameKey(n)):null)||(t.me?t.members.find(x=>x.name===t.me):null)};
+    const isMember=()=>!!myMember()||ws.team.role==='member';
     // קבצים וקישורים במרחב (5.11.2026). קובץ עולה ל-/api/team-files ונפתח רק עם הקישור של הצוות.
     const kb=n=>n?(n>1048576?(n/1048576).toFixed(1)+'MB':Math.max(1,Math.round(n/1024))+'KB'):'';
     async function uploadFiles(input){
@@ -5095,7 +5099,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <div class="ch-actions">${t.me?`<span class="ch-tag">${h(t.me)}${lead()?' · מוביל/ה':''}</span>`:`<label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>`}
         ${lead()?`<select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>`:`<span class="ch-badge gray">${h(t.statusLabel)}</span>`}
         ${t.locked?'<span class="ch-badge gray" title="אין הצטרפות חדשה. הדיון והחומרים נפתחים רק עם קוד הצוות.">🔒 מרחב סגור לצוות</span>':''}
-        ${t.members.some(x=>x.name===me())||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}${t.locked?'':'<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>'}${lead()?`<button type="button" class="ch-btn small" data-w="go-lock">${t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות'}</button>`:''}${t.members.some(x=>x.name===me())?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="compass" title="חיפוש מקורות במאגר הקהילה ובמאגרים בעולם, עם דו״ח מסכם">🧭 מצפן המחקר</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
+        ${isMember()||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}${t.locked?'':'<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>'}${lead()?`<button type="button" class="ch-btn small" data-w="go-lock">${t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות'}</button>`:''}${isMember()?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="compass" title="חיפוש מקורות במאגר הקהילה ובמאגרים בעולם, עם דו״ח מסכם">🧭 מצפן המחקר</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
         <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     function sectionHtml(s){
@@ -5123,7 +5127,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const written=t.sections.filter(x=>x.text.trim());
         const open=t.tasks.filter(k=>!k.done);
         const last=t.messages.slice(-3).reverse();
-        const isMember=t.members.some(x=>x.name===me());
+        const isMember_=isMember();
         const when=d=>new Date(d).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'});
         return `<div class="ch-ov">
           ${ws.editMeta&&lead()?`<form class="ch-form" data-form="meta">
@@ -5143,7 +5147,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
           </div>
           <h4 style="margin:18px 0 6px">💬 מה קורה בדיון</h4>
           ${last.length?`<div class="ch-rows">${last.map(x=>`<div class="ch-msg"><b>${h(x.name)}</b> <small>${when(x.at)}</small><p dir="auto">${h(x.text)}</p></div>`).join('')}</div><p><button type="button" class="ch-btn small" data-tab="talk">לכל הדיון</button></p>`:'<p class="ch-empty">הדיון עוד לא התחיל.</p>'}
-          ${isMember?`<div class="ch-note" style="margin-top:14px"><strong>איך להתחיל?</strong> כדאי להציג את עצמך בדיון ולכתוב במה תרצו לעזור, ואז לבחור סעיף או משימה.
+          ${isMember_?`<div class="ch-note" style="margin-top:14px"><strong>איך להתחיל?</strong> כדאי להציג את עצמך בדיון ולכתוב במה תרצו לעזור, ואז לבחור סעיף או משימה.
             <form class="ch-inline" data-form="message" style="grid-template-columns:1fr auto;margin-top:8px"><textarea name="text" rows="2" required dir="auto" placeholder="שלום לכולם, אני... ואשמח לעזור ב..."></textarea><button class="ch-btn small primary">שליחה לדיון</button></form></div>`:''}
         </div>`;
       }
@@ -5170,11 +5174,11 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const t=ws.team,name=me();
       const others=t.members.filter(x=>x.name!==t.lead.name);
       if(!lead()){
-        const mine=t.members.filter(x=>x.name===name);
+        const mine=myMember();const choose=t.members.filter(x=>x.name!==t.lead.name);
         return `<div class="ch-ws-end" id="chWsLeave">
         <h4>🚪 יציאה מהקבוצה</h4>
         <p class="ch-credit">השם יוצא מרשימת הקבוצה, והקישור שלך מפסיק לעבוד. אפשר לחזור בכל עת בכפתור "הצטרפות לצוות".</p>
-        ${mine.length?`<form class="ch-inline" data-form="leave" style="grid-template-columns:1fr auto"><input type="hidden" name="member" value="${h(name)}"><span>${h(name)}</span><button class="ch-btn small">יציאה מהקבוצה</button></form>`:'<p class="ch-credit">השם שלך לא מופיע ברשימת הקבוצה.</p>'}
+        ${mine?`<form class="ch-inline" data-form="leave" style="grid-template-columns:1fr auto"><input type="hidden" name="member" value="${h(mine.name)}"><span>${h(mine.name)}</span><button class="ch-btn small">יציאה מהקבוצה</button></form>`:choose.length?`<form class="ch-inline" data-form="leave" style="grid-template-columns:1fr auto"><select name="member" required aria-label="מי יוצא/ת מהקבוצה"><option value="">איזה שם ברשימה הוא שלך?</option>${choose.map(x=>`<option>${h(x.name)}</option>`).join('')}</select><button class="ch-btn small">יציאה מהקבוצה</button></form>`:'<p class="ch-credit">השם שלך לא מופיע ברשימת הקבוצה.</p>'}
       </div>`;
       }
       return `${lockZone()}<div class="ch-ws-end" id="chWsLeave">
@@ -5250,7 +5254,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
           window.open(mail,'_blank','noopener');msg(`${j.member.name} צורפה. נפתחה טיוטה ב-Gmail עם הקישור לסביבת העבודה — נשאר רק לשלוח.`,'ok')}
         return}
       if(w==='join'){
-        if(ws.team.members.some(x=>x.name===me()))return msg(`${me()} כבר בצוות.`,'ok');
+        if(isMember())return msg(`${myMember()?.name||me()} כבר בצוות.`,'ok');
         const jm=modal(`<h2>הצטרפות לצוות</h2><p><strong>${h(ws.team.title)}</strong></p><form class="ch-form"><label>השם שלך*<input name="member" required value="${h(me())}"></label><label>מייל<input name="email" type="email" dir="ltr"></label><label class="wide">התפקיד שלי בהצעה (רשות)<input name="role" dir="auto" placeholder="למשל: שיטות מחקר, כתיבה, קשר עם השטח"></label><div class="wide"><button class="ch-btn primary">הצטרפות</button><div class="ch-status"></div></div></form>`);
         jm.querySelector('form').addEventListener('submit',async e=>{e.preventDefault();const d=formData(e.target);
           try{await act('member-join',d);store.set('hosen.team.myname',d.member);jm.close();render(true);msg(`${d.member} הצטרפה לצוות.`,'ok')}
@@ -5297,7 +5301,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         if(!confirm(`להוציא את ${who} מהמרחב "${ws.team.title}"?`))return;
         try{const j=await act('leave',{member:who,newLead:d.newLead||''});
           if(!j.left)return msg(`השם ${who} לא נמצא ברשימת הקבוצה. אפשר לרענן את הדף ולנסות שוב.`,'err');
-          if(who===me()||who===myName())return forget('יצאת מהמרחב');
+          if(who===me()||who===myName()||!lead())return forget('יצאת מהמרחב');
           render(true);msg(`✓ ${who} יצא/ה מהקבוצה.`,'ok');refreshTeams();
         }catch(err){msg(err.message,'err')}
         return;
