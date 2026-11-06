@@ -6,7 +6,7 @@ import { id, json, safeName, store } from "../lib/shared.mts";
 import { clip, lockOK, openTeamAccess } from "../lib/teams.mts";
 import { parseDocx, partText } from "../lib/docx-sections.mts";
 
-const OK_EXT = new Set(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "odt", "ods", "odp", "txt", "rtf", "md", "jpg", "jpeg", "png", "webp", "gif", "zip"]);
+const OK_EXT = new Set(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "odt", "ods", "odp", "txt", "rtf", "md", "html", "jpg", "jpeg", "png", "webp", "gif", "zip"]);
 
 export default async (req: Request) => {
   const u = new URL(req.url);

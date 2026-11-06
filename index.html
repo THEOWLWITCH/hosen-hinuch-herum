@@ -5369,9 +5369,21 @@ html[data-page="calls"] #resourceArea{display:none!important}
         return}
       // מצפן המחקר מתוך המרחב (5.11.2026): נפתח עם שם הקבוצה, והדו"ח המסכם אפשר לשלוח לדיון של הצוות.
       if(w==='compass'){
-        window.compassTeamHook={title:ws.team.title,post:async text=>{await act('message',{text:text.slice(0,3900)});render(true)}};
+        // 6.11.2026: המצפן מקבל את מה שכבר כתוב במרחב (תקציר, שאלות, ביבליוגרפיה), ואפשר לשמור את הדו"ח כקובץ במרחב.
+        const sec=id=>(ws.team.sections.find(x=>x.id===id)?.text||'');
+        const summary=sec('summary'),aims=sec('aims'),refs=ws.team.sections.filter(x=>/refs|ביבליוגרפ|מקורות/.test(x.id+x.title)).map(x=>x.text).join('\n');
+        const kw=((summary+'\n'+aims).match(/מילות מפתח\s*[:：]\s*([^\n]+)/)||[])[1]||'';
+        const keywords=kw.split(/[;,،]/).map(x=>x.trim().replace(/\.$/,'')).filter(Boolean);
+        const question=((aims+'\n'+summary).split(/\n+/).map(x=>x.trim()).find(x=>/\?$/.test(x)&&x.length>25)||'');
+        window.compassTeamHook={title:ws.team.title,summary,aims,refs,keywords,question,
+          post:async text=>{await act('message',{text:text.slice(0,3900)});render(true)},
+          save:async(blob,name)=>{const fd=new FormData();fd.append('file',new File([blob],name,{type:'text/html'}));
+            const r=await fetch('/api/team-files?id='+encodeURIComponent(teamId),{method:'POST',headers:hdr(),body:fd});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||'השמירה לא הצליחה.');
+            await act('link-add',{key:j.key,label:name.replace(/\.html$/,''),size:j.size});render(true)}};
         if(typeof openCompassFromLibrary==='function')openCompassFromLibrary();
-        const q=document.getElementById('compassQuestion');if(q&&!q.value.trim())q.value=ws.team.title;
+        const q=document.getElementById('compassQuestion');
+        if(q)q.value=keywords.length?keywords.slice(0,4).join(' '):ws.team.title;
+        compassTeamNote();
         return}
       if(w==='title-edit'){ws.editTitle=true;render(true);m.querySelector('[data-form="title"] input')?.focus();return}
       if(w==='title-cancel'){ws.editTitle=false;render(true);return}
@@ -7260,57 +7272,94 @@ compassReport({q,type,population,method,context,where,local:local.rows||[],world
 }catch(e){if(status){status.textContent='לא ניתן להשלים את המיפוי כעת. נסו שוב.';status.classList.add('error')}}
 }
 </script>
-<style id="compass-report-v1">.compass-report{margin-top:22px;padding:18px 20px;border:2px solid #2d617a;border-radius:10px;background:#fbfdfd}.compass-report h3{margin:0 0 4px;color:#1f4b60}.compass-report h4{margin:16px 0 6px;color:#2d617a;font-size:15px}.compass-report ol,.compass-report ul{margin:0;padding-inline-start:20px;font-size:13.5px;line-height:1.6}.compass-report li{margin-bottom:4px}.compass-report .cr-meta{font-size:13px;color:#5b6d75}.compass-report .cr-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.compass-report .cr-facts div{padding:8px;background:#eef5f7;border-radius:7px;text-align:center;font-size:12px;color:#456071}.compass-report .cr-facts b{display:block;font-size:20px;color:#1f4b60}.compass-report .cr-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.compass-report .cr-actions button{font:inherit;font-size:13px;padding:6px 14px;border-radius:999px;border:1px solid #2d617a;background:#fff;color:#2d617a;cursor:pointer}.compass-report .cr-actions button.primary{background:#2d617a;color:#fff}@media(max-width:700px){.compass-report .cr-facts{grid-template-columns:repeat(2,1fr)}}</style>
+<style id="compass-report-v1">.compass-report{margin-top:22px;padding:18px 20px;border:2px solid #2d617a;border-radius:10px;background:#fbfdfd}.compass-report h3{margin:0 0 4px;color:#1f4b60}.compass-report h4{margin:16px 0 6px;color:#2d617a;font-size:15px}.compass-report ol,.compass-report ul{margin:0;padding-inline-start:20px;font-size:13.5px;line-height:1.6}.compass-report li{margin-bottom:4px}.compass-report .cr-meta{font-size:13px;color:#5b6d75}.compass-report .cr-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.compass-report .cr-facts div{padding:8px;background:#eef5f7;border-radius:7px;text-align:center;font-size:12px;color:#456071}.compass-report .cr-facts b{display:block;font-size:20px;color:#1f4b60}.compass-report .cr-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.compass-report .cr-actions button{font:inherit;font-size:13px;padding:6px 14px;border-radius:999px;border:1px solid #2d617a;background:#fff;color:#2d617a;cursor:pointer}.compass-report .cr-actions button.primary{background:#2d617a;color:#fff}.cr-tag{display:inline-block;font-size:11.5px;padding:1px 7px;border-radius:999px;margin-inline-end:4px}.cr-tag.known{background:#e5f3ea;color:#2f6e4f}.cr-tag.new{background:#fff4dc;color:#7a5200}@media(max-width:700px){.compass-report .cr-facts{grid-template-columns:repeat(2,1fr)}}</style>
 <script id="compass-report-v1-js">
 // הדו"ח המסכם של מצפן המחקר (5.11.2026: "בסופו לא מקבלים דו"ח מסכם").
 // נבנה בדפדפן מהתוצאות עצמן, בלי מודל שפה: מה חיפשו, מה נמצא, המקורות המובילים, שאלות מחקר והצעדים הבאים.
 let compassLastReport=null;
+// מצפן שנפתח מתוך מרחב עבודה: הודעה קטנה מעל הטופס, ומה שכתוב במרחב נכנס לדו"ח (6.11.2026).
+function compassTeamNote(){
+ const hk=window.compassTeamHook&&document.querySelector('.ch-modal #chWs')?window.compassTeamHook:null,form=document.getElementById('compassForm');if(!form)return;
+ let n=document.getElementById('compassTeamNote');if(!hk){if(n)n.remove();return}
+ if(!n){n=document.createElement('p');n.id='compassTeamNote';n.className='note';n.style.cssText='margin:0 0 10px;padding:8px 12px;border-radius:8px;background:#eef6f8;border:1px solid #cfe2e8;font-size:13.5px';form.before(n)}
+ n.textContent=`🔗 המצפן מחובר למרחב "${hk.title}". ${hk.keywords?.length?'שאלת החיפוש מולאה לפי מילות המפתח מהתקציר':'שאלת החיפוש מולאה לפי שם הצוות'}. בדו"ח יסומן מה כבר נמצא בביבליוגרפיה של הצוות ומה חדש.`;
+}
+const compassNorm=v=>String(v||'').toLowerCase().replace(/https?:\/\/(dx\.)?doi\.org\//,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+function compassInRefs(x,refs){if(!refs)return false;const R=compassNorm(refs);const doi=compassNorm(x.doi||'');if(doi&&doi.length>6&&R.includes(doi))return true;const t=compassNorm(x.title||'');return t.length>20&&R.includes(t.slice(0,60))}
 function compassReport(o){
  const mount=document.getElementById('compassResult');if(!mount)return;
  const world=(o.world&&o.world.results)||[];const engines=((o.world&&o.world.engines)||[]).filter(e=>e.ok&&e.count).map(e=>e.name);
  const years=world.map(x=>Number(x.year)).filter(Boolean);const recent=years.filter(y=>y>=new Date().getFullYear()-3).length;
  const oa=world.filter(x=>x.oaUrl).length;
  const cite=x=>typeof apa7Citation==='function'?apa7Citation(x):[x.authors,'('+(x.year||'n.d.')+').',x.title,x.journal,x.doi].filter(Boolean).join(' ');
- const topLocal=o.local.slice(0,5).map(x=>({text:cite(x),url:x.doi||''}));
- const topWorld=world.slice(0,8).map(x=>({text:worldCite(x),url:x.oaUrl||x.url||''}));
+ const hk=window.compassTeamHook&&document.querySelector('.ch-modal #chWs')?window.compassTeamHook:null;
+ const refs=hk?.refs||'';
+ const topLocal=o.local.slice(0,5).map(x=>({text:cite(x),url:x.doi||'',known:compassInRefs(x,refs)}));
+ const topWorld=world.slice(0,8).map(x=>({text:worldCite(x),url:x.oaUrl||x.url||'',known:compassInRefs(x,refs)}));
  const gap=o.local.length<3?'במאגר הקהילה יש מעט מקורות בנושא. זה עשוי להצביע על פער שכדאי למלא, בעיקר אם גם בעולם מעט מחקרים עדכניים.':'במאגר הקהילה כבר יש בסיס ראשוני בנושא, וכדאי להתחיל ממנו.';
  const fresh=world.length?(recent>=world.length/2?'רוב התוצאות מהעולם עדכניות (משלוש השנים האחרונות): התחום פעיל.':'רק חלק קטן מהתוצאות עדכני: ייתכן שיש מקום למחקר חדש בהקשר הנוכחי.'):'לא התקבלו תוצאות מהמאגרים בעולם. כדאי לנסות ניסוח אחר או להמשיך ב־Google Scholar.';
- const qs=[['איכותני','כיצד '+o.population+' מתארות ומתארים את ההתנסות ב'+o.q+o.where+'?'],['כמותי','באיזו מידה '+o.q+' קשור למדדי חוסן, רציפות למידה או מוכנות בקרב '+o.population+o.where+'?'],['משולב','אילו דפוסים ניתנים למדידה ב'+o.q+', וכיצד '+o.population+' מסבירות ומסבירים אותם?']];
- const chosen=qs.find(x=>x[0]===o.method)||qs[2];
+ const topic=hk?hk.title:o.q; // ממרחב עבודה: הניסוחים לפי נושא הצוות ולא לפי רשימת מילות החיפוש
+ const qs=[['איכותני','כיצד '+o.population+' מתארות ומתארים את ההתנסות ב'+topic+o.where+'?'],['כמותי','באיזו מידה '+topic+' קשור למדדי חוסן, רציפות למידה או מוכנות בקרב '+o.population+o.where+'?'],['משולב','אילו דפוסים ניתנים למדידה ב'+topic+', וכיצד '+o.population+' מסבירות ומסבירים אותם?']];
+ let chosen=qs.find(x=>x[0]===o.method)||qs[2];
+ // אם בצוות כבר נוסחה שאלת מחקר, היא השאלה המרכזית, וההצעות הן חלופות.
+ if(hk?.question)chosen=['של הצוות',hk.question];
  const date=new Date().toLocaleDateString('he-IL');
- compassLastReport={...o,date,topLocal,topWorld,gap,fresh,qs,chosen,engines,oa,recent,worldCount:world.length};
- const li=a=>a.length?'<ol>'+a.map(x=>'<li dir="auto">'+esc(x.text)+(x.url?' <a href="'+escAttr(x.url)+'" target="_blank" rel="noopener">למקור</a>':'')+'</li>').join('')+'</ol>':'<p class="cr-meta">לא נמצאו.</p>';
+ const knownN=[...topLocal,...topWorld].filter(x=>x.known).length;
+ compassLastReport={...o,date,topLocal,topWorld,gap,fresh,qs,chosen,engines,oa,recent,worldCount:world.length,team:hk?{title:hk.title,knownN}:null};
+ const li=a=>a.length?'<ol>'+a.map(x=>'<li dir="auto">'+(hk?(x.known?'<span class="cr-tag known">✓ כבר בביבליוגרפיה</span> ':'<span class="cr-tag new">חדש לצוות</span> '):'')+esc(x.text)+(x.url?' <a href="'+escAttr(x.url)+'" target="_blank" rel="noopener">למקור</a>':'')+'</li>').join('')+'</ol>':'<p class="cr-meta">לא נמצאו.</p>';
+ const teamBox=hk?'<h4>🔗 מול מה שכבר כתוב במרחב "'+esc(hk.title)+'"</h4><ul>'+(hk.question?'<li>שאלת המחקר שלכם: '+esc(hk.question)+'</li>':'<li>עוד לא נוסחה במרחב שאלת מחקר (סעיף "שאלות ומטרות המחקר").</li>')+(hk.keywords?.length?'<li>מילות המפתח שלכם: '+esc(hk.keywords.join(', '))+'</li>':'')+'<li>'+(refs.trim()?'מתוך המקורות המובילים כאן, '+knownN+' כבר מופיעים בביבליוגרפיה של הצוות, והשאר חדשים. כדאי לבדוק קודם את החדשים.':'בביבליוגרפיה של הצוות עוד אין מקורות. המקורות המובילים כאן יכולים להיות נקודת פתיחה.')+'</li></ul>':'';
  let box=document.getElementById('compassReport');if(!box){box=document.createElement('section');box.id='compassReport';box.className='compass-report';mount.appendChild(box)}
  box.innerHTML='<h3>📄 דו"ח מסכם: '+esc(o.q)+'</h3><p class="cr-meta">'+esc(date)+' · עבור '+esc(o.type)+' · אוכלוסיית יעד: '+esc(o.population)+' · מסלול: '+esc(o.method)+(o.context?' · הקשר: '+esc(o.context):'')+'</p>'
  +'<div class="cr-facts"><div><b>'+o.local.length+'</b>מקורות במאגר הקהילה</div><div><b>'+world.length+'</b>תוצאות מהעולם</div><div><b>'+recent+'</b>משלוש השנים האחרונות</div><div><b>'+oa+'</b>בגישה פתוחה</div></div>'
- +'<h4>מה עולה מהמיפוי</h4><ul><li>'+esc(gap)+'</li><li>'+esc(fresh)+'</li>'+(engines.length?'<li>המאגרים שהחזירו תוצאות: '+esc(engines.join(', '))+'.</li>':'')+'</ul>'
+ +teamBox+'<h4>מה עולה מהמיפוי</h4><ul><li>'+esc(gap)+'</li><li>'+esc(fresh)+'</li>'+(engines.length?'<li>המאגרים שהחזירו תוצאות: '+esc(engines.join(', '))+'.</li>':'')+'</ul>'
  +'<h4>מקורות מובילים ממאגר הקהילה</h4>'+li(topLocal)
  +'<h4>מקורות מובילים מהעולם</h4>'+li(topWorld)
- +'<h4>שאלת מחקר מוצעת ('+esc(chosen[0])+')</h4><p>'+esc(chosen[1])+'</p>'
- +'<h4>חלופות</h4><ul>'+qs.filter(x=>x!==chosen).map(x=>'<li><strong>'+esc(x[0])+':</strong> '+esc(x[1])+'</li>').join('')+'</ul>'
+ +'<h4>'+(hk?.question?'שאלת המחקר של הצוות':'שאלת מחקר מוצעת ('+esc(chosen[0])+')')+'</h4><p>'+esc(chosen[1])+'</p>'
+ +'<h4>'+(hk?.question?'ניסוחים חלופיים לפי המיפוי':'חלופות')+'</h4><ul>'+qs.filter(x=>x!==chosen).map(x=>'<li><strong>'+esc(x[0])+':</strong> '+esc(x[1])+'</li>').join('')+'</ul>'
  +'<h4>הצעדים הבאים</h4><ol><li>לקרוא את שלושת המקורות המובילים ולסמן מה כבר ידוע ומה חסר.</li><li>לדייק את השאלה: אוכלוסייה, הקשר ותוצא רצוי.</li><li>להעריך היתכנות: כמה מוסדות ומשתתפות ומשתתפים זמינים.</li><li>לחפש שותפות ושותפים למחקר בעמוד "שיתופי פעולה".</li></ol>'
  +'<p class="cr-meta">הדו"ח הוא נקודת פתיחה ולא סקירה שיטתית. כדאי לפתוח כל מקור לפני שמצטטים.</p>'
- +'<div class="cr-actions"><button type="button" class="primary" onclick="compassReportPrint()">🖨 הדפסה או שמירה כ־PDF</button><button type="button" onclick="compassReportCopy(this)">📋 העתקת הדו"ח</button><button type="button" onclick="compassReportMail()">✉ שליחה במייל</button>'+(window.compassTeamHook&&document.querySelector('.ch-modal #chWs')?'<button type="button" onclick="compassReportToTeam(this)">💬 שליחה לדיון בצוות: '+esc(window.compassTeamHook.title)+'</button>':'')+'</div>';
+ +'<div class="cr-actions">'+(hk?'<button type="button" class="primary" onclick="compassReportSave(this)">💾 שמירה במרחב הצוות</button><button type="button" onclick="compassReportToTeam(this)">💬 שליחה לדיון בצוות</button>':'')+'<button type="button"'+(hk?'':' class="primary"')+' onclick="compassReportPrint()">🖨 הדפסה או שמירה כ־PDF</button><button type="button" onclick="compassReportCopy(this)">📋 העתקת הדו"ח</button><button type="button" onclick="compassReportMail(\'gmail\')">✉ שליחה ב־Gmail</button><button type="button" onclick="compassReportMail()">✉ בתוכנת הדואר</button><button type="button" onclick="compassReportDownload()">⬇ הורדה כקובץ</button></div><p class="cr-meta" id="compassReportMsg" aria-live="polite"></p><textarea id="compassReportPlain" readonly hidden style="width:100%;min-height:180px;margin-top:8px" aria-label="טקסט הדו״ח להעתקה"></textarea>';
  box.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function compassReportText(){const r=compassLastReport;if(!r)return '';const L=a=>a.length?a.map((x,i)=>(i+1)+'. '+x.text+(x.url?' '+x.url:'')).join('\n'):'לא נמצאו.';
+function compassReportText(){const r=compassLastReport;if(!r)return '';const L=a=>a.length?a.map((x,i)=>(i+1)+'. '+(r.team?(x.known?'[כבר בביבליוגרפיה] ':'[חדש] '):'')+x.text+(x.url?' '+x.url:'')).join('\n'):'לא נמצאו.';
  return ['דו"ח מסכם ממצפן המחקר: '+r.q,r.date+' · '+r.type+' · '+r.population+' · מסלול '+r.method+(r.context?' · '+r.context:''),'',
  'מספרים: '+r.local.length+' מקורות במאגר הקהילה, '+r.worldCount+' תוצאות מהעולם ('+r.recent+' משלוש השנים האחרונות, '+r.oa+' בגישה פתוחה).','',
  'מה עולה מהמיפוי:','- '+r.gap,'- '+r.fresh,'','מקורות מובילים ממאגר הקהילה:',L(r.topLocal),'','מקורות מובילים מהעולם:',L(r.topWorld),'',
- 'שאלת מחקר מוצעת ('+r.chosen[0]+'): '+r.chosen[1],'',...r.qs.filter(x=>x!==r.chosen).map(x=>'חלופה ('+x[0]+'): '+x[1]),'',
+ ...(r.team?['מול המרחב "'+r.team.title+'": '+r.team.knownN+' מהמקורות המובילים כבר בביבליוגרפיה של הצוות.','']:[]),
+ (r.chosen[0]==='של הצוות'?'שאלת המחקר של הצוות: ':'שאלת מחקר מוצעת ('+r.chosen[0]+'): ')+r.chosen[1],'',...r.qs.filter(x=>x!==r.chosen).map(x=>'חלופה ('+x[0]+'): '+x[1]),'',
  'הצעדים הבאים: לקרוא את שלושת המקורות המובילים; לדייק את השאלה; להעריך היתכנות; לחפש שותפות ושותפים בעמוד "שיתופי פעולה".','',
  'נוצר במצפן המחקר של קהילת בינה מלאכותית: חוסן-חינוך-חרום · '+location.origin+'/library'].join('\n')}
 async function compassReportToTeam(btn){const hk=window.compassTeamHook;if(!hk)return;btn.disabled=true;btn.textContent='שולח…';try{await hk.post(compassReportText());btn.textContent='✓ נשלח לדיון בצוות'}catch(e){btn.disabled=false;btn.textContent='השליחה לדיון לא הצליחה. אפשר לנסות שוב.'}}
-function compassReportCopy(btn){const t=compassReportText();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{btn.textContent='✓ הועתק'},()=>prompt('הדו"ח:',t))}
-function compassReportMail(){const r=compassLastReport;if(!r)return;const body=compassReportText();location.href='mailto:?subject='+encodeURIComponent('דו"ח ממצפן המחקר: '+r.q)+'&body='+encodeURIComponent(body.length>1800?body.slice(0,1800)+'\n…':body)}
-function compassReportPrint(){const box=document.getElementById('compassReport');if(!box)return;const w=window.open('','_blank');if(!w){window.print();return}
- const css=document.getElementById('compass-report-v1').textContent;
- w.document.write('<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>דו"ח ממצפן המחקר</title><style>body{font-family:Arial,sans-serif;max-width:820px;margin:24px auto;padding:0 16px;color:#1f3440}'+css+'.cr-actions{display:none!important}.compass-report{border:0}</style></head><body><div class="compass-report">'+box.innerHTML+'</div></body></html>');
- w.document.close();w.focus();setTimeout(()=>w.print(),400)}
+function compassReportMsg(t){const m=document.getElementById('compassReportMsg');if(m)m.textContent=t}
+// העתקה (6.11.2026: "ההעתקה לא עובדת"): קודם הדרך החדשה, אחר כך הדרך הישנה, ואם שתיהן נחסמות, הטקסט מוצג בתיבה לסימון ידני.
+async function compassReportCopy(btn){const t=compassReportText();let ok=false;
+ try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t);ok=true}}catch(e){}
+ if(!ok){try{const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(e){}}
+ if(ok){btn.textContent='✓ הועתק';compassReportMsg('הדו"ח הועתק. אפשר להדביק אותו במסמך או במייל.');return}
+ const box=document.getElementById('compassReportPlain');if(box){box.hidden=false;box.value=t;box.focus();box.select()}
+ compassReportMsg('הדפדפן לא אפשר העתקה אוטומטית. הטקסט מסומן בתיבה למטה: מקישים Ctrl+C (או ⌘+C).')}
+function compassReportMail(kind){const r=compassLastReport;if(!r)return;const sub='דו"ח ממצפן המחקר: '+r.q;let body=compassReportText();
+ if(kind==='gmail'){body=body.length>6000?body.slice(0,6000)+'\n…':body;window.open('https://mail.google.com/mail/?view=cm&fs=1&su='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body),'_blank','noopener');compassReportMsg('נפתח חלון Gmail חדש עם הדו"ח. אם הוא לא נפתח, כדאי לאפשר חלונות קופצים לאתר.');return}
+ body=body.length>1800?body.slice(0,1800)+'\n… (הדו"ח המלא: אפשר להעתיק או להוריד אותו)':body;
+ const a=document.createElement('a');a.href='mailto:?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body);document.body.appendChild(a);a.click();a.remove();
+ compassReportMsg('אם לא נפתחה תוכנת דואר, כנראה שאין במחשב תוכנה מוגדרת. אפשר ללחוץ "שליחה ב־Gmail" או "העתקת הדו"ח".')}
+function compassReportHtml(){const box=document.getElementById('compassReport');const css=document.getElementById('compass-report-v1').textContent;
+ return '<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>דו"ח ממצפן המחקר</title><style>body{font-family:Arial,sans-serif;max-width:820px;margin:24px auto;padding:0 16px;color:#1f3440}'+css+'.cr-actions,#compassReportMsg,#compassReportPlain{display:none!important}.compass-report{border:0}</style></head><body><div class="compass-report">'+(box?box.innerHTML:'')+'</div></body></html>'}
+// הדפסה דרך מסגרת נסתרת בתוך הדף: עובדת גם כשחלונות קופצים חסומים.
+function compassReportPrint(){if(!document.getElementById('compassReport'))return;
+ const f=document.createElement('iframe');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);
+ const d=f.contentDocument;d.open();d.write(compassReportHtml());d.close();
+ setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){compassReportDownload();compassReportMsg('ההדפסה לא נפתחה. הורדתי את הדו"ח כקובץ: פותחים אותו ומדפיסים (Ctrl+P), או שומרים כ־PDF.')}setTimeout(()=>f.remove(),60000)},300)}
+function compassReportFileName(){const r=compassLastReport||{};return ('דוח מצפן המחקר - '+String(r.q||'').slice(0,60)+' - '+(r.date||'')).replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim()+'.html'}
+function compassReportDownload(){const b=new Blob([compassReportHtml()],{type:'text/html'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=compassReportFileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000)}
+async function compassReportSave(btn){const hk=window.compassTeamHook;if(!hk?.save)return;btn.disabled=true;btn.textContent='שומר…';
+ try{await hk.save(new Blob([compassReportHtml()],{type:'text/html'}),compassReportFileName());btn.textContent='✓ נשמר במרחב';compassReportMsg('הדו"ח נשמר בלשונית "קישורים וקבצים" של המרחב.')}
+ catch(e){btn.disabled=false;btn.textContent='💾 שמירה במרחב הצוות';compassReportMsg(e.message||'השמירה לא הצליחה.')}}
 </script>
 <div id="compassLibraryModal" class="compass-library-modal" role="dialog" aria-modal="true" aria-label="מצפן המחקר"><div class="compass-library-dialog"><button type="button" class="compass-library-close" aria-label="סגירת מצפן המחקר" onclick="closeCompassLibrary()">×</button><div id="compassLibraryMount"></div></div></div>
 <script id="compass-library-modal-v1-js">
 function openCompassFromLibrary(){
+ setTimeout(()=>{if(typeof compassTeamNote==='function')compassTeamNote()},0);
  const modal=document.getElementById('compassLibraryModal'),mount=document.getElementById('compassLibraryMount'),compass=document.getElementById('compass');
  if(!modal||!mount||!compass)return;
  mount.appendChild(compass);modal.classList.add('open');document.body.style.overflow='hidden';document.getElementById('compassQuestion')?.focus();
