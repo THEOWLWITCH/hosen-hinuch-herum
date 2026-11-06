@@ -4513,6 +4513,7 @@ html.admin-menu-on #adminTabs,html.admin-menu-on .admin-head-actions .admin-comm
 })();
 </script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
+<style id="team-import-v1">.ch-import{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;padding:10px 12px;border:1px dashed #9ec3cf;border-radius:10px;background:#f6fbfc}.ch-import-list{display:grid;gap:6px;max-height:55vh;overflow:auto;margin:10px 0}.ch-import-row{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid #dbe6ea;border-radius:8px;background:#fff}.ch-import-row.sub{margin-inline-start:22px;background:#fbfdfd}.ch-import-row .grow{flex:1;min-width:0}.ch-import-row select{max-width:46%;font:inherit;padding:5px}.ch-import-row pre{white-space:pre-wrap;font:inherit;font-size:12.5px;max-height:180px;overflow:auto;background:#f6f9fa;padding:6px;border-radius:6px}.ch-import-mode{border:1px solid #dbe6ea;border-radius:8px;margin:8px 0;padding:8px 12px;font-size:13.5px}</style>
 <style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
 <style id="teams-title-v2">.sr-only-ch{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
 <style id="team-invite-v1">.ch-invite{display:inline-block;padding:3px 10px;border-radius:999px;background:#fff4dc;border:1px solid #e7c06a;color:#7a5200;font-size:12.5px;font-weight:700;white-space:nowrap}.ch-trow-title{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.ch-trow.inviting,.ch-team.inviting{border-color:#e7c06a!important;background:#fffcf3!important;box-shadow:0 0 0 2px rgba(231,192,106,.25)}</style>
@@ -5140,6 +5141,47 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const url=URL.createObjectURL(await r.blob());const a=document.createElement('a');a.href=url;a.download=name||'file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
       catch(e){msg('לא הצלחתי לפתוח את הקובץ. אפשר לרענן ולנסות שוב.','err')}
     }
+    // ייבוא מסמך Word לסעיפי ההצעה (6.11.2026). השרת מחלק לפי הכותרות ומציע סעיף; כאן בודקים, משנים ושומרים.
+    async function importDocx(file){
+      msg('קורא את המסמך…');
+      let j;try{const fd=new FormData();fd.append('file',file);
+        const r=await fetch('/api/team-files?import=1&id='+encodeURIComponent(teamId),{method:'POST',headers:hdr(),body:fd});
+        j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||'לא הצלחתי לקרוא את המסמך.')}
+      catch(err){return msg(err.message,'err')}
+      msg('');
+      const secs=ws.team.sections;const parts=(j.parts||[]).filter(p=>p.text.trim());
+      if(!parts.length)return msg('לא נמצא במסמך טקסט לייבוא.','err');
+      const newNames=[...new Set(parts.map(p=>p.target).filter(t=>t.startsWith('new:')).map(t=>t.slice(4)))];
+      const opts=(sel)=>`<option value="">לא לייבא</option>${secs.map(x=>`<option value="${h(x.id)}"${sel===x.id?' selected':''}>${h(x.title)}${x.text.trim()?' (יש בו טקסט)':''}</option>`).join('')}${newNames.map(n=>`<option value="new:${h(n)}"${sel==='new:'+n?' selected':''}>➕ סעיף חדש: ${h(n)}</option>`).join('')}`;
+      const words=t=>(t.match(/\S+/g)||[]).length;
+      const im=modal(`<h2>📄 ייבוא מסמך לסעיפי ההצעה</h2>
+        <p>${j.title?`<strong>${h(j.title)}</strong> · `:''}${parts.length} חלקים. לכל חלק בחרתי סעיף לפי הכותרת שלו. אפשר לשנות כל בחירה, או לבחור "לא לייבא".</p>
+        <div class="ch-import-list">${parts.map((p,i)=>`<div class="ch-import-row${p.level>1?' sub':''}"><div class="grow"><strong dir="auto">${h(p.heading||'(בלי כותרת: פתיח המסמך)')}</strong> <small class="ch-credit">${words(p.text)} מילים</small><details><summary>תצוגה</summary><pre dir="auto">${h(p.text.slice(0,1200))}${p.text.length>1200?'…':''}</pre></details></div><select data-part="${i}" aria-label="לאיזה סעיף">${opts(p.target)}</select></div>`).join('')}</div>
+        <fieldset class="ch-import-mode"><legend>סעיף שכבר יש בו טקסט:</legend><label><input type="radio" name="mode" value="append" checked> להוסיף את הטקסט החדש אחרי הטקסט הקיים</label> <label><input type="radio" name="mode" value="replace"> להחליף את הטקסט הקיים</label></fieldset>
+        <p><button type="button" class="ch-btn primary" data-import-go>ייבוא לסעיפים</button> <span class="ch-status" data-import-st></span></p>`,true);
+      im.querySelector('[data-import-go]').onclick=async e=>{
+        const btn=e.target,st=im.querySelector('[data-import-st]');btn.disabled=true;
+        const mode=im.querySelector('[name=mode]:checked').value;
+        const pick=[...im.querySelectorAll('[data-part]')].map(sel=>({to:sel.value,p:parts[+sel.dataset.part]})).filter(x=>x.to);
+        if(!pick.length){btn.disabled=false;st.textContent='לא נבחר אף חלק לייבוא.';return}
+        try{
+          // סעיפים חדשים קודם, לפי סדר הופעתם במסמך.
+          for(const name of [...new Set(pick.map(x=>x.to).filter(t=>t.startsWith('new:')))]){
+            st.textContent='מוסיף סעיף: '+name.slice(4);await act('section-add',{title:name.slice(4)});
+            const made=[...ws.team.sections].reverse().find(x=>x.title===name.slice(4));if(made)pick.forEach(x=>{if(x.to===name)x.to=made.id});
+          }
+          const by=new Map();pick.forEach(x=>{if(!x.to.startsWith('new:'))by.set(x.to,[...(by.get(x.to)||[]),x.p.text])});
+          let n=0;
+          for(const [sid,texts] of by){
+            const sec=ws.team.sections.find(x=>x.id===sid);if(!sec)continue;
+            const add=texts.join('\n\n');const text=(mode==='append'&&sec.text.trim()?sec.text.trim()+'\n\n':'')+add;
+            if(text.length>40000)throw new Error(`הסעיף "${sec.title}" ארוך מדי (יותר מ־40,000 תווים). אפשר לייבא חלק ממנו לסעיף חדש.`);
+            st.textContent=`שומר: ${sec.title}`;await act('section-save',{sectionId:sid,version:sec.version,text});n++;
+          }
+          im.close();render(true);msg(`✓ המסמך יובא ל־${n} סעיפים. כדאי לעבור על כל סעיף ולבדוק.`,'ok');
+        }catch(err){btn.disabled=false;st.textContent=err.status===409?'מישהו שמר סעיף בזמן הייבוא. אפשר לסגור, לרענן ולנסות שוב.':err.message}
+      };
+    }
     function attList(rows,canRemove){
       if(!rows?.length)return '';
       return `<ul class="ch-att">${rows.map(a=>`<li>${a.kind==='file'?`<button type="button" class="ch-att-file" data-w="file-open" data-key="${h(a.key)}" data-name="${h(a.label)}">📄 ${h(a.label)}</button>${a.size?` <small>${kb(a.size)}</small>`:''}`:`<a href="${h(a.url)}" target="_blank" rel="noopener" dir="auto">🔗 ${h(a.label)}</a>`}${a.by?` <small>· ${h(a.by)}</small>`:''}${canRemove&&canRemove(a)?` <button type="button" class="ch-btn small danger" data-w="${canRemove.w}" data-id="${h(a.id)}" data-sec="${h(canRemove.sec||'')}">הסרה</button>`:''}</li>`).join('')}</ul>`;
@@ -5181,6 +5223,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const filled=t.sections.filter(x=>x.text.trim()||ws.drafts[x.id]||ws.openSecs[x.id]);
         const empty=t.sections.filter(x=>!filled.includes(x));
         return `<div class="ch-note" style="margin-bottom:12px">כל אחד ואחת כותבים בסעיף שלהם ושומרים. אם שניים עובדים על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בלשונית "קישורים וקבצים".</div>
+        <div class="ch-import"><label class="ch-btn small primary">📄 ייבוא מסמך Word לסעיפים<input type="file" accept=".docx" data-import-docx hidden></label> <span class="ch-credit">כתבת את ההצעה ב-Word? המערכת מחלקת את המסמך לפי הכותרות, מציעה לכל חלק את הסעיף המתאים, ומוסיפה סעיפים אם צריך. לפני השמירה אפשר לבדוק ולשנות.</span></div>
         ${filled.length?filled.map(sectionHtml).join(''):'<p class="ch-empty">עדיין לא נכתב אף סעיף. בוחרים סעיף מהרשימה ומתחילים.</p>'}
         ${empty.length?`<h4 style="margin:18px 0 6px">סעיפים שעוד לא נכתבו (${empty.length})</h4><div class="ch-rows">${empty.map(x=>`<div class="ch-row"><span class="grow"><strong>${h(x.title)}</strong>${x.hint?` <small class="ch-credit">${h(x.hint)}</small>`:''}</span><button type="button" class="ch-btn small" data-w="sec-open" data-id="${h(x.id)}">✍ לכתוב</button></div>`).join('')}</div>`:''}
         <form class="ch-inline" data-form="sec-add" style="grid-template-columns:1fr auto;margin-top:14px"><input name="title" placeholder="סעיף נוסף שהקול הקורא דורש" dir="auto"><button class="ch-btn small">הוספת סעיף</button></form>`;
@@ -5295,6 +5338,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     m.addEventListener('input',e=>{const id=e.target.dataset?.secText;if(id)ws.drafts[id]=e.target.value;if(e.target.id==='chWsMe')store.set('hosen.team.myname',e.target.value.trim())});
     m.addEventListener('change',async e=>{
       if(e.target.id==='chWsStatus')run(()=>act('meta',{status:e.target.value}));
+      if(e.target.matches?.('[data-import-docx]')){const f=e.target.files[0];e.target.value='';if(f)importDocx(f);return}
       if(e.target.type==='file'){const box=e.target.closest('form')?.querySelector('.ch-att-picked');if(box)box.textContent=[...e.target.files].map(f=>f.name).join(', ')}
       const role=e.target.dataset?.role;if(role!==undefined)run(()=>act('member-update',{member:role,role:e.target.value}));
     });

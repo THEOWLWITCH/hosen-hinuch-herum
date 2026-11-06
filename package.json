@@ -9,6 +9,7 @@
     "@anthropic-ai/sdk": "^0.131.0",
     "@netlify/blobs": "latest",
     "@netlify/functions": "latest",
+    "fflate": "^0.8.3",
     "nodemailer": "^10.0.13"
   },
   "devDependencies": {

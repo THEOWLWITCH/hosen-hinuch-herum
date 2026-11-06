@@ -4,6 +4,7 @@
 import type { Config } from "@netlify/functions";
 import { id, json, safeName, store } from "../lib/shared.mts";
 import { clip, lockOK, openTeamAccess } from "../lib/teams.mts";
+import { parseDocx, partText } from "../lib/docx-sections.mts";
 
 const OK_EXT = new Set(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "csv", "odt", "ods", "odp", "txt", "rtf", "md", "jpg", "jpeg", "png", "webp", "gif", "zip"]);
 
@@ -34,6 +35,15 @@ export default async (req: Request) => {
   const form = await req.formData();
   const f = form.get("file");
   if (!(f instanceof File)) return json({ error: "missing_file" }, 400);
+  // ייבוא מסמך Word לסעיפי ההצעה: רק מחזיר את החלקים וההצעה לשיבוץ. השמירה נעשית בדפדפן, אחרי אישור.
+  if (u.searchParams.get("import") === "1") {
+    if (!/\.docx$/i.test(f.name)) return json({ error: "file_type", message: "אפשר לייבא רק קובץ Word מסוג ‎.docx. אם הקובץ ישן (‎.doc), אפשר לשמור אותו מחדש כ־‎.docx." }, 415);
+    if (f.size > 4_000_000) return json({ error: "file_too_large", message: "הקובץ גדול מ־4MB." }, 413);
+    try {
+      const r = parseDocx(new Uint8Array(await f.arrayBuffer()), access.team.sections.map(s => s.id));
+      return json({ title: r.title, parts: r.parts.map(p => ({ heading: p.heading, level: p.level, target: p.target, text: partText(p) })) });
+    } catch { return json({ error: "bad_docx", message: "לא הצלחתי לקרוא את המסמך. אפשר לנסות לשמור אותו מחדש ב-Word כ־‎.docx." }, 400); }
+  }
   const ext = (f.name.split(".").pop() || "").toLowerCase();
   if (!OK_EXT.has(ext) && !f.type.startsWith("image/")) return json({ error: "file_type", message: `סוג הקובץ ${f.name} אינו נתמך. אפשר לצרף קישור במקום.` }, 415);
   if (f.size > 4_000_000) return json({ error: "file_too_large", message: `הקובץ ${f.name} גדול מ־4MB. אפשר להעלות אותו ל־Google Drive ולצרף קישור.` }, 413);
