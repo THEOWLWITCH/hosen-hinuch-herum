@@ -4513,6 +4513,7 @@ html.admin-menu-on #adminTabs,html.admin-menu-on .admin-head-actions .admin-comm
 })();
 </script>
 <style id="hidden-tabs-v1">.site-tab[hidden]{display:none!important}</style>
+<style id="team-track-v1">.ch-track{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;border:1px solid #dbe6ea;border-radius:10px;background:#fbfdfd}.ch-track.on{border-color:#e7c06a;background:#fffcf3}.ch-badge.sg{background:#fff4dc;color:#7a5200}.ch-badge.nt{background:#eef6f8;color:#1f4b60}.ch-sgs,.ch-nts{margin-top:10px}.ch-sgs h5,.ch-nts h5{margin:10px 0 6px;font-size:14px;color:#1f4b60}.ch-sg,.ch-nt{border:1px solid #e7d7a8;border-radius:10px;padding:10px 12px;margin:0 0 8px;background:#fffdf7}.ch-nt{border-color:#cfe2e8;background:#f7fbfc}.ch-sg.done,.ch-nt.done{opacity:.75}.ch-sg-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.ch-sg-note{margin:4px 0;font-style:italic;color:#5c6f78}.ch-diff{white-space:pre-wrap;line-height:1.8;font-size:14px;padding:8px;background:#fff;border:1px solid #eee;border-radius:8px;max-height:260px;overflow:auto}.ch-diff del{background:#fde4e4;color:#9b2c2c;text-decoration:line-through}.ch-diff ins{background:#e2f4e6;color:#226b3a;text-decoration:underline}.ch-diff-ctx{color:#8a99a1}.ch-sg-act{margin:6px 0}.ch-th{margin:6px 0 0;padding:6px 10px;border-inline-start:3px solid #cfe2e8;font-size:13px}.ch-quote{margin:0 0 6px;padding:4px 8px;background:#fff4b8;border-radius:6px;font-size:13px}.ch-note-form{border:1px solid #cfe2e8;border-radius:10px;padding:10px;margin:8px 0;background:#f7fbfc}.ch-note-form textarea{width:100%;box-sizing:border-box;margin-bottom:6px}.ch-sg-why{font:inherit;font-size:12.5px;padding:4px 8px;border:1px solid #cddbe3;border-radius:6px;width:200px;max-width:40vw}.ch-sg-done summary{cursor:pointer;font-size:13px;color:#5c6f78;margin:6px 0}</style>
 <style id="team-import-v1">.ch-import{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;padding:10px 12px;border:1px dashed #9ec3cf;border-radius:10px;background:#f6fbfc}.ch-import-list{display:grid;gap:6px;max-height:55vh;overflow:auto;margin:10px 0}.ch-import-row{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid #dbe6ea;border-radius:8px;background:#fff}.ch-import-row.sub{margin-inline-start:22px;background:#fbfdfd}.ch-import-row .grow{flex:1;min-width:0}.ch-import-row select{max-width:46%;font:inherit;padding:5px}.ch-import-row pre{white-space:pre-wrap;font:inherit;font-size:12.5px;max-height:180px;overflow:auto;background:#f6f9fa;padding:6px;border-radius:6px}.ch-import-mode{border:1px solid #dbe6ea;border-radius:8px;margin:8px 0;padding:8px 12px;font-size:13.5px}</style>
 <style id="team-attach-v1">.ch-att{list-style:none;margin:6px 0;padding:0;display:grid;gap:4px;font-size:13px}.ch-att a{color:#17649a;text-decoration:none;overflow-wrap:anywhere}.ch-att small{color:#6b7d88}.ch-att-file{font:inherit;border:0;background:none;padding:0;color:#17649a;cursor:pointer;text-align:start;overflow-wrap:anywhere}.ch-att-file:hover,.ch-att a:hover{text-decoration:underline}.ch-attach-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.ch-attach-row input[type=url]{flex:1 1 200px;min-width:0}.ch-attach-row input[name=linkLabel]{flex:1 1 150px;min-width:0}.ch-att-picked{font-size:12px;color:#2f6e4f}.ch-sec-attach{margin-top:4px;padding-top:6px;border-top:1px dashed #d7e3e7}</style>
 <style id="teams-title-v2">.sr-only-ch{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
@@ -5206,16 +5207,59 @@ html[data-page="calls"] #resourceArea{display:none!important}
         ${isMember()||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}${t.locked?'':'<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>'}${lead()?`<button type="button" class="ch-btn small" data-w="go-lock">${t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות'}</button>`:''}${isMember()?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="compass" title="חיפוש מקורות במאגר הקהילה ובמאגרים בעולם, עם דו״ח מסכם">🧭 מצפן המחקר</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
         <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
+    // ---------- מעקב שינויים והערות (6.11.2026) ----------
+    // השוואה ברמת מילים: מקצצים התחלה וסוף משותפים, ובאמצע מחשבים LCS (אם האמצע לא ענק).
+    function wordDiff(a,b){
+      const A=String(a||'').split(/(\s+)/),B=String(b||'').split(/(\s+)/);
+      let p=0;while(p<A.length&&p<B.length&&A[p]===B[p])p++;
+      let e=0;while(e<A.length-p&&e<B.length-p&&A[A.length-1-e]===B[B.length-1-e])e++;
+      const a1=A.slice(p,A.length-e),b1=B.slice(p,B.length-e),out=[];
+      const pre=A.slice(0,p).join(''),post=A.slice(A.length-e).join('');
+      if(a1.length*b1.length>1500000){out.push(['-',a1.join('')],['+',b1.join('')])}
+      else{const n=a1.length,m2=b1.length,L=Array.from({length:n+1},()=>new Uint16Array(m2+1));
+        for(let i=n-1;i>=0;i--)for(let j=m2-1;j>=0;j--)L[i][j]=a1[i]===b1[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+        let i=0,j=0;while(i<n&&j<m2){if(a1[i]===b1[j]){out.push(['=',a1[i]]);i++;j++}else if(L[i+1][j]>=L[i][j+1]){out.push(['-',a1[i]]);i++}else{out.push(['+',b1[j]]);j++}}
+        while(i<n)out.push(['-',a1[i++]]);while(j<m2)out.push(['+',b1[j++]]);}
+      // הקשר: עד 30 מילים לפני ואחרי השינוי
+      const ctx=(t,end)=>{const w=t.split(/(\s+)/);return end?(w.length>60?'… ':'')+w.slice(-60).join(''):w.slice(0,60).join('')+(w.length>60?' …':'')};
+      const merged=[];for(const [k,v] of out){const l=merged[merged.length-1];if(l&&l[0]===k)l[1]+=v;else merged.push([k,v])}
+      return `<span class="ch-diff-ctx">${h(ctx(pre,true))}</span>${merged.map(([k,v])=>k==='='?h(v):k==='-'?`<del>${h(v)}</del>`:`<ins>${h(v)}</ins>`).join('')}<span class="ch-diff-ctx">${h(ctx(post,false))}</span>`;
+    }
+    const when=t=>t?new Date(t).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'}):'';
+    function threadHtml(rows){return (rows||[]).map(c=>`<p class="ch-th"><strong>${h(c.by)}</strong> <small>${when(c.at)}</small><br>${h(c.text)}</p>`).join('')}
+    function suggestionsHtml(s){
+      const all=s.suggestions||[];const open=all.filter(x=>x.status==='open'),done=all.filter(x=>x.status!=='open');
+      if(!all.length)return '';
+      const lab={accepted:'✓ התקבלה',rejected:'✕ נדחתה',withdrawn:'בוטלה'};
+      const card=g=>`<div class="ch-sg${g.status!=='open'?' done':''}"><div class="ch-sg-head"><strong>💡 הצעה של ${h(g.by)}</strong> <small>${when(g.at)}</small>${g.status!=='open'?` <span class="ch-badge gray">${lab[g.status]||''}${g.decidedBy?` · ${h(g.decidedBy)}`:''}</span>`:''}</div>
+        ${g.note?`<p class="ch-sg-note">${h(g.note)}</p>`:''}
+        <div class="ch-diff" dir="auto">${wordDiff(g.from,g.to)}</div>
+        ${g.status==='open'?`<div class="ch-sg-act">${true?`<button type="button" class="ch-btn small primary" data-w="sg-accept" data-sec="${h(s.id)}" data-id="${h(g.id)}">✓ קבלה</button> <button type="button" class="ch-btn small" data-w="sg-reject" data-sec="${h(s.id)}" data-id="${h(g.id)}">✕ דחייה</button>`:''}${g.by===me()||lead()?` <button type="button" class="ch-btn small" data-w="sg-withdraw" data-sec="${h(s.id)}" data-id="${h(g.id)}">ביטול ההצעה</button>`:''}</div>`:''}
+        ${threadHtml(g.comments)}
+        ${g.status==='open'?`<form class="ch-inline" data-form="sg-comment" data-sec="${h(s.id)}" data-id="${h(g.id)}" style="grid-template-columns:1fr auto"><input name="text" dir="auto" placeholder="הערה על ההצעה" required><button class="ch-btn small">💬 הוספה</button></form>`:''}</div>`;
+      return `<div class="ch-sgs">${open.length?`<h5>💡 הצעות לשינוי (${open.length})</h5><p class="ch-credit" style="margin:0 0 6px">בתיבה למעלה מופיע הנוסח המאושר. כאן רואים כל הצעה: <del style="background:#fde4e4;color:#9b2c2c">מה נמחק</del> ו<ins style="background:#e2f4e6;color:#226b3a">מה נוסף</ins>. "✓ קבלה" מכניסה את השינוי לסעיף.</p>`+open.map(card).join(''):''}${done.length?`<details class="ch-sg-done"><summary>הצעות שטופלו (${done.length})</summary>${done.slice(-10).reverse().map(card).join('')}</details>`:''}</div>`;
+    }
+    function notesHtml(s){
+      const all=s.notes||[];const open=all.filter(x=>!x.resolved),done=all.filter(x=>x.resolved);
+      const form=ws.noteFor===s.id?`<form class="ch-note-form" data-form="note-add" data-sec="${h(s.id)}"><p class="ch-quote">${ws.noteQuote?`„${h(ws.noteQuote)}”`:'הערה על הסעיף כולו (לא סומן טקסט)'}</p><textarea name="text" rows="2" dir="auto" required placeholder="מה ההערה?"></textarea><button class="ch-btn small primary">💬 הוספת הערה</button> <button type="button" class="ch-btn small" data-w="note-cancel">ביטול</button></form>`:'';
+      if(!all.length&&!form)return '';
+      const card=n=>`<div class="ch-nt${n.resolved?' done':''}">${n.quote?`<p class="ch-quote">„${h(n.quote)}”</p>`:''}<p><strong>${h(n.by)}</strong> <small>${when(n.at)}</small><br>${h(n.text)}</p>${threadHtml(n.replies)}
+        <div class="ch-sg-act"><button type="button" class="ch-btn small" data-w="note-resolve" data-sec="${h(s.id)}" data-id="${h(n.id)}">${n.resolved?'↩ פתיחה מחדש':'✓ טופל'}</button></div>
+        ${n.resolved?'':`<form class="ch-inline" data-form="note-reply" data-sec="${h(s.id)}" data-id="${h(n.id)}" style="grid-template-columns:1fr auto"><input name="text" dir="auto" placeholder="תשובה" required><button class="ch-btn small">↩ תשובה</button></form>`}</div>`;
+      return `<div class="ch-nts">${form}${open.length?`<h5>💬 הערות (${open.length})</h5>`+open.map(card).join(''):''}${done.length?`<details class="ch-sg-done"><summary>הערות שטופלו (${done.length})</summary>${done.map(card).join('')}</details>`:''}</div>`;
+    }
     function sectionHtml(s){
       const draft=ws.drafts[s.id]??s.text;const conflict=ws.conflicts[s.id];
-      return `<div class="ch-sec" data-sec="${h(s.id)}"><div class="ch-sec-head"><h4>${h(s.title)}</h4>${lead()&&!s.text.trim()&&!draft.trim()?`<button type="button" class="ch-btn small danger" data-w="sec-remove" data-id="${h(s.id)}">הסרה</button>`:''}</div>
+      const openSg=(s.suggestions||[]).filter(x=>x.status==='open').length,openNt=(s.notes||[]).filter(x=>!x.resolved).length;
+      return `<div class="ch-sec" data-sec="${h(s.id)}"><div class="ch-sec-head"><h4>${h(s.title)}${openSg?` <span class="ch-badge sg">💡 ${openSg}</span>`:''}${openNt?` <span class="ch-badge nt">💬 ${openNt}</span>`:''}</h4>${lead()&&!s.text.trim()&&!draft.trim()?`<button type="button" class="ch-btn small danger" data-w="sec-remove" data-id="${h(s.id)}">הסרה</button>`:''}</div>
         ${s.hint?`<p class="hint">${h(s.hint)}</p>`:''}
         <textarea dir="auto" data-sec-text="${h(s.id)}">${h(draft)}</textarea>
         ${conflict?`<div class="ch-conflict"><strong>${h(conflict.updatedBy||'חבר/ה אחר/ת בצוות')} עדכן/ה את הסעיף בזמן שכתבת.</strong> הנוסח שלך נשאר בתיבה. זה הנוסח האחר — אפשר לשלב ביניהם ולשמור שוב:<pre dir="auto">${h(conflict.text)}</pre></div>`:''}
         ${attList(s.attachments,Object.assign(a=>lead()||a.by===me(),{w:'sec-detach',sec:s.id}))}
         <form class="ch-sec-attach" data-form="sec-attach" data-id="${h(s.id)}">${attachRow('sec','<button class="ch-btn small">צירוף לסעיף</button>')}</form>
         <div class="ch-sec-foot"><span>${words(draft)} מילים${s.updatedAt?` · עודכן ע״י ${h(s.updatedBy||'')} ב־${new Date(s.updatedAt).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}`:''}</span>
-        <span><span data-saved="${h(s.id)}"></span> <button type="button" class="ch-btn small primary" data-w="sec-save" data-id="${h(s.id)}">שמירה</button></span></div></div>`;
+        <span><span data-saved="${h(s.id)}"></span> <button type="button" class="ch-btn small" data-w="note-start" data-id="${h(s.id)}" title="מסמנים טקסט בתיבה ולוחצים, כדי להעיר עליו">💬 הערה</button> ${ws.team.trackChanges?`<input class="ch-sg-why" data-sg-note="${h(s.id)}" dir="auto" placeholder="הסבר קצר להצעה (רשות)"> <button type="button" class="ch-btn small primary" data-w="sec-suggest" data-id="${h(s.id)}">💡 שליחה כהצעה</button>`:`<button type="button" class="ch-btn small primary" data-w="sec-save" data-id="${h(s.id)}">שמירה</button>`}</span></div>
+        ${notesHtml(s)}${suggestionsHtml(s)}</div>`;
     }
     function body(){
       const t=ws.team,c=call();
@@ -5223,6 +5267,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const filled=t.sections.filter(x=>x.text.trim()||ws.drafts[x.id]||ws.openSecs[x.id]);
         const empty=t.sections.filter(x=>!filled.includes(x));
         return `<div class="ch-note" style="margin-bottom:12px">כל אחד ואחת כותבים בסעיף שלהם ושומרים. אם שניים עובדים על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בלשונית "קישורים וקבצים".</div>
+        <div class="ch-track${t.trackChanges?' on':''}"><button type="button" class="ch-btn small${t.trackChanges?' primary':''}" data-w="track-toggle">🔁 מעקב שינויים: ${t.trackChanges?'פעיל':'כבוי'}</button> <span class="ch-credit">${t.trackChanges?'כל שמירה בסעיף נשלחת כהצעה: רואים מה נמחק ומה נוסף, וחברי וחברות הצוות מקבלים או דוחים אותה. אפשר גם להעיר על טקסט מסומן (💬 הערה).':'שמירה בסעיף משנה אותו ישירות. כשמפעילים מעקב שינויים, כל שינוי נשלח כהצעה לקבלה או לדחייה, כמו ב-Word.'}</span></div>
         <div class="ch-import"><label class="ch-btn small primary">📄 ייבוא מסמך Word לסעיפים<input type="file" accept=".docx" data-import-docx hidden></label> <span class="ch-credit">כתבת את ההצעה ב-Word? המערכת מחלקת את המסמך לפי הכותרות, מציעה לכל חלק את הסעיף המתאים, ומוסיפה סעיפים אם צריך. לפני השמירה אפשר לבדוק ולשנות.</span></div>
         ${filled.length?filled.map(sectionHtml).join(''):'<p class="ch-empty">עדיין לא נכתב אף סעיף. בוחרים סעיף מהרשימה ומתחילים.</p>'}
         ${empty.length?`<h4 style="margin:18px 0 6px">סעיפים שעוד לא נכתבו (${empty.length})</h4><div class="ch-rows">${empty.map(x=>`<div class="ch-row"><span class="grow"><strong>${h(x.title)}</strong>${x.hint?` <small class="ch-credit">${h(x.hint)}</small>`:''}</span><button type="button" class="ch-btn small" data-w="sec-open" data-id="${h(x.id)}">✍ לכתוב</button></div>`).join('')}</div>`:''}
@@ -5348,6 +5393,15 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const w=b.dataset.w,id=b.dataset.id;
       if(w==='sec-open'){ws.openSecs[id]=true;render(true);m.querySelector(`[data-sec-text="${CSS.escape(id)}"]`)?.focus();return}
       if(w==='sec-save')return saveSection(id);
+      if(w==='track-toggle'){const on=!ws.team.trackChanges;if(confirm(on?'להפעיל מעקב שינויים לכל הצוות? מעכשיו כל שמירה בסעיף תישלח כהצעה, ואחרים יקבלו או ידחו אותה.':'לכבות את מעקב השינויים? שמירה בסעיף תשנה אותו ישירות. הצעות פתוחות יישארו.'))run(()=>act('track',{on}));return}
+      if(w==='sec-suggest'){const ta=m.querySelector(`[data-sec-text="${CSS.escape(id)}"]`);const note=m.querySelector(`[data-sg-note="${CSS.escape(id)}"]`)?.value||'';
+        run(async()=>{await act('suggest',{sectionId:id,text:ta.value,note});delete ws.drafts[id];render(true);msg('✓ ההצעה נשלחה. היא מופיעה מתחת לסעיף, וחברי וחברות הצוות יכולים לקבל או לדחות אותה.','ok')});return}
+      if(w==='sg-accept'||w==='sg-reject'||w==='sg-withdraw'){const decision=w.slice(3);
+        if(decision==='accept'&&ws.drafts[b.dataset.sec]!==undefined&&ws.drafts[b.dataset.sec]!==ws.team.sections.find(x=>x.id===b.dataset.sec)?.text&&!confirm('יש בתיבה של הסעיף שינויים שלך שעוד לא נשמרו. אחרי הקבלה הם יוחלפו בנוסח המעודכן. להמשיך?'))return;
+        run(async()=>{try{await act('suggestion-decide',{sectionId:b.dataset.sec,suggestionId:id,decision});delete ws.drafts[b.dataset.sec];render(true);msg(decision==='accept'?'✓ ההצעה התקבלה ונכנסה לסעיף.':decision==='reject'?'ההצעה נדחתה.':'ההצעה בוטלה.','ok')}catch(err){msg(err.message,'err')}});return}
+      if(w==='note-start'){const ta=m.querySelector(`[data-sec-text="${CSS.escape(id)}"]`);ws.noteQuote=ta?ta.value.slice(ta.selectionStart,ta.selectionEnd).trim().slice(0,400):'';if(ta)ws.drafts[id]=ta.value;ws.noteFor=id;render(true);m.querySelector('[data-form="note-add"] textarea')?.focus();return}
+      if(w==='note-cancel'){ws.noteFor='';ws.noteQuote='';render(true);return}
+      if(w==='note-resolve'){run(async()=>{await act('note-resolve',{sectionId:b.dataset.sec,noteId:id});render(true)});return}
       if(w==='sec-remove')return run(()=>act('section-remove',{sectionId:id}));
       if(w==='task-toggle')return run(()=>act('task-toggle',{taskId:id}));
       if(w==='task-remove')return run(()=>act('task-remove',{taskId:id}));
@@ -5414,6 +5468,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
     m.addEventListener('submit',async e=>{
       const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
       const d=formData(f),kind=f.dataset.form;
+      if(kind==='note-add'){try{await act('note-add',{sectionId:f.dataset.sec,quote:ws.noteQuote||'',text:d.text});ws.noteFor='';ws.noteQuote='';render(true);msg('✓ ההערה נוספה.','ok')}catch(err){msg(err.message,'err')}return}
+      if(kind==='note-reply'){try{await act('note-reply',{sectionId:f.dataset.sec,noteId:f.dataset.id,text:d.text});render(true)}catch(err){msg(err.message,'err')}return}
+      if(kind==='sg-comment'){try{await act('suggestion-comment',{sectionId:f.dataset.sec,suggestionId:f.dataset.id,text:d.text});render(true)}catch(err){msg(err.message,'err')}return}
       if(kind==='leave'){
         const who=d.member;
         if(!who)return msg('נשמח לבחירה: מי יוצא/ת מהקבוצה.','err');

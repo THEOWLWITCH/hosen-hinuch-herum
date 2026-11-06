@@ -16,7 +16,11 @@ export type Member = { name: string; email?: string; role?: string; joinedAt: st
 export type JoinRequest = { id: string; name: string; email?: string; note?: string; at: string };
 // קובץ או קישור מצורף (5.11.2026): בסעיף של ההצעה, בהודעה בדיון או בלשונית הקישורים.
 export type Attachment = { id: string; kind: "file" | "link"; label: string; key?: string; url?: string; size?: number; by?: string; at?: string };
-export type Section = { id: string; title: string; hint?: string; text: string; version: number; updatedBy?: string; updatedAt?: string; attachments?: Attachment[] };
+// מעקב שינויים (6.11.2026): הצעה לנוסח חדש של סעיף, שאחרים מקבלים או דוחים, והערות על קטע מסומן.
+export type SecComment = { id: string; by: string; at: string; text: string };
+export type Suggestion = { id: string; by: string; at: string; from: string; to: string; note?: string; status: "open" | "accepted" | "rejected" | "withdrawn"; decidedBy?: string; decidedAt?: string; comments: SecComment[] };
+export type SecNote = { id: string; by: string; at: string; quote: string; text: string; resolved?: boolean; resolvedBy?: string; replies?: SecComment[] };
+export type Section = { id: string; title: string; hint?: string; text: string; version: number; updatedBy?: string; updatedAt?: string; attachments?: Attachment[]; suggestions?: Suggestion[]; notes?: SecNote[] };
 export type Task = { id: string; text: string; owner?: string; due?: string; done: boolean };
 export type Message = { id: string; name: string; text: string; at: string; attachments?: Attachment[] };
 export type Link = { id: string; label: string; url: string; key?: string; size?: number };
@@ -27,6 +31,7 @@ export type Team = {
   // מרחב סגור (5.11.2026): אחרי שהצוות התגבש, המוביל/ה סוגר/ת את המרחב בקוד צוות. אין הצטרפות חדשה,
   // והדיון והחומרים נפתחים לחברי/ות הצוות רק עם הקוד. בכרטיס הציבורי נשארים התקציר ושמות החוקרים/ות.
   locked?: boolean; lockHash?: string; lockedAt?: string;
+  trackChanges?: boolean; // מעקב שינויים פעיל: שמירה בסעיף נשמרת כהצעה
   // הקוד עצמו נשמר כדי שמנהלת המערכת והמוביל/ה יוכלו לראות אותו ולעזור (5.11.2026). לא נשלח לחברי/ות הצוות ולא לכרטיס הציבורי.
   lockCode?: string;
   // הפעילות האחרונה במרחב (פתיחה או עבודה בו). הנורית בכרטיס דולקת שבוע מאז (5.11.2026).
@@ -186,6 +191,21 @@ export function cleanAttachments(teamId: string, rows: unknown, by: string): Att
     if (!url) return null;
     return { id: newItemId(), kind: "link", label: clip(r.label, 200) || url, url, by, at } as Attachment;
   }).filter(Boolean) as Attachment[];
+}
+
+// החלת הצעה על הנוסח הנוכחי: אם הסעיף לא השתנה מאז ההצעה, מחליפים. אחרת מאתרים את האזור שהשתנה
+// (עם 40 תווי הקשר מכל צד) ומחליפים רק אותו, אם הוא מופיע פעם אחת בדיוק. null = לא ניתן להחיל אוטומטית.
+export function applySuggestion(current: string, from: string, to: string): string | null {
+  if (current === from) return to;
+  let p = 0; while (p < from.length && p < to.length && from[p] === to[p]) p++;
+  let e = 0; while (e < from.length - p && e < to.length - p && from[from.length - 1 - e] === to[to.length - 1 - e]) e++;
+  const ctxA = from.slice(Math.max(0, p - 40), p), ctxB = from.slice(from.length - e, from.length - e + 40);
+  const oldMid = from.slice(p, from.length - e), newMid = to.slice(p, to.length - e);
+  const needle = ctxA + oldMid + ctxB;
+  if (!needle.trim()) return null;
+  const i = current.indexOf(needle);
+  if (i < 0 || current.indexOf(needle, i + 1) >= 0) return null;
+  return current.slice(0, i) + ctxA + newMid + ctxB + current.slice(i + needle.length);
 }
 
 export function newItemId() {

@@ -4,7 +4,7 @@ import { communityOK } from "../lib/member-code.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamAccess, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, issueKey, listTeams, newItemId, newKey,
-  openTeamAccess, publicTeam, saveTeam, workspaceTeam, hashLock, lockOK, cleanAttachments,
+  openTeamAccess, publicTeam, saveTeam, workspaceTeam, hashLock, lockOK, cleanAttachments, applySuggestion,
 } from "../lib/teams.mts";
 
 // מה שסביבת העבודה מקבלת: הקבוצה, התפקיד של מי שנכנס/ה (מוביל/ה או חבר/ה) והשם שלו/ה.
@@ -308,6 +308,65 @@ export default async (req: Request) => {
       // מניעת דריסה: שומרים רק אם הנוסח לא השתנה מאז שנפתח.
       if (Number(body.version) !== s.version) return json({ error: "conflict", section: s }, 409);
       Object.assign(s, { text: clip(body.text, 40000), version: s.version + 1, updatedBy: who, updatedAt: at });
+      break;
+    }
+    // ---------- מעקב שינויים והערות (6.11.2026) ----------
+    case "track": {
+      t.trackChanges = !!body.on;
+      t.messages.push({ id: newItemId(), name: who, text: t.trackChanges ? "🔁 מעקב שינויים הופעל: שמירה בסעיף נשמרת כהצעה, ואחרים מקבלים או דוחים אותה." : "🔁 מעקב שינויים כובה: שמירה בסעיף משנה אותו ישירות.", at });
+      t.messages = t.messages.slice(-300);
+      break;
+    }
+    case "suggest": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      if (!s) return json({ error: "not_found" }, 404);
+      const to = clip(body.text, 40000);
+      if (to === s.text) return json({ error: "no_change", message: "אין שינוי לעומת הנוסח הנוכחי." }, 400);
+      s.suggestions = (s.suggestions || []).filter(x => x.status === "open" || Date.parse(x.decidedAt || x.at) > Date.now() - 30 * 86400000);
+      if (s.suggestions.filter(x => x.status === "open").length >= 20) return json({ error: "too_many", message: "יש כבר 20 הצעות פתוחות בסעיף. כדאי לקבל או לדחות חלק מהן קודם." }, 400);
+      s.suggestions.push({ id: newItemId(), by: who, at, from: s.text, to, note: clip(body.note, 600), status: "open", comments: [] });
+      break;
+    }
+    case "suggestion-decide": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      const g = s?.suggestions?.find(x => x.id === clip(body.suggestionId, 20));
+      if (!s || !g || g.status !== "open") return json({ error: "not_found", message: "ההצעה כבר לא פתוחה." }, 404);
+      const decision = String(body.decision || "");
+      if (decision === "withdraw") {
+        if (g.by !== who && !isLead) return json({ error: "forbidden", message: "רק מי שהציע/ה יכול/ה לבטל." }, 403);
+        g.status = "withdrawn";
+      } else if (decision === "reject") {
+        g.status = "rejected";
+      } else if (decision === "accept") {
+        const next = applySuggestion(s.text, g.from, g.to);
+        if (next === null) return json({ error: "stale", message: "הסעיף השתנה מאז ההצעה, באותו מקום. אפשר לפתוח את ההצעה, להעתיק ממנה ולשלב ידנית." }, 409);
+        Object.assign(s, { text: next, version: s.version + 1, updatedBy: who, updatedAt: at });
+        g.status = "accepted";
+      } else return json({ error: "bad_decision" }, 400);
+      g.decidedBy = who; g.decidedAt = at;
+      break;
+    }
+    case "suggestion-comment": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      const g = s?.suggestions?.find(x => x.id === clip(body.suggestionId, 20));
+      const text = clip(body.text, 1500);
+      if (!g || !text) return json({ error: "missing_fields" }, 400);
+      g.comments.push({ id: newItemId(), by: who, at, text });
+      break;
+    }
+    case "note-add": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      const text = clip(body.text, 1500);
+      if (!s || !text) return json({ error: "missing_fields", message: "נשמח לתוכן ההערה." }, 400);
+      s.notes = [...(s.notes || []), { id: newItemId(), by: who, at, quote: clip(body.quote, 400), text, replies: [] }].slice(-100);
+      break;
+    }
+    case "note-reply": case "note-resolve": {
+      const s = t.sections.find(x => x.id === clip(body.sectionId, 40));
+      const n = s?.notes?.find(x => x.id === clip(body.noteId, 20));
+      if (!n) return json({ error: "not_found" }, 404);
+      if (action === "note-resolve") { n.resolved = !n.resolved; n.resolvedBy = n.resolved ? who : ""; }
+      else { const text = clip(body.text, 1500); if (!text) return json({ error: "missing_fields" }, 400); n.replies = [...(n.replies || []), { id: newItemId(), by: who, at, text }]; }
       break;
     }
     case "section-add": {
