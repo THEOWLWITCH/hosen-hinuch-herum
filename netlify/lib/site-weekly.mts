@@ -114,7 +114,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   if (changed.length) S.splice(2, 0, { key: "site", title: "🛠 מה חדש באתר עצמו", lines: changed.slice(0, 15), link: ["לאתר", site] });
   // הסבר מורחב על שינוי (guides ב-site-changes.json): מדור משלו מיד אחרי "מה חדש באתר עצמו" (5.11.2026).
   const guides = (Array.isArray(changes) ? changes : []).filter(c => String(c?.date || "") >= sinceDay).flatMap(c => Array.isArray(c.guides) ? c.guides : [])
-    .filter(g => g?.title && Array.isArray(g.lines) && g.lines.length).slice(0, 3);
+    .filter(g => g?.title && Array.isArray(g.lines) && g.lines.length).slice(0, 5); // עד חמישה הסברים בשבוע
   guides.forEach((g, i) => S.splice((changed.length ? 3 : 2) + i, 0, { key: "guide", title: clip(g.title, 120), lines: g.lines.slice(0, 10).map(x => clip(x, 400)) }));
 
   const count = S.filter(s => s.key !== "research" && s.key !== "stats" && s.key !== "guide").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
