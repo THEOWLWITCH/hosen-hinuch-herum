@@ -29,6 +29,14 @@ export function renderHtml(text: string, site: string): string {
   for (const raw of String(text || "").split("\n")) {
     const l = raw.trim();
     if (!l) { close(); continue; }
+    // איור: שורה בצורה ![תיאור](קישור לתמונה) או ![תיאור](קישור לתמונה)(קישור ללחיצה) (7.11.2026).
+    const img = l.match(/^(?:[-•]\s+)?!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)(?:\((https?:\/\/[^\s)]+)\))?$/);
+    if (img) {
+      close();
+      const tag = `<img src="${esc(img[2])}" alt="${esc(img[1])}" width="584" style="display:block;width:100%;max-width:584px;height:auto;border:0;border-radius:14px">`;
+      html += `<div style="margin:4px 0 14px">${img[3] ? `<a href="${esc(img[3])}">${tag}</a>` : tag}</div>`;
+      continue;
+    }
     const m = l.match(/^[-•]\s+(.*)$/);
     if (m) { if (!list) { html += '<ul style="margin:0 0 12px;padding-inline-start:20px">'; list = true; } html += `<li style="margin:0 0 4px">${inline(m[1])}</li>`; continue; }
     close();
@@ -40,7 +48,9 @@ export function renderHtml(text: string, site: string): string {
 }
 
 export function plainText(text: string): string {
-  return String(text || "").replace(/\*\*(.+?)\*\*/g, "$1");
+  return String(text || "")
+    .replace(/^(?:[-•]\s+)?!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)(?:\((https?:\/\/[^\s)]+)\))?$/gm, (_m, alt, _src, link) => link ? `${alt}: ${link}` : alt)
+    .replace(/\*\*(.+?)\*\*/g, "$1");
 }
 
 export type MailLog = { id: string; at: string; subject: string; sent: number; failed: string[]; test: boolean };
