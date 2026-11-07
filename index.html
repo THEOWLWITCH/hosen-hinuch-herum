@@ -4138,7 +4138,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     document.body.appendChild(m);
     const root=m.querySelector('[data-rq]');
     const V={status:'open',type:'',q:'',rows:[],types:{}};
-    async function load(){const j=await api('GET');V.rows=j.requests;V.types=j.types}
+    async function load(){const j=await api('GET');V.rows=j.requests;V.types=j.types;V.joinTpl=j.joinTpl||''}
     function render(){
       const cnt=k=>V.rows.filter(r=>r.status===k).length;
       const rows=V.rows.filter(r=>(V.status==='all'||(V.status==='open'?r.status!=='done':r.status===V.status))&&(!V.type||r.type===V.type)&&(!V.q||[r.name,r.email,r.subject,r.body,r.note].join(' ').toLowerCase().includes(V.q.toLowerCase())));
@@ -4164,7 +4164,7 @@ html[data-page="tasks"] #tasks{display:block!important}
     }
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
     async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
-    // תבנית תשובה לבקשת הצטרפות לקהילה (7.11.2026). אפשר לערוך ולשמור כתבנית (נשמרת בדפדפן הזה).
+    // תבנית תשובה לבקשת הצטרפות לקהילה (7.11.2026). נשמרת במערכת (settings/join-reply-tpl.json), ונפתחת אוטומטית בכל מחשב.
     const JOIN_TPL_KEY='hosen_join_reply_tpl';
     const JOIN_TPL_DEFAULT=`שלום {שם},
 
@@ -4183,7 +4183,7 @@ html[data-page="tasks"] #tasks{display:block!important}
 בברכה,
 ד״ר יעל שדה
 בינה מלאכותית: חוסן-חינוך-חרום`;
-    const joinTpl=()=>{try{return localStorage.getItem(JOIN_TPL_KEY)||JOIN_TPL_DEFAULT}catch(e){return JOIN_TPL_DEFAULT}};
+    const joinTpl=()=>{if(V.joinTpl)return V.joinTpl;try{return localStorage.getItem(JOIN_TPL_KEY)||JOIN_TPL_DEFAULT}catch(e){return JOIN_TPL_DEFAULT}};
     // תשובה במייל מתוך התיבה: נשלחת מהאתר ונשמרת בהיסטוריה של הפנייה.
     function openReply(btn){
       const card=btn.closest('.nv-card');const old=card.querySelector('[data-reply-form]');if(old){old.remove();return}
@@ -4204,8 +4204,8 @@ html[data-page="tasks"] #tasks{display:block!important}
         catch(err){b.disabled=false;st.className='nv-status err';st.textContent=err.message}
       });
       // שמירת הנוסח כתבנית: השם של הפונה חוזר להיות {שם}, כדי שהתבנית תתאים לכל פנייה.
-      f.querySelector('[data-tpl-save]')?.addEventListener('click',()=>{const st=f.querySelector('[data-reply-st]');let t=f.elements.text.value;if(r.name)t=t.split(r.name).join('{שם}');try{localStorage.setItem(JOIN_TPL_KEY,t);st.className='nv-status ok';st.textContent='✓ התבנית נשמרה. היא תופיע בכל תשובה לבקשת הצטרפות (בדפדפן הזה).'}catch(e){st.className='nv-status err';st.textContent='לא הצלחתי לשמור את התבנית.'}});
-      f.querySelector('[data-tpl-reset]')?.addEventListener('click',()=>{if(!confirm('לחזור לנוסח המקורי של התבנית?'))return;try{localStorage.removeItem(JOIN_TPL_KEY)}catch(e){}f.elements.text.value=JOIN_TPL_DEFAULT.replace(/\{שם\}/g,r.name||'')});
+      f.querySelector('[data-tpl-save]')?.addEventListener('click',async()=>{const st=f.querySelector('[data-reply-st]');let t=f.elements.text.value;if(r.name)t=t.split(r.name).join('{שם}');st.className='nv-status';st.textContent='שומרת…';try{await api('POST',{action:'join-tpl',text:t});V.joinTpl=t;try{localStorage.removeItem(JOIN_TPL_KEY)}catch(e){}st.className='nv-status ok';st.textContent='✓ הנוסח נשמר במערכת. הוא ייפתח אוטומטית בכל תשובה לבקשת הצטרפות, בכל מחשב.'}catch(e){st.className='nv-status err';st.textContent='לא הצלחתי לשמור את הנוסח: '+e.message}});
+      f.querySelector('[data-tpl-reset]')?.addEventListener('click',async()=>{if(!confirm('לחזור לנוסח המקורי של התבנית?'))return;try{await api('POST',{action:'join-tpl',text:''});V.joinTpl='';localStorage.removeItem(JOIN_TPL_KEY)}catch(e){}f.elements.text.value=JOIN_TPL_DEFAULT.replace(/\{שם\}/g,r.name||'')});
       card.appendChild(f);const ta=f.querySelector('textarea');ta.focus();const pos=ta.value.indexOf('\n\n')+2;ta.setSelectionRange(pos,pos);
     }
     // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
@@ -7426,7 +7426,13 @@ async function compassReportCopy(btn){const t=compassReportText();let ok=false;
    box.oncopy=()=>{setTimeout(()=>{done();box.hidden=true},50)}}
  compassReportMsg('📋 הדפדפן לא אפשר העתקה אוטומטית. הטקסט כבר מסומן בתיבה למטה: מקישים עכשיו Ctrl+C (במק: ⌘+C), ויופיע כאן אישור.','warn')}
 function compassReportMail(kind){const r=compassLastReport;if(!r)return;const sub='דו"ח ממצפן המחקר: '+r.q;let body=compassReportText();
- if(kind==='gmail'){body=body.length>6000?body.slice(0,6000)+'\n…':body;window.open('https://mail.google.com/mail/?view=cm&fs=1&su='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body),'_blank','noopener');compassReportMsg('✉ נפתח חלון Gmail חדש עם הדו"ח. אם הוא לא נפתח, כדאי לאפשר חלונות קופצים לאתר.','info');return}
+ if(kind==='gmail'){
+  // Gmail לא פותח כתובת ארוכה מדי (דו"ח בעברית חורג מהר מהמגבלה). לכן: הדו"ח המלא מועתק ללוח, ובמייל נכנס קיצור עם הסבר. 7.11.2026.
+  let copied=false;try{const ta=document.createElement('textarea');ta.value=body;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.select();copied=document.execCommand('copy');ta.remove()}catch(e){}
+  try{if(!copied&&navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(body).catch(()=>{});copied=true}}catch(e){}
+  const short=body.length>1100?body.slice(0,1100).replace(/\s+\S*$/,'')+'\n…\n\n'+(copied?'[הדו"ח המלא הועתק. כדי לצרף אותו: מוחקים את הקיצור הזה ומדביקים (Ctrl+V)]':'[הדו"ח המלא: אפשר להוריד אותו כקובץ מהמצפן ולצרף למייל]'):body;
+  const a=document.createElement('a');a.href='https://mail.google.com/mail/?view=cm&fs=1&su='+encodeURIComponent(sub)+'&body='+encodeURIComponent(short);a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+  compassReportMsg(body.length>1100?(copied?'✉ נפתח חלון Gmail חדש. הדו"ח ארוך, ולכן במייל יש קיצור, והדו"ח המלא הועתק: מוחקים את הקיצור ומדביקים (Ctrl+V). אם החלון לא נפתח, כדאי לאפשר חלונות קופצים לאתר.':'✉ נפתח חלון Gmail חדש עם קיצור של הדו"ח. את הדו"ח המלא אפשר להוריד כקובץ ולצרף.'):'✉ נפתח חלון Gmail חדש עם הדו"ח. אם הוא לא נפתח, כדאי לאפשר חלונות קופצים לאתר.','ok');return}
  body=body.length>1800?body.slice(0,1800)+'\n… (הדו"ח המלא: אפשר להעתיק או להוריד אותו)':body;
  const a=document.createElement('a');a.href='mailto:?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body);document.body.appendChild(a);a.click();a.remove();
  compassReportMsg('אם לא נפתחה תוכנת דואר, כנראה שאין במחשב תוכנה מוגדרת. אפשר ללחוץ "שליחה ב־Gmail" או "העתקת הדו"ח".')}

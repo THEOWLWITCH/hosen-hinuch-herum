@@ -11,7 +11,8 @@ const SOURCE_CATEGORIES = ["research-institute", "research-preparedness", "resea
 export default async (req: Request) => {
   if (req.method === "GET") {
     if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
-    return json({ requests: await listRequests(), types: TYPE_LABELS });
+    const tpl = await store("hosen-data").get("settings/join-reply-tpl.json", { type: "json" }).catch(() => null) as { text?: string } | null;
+    return json({ requests: await listRequests(), types: TYPE_LABELS, joinTpl: tpl?.text || "" });
   }
   if (req.method !== "POST") return json({ error: "method" }, 405);
   const body = await req.json().catch(() => ({} as any));
@@ -35,6 +36,14 @@ export default async (req: Request) => {
   }
 
   if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
+  // תבנית התשובה לבקשות הצטרפות: נשמרת במערכת (ולא בדפדפן), כך שהיא נפתחת בכל מחשב. טקסט ריק = חזרה לנוסח המקורי. 7.11.2026.
+  if (body.action === "join-tpl") {
+    const text = clip(body.text, 8000);
+    const st = store("hosen-data");
+    if (text) await st.setJSON("settings/join-reply-tpl.json", { text, at: new Date().toISOString() });
+    else await st.delete("settings/join-reply-tpl.json");
+    return json({ ok: true });
+  }
   // אישור בקשת הצטרפות: כרטיס חדש בנבחרת, עם המייל — וכך גם בכל רשימות השליחה האוטומטית.
   if (body.action === "approve-join") {
     const r = await getRequest(clip(body.id, 60));

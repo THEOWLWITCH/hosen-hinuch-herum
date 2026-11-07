@@ -72,13 +72,35 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   ], ["לשיתופי פעולה", `${site}/match`]);
 
   // הודעות ידניות מהנהלת הקהילה (weekly-notes.json): section "people" נכנס ל"הצטרפו לנבחרת", כל השאר ל"📌 מהנהלת הקהילה".
-  const wnotes = (await fetch(`${site}/weekly-notes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => [])) as { date: string; section?: string; text: string }[];
+  // ברכה למצטרף/ת עם "person" (חלק מהשם): הפרטים (שם מלא, מוסד, תחום מחקר) נלקחים מהכרטיס בנבחרת או מבקשת ההצטרפות,
+  // ונכנסים ל-"template" במקום {שם} {מוסד} {תחום}. לא נמצאו פרטים: נכנס "text".
+  const wnotes = (await fetch(`${site}/weekly-notes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => [])) as { date: string; section?: string; text: string; person?: string | string[]; template?: string }[];
   const myNotes = (Array.isArray(wnotes) ? wnotes : []).filter(x => String(x?.date || "") >= since.slice(0, 10) && x.text);
-  const peopleNotes = myNotes.filter(x => x.section === "people").map(x => clip(x.text, 400));
+  const keysOf = (x: { person?: string | string[] }) => (Array.isArray(x.person) ? x.person : x.person ? [x.person] : []).filter(Boolean);
+  const hit = (name: unknown, keys: string[]) => keys.some(k => String(name || "").includes(k));
+  const firstPart = (v: unknown) => clip(String(v || "").split(/\n|(?<=[.!?])\s/)[0], 220).replace(/[.\s]+$/, "");
+  const personInfo = (keys: string[]) => {
+    if (!keys.length) return null;
+    const p = (people as any[]).find(x => hit(x.name, keys));
+    if (p) return { name: clip(p.name, 120), inst: clip(p.institution, 160), field: firstPart(p.description) };
+    const r = (requests as any[]).filter(x => x.type === "join" && hit(x.data?.name || x.name, keys)).sort((a, b) => String(b.at).localeCompare(String(a.at)))[0];
+    return r ? { name: clip(r.data?.name || r.name, 120), inst: clip(r.data?.affiliation, 160), field: firstPart(r.data?.expertise) } : null;
+  };
+  const noteText = (x: (typeof myNotes)[number]) => {
+    const info = personInfo(keysOf(x));
+    if (!info || !x.template) return x.text;
+    let t = x.template.replace(/\{שם\}/g, info.name);
+    t = info.inst ? t.replace(/\{מוסד\}/g, info.inst) : t.replace(/\s*\([^()]*\{מוסד\}[^()]*\)/g, "").replace(/\{מוסד\}/g, "");
+    t = info.field ? t.replace(/\{תחום\}/g, info.field) : t.replace(/[^.!]*\{תחום\}[^.!]*[.!]?/g, "");
+    return t.replace(/\s{2,}/g, " ").trim();
+  };
+  const noteKeys = myNotes.filter(x => x.section === "people").flatMap(keysOf);
+  const peopleNotes = myNotes.filter(x => x.section === "people").map(x => clip(noteText(x), 600));
   add("notes", "📌 מהנהלת הקהילה", myNotes.filter(x => x.section !== "people").map(x => clip(x.text, 600)));
 
   const joined = (people as any[]).filter(isNew).map(p => clip(p.name, 60)).filter(Boolean);
-  add("people", "🙋 הצטרפו לנבחרת", [...peopleNotes, ...(joined.length ? [`ברוכים הבאים וברוכות הבאות: ${joined.slice(0, 12).join(", ")}`] : [])], ["לנבחרת", `${site}/people`]);
+  const joinedOthers = joined.filter(nm => !hit(nm, noteKeys)); // מי שכבר קיבל/ה ברכה אישית לא חוזר/ת ברשימה
+  add("people", "🙋 הצטרפו לנבחרת", [...peopleNotes, ...(joinedOthers.length ? [`ברוכים הבאים וברוכות הבאות: ${joinedOthers.slice(0, 12).join(", ")}`] : [])], ["לנבחרת", `${site}/people`]);
 
   const albums = gallery.filter(isNew).filter(g => g.active !== false);
   add("gallery", "📷 בגלריה", albums.slice(0, 4).map(g => clip(g.title, 100)), ["לגלריה", `${site}/gallery`]);
