@@ -2474,6 +2474,8 @@ body:has(.feedback-modal.open){
 #kikar .kk-bt{font-size:15px;line-height:1.28;font-weight:800;color:#1f4256}
 #kikar .kk-cta{font-size:12px;font-weight:800;color:var(--c)}
 #kikar .kk-count{font-size:11px;color:#5a6e7a}
+/* נקודה ירוקה על עיגול שיחה שהייתה בה תגובה בשבוע האחרון (7.11.2026). רק חיווי חיובי, בלי סימון לשיחות שקטות. */
+#kikar .kk-live{position:absolute;top:14%;right:14%;width:16px;height:16px;border-radius:50%;background:#2e9d5b;box-shadow:0 0 0 3px #fff,0 0 0 5px rgba(46,157,91,.25)}
 #kikar .kk-bottom{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;margin-top:10px}
 #kikar .kk-head{background:none!important;padding:0!important;border:0!important;box-shadow:none!important;min-height:0!important}
 #kikar .kk-learn,#kikar .kk-next{padding:24px 32px!important;margin:0!important}
@@ -2577,7 +2579,7 @@ body:has(.feedback-modal.open){
   function render(){
     const t=S.topic;if(!t)return;
     document.getElementById('kkInfo').innerHTML=`<span>🗓 הנושא נפתח ב־${fmt(t.opens)}</span><span>👁 כולם קוראים · חברי וחברות הקהילה כותבים</span>`;
-    const n=t.convs.length,count=id=>S.posts.filter(p=>p.conv===id).length;
+    const n=t.convs.length,count=id=>S.posts.filter(p=>p.conv===id).length,wk=Date.now()-7*864e5,live=id=>S.posts.some(p=>p.conv===id&&Date.parse(p.createdAt)>wk);
     const P={};t.convs.forEach((c,i)=>P[c.id]=pos(i,n));
     const pairs=new Set();S.posts.forEach(p=>{if(p.linkTo&&P[p.linkTo])pairs.add([p.conv,p.linkTo].sort().join('|'))});
     const curve=(a,b)=>{const [x1,y1]=P[a],[x2,y2]=P[b];const mx=(x1+x2)/2,my=(y1+y2)/2;const dx=mx-600,dy=my-450,L=Math.hypot(dx,dy)||1;return `M${x1} ${y1} Q${Math.round(mx+dx/L*170)} ${Math.round(my+dy/L*170)} ${x2} ${y2}`};
@@ -2591,7 +2593,7 @@ body:has(.feedback-modal.open){
         <circle cx="120" cy="120" r="10" fill="#c9973a" opacity=".55"/><circle cx="1090" cy="110" r="14" fill="#4f7f9a" opacity=".35"/><circle cx="1120" cy="780" r="9" fill="#8a2a3b" opacity=".4"/><circle cx="90" cy="760" r="16" fill="#c9973a" opacity=".35"/>
       </svg>
       <div class="kk-center"><span class="kk-kicker">נושא השיחה</span><h2>${esc(t.title)}</h2><p>${esc(t.question)}</p>${S.current?'':'<small>נושא מהארכיון</small>'}</div>
-      ${t.convs.map((c,i)=>{const [x,y]=P[c.id],k=count(c.id);return `<button type="button" class="kk-bubble" data-conv="${esc(c.id)}" style="--c:${esc(c.color)};left:${x-110}px;top:${y-110}px" aria-label="שיחה: ${esc(c.title)}"><span class="kk-num">${ico(c.id)}</span><span class="kk-bt">${esc(c.title)}</span><span class="kk-cta">לשיחה ←</span>${k?`<span class="kk-count">${k===1?'תגובה אחת':k+' תגובות'}</span>`:''}</button>`}).join('')}`;
+      ${t.convs.map((c,i)=>{const [x,y]=P[c.id],k=count(c.id),on=live(c.id);return `<button type="button" class="kk-bubble" data-conv="${esc(c.id)}" style="--c:${esc(c.color)};left:${x-110}px;top:${y-110}px" aria-label="שיחה: ${esc(c.title)}${on?'. יש פעילות השבוע':''}">${on?'<span class="kk-live" title="יש פעילות בשיחה השבוע" aria-hidden="true"></span>':''}<span class="kk-num">${ico(c.id)}</span><span class="kk-bt">${esc(c.title)}</span><span class="kk-cta">לשיחה ←</span>${k?`<span class="kk-count">${k===1?'תגובה אחת':k+' תגובות'}</span>`:''}</button>`}).join('')}`;
     if(pairs.size){const note=document.createElement('p');note.className='kk-note';note.style.cssText='position:absolute;left:0;bottom:0;margin:0';note.textContent='קו מקווקו בין שיחות = תגובה שמחברת ביניהן';document.getElementById('kkStage').appendChild(note)}
     document.querySelectorAll('#kkStage .kk-bubble').forEach(b=>b.onclick=()=>openConv(b.dataset.conv));
     const ad=!!adminTok();
