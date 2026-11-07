@@ -2492,6 +2492,14 @@ body:has(.feedback-modal.open){
   border-radius:0 32px 32px 0;box-shadow:0 0 40px rgba(0,0,0,.18);font-family:Heebo,Arial,sans-serif;color:#1f4256;direction:rtl}
 .kk-drawer *{box-sizing:border-box}
 .kk-dtop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.kk-codelink{font-family:inherit;font-size:13px;font-weight:600;color:#1f4256;background:none;border:0;padding:4px 2px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.kk-codelink[aria-expanded="true"]{color:#8a2a3b}
+.kk-codeok{font-size:13px;color:#2f6e4f}
+.kk-codebox{display:flex;flex-wrap:wrap;gap:8px 12px;background:#fff;border:1px solid #e6dfcf;border-radius:14px;padding:10px 12px}
+.kk-codebox[hidden]{display:none}
+.kk-codebox .mc-hint{display:none}
+.kk-codebox label{font-size:13px;font-weight:700;display:flex;flex-direction:column;gap:3px;flex:1;min-width:150px}
+.kk-codebox input{font-family:inherit;font-size:14px;border:1px solid #cfc4ab;border-radius:10px;padding:8px;background:#fffdf7;color:#1f4256}
 .kk-x{width:44px;height:44px;border-radius:999px;border:1px solid #d9cfb8;background:#fff;cursor:pointer;font-size:20px;color:#1f4256}
 .kk-drawer h2{margin:0;font-size:26px;line-height:1.25;font-weight:800}
 .kk-drawer .kk-op{margin:0;font-size:17px;line-height:1.7;color:#2e4654}
@@ -2596,10 +2604,21 @@ body:has(.feedback-modal.open){
   }
   const close=()=>{document.querySelector('.kk-overlay')?.remove();document.removeEventListener('keydown',onKey);if(/^#c\d+$/.test(location.hash))history.replaceState(null,'',location.pathname+location.search)};
   const onKey=e=>{if(e.key==='Escape')close()};
-  function codeFields(){
+  // קוד הקהילה (7.11.2026): קישור קטן בראש החלונית, משמאל לכותרת. השדות שייכים לטופס דרך form="…".
+  function codeLink(){return tok()?'<span class="kk-codeok">✓ מחובר/ת</span>':'<button type="button" class="kk-codelink" data-codelink aria-expanded="false">🔑 קוד הקהילה</button>'}
+  function codeBox(fid){
     const on=!!tok();
-    return `${on?'':`<label>השם שלך<input name="name" autocomplete="name" required maxlength="160"></label>`}
-      <label>קוד אישי או קוד הקהילה<input name="communityCode" autocomplete="off" required></label>`;
+    return `<div class="kk-codebox" data-codebox ${on?'hidden':'hidden'}>${on?'':`<label>השם שלך<input name="name" form="${fid}" autocomplete="name" maxlength="160"></label>`}
+      <label>קוד אישי או קוד הקהילה<input name="communityCode" form="${fid}" autocomplete="off"></label></div>`;
+  }
+  function wireCode(ov,f,msg){
+    const link=ov.querySelector('[data-codelink]'),box=ov.querySelector('[data-codebox]');
+    const show=()=>{box.hidden=false;if(link)link.setAttribute('aria-expanded','true');(f.elements.name&&!f.elements.name.value?f.elements.name:f.elements.communityCode).focus()};
+    if(link)link.onclick=()=>{if(box.hidden)show();else{box.hidden=true;link.setAttribute('aria-expanded','false')}};
+    return ()=>{if(tok())return true;
+      if(f.elements.name&&!f.elements.name.value.trim()){show();msg('יש לכתוב שם ואת קוד הקהילה (למעלה, משמאל לכותרת).','err');return false}
+      if(!f.elements.communityCode.value.trim()){show();msg('יש להזין את קוד הקהילה (למעלה, משמאל לכותרת).','err');return false}
+      return true};
   }
   function openConv(id){
     const t=S.topic,i=t.convs.findIndex(c=>c.id===id);if(i<0)return;const c=t.convs[i];
@@ -2608,7 +2627,8 @@ body:has(.feedback-modal.open){
     const ad=!!adminTok();const opened=Date.now();let sources=[];
     const ov=document.createElement('div');ov.className='kk-overlay';
     ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkDT">
-      <div class="kk-dtop"><span class="kk-row"><span class="kk-num" style="--c:${esc(c.color)}">${ico(c.id)}</span><span class="kk-note">שיחה בכיכר · ${esc(c.short)}</span></span><button type="button" class="kk-x" aria-label="סגירת השיחה">✕</button></div>
+      <div class="kk-dtop"><span class="kk-row"><span class="kk-num" style="--c:${esc(c.color)}">${ico(c.id)}</span><span class="kk-note">שיחה בכיכר · ${esc(c.short)}</span></span><span class="kk-row">${S.current?codeLink():''}<button type="button" class="kk-x" aria-label="סגירת השיחה">✕</button></span></div>
+      ${S.current?codeBox('kkF'):''}
       <h2 id="kkDT">${esc(c.title)}</h2>
       <p class="kk-op">${esc(c.opener)}</p>
       <div class="kk-read"><b>לעיון</b><p>${esc(c.note)}</p><a href="${esc(c.srcUrl)}" target="_blank" rel="noopener" style="font-weight:700;color:#1f4256">${esc(c.srcLabel)} ↗</a></div>
@@ -2616,7 +2636,7 @@ body:has(.feedback-modal.open){
       <section aria-label="תגובות" style="display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:18px">תגובות</h3>
       ${posts.length?posts.map(p=>`<article class="kk-post"><div class="kk-meta"><b>${esc(p.name)}</b><span>${fmt(p.createdAt)}</span>${p.linkTo&&conv(p.linkTo)?`<button type="button" class="kk-tag" data-go="${esc(p.linkTo)}">מתחבר לשיחה: ${esc(conv(p.linkTo).short)}</button>`:''}${ad?`<button type="button" class="kk-tag" data-del-post="${esc(p.id)}">מחיקה</button>`:''}</div><p>${esc(p.text)}</p>${p.sources&&p.sources.length?`<div class="kk-srcs">${p.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${s.kind==='file'?'📎':s.kind==='library'?'📚':'🔗'} ${esc(s.title)}</a>`).join('')}</div>`:''}</article>`).join(''):'<p class="kk-note" style="background:#fff;border:1px dashed #d9cfb8;border-radius:12px;padding:12px 14px;margin:0">עוד אין תגובות. אפשר לפתוח את השיחה.</p>'}
       </section>
-      ${S.current?`<form class="kk-form" novalidate>
+      ${S.current?`<form class="kk-form" id="kkF" novalidate>
         <label>התגובה שלך<textarea name="text" rows="5" required maxlength="4000" placeholder="ניסיון מהשטח, שאלה או טענה מחקרית. בלי פרטים מזהים של תלמידים, הורים או צוות."></textarea></label>
         <span style="font-size:14px;font-weight:700">צירוף מקור (לא חובה)</span>
         <div class="kk-row"><button type="button" class="kk-btn line" data-pane="lib">📚 מהספרייה</button><button type="button" class="kk-btn line" data-pane="link">🔗 קישור חיצוני</button><button type="button" class="kk-btn line" data-pane="file">📎 העלאת קובץ</button></div>
@@ -2625,7 +2645,6 @@ body:has(.feedback-modal.open){
         <div class="kk-pane" data-p="file" hidden><input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp" data-file><span class="kk-note">עד 4MB. הקובץ יהיה גלוי לכל מי שקורא בכיכר.</span></div>
         <div class="kk-srcs" data-chosen></div>
         <label>מתחבר/ת לשיחה אחרת? (לא חובה)<select name="linkTo"><option value="">לא מתחבר לשיחה אחרת</option>${t.convs.filter(x=>x.id!==id).map((x,j)=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('')}</select></label>
-        ${codeFields()}
         <span class="kk-note">מקור חדש מופיע בשיחה מיד, ונכנס גם להצעות לספרייה.</span>
         <div class="kk-row"><button type="submit" class="kk-btn dark">פרסום</button><span class="kk-msg" aria-live="polite"></span></div>
       </form>`:'<p class="kk-note">הנושא הזה נסגר לכתיבה. אפשר להמשיך לקרוא.</p>'}
@@ -2637,6 +2656,7 @@ body:has(.feedback-modal.open){
     ov.querySelectorAll('[data-del-post]').forEach(b=>b.onclick=()=>confirm('למחוק את התגובה?')&&admin({action:'post-delete',id:b.dataset.delPost}).then(()=>setTimeout(()=>openConv(id),400)));
     const f=ov.querySelector('form');if(!f)return;
     const msg=(t,k)=>{const m=f.querySelector('.kk-msg');m.textContent=t;m.className='kk-msg '+(k||'')};
+    const codeOK=wireCode(ov,f,msg);
     const chosen=()=>{f.querySelector('[data-chosen]').innerHTML=sources.map((s,j)=>`<span style="font-size:13px;background:#eef5f7;border-radius:999px;padding:3px 10px">${s.kind==='file'?'📎':s.kind==='library'?'📚':'🔗'} ${esc(s.title)} <button type="button" class="kk-tag" data-rm="${j}" aria-label="הסרת המקור">✕</button></span>`).join('');
       f.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{sources.splice(+b.dataset.rm,1);chosen()})};
     f.querySelectorAll('[data-pane]').forEach(b=>b.onclick=()=>f.querySelectorAll('[data-p]').forEach(p=>p.hidden=p.dataset.p!==b.dataset.pane||!p.hidden));
@@ -2650,13 +2670,13 @@ body:has(.feedback-modal.open){
     };
     f.querySelector('[data-addlink]').onclick=()=>{const u=f.querySelector('[data-lu]').value.trim();if(!/^https?:\/\//i.test(u))return msg('הקישור צריך להתחיל ב־https://','err');sources.push({kind:'link',title:f.querySelector('[data-lt]').value.trim()||u,url:u});f.querySelector('[data-lu]').value='';f.querySelector('[data-lt]').value='';chosen();msg('')};
     f.querySelector('[data-file]').onchange=async e=>{
-      const file=e.target.files[0];if(!file)return;if(file.size>4e6)return msg('הקובץ גדול מ־4MB. אפשר לצרף קישור.','err');
+      const file=e.target.files[0];if(!file)return;if(!codeOK()){e.target.value='';return}if(file.size>4e6)return msg('הקובץ גדול מ־4MB. אפשר לצרף קישור.','err');
       const fd=new FormData();fd.append('file',file);fd.append('communityCode',f.elements.communityCode.value);if(f.elements.name)fd.append('name',f.elements.name.value);
       msg('מעלה את הקובץ…');const r=await fetch('/api/kikar',{method:'POST',body:fd});const j=await r.json().catch(()=>({}));
       if(!r.ok)return msg(j.message||'ההעלאה לא הצליחה.','err');sources.push(j);chosen();msg('✓ הקובץ צורף','ok');e.target.value='';
     };
     f.onsubmit=async e=>{e.preventDefault();
-      const text=f.elements.text.value.trim();if(!text)return msg('יש לכתוב תגובה.','err');
+      const text=f.elements.text.value.trim();if(!text)return msg('יש לכתוב תגובה.','err');if(!codeOK())return;
       const b=f.querySelector('button[type=submit]');b.disabled=true;msg('מפרסם…');
       const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'post',conv:id,text,linkTo:f.elements.linkTo.value,sources,name:f.elements.name?f.elements.name.value:'',communityCode:f.elements.communityCode.value,elapsed:Date.now()-opened})});
       const j=await r.json().catch(()=>({}));b.disabled=false;
@@ -2667,18 +2687,19 @@ body:has(.feedback-modal.open){
   function openSuggest(){
     close();const opened=Date.now();
     const ov=document.createElement('div');ov.className='kk-overlay';
-    ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkST"><div class="kk-dtop"><h2 id="kkST">הצעת נושא לכיכר</h2><button type="button" class="kk-x" aria-label="סגירה">✕</button></div>
+    ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkST"><div class="kk-dtop"><h2 id="kkST">הצעת נושא לכיכר</h2><span class="kk-row">${codeLink()}<button type="button" class="kk-x" aria-label="סגירה">✕</button></span></div>
+      ${codeBox('kkSF')}
       <p class="kk-op" style="font-size:16px">מעלה הנושא מכין/ה אותו, מלווה את השיחות ומסכמ/ת אותו. ההצעה מגיעה להנהלת הקהילה, שתחזור אלייך או אליך.</p>
-      <form class="kk-form"><label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
+      <form class="kk-form" id="kkSF"><label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
       <label>למה עכשיו, ומה השיחות שאפשר לפתוח סביבו?<textarea name="details" rows="5" maxlength="3000"></textarea></label>
       <label>מקורות מחקריים שכדאי לעגן בהם (לא חובה)<textarea name="sources" rows="3" maxlength="1500"></textarea></label>
       <label>מייל לחזרה (לא חובה)<input name="email" type="email" dir="ltr" maxlength="240"></label>
-      ${codeFields()}
       <div class="kk-row"><button type="submit" class="kk-btn dark">שליחת ההצעה</button><span class="kk-msg" aria-live="polite"></span></div></form></aside>`;
     document.body.appendChild(ov);document.addEventListener('keydown',onKey);
     ov.addEventListener('click',e=>{if(e.target===ov)close()});ov.querySelector('.kk-x').onclick=close;
     const f=ov.querySelector('form'),msg=(t,k)=>{const m=f.querySelector('.kk-msg');m.textContent=t;m.className='kk-msg '+(k||'')};
-    f.onsubmit=async e=>{e.preventDefault();if(!f.elements.title.value.trim())return msg('יש לכתוב את הנושא.','err');
+    const codeOK=wireCode(ov,f,msg);
+    f.onsubmit=async e=>{e.preventDefault();if(!f.elements.title.value.trim())return msg('יש לכתוב את הנושא.','err');if(!codeOK())return;
       const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'suggest',title:f.elements.title.value,details:f.elements.details.value,sources:f.elements.sources.value,email:f.elements.email.value,name:f.elements.name?f.elements.name.value:'',communityCode:f.elements.communityCode.value,elapsed:Date.now()-opened})});
       const j=await r.json().catch(()=>({}));if(!r.ok)return msg(j.message||'השליחה לא הצליחה.','err');
       f.innerHTML='<p style="margin:0;font-size:17px;color:#2f6e4f">✓ תודה! ההצעה הגיעה להנהלת הקהילה.</p>';};
