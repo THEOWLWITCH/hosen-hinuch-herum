@@ -1086,7 +1086,7 @@ section{padding:58px 0!important}
   border-color:rgba(64,104,124,.24)!important;
   color:#244b61!important;
 }
-#now,#match,#gallery,#people,#resources,#researchWorld,#compass{display:none!important}
+#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar{display:none!important}
 html[data-page="now"] #now,
 html[data-page="match"] #match,
 html[data-page="gallery"] #gallery,
@@ -1102,6 +1102,7 @@ html[data-page="research-tools"] #resources,
 html[data-page="policy"] #resources,
 html[data-page="professional"] #resources{display:block!important}
 html[data-page="compass"] #compass{display:block!important}
+html[data-page="kikar"] #kikar{display:block!important}
 html[data-resource-page="1"] #resources .topics{display:none!important}
 html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
 html[data-resource-page="1"] #resources .resource-area{
@@ -2295,6 +2296,7 @@ body:has(.feedback-modal.open){
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
   <div class="site-tabs wrap">
     <a class="site-tab" data-route="now" href="/now">עמוד ראשי</a>
+    <a class="site-tab" data-route="kikar" href="/kikar">🏛 כיכר הקהילה</a>
     <a class="site-tab" data-route="match" href="/match">שיתופי פעולה</a>
     <a class="site-tab" data-route="people" href="/people">הנבחרת</a>
     <a class="site-tab" data-route="calls" href="/calls">קולות קוראים</a>
@@ -2310,6 +2312,7 @@ body:has(.feedback-modal.open){
 </nav>
 <main>
 
+<a class="kk-entry" href="/kikar" aria-label="כיכר הקהילה: שיח מקצועי לשיתוף ידע והעברתו לשדה. לכניסה לכיכר"><img src="/assets/kikar-community-square.jpg" alt="כיכר הקהילה · ساحة المجتمع. נושא אחד במרכז ושבע שיחות סביבו. לכניסה לכיכר" width="1280" height="460" loading="lazy"></a>
 <section id="now" class="top-dynamic-zone"><div class="wrap top-dynamic-grid">
 <aside class="community-board" aria-label="דברי קהילה">
   <div class="community-board-head"><h2>דברי קהילה</h2><button type="button" onclick="openBoardSubmit()">פרסום הודעה</button></div>
@@ -2434,6 +2437,259 @@ body:has(.feedback-modal.open){
     </form>
   </div>
 </div></section>
+
+<!-- כיכר הקהילה (7.11.2026): נושא במרכז ושיחות במקביל סביבו. השרת: netlify/functions/kikar.mts, הנושאים: netlify/lib/kikar-topics.mts -->
+<style id="kikar-css">
+#kikar{background:#faf7ef;color:#1f4256;font-family:Heebo,'Noto Sans Arabic',Arial,sans-serif}
+#kikar *{box-sizing:border-box}
+#kikar .kk-wrap{max-width:1280px;margin:0 auto;padding:30px 24px 56px}
+#kikar .kk-head{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+#kikar .kk-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
+#kikar .kk-title h1{margin:0;font-size:52px;line-height:1.05;font-weight:800;color:#1f4256}
+#kikar .kk-ar{font-family:'Noto Sans Arabic',Arial,sans-serif;font-size:30px;font-weight:700;color:#8a2a3b}
+#kikar .kk-sub{margin:0;font-size:22px;font-weight:500}
+#kikar .kk-sub span{font-family:'Noto Sans Arabic',Arial,sans-serif;font-size:17px;color:#5a6e7a;font-weight:400}
+#kikar .kk-invite{margin:0;font-size:17px;color:#3e5563}
+#kikar .kk-chips{display:flex;flex-wrap:wrap;gap:8px}
+#kikar .kk-chips span{padding:6px 15px;border-radius:999px;font-size:14px;font-weight:600;color:#fff}
+#kikar .kk-info{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:15px;color:#3e5563;margin:6px 0 4px}
+#kikar .kk-stage{position:relative;width:1200px;height:900px;margin:0 auto}
+#kikar .kk-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#kikar .kk-center{position:absolute;left:395px;top:245px;width:410px;height:410px;z-index:2;border-radius:50%;
+  background:radial-gradient(circle at 50% 45%,#fff 0%,#fbf5e8 38%,#f1e2bf 70%,#dfe9ee 100%);border:12px solid #1f4256;
+  box-shadow:0 0 0 8px #e7eef2,0 18px 40px rgba(31,66,86,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:8px;padding:74px 66px;overflow:hidden}
+#kikar .kk-center .kk-kicker{font-size:12px;font-weight:700;color:#8a2a3b;background:#f6e6e9;padding:4px 12px;border-radius:999px}
+#kikar .kk-center h2{margin:0;font-size:21px;line-height:1.15;font-weight:800;color:#1f4256}
+#kikar .kk-center p{margin:0;font-size:14px;line-height:1.35;font-weight:800;color:#8a2a3b}
+#kikar .kk-center small{font-size:12px;line-height:1.4;color:#3e5563}
+#kikar .kk-bubble{position:absolute;width:220px;height:220px;z-index:2;border-radius:50%;background:#fff;border:5px solid var(--c);
+  padding:30px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;
+  font-family:inherit;cursor:pointer;box-shadow:0 8px 22px rgba(31,66,86,.12);overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}
+#kikar .kk-bubble:hover,#kikar .kk-bubble:focus-visible{transform:scale(1.05);box-shadow:0 14px 30px rgba(31,66,86,.18)}
+#kikar .kk-num{width:30px;height:30px;border-radius:999px;background:var(--c);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+#kikar .kk-bt{font-size:15px;line-height:1.28;font-weight:800;color:#1f4256}
+#kikar .kk-cta{font-size:12px;font-weight:800;color:var(--c)}
+#kikar .kk-count{font-size:11px;color:#5a6e7a}
+#kikar .kk-bottom{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;margin-top:10px}
+#kikar .kk-head{background:none!important;padding:0!important;border:0!important;box-shadow:none!important;min-height:0!important}
+#kikar .kk-learn,#kikar .kk-next{padding:24px 32px!important;margin:0!important}
+#kikar .kk-learn{background:#fff;border-radius:40px;padding:24px 32px;box-shadow:0 6px 24px rgba(31,66,86,.08)}
+#kikar .kk-learn h2,#kikar .kk-next h2{margin:0 0 8px;font-size:22px;font-weight:800}
+#kikar .kk-learn ul{margin:0;padding-inline-start:20px;line-height:1.7}
+#kikar .kk-next{background:#8a2a3b;color:#fff;border-radius:40px;padding:24px 32px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+#kikar .kk-next p{margin:0;color:#f6e6e9;line-height:1.6}
+#kikar .kk-btn{font-family:inherit;font-size:16px;font-weight:700;border:0;border-radius:999px;padding:0 24px;min-height:46px;cursor:pointer}
+#kikar .kk-btn.light{background:#fff;color:#8a2a3b}
+#kikar .kk-btn.dark{background:#1f4256;color:#fff}
+#kikar .kk-btn.line{background:#fff;color:#1f4256;border:1px solid #1f4256;font-size:14px;min-height:42px;padding:0 16px}
+#kikar .kk-archive{margin-top:22px;font-size:14px;color:#3e5563}
+.kk-overlay{position:fixed;inset:0;z-index:9000;background:rgba(20,35,45,.45);display:flex;justify-content:flex-end}
+.kk-drawer{width:min(620px,100%);height:100%;overflow-y:auto;background:#fffdf7;padding:26px 30px 40px;display:flex;flex-direction:column;gap:16px;
+  border-radius:0 32px 32px 0;box-shadow:0 0 40px rgba(0,0,0,.18);font-family:Heebo,Arial,sans-serif;color:#1f4256;direction:rtl}
+.kk-drawer *{box-sizing:border-box}
+.kk-dtop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.kk-x{width:44px;height:44px;border-radius:999px;border:1px solid #d9cfb8;background:#fff;cursor:pointer;font-size:20px;color:#1f4256}
+.kk-drawer h2{margin:0;font-size:26px;line-height:1.25;font-weight:800}
+.kk-drawer .kk-op{margin:0;font-size:17px;line-height:1.7;color:#2e4654}
+.kk-read{background:#f3ead6;border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.kk-read b{font-size:13px;color:#6b4a12}.kk-read p{margin:0;font-size:15px;line-height:1.6;color:#3e5563}
+.kk-contq{border:2px solid #1f4256;border-radius:16px;padding:12px 18px}
+.kk-contq b{font-size:13px;color:#8a2a3b;display:block}.kk-contq p{margin:4px 0 0;font-size:17px;font-weight:700;line-height:1.5}
+.kk-post{background:#fff;border:1px solid #e6dfcf;border-radius:16px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.kk-post .kk-meta{font-size:13px;color:#5a6e7a;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.kk-post .kk-meta b{color:#1f4256}
+.kk-post p{margin:0;font-size:15px;line-height:1.7;white-space:pre-line}
+.kk-tag{font-size:12px;color:#8a2a3b;background:#f6e6e9;border-radius:999px;padding:2px 10px;border:0;cursor:pointer;font-family:inherit}
+.kk-srcs{display:flex;flex-wrap:wrap;gap:6px}.kk-srcs a{font-size:13px;background:#eef5f7;border-radius:999px;padding:3px 12px;text-decoration:none;color:#1f4256}
+.kk-form{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid #e6dfcf;border-radius:18px;padding:16px}
+.kk-form label{font-size:14px;font-weight:700;display:flex;flex-direction:column;gap:4px}
+.kk-form input,.kk-form textarea,.kk-form select{font-family:inherit;font-size:15px;border:1px solid #cfc4ab;border-radius:10px;padding:10px;background:#fffdf7;color:#1f4256;font-weight:400}
+.kk-form textarea{resize:vertical;line-height:1.6}
+.kk-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.kk-pane{display:flex;flex-direction:column;gap:8px;background:#faf7ef;border-radius:12px;padding:10px}
+.kk-pick{text-align:right;font-family:inherit;font-size:13px;background:#fff;border:1px solid #e6dfcf;border-radius:10px;padding:8px 10px;cursor:pointer;color:#1f4256}
+.kk-msg{font-size:14px}.kk-msg.err{color:#a23b3b}.kk-msg.ok{color:#2f6e4f}
+.kk-note{font-size:13px;color:#5a6e7a}
+.kk-entry{display:block;max-width:1280px;margin:18px auto 0;padding:0 24px}
+.kk-entry img{display:block;width:100%;height:auto;border-radius:28px;box-shadow:0 6px 24px rgba(31,66,86,.1)}
+html:not([data-page="now"]) .kk-entry{display:none}
+@media (max-width:1250px){
+  #kikar .kk-stage{width:auto;height:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;justify-items:center}
+  #kikar .kk-stage > *{position:static!important}
+  #kikar .kk-center{grid-column:1 / -1}
+  #kikar .kk-lines,#kikar .kk-stage > p.kk-note{display:none}
+}
+@media (max-width:620px){
+  #kikar .kk-wrap{padding:22px 14px 40px}
+  #kikar .kk-title h1{font-size:36px}#kikar .kk-ar{font-size:20px}#kikar .kk-sub{font-size:16px}
+  #kikar .kk-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #kikar .kk-center{width:300px;height:300px;border-width:10px;padding:54px 48px}
+  #kikar .kk-center h2{font-size:17px}#kikar .kk-center p{font-size:12px}#kikar .kk-center small{font-size:11px}
+  #kikar .kk-bubble{width:160px;height:160px;padding:18px 16px;gap:3px;border-width:4px}
+  #kikar .kk-bt{font-size:12.5px;line-height:1.22}#kikar .kk-count{display:none}#kikar .kk-learn,#kikar .kk-next{padding:20px 22px!important;border-radius:28px}#kikar .kk-num{width:24px;height:24px;font-size:12px}
+  #kikar .kk-bottom{grid-template-columns:minmax(0,1fr)}
+  .kk-drawer{border-radius:0;padding:20px 16px 32px}
+}
+</style>
+<section id="kikar" aria-labelledby="kkTitle"><div class="kk-wrap">
+  <header class="kk-head">
+    <div class="kk-title"><h1 id="kkTitle">כיכר הקהילה</h1><span class="kk-ar" lang="ar">ساحة المجتمع</span></div>
+    <p class="kk-sub">שיח מקצועי לשיתוף ידע והעברתו לשדה <span lang="ar">· حوار مهني لتبادل المعرفة ونقلها إلى الميدان</span></p>
+    <p class="kk-invite">מוזמנים ומוזמנות להעלות נושאים לשיחות הבאות, שמתחלפות כל כמה שבועות.</p>
+    <div class="kk-chips"><span style="background:#1f4256">נושא אחד</span><span style="background:#c9973a;color:#2a1d05">כמה מקורות</span><span style="background:#8a2a3b">הרבה נקודות מבט</span></div>
+    <div class="kk-info" id="kkInfo"></div>
+  </header>
+  <div class="kk-stage" id="kkStage" aria-label="קיר השיחות"><p class="kk-note">טוען את הכיכר…</p></div>
+  <div class="kk-bottom">
+    <section class="kk-learn" aria-label="מה למדנו"><h2>מה למדנו</h2><div id="kkInsights"></div></section>
+    <section class="kk-next" aria-label="הנושא הבא"><h2>הנושא הבא שלך?</h2><p>כל חבר/ת קהילה יכול/ה להעלות נושא לכיכר ולהנחות אותו. כל נושא פתוח שלושה שבועות.</p><button type="button" class="kk-btn light" id="kkSuggestBtn">הצעת נושא לשיחה הבאה</button></section>
+  </div>
+  <div class="kk-archive" id="kkArchive"></div>
+</div></section>
+<script id="kikar-js">
+(function(){
+  const POS=[[600,120],[913,244],[990,523],[774,747],[426,747],[210,523],[287,244]];
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const tok=()=>{try{return localStorage.getItem('hosen_member_token')||''}catch(e){return ''}};
+  const adminTok=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(e){return ''}};
+  const fmt=d=>{const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+m[3]}.${+m[2]}.${m[1]}`:''};
+  let S={topic:null,posts:[],insights:[],archive:[],current:true};
+  const pos=(i,n)=>{if(n===7)return POS[i];const a=(-90+i*360/n)*Math.PI/180;return [Math.round(600+400*Math.cos(a)),Math.round(450+330*Math.sin(a))]};
+  async function load(){
+    try{const r=await fetch('/api/kikar',{cache:'no-store'});S=await r.json();render();
+      const m=location.hash.match(/^#(c\d+)$/);if(m)openConv(m[1]);}
+    catch(e){document.getElementById('kkStage').innerHTML='<p class="kk-note">לא הצלחתי לטעון את הכיכר. אפשר לרענן את הדף.</p>'}
+  }
+  function render(){
+    const t=S.topic;if(!t)return;
+    document.getElementById('kkInfo').innerHTML=`<span>🗓 הנושא פתוח ${fmt(t.opens)}–${fmt(t.closes)}</span><span>🙋 מעלה הנושא: ${esc(t.host)}</span><span>👁 כולם קוראים · חברי וחברות הקהילה כותבים</span>`;
+    const n=t.convs.length,count=id=>S.posts.filter(p=>p.conv===id).length;
+    const P={};t.convs.forEach((c,i)=>P[c.id]=pos(i,n));
+    const pairs=new Set();S.posts.forEach(p=>{if(p.linkTo&&P[p.linkTo])pairs.add([p.conv,p.linkTo].sort().join('|'))});
+    const curve=(a,b)=>{const [x1,y1]=P[a],[x2,y2]=P[b];const mx=(x1+x2)/2,my=(y1+y2)/2;const dx=mx-600,dy=my-450,L=Math.hypot(dx,dy)||1;return `M${x1} ${y1} Q${Math.round(mx+dx/L*170)} ${Math.round(my+dy/L*170)} ${x2} ${y2}`};
+    const spoke=(x,y)=>{const mx=(600+x)/2,my=(450+y)/2,dx=x-600,dy=y-450,L=Math.hypot(dx,dy)||1;return `M600 450 Q${Math.round(mx-dy/L*40)} ${Math.round(my+dx/L*40)} ${x} ${y}`};
+    document.getElementById('kkStage').innerHTML=`
+      <svg class="kk-lines" viewBox="0 0 1200 900" aria-hidden="true">
+        <ellipse cx="600" cy="450" rx="400" ry="330" fill="none" stroke="#e2cf9f" stroke-width="2" stroke-dasharray="3 9" stroke-linecap="round"/>
+        <ellipse cx="600" cy="450" rx="520" ry="430" fill="none" stroke="#efe3c3" stroke-width="1.5"/>
+        <g fill="none" stroke="#c9b98f" stroke-width="2.5" stroke-linecap="round">${t.convs.map(c=>`<path d="${spoke(...P[c.id])}"/>`).join('')}</g>
+        <g fill="none" stroke="#8a2a3b" stroke-width="2.5" stroke-dasharray="7 6" stroke-linecap="round">${[...pairs].map(k=>{const [a,b]=k.split('|');return `<path d="${curve(a,b)}"/>`}).join('')}</g>
+        <circle cx="120" cy="120" r="10" fill="#c9973a" opacity=".55"/><circle cx="1090" cy="110" r="14" fill="#4f7f9a" opacity=".35"/><circle cx="1120" cy="780" r="9" fill="#8a2a3b" opacity=".4"/><circle cx="90" cy="760" r="16" fill="#c9973a" opacity=".35"/>
+      </svg>
+      <div class="kk-center"><span class="kk-kicker">נושא השיחה</span><h2>${esc(t.title)}</h2><p>${esc(t.question)}</p><small>מעלה הנושא: ${esc(t.host)}${S.current?'':'<br>נושא מהארכיון'}</small></div>
+      ${t.convs.map((c,i)=>{const [x,y]=P[c.id],k=count(c.id);return `<button type="button" class="kk-bubble" data-conv="${esc(c.id)}" style="--c:${esc(c.color)};left:${x-110}px;top:${y-110}px" aria-label="שיחה ${i+1}: ${esc(c.title)}"><span class="kk-num">${i+1}</span><span class="kk-bt">${esc(c.title)}</span><span class="kk-cta">לשיחה ←</span>${k?`<span class="kk-count">${k===1?'תגובה אחת':k+' תגובות'}</span>`:''}</button>`}).join('')}`;
+    if(pairs.size){const note=document.createElement('p');note.className='kk-note';note.style.cssText='position:absolute;left:0;bottom:0;margin:0';note.textContent='קו מקווקו בין שיחות = תגובה שמחברת ביניהן';document.getElementById('kkStage').appendChild(note)}
+    document.querySelectorAll('#kkStage .kk-bubble').forEach(b=>b.onclick=()=>openConv(b.dataset.conv));
+    const ad=!!adminTok();
+    document.getElementById('kkInsights').innerHTML=(S.insights.length?`<ul>${S.insights.map(x=>`<li>${esc(x.text)}${ad?` <button type="button" class="kk-tag" data-del-ins="${esc(x.id)}">הסרה</button>`:''}</li>`).join('')}</ul>`:'<p style="margin:0;line-height:1.6;color:#3e5563">כאן מעלה הנושא מצמיד/ה תובנות מכל השיחות. בסוף שלושת השבועות הסיכום יוכל לעבור ל״הצעות לשיתופי פעולה״ כיוזמה או כרעיון למחקר.</p>')+
+      (ad?`<div class="kk-row" style="margin-top:10px"><input id="kkInsText" placeholder="תובנה חדשה להצמדה" style="flex:1;min-width:200px;font-family:inherit;font-size:15px;border:1px solid #cfc4ab;border-radius:10px;padding:10px"><button type="button" class="kk-btn dark" id="kkInsAdd" style="min-height:42px;font-size:14px">הצמדה</button></div>`:'');
+    if(ad){const add=document.getElementById('kkInsAdd');if(add)add.onclick=()=>admin({action:'insight',text:document.getElementById('kkInsText').value});
+      document.querySelectorAll('[data-del-ins]').forEach(b=>b.onclick=()=>confirm('להסיר את התובנה?')&&admin({action:'insight-delete',id:b.dataset.delIns}))}
+    document.getElementById('kkArchive').innerHTML=S.archive&&S.archive.length?'נושאים קודמים: '+S.archive.map(a=>`<a href="/kikar?topic=${encodeURIComponent(a.id)}">${esc(a.title)}</a>`).join(' · '):'';
+  }
+  async function admin(body){
+    const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json',Authorization:'Bearer '+adminTok()},body:JSON.stringify({...body,topic:S.topic.id})});
+    if(!r.ok)return alert('הפעולה לא הצליחה. אולי צריך להיכנס שוב לניהול.');load();
+  }
+  const close=()=>{document.querySelector('.kk-overlay')?.remove();document.removeEventListener('keydown',onKey);if(/^#c\d+$/.test(location.hash))history.replaceState(null,'',location.pathname+location.search)};
+  const onKey=e=>{if(e.key==='Escape')close()};
+  function codeFields(){
+    const on=!!tok();
+    return `${on?'':`<label>השם שלך<input name="name" autocomplete="name" required maxlength="160"></label>`}
+      <label>קוד אישי או קוד הקהילה<input name="communityCode" autocomplete="off" required></label>`;
+  }
+  function openConv(id){
+    const t=S.topic,i=t.convs.findIndex(c=>c.id===id);if(i<0)return;const c=t.convs[i];
+    close();history.replaceState(null,'',location.pathname+location.search+'#'+id);
+    const posts=S.posts.filter(p=>p.conv===id),conv=x=>t.convs.find(y=>y.id===x);
+    const ad=!!adminTok();const opened=Date.now();let sources=[];
+    const ov=document.createElement('div');ov.className='kk-overlay';
+    ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkDT">
+      <div class="kk-dtop"><span class="kk-row"><span class="kk-num" style="--c:${esc(c.color)};width:30px;height:30px;border-radius:999px;background:${esc(c.color)};color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center">${i+1}</span><span class="kk-note">שיחה בכיכר · ${esc(c.short)}</span></span><button type="button" class="kk-x" aria-label="סגירת השיחה">✕</button></div>
+      <h2 id="kkDT">${esc(c.title)}</h2>
+      <p class="kk-op">${esc(c.opener)}</p>
+      <div class="kk-read"><b>לעיון</b><p>${esc(c.note)}</p><a href="${esc(c.srcUrl)}" target="_blank" rel="noopener" style="font-weight:700;color:#1f4256">${esc(c.srcLabel)} ↗</a></div>
+      <div class="kk-contq"><b>להמשך השיחה</b><p>${esc(c.cont)}</p></div>
+      <section aria-label="תגובות" style="display:flex;flex-direction:column;gap:8px"><h3 style="margin:0;font-size:18px">תגובות</h3>
+      ${posts.length?posts.map(p=>`<article class="kk-post"><div class="kk-meta"><b>${esc(p.name)}</b><span>${fmt(p.createdAt)}</span>${p.linkTo&&conv(p.linkTo)?`<button type="button" class="kk-tag" data-go="${esc(p.linkTo)}">מתחבר לשיחה: ${esc(conv(p.linkTo).short)}</button>`:''}${ad?`<button type="button" class="kk-tag" data-del-post="${esc(p.id)}">מחיקה</button>`:''}</div><p>${esc(p.text)}</p>${p.sources&&p.sources.length?`<div class="kk-srcs">${p.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${s.kind==='file'?'📎':s.kind==='library'?'📚':'🔗'} ${esc(s.title)}</a>`).join('')}</div>`:''}</article>`).join(''):'<p class="kk-note" style="background:#fff;border:1px dashed #d9cfb8;border-radius:12px;padding:12px 14px;margin:0">עוד אין תגובות. אפשר לפתוח את השיחה.</p>'}
+      </section>
+      ${S.current?`<form class="kk-form" novalidate>
+        <label>התגובה שלך<textarea name="text" rows="5" required maxlength="4000" placeholder="ניסיון מהשטח, שאלה או טענה מחקרית. בלי פרטים מזהים של תלמידים, הורים או צוות."></textarea></label>
+        <span style="font-size:14px;font-weight:700">צירוף מקור (לא חובה)</span>
+        <div class="kk-row"><button type="button" class="kk-btn line" data-pane="lib">📚 מהספרייה</button><button type="button" class="kk-btn line" data-pane="link">🔗 קישור חיצוני</button><button type="button" class="kk-btn line" data-pane="file">📎 העלאת קובץ</button></div>
+        <div class="kk-pane" data-p="lib" hidden><input type="search" placeholder="חיפוש בספרייה: כותרת, מחבר/ת, נושא" data-libq><div data-libres class="kk-srcs" style="flex-direction:column;align-items:stretch"></div></div>
+        <div class="kk-pane" data-p="link" hidden><input placeholder="כותרת המקור" data-lt><input type="url" dir="ltr" placeholder="https://…" data-lu><button type="button" class="kk-btn line" data-addlink>הוספת הקישור</button></div>
+        <div class="kk-pane" data-p="file" hidden><input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp" data-file><span class="kk-note">עד 4MB. הקובץ יהיה גלוי לכל מי שקורא בכיכר.</span></div>
+        <div class="kk-srcs" data-chosen></div>
+        <label>מתחבר/ת לשיחה אחרת? (לא חובה)<select name="linkTo"><option value="">לא מתחבר לשיחה אחרת</option>${t.convs.filter(x=>x.id!==id).map((x,j)=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('')}</select></label>
+        ${codeFields()}
+        <span class="kk-note">מקור חדש מופיע בשיחה מיד, ונכנס גם להצעות לספרייה.</span>
+        <div class="kk-row"><button type="submit" class="kk-btn dark">פרסום</button><span class="kk-msg" aria-live="polite"></span></div>
+      </form>`:'<p class="kk-note">הנושא הזה נסגר לכתיבה. אפשר להמשיך לקרוא.</p>'}
+    </aside>`;
+    document.body.appendChild(ov);document.addEventListener('keydown',onKey);
+    ov.addEventListener('click',e=>{if(e.target===ov)close()});
+    ov.querySelector('.kk-x').onclick=close;ov.querySelector('.kk-x').focus();
+    ov.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>openConv(b.dataset.go));
+    ov.querySelectorAll('[data-del-post]').forEach(b=>b.onclick=()=>confirm('למחוק את התגובה?')&&admin({action:'post-delete',id:b.dataset.delPost}).then(()=>setTimeout(()=>openConv(id),400)));
+    const f=ov.querySelector('form');if(!f)return;
+    const msg=(t,k)=>{const m=f.querySelector('.kk-msg');m.textContent=t;m.className='kk-msg '+(k||'')};
+    const chosen=()=>{f.querySelector('[data-chosen]').innerHTML=sources.map((s,j)=>`<span style="font-size:13px;background:#eef5f7;border-radius:999px;padding:3px 10px">${s.kind==='file'?'📎':s.kind==='library'?'📚':'🔗'} ${esc(s.title)} <button type="button" class="kk-tag" data-rm="${j}" aria-label="הסרת המקור">✕</button></span>`).join('');
+      f.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{sources.splice(+b.dataset.rm,1);chosen()})};
+    f.querySelectorAll('[data-pane]').forEach(b=>b.onclick=()=>f.querySelectorAll('[data-p]').forEach(p=>p.hidden=p.dataset.p!==b.dataset.pane||!p.hidden));
+    let lib=null;
+    f.querySelector('[data-libq]').oninput=async e=>{
+      const q=e.target.value.trim().toLowerCase(),box=f.querySelector('[data-libres]');if(q.length<2){box.innerHTML='';return}
+      if(!lib){box.innerHTML='<span class="kk-note">טוען את הספרייה…</span>';try{lib=await (await fetch('/api/library')).json()}catch(err){lib=[]}}
+      const words=q.split(/\s+/);const hits=(Array.isArray(lib)?lib:[]).filter(x=>{const s=[x.title,x.apa,x.authors,x.summary].join(' ').toLowerCase();return words.every(w=>s.includes(w))}).slice(0,8);
+      box.innerHTML=hits.length?hits.map((x,j)=>`<button type="button" class="kk-pick" data-h="${j}">${esc(x.title||x.apa)}</button>`).join(''):'<span class="kk-note">לא נמצא בספרייה. אפשר לצרף קישור.</span>';
+      box.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{const x=hits[+b.dataset.h];const u=x.url||x.link||(x.doi?'https://doi.org/'+String(x.doi).replace(/^https?:\/\/doi\.org\//,''):'/library');sources.push({kind:'library',title:x.title||x.apa,url:u});chosen()});
+    };
+    f.querySelector('[data-addlink]').onclick=()=>{const u=f.querySelector('[data-lu]').value.trim();if(!/^https?:\/\//i.test(u))return msg('הקישור צריך להתחיל ב־https://','err');sources.push({kind:'link',title:f.querySelector('[data-lt]').value.trim()||u,url:u});f.querySelector('[data-lu]').value='';f.querySelector('[data-lt]').value='';chosen();msg('')};
+    f.querySelector('[data-file]').onchange=async e=>{
+      const file=e.target.files[0];if(!file)return;if(file.size>4e6)return msg('הקובץ גדול מ־4MB. אפשר לצרף קישור.','err');
+      const fd=new FormData();fd.append('file',file);fd.append('communityCode',f.elements.communityCode.value);if(f.elements.name)fd.append('name',f.elements.name.value);
+      msg('מעלה את הקובץ…');const r=await fetch('/api/kikar',{method:'POST',body:fd});const j=await r.json().catch(()=>({}));
+      if(!r.ok)return msg(j.message||'ההעלאה לא הצליחה.','err');sources.push(j);chosen();msg('✓ הקובץ צורף','ok');e.target.value='';
+    };
+    f.onsubmit=async e=>{e.preventDefault();
+      const text=f.elements.text.value.trim();if(!text)return msg('יש לכתוב תגובה.','err');
+      const b=f.querySelector('button[type=submit]');b.disabled=true;msg('מפרסם…');
+      const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'post',conv:id,text,linkTo:f.elements.linkTo.value,sources,name:f.elements.name?f.elements.name.value:'',communityCode:f.elements.communityCode.value,elapsed:Date.now()-opened})});
+      const j=await r.json().catch(()=>({}));b.disabled=false;
+      if(!r.ok)return msg(j.message||'הפרסום לא הצליח. אפשר לנסות שוב.','err');
+      await load();openConv(id);
+    };
+  }
+  function openSuggest(){
+    close();const opened=Date.now();
+    const ov=document.createElement('div');ov.className='kk-overlay';
+    ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkST"><div class="kk-dtop"><h2 id="kkST">הצעת נושא לכיכר</h2><button type="button" class="kk-x" aria-label="סגירה">✕</button></div>
+      <p class="kk-op" style="font-size:16px">מעלה הנושא מכין/ה אותו, משגיח/ה עליו שלושה שבועות ומסכמ/ת אותו. ההצעה מגיעה להנהלת הקהילה, שתחזור אלייך או אליך.</p>
+      <form class="kk-form"><label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
+      <label>למה עכשיו, ומה השיחות שאפשר לפתוח סביבו?<textarea name="details" rows="5" maxlength="3000"></textarea></label>
+      <label>מקורות מחקריים שכדאי לעגן בהם (לא חובה)<textarea name="sources" rows="3" maxlength="1500"></textarea></label>
+      <label>מייל לחזרה (לא חובה)<input name="email" type="email" dir="ltr" maxlength="240"></label>
+      ${codeFields()}
+      <div class="kk-row"><button type="submit" class="kk-btn dark">שליחת ההצעה</button><span class="kk-msg" aria-live="polite"></span></div></form></aside>`;
+    document.body.appendChild(ov);document.addEventListener('keydown',onKey);
+    ov.addEventListener('click',e=>{if(e.target===ov)close()});ov.querySelector('.kk-x').onclick=close;
+    const f=ov.querySelector('form'),msg=(t,k)=>{const m=f.querySelector('.kk-msg');m.textContent=t;m.className='kk-msg '+(k||'')};
+    f.onsubmit=async e=>{e.preventDefault();if(!f.elements.title.value.trim())return msg('יש לכתוב את הנושא.','err');
+      const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'suggest',title:f.elements.title.value,details:f.elements.details.value,sources:f.elements.sources.value,email:f.elements.email.value,name:f.elements.name?f.elements.name.value:'',communityCode:f.elements.communityCode.value,elapsed:Date.now()-opened})});
+      const j=await r.json().catch(()=>({}));if(!r.ok)return msg(j.message||'השליחה לא הצליחה.','err');
+      f.innerHTML='<p style="margin:0;font-size:17px;color:#2f6e4f">✓ תודה! ההצעה הגיעה להנהלת הקהילה.</p>';};
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(document.documentElement.dataset.page!=='kikar')return;
+    document.getElementById('kkSuggestBtn').onclick=openSuggest;
+    const q=new URLSearchParams(location.search).get('topic');
+    if(q){const _l=load;load=async()=>{try{const r=await fetch('/api/kikar?topic='+encodeURIComponent(q),{cache:'no-store'});S=await r.json();render()}catch(e){}};}
+    load();
+  });
+})();
+</script>
 
 <section id="compass" class="compass-page"><div class="wrap">
 <header class="compass-hero compass-start-hero"><div class="compass-eyebrow">חוסן · חינוך · חירום</div><h1>מצפן המחקר</h1><p>כאן מתחיל תהליך העבודה: הזינו את השאלה או התחום, והמצפן ימפה את המקורות במאגר הקהילה וימשיך לחיפוש במאגרים אקדמיים בעולם. מכאן אפשר לדייק את השאלה לסבב מחקר איכותני, כמותי או משולב.</p><a class="compass-cta" href="#compassQuestion">התחלת מיפוי</a></header>
@@ -7088,14 +7344,14 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
   document.documentElement.dataset.page=resolved;
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
   // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
-  try{const T={match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
+  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
     if(T[resolved])document.title=T[resolved]+' · '+base;
     const c=document.getElementById('canonicalLink');if(c)c.href='https://hosen-hinuch-herum.netlify.app/'+(resolved==='now'?'':resolved);}catch(e){}
 
