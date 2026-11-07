@@ -116,7 +116,8 @@ export default async (req: Request) => {
     if (!who.ok) return json({ error: "unauthorized", message: who.message }, 401);
     const title = clip(body.title, 200);
     if (!title) return json({ error: "title", message: "יש לכתוב את הנושא." }, 400);
-    await addRequest({ type: "idea", name: who.name, email: clip(body.email, 240), subject: `הצעת נושא לכיכר הקהילה: ${title}`,
+    // השם שנכתב בטופס ההצעה קובע, גם בכניסה עם קוד אישי (7.11.2026)
+    await addRequest({ type: "idea", name: clip(body.name, 160) || who.name, email: clip(body.email, 240), subject: `הצעת נושא לכיכר הקהילה: ${title}`,
       body: [clip(body.details, 3000), clip(body.sources, 1500) ? `מקורות: ${clip(body.sources, 1500)}` : ""].filter(Boolean).join("\n\n"), link: "/kikar" });
     return json({ ok: true }, 201);
   }

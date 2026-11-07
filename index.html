@@ -2613,9 +2613,10 @@ body:has(.feedback-modal.open){
   // אחרי "כניסה" עם קוד נכון, הדפדפן זוכר את הכניסה עד סגירת הלשונית (7.11.2026).
   const saved=()=>{try{return JSON.parse(sessionStorage.getItem('hosen_kikar_in')||'null')}catch(e){return null}};
   function codeLink(){const s=saved();return tok()||s?`<span class="kk-codeok" data-codeok>✓ מחובר/ת${s&&s.who?' ('+esc(s.who)+')':''}</span>`:'<button type="button" class="kk-codelink" data-codelink aria-expanded="false">🔑 כניסה לכתיבה</button>'}
-  function codeBox(fid){
+  // noName: הטופס עצמו כולל שדה שם (הצעת נושא, 7.11.2026), ולכן אין שדה שם נוסף בתיבת הקוד.
+  function codeBox(fid,noName){
     const on=!!tok(),s=saved()||{};
-    return `<div class="kk-codebox" data-codebox hidden>${on?'':`<label>השם שלך<input name="name" form="${fid}" autocomplete="name" maxlength="160" value="${esc(s.name||'')}"></label>`}
+    return `<div class="kk-codebox" data-codebox hidden>${on||noName?'':`<label>השם שלך<input name="name" form="${fid}" autocomplete="name" maxlength="160" value="${esc(s.name||'')}"></label>`}
       <label>קוד אישי או קוד הקהילה<input name="communityCode" form="${fid}" autocomplete="off" value="${esc(s.code||'')}"></label>${on?'':'<button type="button" class="kk-codego" data-codego>כניסה</button><p class="kk-codest" data-codest aria-live="polite"></p>'}</div>`;
   }
   function wireCode(ov,f,msg){
@@ -2709,9 +2710,10 @@ body:has(.feedback-modal.open){
     close();const opened=Date.now();
     const ov=document.createElement('div');ov.className='kk-overlay';
     ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkST"><div class="kk-dtop"><h2 id="kkST">הצעת נושא לכיכר</h2><span class="kk-row">${codeLink()}<button type="button" class="kk-x" aria-label="סגירה">✕</button></span></div>
-      ${codeBox('kkSF')}
+      ${codeBox('kkSF',true)}
       <p class="kk-op" style="font-size:16px">מעלה הנושא מכין/ה אותו, מלווה את השיחות ומסכמ/ת אותו. ההצעה מגיעה להנהלת הקהילה, שתחזור אלייך או אליך.</p>
-      <form class="kk-form" id="kkSF"><label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
+      <form class="kk-form" id="kkSF"><label>השם שלך<input name="name" required maxlength="160" autocomplete="name" value="${esc((saved()||{}).who||(saved()||{}).name||'')}"></label>
+      <label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
       <label>למה עכשיו, ומה השיחות שאפשר לפתוח סביבו?<textarea name="details" rows="5" maxlength="3000"></textarea></label>
       <label>מקורות מחקריים שכדאי לעגן בהם (לא חובה)<textarea name="sources" rows="3" maxlength="1500"></textarea></label>
       <label>מייל לחזרה (לא חובה)<input name="email" type="email" dir="ltr" maxlength="240"></label>
@@ -2720,7 +2722,7 @@ body:has(.feedback-modal.open){
     ov.addEventListener('click',e=>{if(e.target===ov)close()});ov.querySelector('.kk-x').onclick=close;
     const f=ov.querySelector('form'),msg=(t,k)=>{const m=f.querySelector('.kk-msg');m.textContent=t;m.className='kk-msg '+(k||'')};
     const codeOK=wireCode(ov,f,msg);
-    f.onsubmit=async e=>{e.preventDefault();if(!f.elements.title.value.trim())return msg('יש לכתוב את הנושא.','err');if(!codeOK())return;
+    f.onsubmit=async e=>{e.preventDefault();if(!f.elements.name.value.trim()){f.elements.name.focus();return msg('יש לכתוב שם.','err')}if(!f.elements.title.value.trim())return msg('יש לכתוב את הנושא.','err');if(!codeOK())return;
       const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'suggest',title:f.elements.title.value,details:f.elements.details.value,sources:f.elements.sources.value,email:f.elements.email.value,name:f.elements.name?f.elements.name.value:'',communityCode:f.elements.communityCode.value,elapsed:Date.now()-opened})});
       const j=await r.json().catch(()=>({}));if(!r.ok)return msg(j.message||'השליחה לא הצליחה.','err');
       f.innerHTML='<p style="margin:0;font-size:17px;color:#2f6e4f">✓ תודה! ההצעה הגיעה להנהלת הקהילה.</p>';};
