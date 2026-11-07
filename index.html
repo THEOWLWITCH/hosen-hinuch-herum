@@ -2500,6 +2500,9 @@ body:has(.feedback-modal.open){
 .kk-codebox .mc-hint{display:none}
 .kk-codebox label{font-size:13px;font-weight:700;display:flex;flex-direction:column;gap:3px;flex:1;min-width:150px}
 .kk-codebox input{font-family:inherit;font-size:14px;border:1px solid #cfc4ab;border-radius:10px;padding:8px;background:#fffdf7;color:#1f4256}
+.kk-codebox .kk-codego{align-self:flex-end;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:#1f4256;border:0;border-radius:10px;padding:9px 18px;cursor:pointer}
+.kk-codebox .kk-codest{flex-basis:100%;font-size:13px;margin:0;min-height:0}
+.kk-codebox .kk-codest.err{color:#a3283a}.kk-codebox .kk-codest.ok{color:#2f6e4f}
 .kk-x{width:44px;height:44px;border-radius:999px;border:1px solid #d9cfb8;background:#fff;cursor:pointer;font-size:20px;color:#1f4256}
 .kk-drawer h2{margin:0;font-size:26px;line-height:1.25;font-weight:800}
 .kk-drawer .kk-op{margin:0;font-size:17px;line-height:1.7;color:#2e4654}
@@ -2605,16 +2608,32 @@ body:has(.feedback-modal.open){
   const close=()=>{document.querySelector('.kk-overlay')?.remove();document.removeEventListener('keydown',onKey);if(/^#c\d+$/.test(location.hash))history.replaceState(null,'',location.pathname+location.search)};
   const onKey=e=>{if(e.key==='Escape')close()};
   // קוד הקהילה (7.11.2026): קישור קטן בראש החלונית, משמאל לכותרת. השדות שייכים לטופס דרך form="…".
-  function codeLink(){return tok()?'<span class="kk-codeok">✓ מחובר/ת</span>':'<button type="button" class="kk-codelink" data-codelink aria-expanded="false">🔑 קוד הקהילה</button>'}
+  // אחרי "כניסה" עם קוד נכון, הדפדפן זוכר את הכניסה עד סגירת הלשונית (7.11.2026).
+  const saved=()=>{try{return JSON.parse(sessionStorage.getItem('hosen_kikar_in')||'null')}catch(e){return null}};
+  function codeLink(){const s=saved();return tok()||s?`<span class="kk-codeok" data-codeok>✓ מחובר/ת${s&&s.who?' ('+esc(s.who)+')':''}</span>`:'<button type="button" class="kk-codelink" data-codelink aria-expanded="false">🔑 כניסה לכתיבה</button>'}
   function codeBox(fid){
-    const on=!!tok();
-    return `<div class="kk-codebox" data-codebox ${on?'hidden':'hidden'}>${on?'':`<label>השם שלך<input name="name" form="${fid}" autocomplete="name" maxlength="160"></label>`}
-      <label>קוד אישי או קוד הקהילה<input name="communityCode" form="${fid}" autocomplete="off"></label></div>`;
+    const on=!!tok(),s=saved()||{};
+    return `<div class="kk-codebox" data-codebox hidden>${on?'':`<label>השם שלך<input name="name" form="${fid}" autocomplete="name" maxlength="160" value="${esc(s.name||'')}"></label>`}
+      <label>קוד אישי או קוד הקהילה<input name="communityCode" form="${fid}" autocomplete="off" value="${esc(s.code||'')}"></label>${on?'':'<button type="button" class="kk-codego" data-codego>כניסה</button><p class="kk-codest" data-codest aria-live="polite"></p>'}</div>`;
   }
   function wireCode(ov,f,msg){
     const link=ov.querySelector('[data-codelink]'),box=ov.querySelector('[data-codebox]');
     const show=()=>{box.hidden=false;if(link)link.setAttribute('aria-expanded','true');(f.elements.name&&!f.elements.name.value?f.elements.name:f.elements.communityCode).focus()};
     if(link)link.onclick=()=>{if(box.hidden)show();else{box.hidden=true;link.setAttribute('aria-expanded','false')}};
+    // כפתור "כניסה": בודק את הקוד מיד ומודיע אם הוא נכון. Enter בשדות הקוד = כניסה (ולא פרסום התגובה).
+    const go=box&&box.querySelector('[data-codego]'),st=box&&box.querySelector('[data-codest]');
+    const say=(t,k)=>{if(st){st.textContent=t;st.className='kk-codest '+(k||'')}};
+    const check=async()=>{const name=f.elements.name?f.elements.name.value.trim():'',code=f.elements.communityCode.value.trim();
+      if(f.elements.name&&!name){say('יש לכתוב שם.','err');f.elements.name.focus();return}
+      if(!code){say('יש להקליד את הקוד האישי או את קוד הקהילה.','err');f.elements.communityCode.focus();return}
+      go.disabled=true;say('בודק…');
+      try{const r=await fetch('/api/kikar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'check',name,communityCode:code})});const j=await r.json().catch(()=>({}));
+        if(!r.ok){say(j.message||'הקוד לא נכון. אפשר לנסות שוב.','err');return}
+        try{sessionStorage.setItem('hosen_kikar_in',JSON.stringify({name,code,who:j.name||name}))}catch(e){}
+        box.hidden=true;if(link)link.outerHTML=`<span class="kk-codeok">✓ מחובר/ת${j.name?' ('+esc(j.name)+')':''}</span>`;
+        msg('✓ הכניסה הצליחה. אפשר לכתוב תגובה ולפרסם.','ok');f.elements.text&&f.elements.text.focus()}
+      catch(e){say('אין חיבור לשרת. אפשר לנסות שוב.','err')}finally{go.disabled=false}};
+    if(go){go.onclick=check;box.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();check()}}))}
     return ()=>{if(tok())return true;
       if(f.elements.name&&!f.elements.name.value.trim()){show();msg('יש לכתוב שם ואת קוד הקהילה (למעלה, משמאל לכותרת).','err');return false}
       if(!f.elements.communityCode.value.trim()){show();msg('יש להזין את קוד הקהילה (למעלה, משמאל לכותרת).','err');return false}

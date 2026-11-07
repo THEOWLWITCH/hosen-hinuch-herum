@@ -79,6 +79,13 @@ export default async (req: Request) => {
   const body = await req.json().catch(() => ({} as any));
   const action = clip(body.action, 30);
 
+  // כניסה לכתיבה (7.11.2026): בדיקת הקוד מיד, בלי לחכות לפרסום התגובה.
+  if (action === "check") {
+    const who = await author(req, body);
+    if (who.ok) return json({ ok: true, name: who.name });
+    return json({ error: "unauthorized", message: who.message === "יש לכתוב שם." ? who.message : "הקוד לא נכון. אפשר להקליד את הקוד האישי (שמגיע במייל) או את קוד הקהילה." }, 401);
+  }
+
   if (action === "post") {
     if (!looksHuman(body)) return json({ ok: true });
     const topic = currentTopic();
