@@ -2712,7 +2712,7 @@ body:has(.feedback-modal.open){
     ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkST"><div class="kk-dtop"><h2 id="kkST">הצעת נושא לכיכר</h2><span class="kk-row">${codeLink()}<button type="button" class="kk-x" aria-label="סגירה">✕</button></span></div>
       ${codeBox('kkSF',true)}
       <p class="kk-op" style="font-size:16px">מעלה הנושא מכין/ה אותו, מלווה את השיחות ומסכמ/ת אותו. ההצעה מגיעה להנהלת הקהילה, שתחזור אלייך או אליך.</p>
-      <form class="kk-form" id="kkSF"><label>השם שלך<input name="name" required maxlength="160" autocomplete="name" value="${esc((saved()||{}).who||(saved()||{}).name||'')}"></label>
+      <form class="kk-form" id="kkSF"><label>השם שלך<input name="name" required maxlength="160" autocomplete="off"></label>
       <label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
       <label>למה עכשיו, ומה השיחות שאפשר לפתוח סביבו?<textarea name="details" rows="5" maxlength="3000"></textarea></label>
       <label>מקורות מחקריים שכדאי לעגן בהם (לא חובה)<textarea name="sources" rows="3" maxlength="1500"></textarea></label>
