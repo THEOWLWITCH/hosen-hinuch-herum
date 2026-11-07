@@ -2543,7 +2543,7 @@ html:not([data-page="now"]) .kk-entry{display:none}
   <div class="kk-stage" id="kkStage" aria-label="קיר השיחות"><p class="kk-note">טוען את הכיכר…</p></div>
   <div class="kk-bottom">
     <section class="kk-learn" aria-label="מה למדנו"><h2>מה למדנו</h2><div id="kkInsights"></div></section>
-    <section class="kk-next" aria-label="הנושא הבא"><h2>הנושא הבא שלך?</h2><p>כל חבר/ת קהילה יכול/ה להעלות נושא לכיכר ולהנחות אותו. כל נושא פתוח שלושה שבועות.</p><button type="button" class="kk-btn light" id="kkSuggestBtn">הצעת נושא לשיחה הבאה</button></section>
+    <section class="kk-next" aria-label="הנושא הבא"><h2>הנושא הבא שלך?</h2><p>כל חבר/ת קהילה יכול/ה להעלות נושא לכיכר ולהנחות אותו.</p><button type="button" class="kk-btn light" id="kkSuggestBtn">הצעת נושא לשיחה הבאה</button></section>
   </div>
   <div class="kk-archive" id="kkArchive"></div>
 </div></section>
@@ -2563,7 +2563,7 @@ html:not([data-page="now"]) .kk-entry{display:none}
   }
   function render(){
     const t=S.topic;if(!t)return;
-    document.getElementById('kkInfo').innerHTML=`<span>🗓 הנושא פתוח ${fmt(t.opens)}–${fmt(t.closes)}</span><span>🙋 מעלה הנושא: ${esc(t.host)}</span><span>👁 כולם קוראים · חברי וחברות הקהילה כותבים</span>`;
+    document.getElementById('kkInfo').innerHTML=`<span>🗓 הנושא נפתח ב־${fmt(t.opens)}</span><span>🙋 מעלה הנושא: ${esc(t.host)}</span><span>👁 כולם קוראים · חברי וחברות הקהילה כותבים</span>`;
     const n=t.convs.length,count=id=>S.posts.filter(p=>p.conv===id).length;
     const P={};t.convs.forEach((c,i)=>P[c.id]=pos(i,n));
     const pairs=new Set();S.posts.forEach(p=>{if(p.linkTo&&P[p.linkTo])pairs.add([p.conv,p.linkTo].sort().join('|'))});
@@ -2582,7 +2582,7 @@ html:not([data-page="now"]) .kk-entry{display:none}
     if(pairs.size){const note=document.createElement('p');note.className='kk-note';note.style.cssText='position:absolute;left:0;bottom:0;margin:0';note.textContent='קו מקווקו בין שיחות = תגובה שמחברת ביניהן';document.getElementById('kkStage').appendChild(note)}
     document.querySelectorAll('#kkStage .kk-bubble').forEach(b=>b.onclick=()=>openConv(b.dataset.conv));
     const ad=!!adminTok();
-    document.getElementById('kkInsights').innerHTML=(S.insights.length?`<ul>${S.insights.map(x=>`<li>${esc(x.text)}${ad?` <button type="button" class="kk-tag" data-del-ins="${esc(x.id)}">הסרה</button>`:''}</li>`).join('')}</ul>`:'<p style="margin:0;line-height:1.6;color:#3e5563">כאן מעלה הנושא מצמיד/ה תובנות מכל השיחות. בסוף שלושת השבועות הסיכום יוכל לעבור ל״הצעות לשיתופי פעולה״ כיוזמה או כרעיון למחקר.</p>')+
+    document.getElementById('kkInsights').innerHTML=(S.insights.length?`<ul>${S.insights.map(x=>`<li>${esc(x.text)}${ad?` <button type="button" class="kk-tag" data-del-ins="${esc(x.id)}">הסרה</button>`:''}</li>`).join('')}</ul>`:'<p style="margin:0;line-height:1.6;color:#3e5563">כאן מעלה הנושא מצמיד/ה תובנות מכל השיחות. בסוף הנושא הסיכום יוכל לעבור ל״הצעות לשיתופי פעולה״ כיוזמה או כרעיון למחקר.</p>')+
       (ad?`<div class="kk-row" style="margin-top:10px"><input id="kkInsText" placeholder="תובנה חדשה להצמדה" style="flex:1;min-width:200px;font-family:inherit;font-size:15px;border:1px solid #cfc4ab;border-radius:10px;padding:10px"><button type="button" class="kk-btn dark" id="kkInsAdd" style="min-height:42px;font-size:14px">הצמדה</button></div>`:'');
     if(ad){const add=document.getElementById('kkInsAdd');if(add)add.onclick=()=>admin({action:'insight',text:document.getElementById('kkInsText').value});
       document.querySelectorAll('[data-del-ins]').forEach(b=>b.onclick=()=>confirm('להסיר את התובנה?')&&admin({action:'insight-delete',id:b.dataset.delIns}))}
@@ -2666,7 +2666,7 @@ html:not([data-page="now"]) .kk-entry{display:none}
     close();const opened=Date.now();
     const ov=document.createElement('div');ov.className='kk-overlay';
     ov.innerHTML=`<aside class="kk-drawer" role="dialog" aria-modal="true" aria-labelledby="kkST"><div class="kk-dtop"><h2 id="kkST">הצעת נושא לכיכר</h2><button type="button" class="kk-x" aria-label="סגירה">✕</button></div>
-      <p class="kk-op" style="font-size:16px">מעלה הנושא מכין/ה אותו, משגיח/ה עליו שלושה שבועות ומסכמ/ת אותו. ההצעה מגיעה להנהלת הקהילה, שתחזור אלייך או אליך.</p>
+      <p class="kk-op" style="font-size:16px">מעלה הנושא מכין/ה אותו, מלווה את השיחות ומסכמ/ת אותו. ההצעה מגיעה להנהלת הקהילה, שתחזור אלייך או אליך.</p>
       <form class="kk-form"><label>הנושא<input name="title" required maxlength="200" placeholder="שאלה מרכזית שהקהילה צריכה לדבר עליה"></label>
       <label>למה עכשיו, ומה השיחות שאפשר לפתוח סביבו?<textarea name="details" rows="5" maxlength="3000"></textarea></label>
       <label>מקורות מחקריים שכדאי לעגן בהם (לא חובה)<textarea name="sources" rows="3" maxlength="1500"></textarea></label>
