@@ -21,6 +21,10 @@ await copyFile("googled52023a596e653b1.html", "dist/googled52023a596e653b1.html"
 // מה השתנה באתר, למדור "🛠 מה חדש באתר עצמו" בעדכון השבועי (netlify/lib/site-weekly.mts).
 JSON.parse(await readFile("site-changes.json", "utf8")); // קובץ שבור עוצר את הבנייה
 await copyFile("site-changes.json", "dist/site-changes.json");
+// הודעות ידניות לעדכון השבועי (weekly-notes.json): ברכה למצטרפים, הודעות מהנהלת הקהילה. 7.11.2026.
+const notes = JSON.parse(await readFile("weekly-notes.json", "utf8"));
+if (!Array.isArray(notes) || notes.some(n => !/^\d{4}-\d{2}-\d{2}$/.test(n.date) || !n.text)) { console.error("weekly-notes.json לא תקין"); process.exit(1); }
+await copyFile("weekly-notes.json", "dist/weekly-notes.json");
 // גוגל: robots.txt ו-sitemap.xml
 await copyFile("robots.txt", "dist/robots.txt");
 await copyFile("sitemap.xml", "dist/sitemap.xml");

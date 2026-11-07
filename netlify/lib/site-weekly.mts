@@ -71,8 +71,14 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
     ...(activeTeams.length ? [`${activeTeams.length === 1 ? "מרחב עבודה אחד היה פעיל" : `${activeTeams.length} מרחבי עבודה היו פעילים`} השבוע`] : []),
   ], ["לשיתופי פעולה", `${site}/match`]);
 
+  // הודעות ידניות מהנהלת הקהילה (weekly-notes.json): section "people" נכנס ל"הצטרפו לנבחרת", כל השאר ל"📌 מהנהלת הקהילה".
+  const wnotes = (await fetch(`${site}/weekly-notes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => [])) as { date: string; section?: string; text: string }[];
+  const myNotes = (Array.isArray(wnotes) ? wnotes : []).filter(x => String(x?.date || "") >= since.slice(0, 10) && x.text);
+  const peopleNotes = myNotes.filter(x => x.section === "people").map(x => clip(x.text, 400));
+  add("notes", "📌 מהנהלת הקהילה", myNotes.filter(x => x.section !== "people").map(x => clip(x.text, 600)));
+
   const joined = (people as any[]).filter(isNew).map(p => clip(p.name, 60)).filter(Boolean);
-  add("people", "🙋 הצטרפו לנבחרת", joined.length ? [`ברוכים הבאים וברוכות הבאות: ${joined.slice(0, 12).join(", ")}`] : [], ["לנבחרת", `${site}/people`]);
+  add("people", "🙋 הצטרפו לנבחרת", [...peopleNotes, ...(joined.length ? [`ברוכים הבאים וברוכות הבאות: ${joined.slice(0, 12).join(", ")}`] : [])], ["לנבחרת", `${site}/people`]);
 
   const albums = gallery.filter(isNew).filter(g => g.active !== false);
   add("gallery", "📷 בגלריה", albums.slice(0, 4).map(g => clip(g.title, 100)), ["לגלריה", `${site}/gallery`]);

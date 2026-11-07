@@ -4164,6 +4164,26 @@ html[data-page="tasks"] #tasks{display:block!important}
     }
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
     async function update(ids,patch){await api('POST',{action:'update',ids,...patch});ids.forEach(id=>{const r=V.rows.find(x=>x.id===id);if(r)Object.assign(r,patch)});render();refreshBadge()}
+    // תבנית תשובה לבקשת הצטרפות לקהילה (7.11.2026). אפשר לערוך ולשמור כתבנית (נשמרת בדפדפן הזה).
+    const JOIN_TPL_KEY='hosen_join_reply_tpl';
+    const JOIN_TPL_DEFAULT=`שלום {שם},
+
+תודה על הפנייה. אנחנו שמחות לצרף אותך לקהילת "בינה מלאכותית: חוסן-חינוך-חרום"!
+
+את הקהילה מובילות פרופ' אורית חזן וד"ר עינת שושן-רפאלי, ממוסד שמואל נאמן בטכניון.
+
+כמה צעדים ראשונים:
+• כרטיס אישי בנבחרת: בקרוב יישלח אלייך מהמערכת קוד אישי. בעזרתו אפשר לפתוח כרטיס ולערוך אותו, ורק למי שמחזיק/ה בקוד יש גישה אליו. כדאי למלא בכרטיס תחומי עניין ומומחיות: כך המערכת תתאים לך עדכונים, קולות קוראים ושיתופי פעולה.
+• קבוצת הווטסאפ של הקהילה: https://chat.whatsapp.com/L6SA6xKuMIb2CTmDVtvTvT
+• מפגש הקהילה הבא יתקיים בזום ביום [תאריך] בשעה 18:00.
+
+היעדים הראשונים של הקהילה: כנס החינוך הישראלי במכון מופ"ת בספטמבר 2027, וקידום היוזמה "מילואים בחינוך".
+
+מקוות לפעילות פורייה ומשותפת,
+בברכה,
+ד״ר יעל שדה
+בינה מלאכותית: חוסן-חינוך-חרום`;
+    const joinTpl=()=>{try{return localStorage.getItem(JOIN_TPL_KEY)||JOIN_TPL_DEFAULT}catch(e){return JOIN_TPL_DEFAULT}};
     // תשובה במייל מתוך התיבה: נשלחת מהאתר ונשמרת בהיסטוריה של הפנייה.
     function openReply(btn){
       const card=btn.closest('.nv-card');const old=card.querySelector('[data-reply-form]');if(old){old.remove();return}
@@ -4171,16 +4191,21 @@ html[data-page="tasks"] #tasks{display:block!important}
       const f=document.createElement('form');f.dataset.replyForm=r.id;f.className='nv-form';f.style.cssText='margin-top:10px;padding:12px;border:1px dashed #9fc2b0;border-radius:9px;background:#fbfdfb';
       f.innerHTML=`<label class="wide">אל<input value="${h(r.name?r.name+' <'+r.email+'>':r.email)}" dir="auto" disabled></label>
         <label class="wide">נושא<input name="subject" dir="auto" value="${h('בעניין: '+r.subject)}"></label>
-        <label class="wide">התשובה<textarea name="text" rows="8" dir="auto">${h(`שלום ${r.name||''},\n\n\n\nבברכה,\nד״ר יעל שדה\nבינה מלאכותית: חוסן-חינוך-חרום`)}</textarea></label>
+        <label class="wide">התשובה<textarea name="text" rows="${r.type==='join'?18:8}" dir="auto">${h(r.type==='join'?joinTpl().replace(/\{שם\}/g,r.name||''):`שלום ${r.name||''},\n\n\n\nבברכה,\nד״ר יעל שדה\nבינה מלאכותית: חוסן-חינוך-חרום`)}</textarea></label>
+        ${r.type==='join'?`<div class="wide nv-row" style="margin-top:-4px"><span class="nv-status">זו תבנית התשובה לבקשות הצטרפות.${joinTpl().includes('[תאריך]')?' <strong>כדאי למלא את תאריך המפגש במקום [תאריך].</strong>':''}</span><button type="button" class="nv-btn small" data-tpl-save>💾 שמירת הנוסח כתבנית</button><button type="button" class="nv-btn small" data-tpl-reset>↺ חזרה לנוסח המקורי</button></div>`:''}
         <label>אחרי השליחה, הפנייה<select name="status"><option value="">${r.status==='new'?'תעבור ל"בטיפול"':'תישאר '+ST[r.status][0]}</option><option value="in_progress">🟠 בטיפול</option><option value="done">✓ טופלה</option></select></label>
-        <div class="wide nv-row"><button type="submit" class="nv-btn small primary">שליחה</button><button type="button" class="nv-btn small" data-reply-cancel>ביטול</button><a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}">או לכתוב ב-Gmail</a><span class="nv-status" data-reply-st></span></div>`;
+        <div class="wide nv-row"><button type="submit" class="nv-btn small primary">שליחה</button><button type="button" class="nv-btn small" data-reply-cancel>ביטול</button><a class="nv-btn small" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(r.email)}&su=${encodeURIComponent('בעניין: '+r.subject)}${r.type==='join'?'&body='+encodeURIComponent(joinTpl().replace(/\{שם\}/g,r.name||'')):''}">או לכתוב ב-Gmail</a><span class="nv-status" data-reply-st></span></div>`;
       f.addEventListener('submit',async ev=>{
         ev.preventDefault();const st=f.querySelector('[data-reply-st]');const d=Object.fromEntries(new FormData(f));
         if(String(d.text||'').trim().length<2){st.className='nv-status err';st.textContent='צריך לכתוב תשובה.';return}
+        if(/\[תאריך\]/.test(d.text)&&!confirm('בתשובה עדיין כתוב [תאריך] במקום תאריך המפגש. לשלוח בכל זאת?'))return;
         const b=f.querySelector('[type=submit]');b.disabled=true;st.className='nv-status';st.textContent='שולחת…';
         try{await api('POST',{action:'reply',id:r.id,subject:d.subject,text:d.text,status:d.status});await load();render();refreshBadge();msg(`התשובה נשלחה אל ${r.name||r.email} ✓`,'ok')}
         catch(err){b.disabled=false;st.className='nv-status err';st.textContent=err.message}
       });
+      // שמירת הנוסח כתבנית: השם של הפונה חוזר להיות {שם}, כדי שהתבנית תתאים לכל פנייה.
+      f.querySelector('[data-tpl-save]')?.addEventListener('click',()=>{const st=f.querySelector('[data-reply-st]');let t=f.elements.text.value;if(r.name)t=t.split(r.name).join('{שם}');try{localStorage.setItem(JOIN_TPL_KEY,t);st.className='nv-status ok';st.textContent='✓ התבנית נשמרה. היא תופיע בכל תשובה לבקשת הצטרפות (בדפדפן הזה).'}catch(e){st.className='nv-status err';st.textContent='לא הצלחתי לשמור את התבנית.'}});
+      f.querySelector('[data-tpl-reset]')?.addEventListener('click',()=>{if(!confirm('לחזור לנוסח המקורי של התבנית?'))return;try{localStorage.removeItem(JOIN_TPL_KEY)}catch(e){}f.elements.text.value=JOIN_TPL_DEFAULT.replace(/\{שם\}/g,r.name||'')});
       card.appendChild(f);const ta=f.querySelector('textarea');ta.focus();const pos=ta.value.indexOf('\n\n')+2;ta.setSelectionRange(pos,pos);
     }
     // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
