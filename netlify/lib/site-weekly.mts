@@ -5,6 +5,7 @@ import { store, readLibrary, pool } from "./shared.mts";
 import { formatDate, isOpen, israelToday, listCalls, loadPeople } from "./calls.mts";
 import { listTeams } from "./teams.mts";
 import { listCollabs, listResearch } from "./collab.mts";
+import { currentTopic } from "./kikar-topics.mts";
 
 const data = () => store("hosen-data");
 const clip = (v: unknown, n: number) => { const s = String(v ?? "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
@@ -21,6 +22,7 @@ export type Weekly = { subject: string; body: string; sections: WeeklySection[];
 export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const today = israelToday();
+  const sinceDay = since.slice(0, 10);
   const isNew = (x: any) => String(x?.createdAt || "") >= since;
   const [messages, resources, gallery, library, calls, teams, collabs, research, people, seen, discussions, requests] = await Promise.all([
     listPrefix("messages/"), listPrefix("resources/"), listPrefix("gallery/"), readLibrary(),
@@ -98,16 +100,45 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const peopleNotes = myNotes.filter(x => x.section === "people").map(x => clip(noteText(x), 600));
   add("notes", "📌 מהנהלת הקהילה", myNotes.filter(x => x.section !== "people").map(x => clip(x.text, 600)));
 
-  const joined = (people as any[]).filter(isNew).map(p => clip(p.name, 60)).filter(Boolean);
-  const joinedOthers = joined.filter(nm => !hit(nm, noteKeys)); // מי שכבר קיבל/ה ברכה אישית לא חוזר/ת ברשימה
-  add("people", "🙋 הצטרפו לנבחרת", [...peopleNotes, ...(joinedOthers.length ? [`ברוכים הבאים וברוכות הבאות: ${joinedOthers.slice(0, 12).join(", ")}`] : [])], ["לנבחרת", `${site}/people`]);
+  // מצטרפים השבוע (8.11.2026): גם מי שנפתח לו כרטיס בנבחרת וגם מי ששלח/ה בקשת הצטרפות (עוד בלי כרטיס), עם המוסד.
+  const seenKey = new Set<string>();
+  const joinedRows: { name: string; inst: string }[] = [];
+  const pushJ = (name: unknown, inst: unknown, email: unknown) => {
+    const nm = clip(name, 80); if (!nm) return;
+    const k = String(email || "").trim().toLowerCase() || nm.replace(/[״"'׳\s.]/g, "");
+    if (seenKey.has(k) || seenKey.has(nm.replace(/[״"'׳\s.]/g, ""))) return;
+    seenKey.add(k); seenKey.add(nm.replace(/[״"'׳\s.]/g, ""));
+    joinedRows.push({ name: nm, inst: clip(inst, 90) });
+  };
+  for (const p of (people as any[]).filter(isNew)) pushJ(p.name, p.institution, p.email);
+  for (const r of (requests as any[]).filter(r => r.type === "join" && String(r.at || r.createdAt || "") >= since)) pushJ(r.data?.name || r.name, r.data?.affiliation, r.data?.email || r.email);
+  const joined = joinedRows.map(x => x.name);
+  const joinedOthers = joinedRows.filter(x => !hit(x.name, noteKeys)).map(x => x.inst ? `${x.name} (${x.inst})` : x.name); // מי שכבר קיבל/ה ברכה אישית לא חוזר/ת ברשימה
+  add("people", "🙋 הצטרפו לקהילה השבוע", [...peopleNotes, ...(joinedOthers.length ? [`ברוכים הבאים וברוכות הבאות: ${joinedOthers.slice(0, 12).join("; ")}`] : [])], ["לנבחרת", `${site}/people`]);
+
+  // 🏛 כיכר הקהילה (8.11.2026): הנושא הפתוח, השיחות סביבו ומה נכתב השבוע.
+  try {
+    const kt = currentTopic();
+    if (kt) {
+      const kposts = await listPrefix(`kikar/posts/${kt.id}/`);
+      const kweek = kposts.filter(x => String(x.createdAt || "") >= since);
+      // כשיש השבוע הסבר מורחב על הכיכר (guides ב-site-changes.json), כאן רק מה שקורה בה, בלי לחזור על הנושא והשיחות.
+      const kGuide = (await fetch(`${site}/site-changes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => []) as any[])
+        .filter(c => String(c?.date || "") >= sinceDay).some(c => (c.guides || []).some((g: any) => String(g?.title || "").includes("כיכר")));
+      const isNewTopic = !kGuide && (String(kt.opens || "") > sinceDay || String(kt.opens || "") === today);
+      const kl: string[] = [];
+      kl.push(`${isNewTopic ? "נפתח נושא חדש בכיכר" : "הנושא הפתוח בכיכר"}: **${clip(kt.title, 120)}**${kt.host ? ` (מארחת: ${clip(kt.host, 60)})` : ""}. ${clip(kt.question, 200)}`);
+      if (isNewTopic) for (const c of kt.convs.slice(0, 6)) kl.push(`שיחה: ${clip(c.title, 110)}`);
+      kl.push(kweek.length ? `${kweek.length === 1 ? "נכתבה תגובה אחת" : `נכתבו ${kweek.length.toLocaleString("he-IL")} תגובות`} השבוע${kposts.length > kweek.length ? ` (${kposts.length.toLocaleString("he-IL")} בסך הכול)` : ""}. מצטרפים לשיחה עם הקוד האישי או קוד הקהילה` : "עוד אין תגובות. אפשר לפתוח את השיחה: בוחרים שיחה, לוחצים \"🔑 כניסה לכתיבה\" וכותבים");
+      add("kikar", "🏛 כיכר הקהילה: שיח מקצועי לשיתוף ידע והעברתו לשדה", kl, ["לכיכר הקהילה", `${site}/kikar`]);
+    }
+  } catch { /* הכיכר לא זמינה: ממשיכים בלי המדור */ }
 
   const albums = gallery.filter(isNew).filter(g => g.active !== false);
   add("gallery", "📷 בגלריה", albums.slice(0, 4).map(g => clip(g.title, 100)), ["לגלריה", `${site}/gallery`]);
 
   // 📊 הקהילה במספרים (5.11.2026). "נכנסו השבוע" = מי שנכנס/ה לאתר עם הקוד האישי (member-seen/), כי בלי קוד אין דרך לדעת מי ביקר.
   const n = (x: number) => x.toLocaleString("he-IL");
-  const sinceDay = since.slice(0, 10);
   const liveTeams = (teams as any[]).filter(t => t.status !== "closed");
   const ideasOpen = (research as any[]).filter(r => r.status === "open").length + (collabs as any[]).filter(c => c.status === "open").length;
   const closingSoon = open.filter(c => c.endDate && c.endDate >= today && c.endDate <= new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10)).length;
@@ -148,6 +179,10 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const pic = (g: { image?: string; alt?: string; link?: string; title: string }) => g.image ? [`![${clip(g.alt || g.title, 140).replace(/[\[\]]/g, "")}](${abs(g.image)})${g.link ? `(${abs(g.link)})` : ""}`] : [];
   guides.forEach((g, i) => S.splice((changed.length ? 3 : 2) + i, 0, { key: "guide", title: clip(g.title, 120), lines: [...pic(g), ...g.lines.slice(0, 10).map(x => clip(x, 400))] }));
 
+  // סדר המדורים (8.11.2026): מה שהקהילה צריכה לראות קודם, ולא לפי סדר החישוב.
+  const ORDER = ["notes", "people", "research", "stats", "kikar", "site", "guide", "board", "collab", "calls", "events", "library", "gallery"];
+  const rank = (k: string) => { const i = ORDER.indexOf(k); return i < 0 ? ORDER.length : i; };
+  S.splice(0, S.length, ...S.map((s, i) => ({ s, i })).sort((a, b) => rank(a.s.key) - rank(b.s.key) || a.i - b.i).map(x => x.s));
   const count = S.filter(s => s.key !== "research" && s.key !== "stats" && s.key !== "guide").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);
   const from = formatDate(since.slice(0, 10)), to = formatDate(today);
   const blocks = S.map(s => [`**${s.title}**`, ...s.lines.map(l => l.startsWith("![") ? l : "- " + l), s.link ? `${s.link[0]}: ${s.link[1]}` : ""].filter(Boolean).join("\n"));

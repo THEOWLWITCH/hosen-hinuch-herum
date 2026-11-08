@@ -4692,7 +4692,8 @@ https://hosen-hinuch-herum.netlify.app/apps
     // העדכון השבועי (5.11.2026): טיוטה ממה שנוסף באתר בשבוע האחרון. עוברים עליה, מוסיפים מילה אישית ושולחים.
     const loadWeekly=async()=>{msg('מכין את העדכון השבועי…');
       try{const r=await fetch('/api/community-mail?weekly=1',{headers:{Authorization:'Bearer '+token()}});const w=await r.json();if(!r.ok)throw new Error(w.message||'');
-        if((f.elements.body.value.trim()&&f.elements.body.value!==DEFAULT_BODY)&&!confirm('להחליף את הטקסט הנוכחי בעדכון השבועי?'))return msg('');
+        // הטקסט הקודם נשמר בגיבוי (hosen_weekly_prev), כדי שטיוטה ישנה לא תסתיר את העדכון החדש (8.11.2026).
+        try{const old=f.elements.body.value.trim();if(old&&old!==DEFAULT_BODY.trim()&&old!==w.body.trim())localStorage.setItem('hosen_weekly_prev',JSON.stringify({at:new Date().toISOString(),subject:f.elements.subject.value,body:f.elements.body.value}))}catch(e){}
         f.elements.subject.value=w.subject;f.elements.body.value=w.body;save();
         msg(w.count?`✓ העדכון השבועי מוכן (${w.from}–${w.to}). כדאי לקרוא, להוסיף פתיח אישי, ולשלוח בדיקה לפני השליחה לכולם.`:'✓ נטען, אבל השבוע כמעט לא נוסף תוכן חדש באתר. אולי כדאי לדלג השבוע.','ok')}
       catch(e){msg('לא הצלחתי להכין את העדכון השבועי. אפשר לנסות שוב.','err')}};
