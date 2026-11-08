@@ -24,11 +24,13 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const today = israelToday();
   const sinceDay = since.slice(0, 10);
   const isNew = (x: any) => String(x?.createdAt || "") >= since;
-  const [messages, resources, gallery, library, calls, teams, collabs, research, people, seen, discussions, requests] = await Promise.all([
+  const getJson = (path: string, empty: any) => fetch(`${site}/${path}`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : empty).catch(() => empty);
+  const [messages, resources, gallery, library, calls, teams, collabs, research, people, seen, discussions, requests, rwJson, notesJson, changesJson] = await Promise.all([
     listPrefix("messages/"), listPrefix("resources/"), listPrefix("gallery/"), readLibrary(),
     listCalls().catch(() => []), listTeams().catch(() => []), listCollabs().catch(() => []), listResearch().catch(() => []),
     loadPeople(site).catch(() => []),
     listPrefix("member-seen/"), listPrefix("research-discussions/"), listPrefix("requests/"),
+    getJson("research-weekly.json", null), getJson("weekly-notes.json", []), getJson("site-changes.json", []),
   ]);
   const S: WeeklySection[] = [];
   const add = (key: string, title: string, lines: string[], link?: [string, string]) => { if (lines.length) S.push({ key, title, lines, link }); };
@@ -37,7 +39,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
     .slice(0, 6).map(m => `${clip(m.title || m.message, 90)}${m.name ? ` (${clip(m.name, 60)})` : ""}`), ["לכל ההודעות", `${site}/now`]);
 
   // חידושים במחקר: מחקרי השבוע מהעדכון של יום ראשון (research-weekly.json נוצר בבנייה), ומחקרים שחברי הקהילה הוסיפו.
-  const rw = await fetch(`${site}/research-weekly.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : null).catch(() => null) as
+  const rw = rwJson as
     { week: string; added: number; total?: number; highlights: { title: string; source: string; summary: string; why: string; url: string; note: string }[] } | null;
   const fresh = !!rw?.week && rw.week >= since.slice(0, 10);
   const research_ = resources.filter(isNew).filter(r => String(r.category || "").startsWith("research-") && r.active !== false && !r.pendingHebrew);
@@ -76,7 +78,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   // הודעות ידניות מהנהלת הקהילה (weekly-notes.json): section "people" נכנס ל"הצטרפו לנבחרת", כל השאר ל"📌 מהנהלת הקהילה".
   // ברכה למצטרף/ת עם "person" (חלק מהשם): הפרטים (שם מלא, מוסד, תחום מחקר) נלקחים מהכרטיס בנבחרת או מבקשת ההצטרפות,
   // ונכנסים ל-"template" במקום {שם} {מוסד} {תחום}. לא נמצאו פרטים: נכנס "text".
-  const wnotes = (await fetch(`${site}/weekly-notes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => [])) as { date: string; section?: string; text: string; person?: string | string[]; template?: string }[];
+  const wnotes = notesJson as { date: string; section?: string; text: string; person?: string | string[]; template?: string }[];
   const myNotes = (Array.isArray(wnotes) ? wnotes : []).filter(x => String(x?.date || "") > since.slice(0, 10) && x.text); // ">" ולא ">=": הודעה מיום ראשון לא חוזרת בעדכון של השבוע הבא
   const keysOf = (x: { person?: string | string[] }) => (Array.isArray(x.person) ? x.person : x.person ? [x.person] : []).filter(Boolean);
   const hit = (name: unknown, keys: string[]) => keys.some(k => String(name || "").includes(k));
@@ -120,10 +122,12 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   try {
     const kt = currentTopic();
     if (kt) {
-      const kposts = await listPrefix(`kikar/posts/${kt.id}/`);
-      const kweek = kposts.filter(x => String(x.createdAt || "") >= since);
+      // בלי לקרוא כל תגובה: שם הקובץ מתחיל בזמן הכתיבה (YYYYMMDDHHMMSSmmm).
+      const kkeys = (await data().list({ prefix: `kikar/posts/${kt.id}/` })).blobs.map(b => b.key.split("/").pop() || "");
+      const sinceStamp = since.replace(/[-:.TZ]/g, "");
+      const kposts = kkeys, kweek = kkeys.filter(k => k.slice(0, 17) >= sinceStamp.slice(0, 17));
       // כשיש השבוע הסבר מורחב על הכיכר (guides ב-site-changes.json), כאן רק מה שקורה בה, בלי לחזור על הנושא והשיחות.
-      const kGuide = (await fetch(`${site}/site-changes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => []) as any[])
+      const kGuide = ((Array.isArray(changesJson) ? changesJson : []) as any[])
         .filter(c => String(c?.date || "") >= sinceDay).some(c => (c.guides || []).some((g: any) => String(g?.title || "").includes("כיכר")));
       const isNewTopic = !kGuide && (String(kt.opens || "") > sinceDay || String(kt.opens || "") === today);
       const kl: string[] = [];
@@ -168,7 +172,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   S.splice(1, 0, { key: "stats", title: "📊 הקהילה במספרים", lines: stats });
 
   // 🛠 מה חדש באתר עצמו: מתוך site-changes.json שבמאגר (כל שינוי שהקהילה רואה נרשם שם).
-  const changes = await fetch(`${site}/site-changes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => []) as { date: string; items: string[]; guides?: { title: string; lines: string[]; image?: string; alt?: string; link?: string }[] }[];
+  const changes = changesJson as { date: string; items: string[]; guides?: { title: string; lines: string[]; image?: string; alt?: string; link?: string }[] }[];
   const changed = (Array.isArray(changes) ? changes : []).filter(c => String(c?.date || "") >= sinceDay).flatMap(c => Array.isArray(c.items) ? c.items : []).map(x => clip(x, 300)).filter(Boolean);
   if (changed.length) S.splice(2, 0, { key: "site", title: "🛠 מה חדש באתר עצמו", lines: changed.slice(0, 15), link: ["לאתר", site] });
   // הסבר מורחב על שינוי (guides ב-site-changes.json): מדור משלו מיד אחרי "מה חדש באתר עצמו" (5.11.2026).

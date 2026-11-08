@@ -4682,7 +4682,11 @@ https://hosen-hinuch-herum.netlify.app/apps
       <div data-prev></div>
       ${d.log.length?`<h4 style="margin:16px 0 4px">שליחות אחרונות</h4><table class="nv-table">${d.log.map(l=>`<tr><td>${new Date(l.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</td><td>${h(l.subject)}</td><td>${l.test?'בדיקה':`נשלח ל־${l.sent}${l.failed.length?` · לא נשלח: ${l.failed.map(h).join(', ')}`:''}`}</td></tr>`).join('')}</table>`:''}`;
     const f=root.querySelector('[data-f]'),st=root.querySelector('[data-st]'),bar=root.querySelector('.nv-progress');
-    const msg=(t,k)=>{st.className='nv-status'+(k?' '+k:'');st.textContent=t};
+    // הודעה גם בפס קבוע בראש המסך: שורת הסטטוס בתחתית החלון לא נראית בלי לגלול (8.11.2026).
+    const msg=(t,k)=>{st.className='nv-status'+(k?' '+k:'');st.textContent=t;
+      let tb=document.getElementById('cmToast');if(!t){tb&&tb.remove();return}
+      if(!tb){tb=document.createElement('div');tb.id='cmToast';tb.setAttribute('role','status');tb.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:100000;max-width:min(92vw,560px);padding:12px 16px;border-radius:12px;font:600 15px/1.5 inherit;box-shadow:0 6px 24px rgba(0,0,0,.25);cursor:pointer;direction:rtl;text-align:right;color:#fff';tb.onclick=()=>tb.remove();document.body.appendChild(tb)}
+      tb.style.background=k==='err'?'#a3283a':k==='ok'?'#2f6e4f':'#1f4256';tb.textContent=t;clearTimeout(tb._t);if(k!=='err')tb._t=setTimeout(()=>tb.remove(),k==='ok'?10000:60000)};
     const chosen=()=>[...f.querySelectorAll('.nv-checks input:checked')].map(i=>i.value);
     const count=()=>{const n=chosen().length;root.querySelector('[data-count]').textContent=n;f.querySelector('[data-send]').textContent=`✉ שליחה ל־${n}`};
     const save=()=>draft.set({subject:f.elements.subject.value,body:f.elements.body.value});
@@ -4691,12 +4695,12 @@ https://hosen-hinuch-herum.netlify.app/apps
     root.querySelector('[data-reset]').onclick=()=>{if(!confirm('להחליף את הטקסט הנוכחי בטקסט המוכן?'))return;f.elements.subject.value=DEFAULT_SUBJECT;f.elements.body.value=DEFAULT_BODY;save()};
     // העדכון השבועי (5.11.2026): טיוטה ממה שנוסף באתר בשבוע האחרון. עוברים עליה, מוסיפים מילה אישית ושולחים.
     const loadWeekly=async()=>{msg('מכין את העדכון השבועי…');
-      try{const r=await fetch('/api/community-mail?weekly=1',{headers:{Authorization:'Bearer '+token()}});const w=await r.json();if(!r.ok)throw new Error(w.message||'');
+      const t0=Date.now();try{const r=await fetch('/api/community-mail?weekly=1&t='+t0,{cache:'no-store',headers:{Authorization:'Bearer '+token()}});const w=await r.json().catch(()=>({}));if(!r.ok)throw new Error((w.message||'השרת לא הספיק להכין את העדכון')+' · קוד '+r.status);
         // הטקסט הקודם נשמר בגיבוי (hosen_weekly_prev), כדי שטיוטה ישנה לא תסתיר את העדכון החדש (8.11.2026).
         try{const old=f.elements.body.value.trim();if(old&&old!==DEFAULT_BODY.trim()&&old!==w.body.trim())localStorage.setItem('hosen_weekly_prev',JSON.stringify({at:new Date().toISOString(),subject:f.elements.subject.value,body:f.elements.body.value}))}catch(e){}
         f.elements.subject.value=w.subject;f.elements.body.value=w.body;save();
         msg(w.count?`✓ העדכון השבועי מוכן (${w.from}–${w.to}). כדאי לקרוא, להוסיף פתיח אישי, ולשלוח בדיקה לפני השליחה לכולם.`:'✓ נטען, אבל השבוע כמעט לא נוסף תוכן חדש באתר. אולי כדאי לדלג השבוע.','ok')}
-      catch(e){msg('לא הצלחתי להכין את העדכון השבועי. אפשר לנסות שוב.','err')}};
+      catch(e){msg('לא הצלחתי להכין את העדכון השבועי, והטקסט בחלון לא השתנה ('+e.message+'). אפשר לנסות שוב.','err')}};
     root.querySelector('[data-weekly]').onclick=loadWeekly;
     if(window.__weeklyMail){window.__weeklyMail=false;loadWeekly()}
     root.querySelector('[data-preview]').onclick=async()=>{
