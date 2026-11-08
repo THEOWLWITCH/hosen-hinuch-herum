@@ -744,6 +744,17 @@ export async function sendWeeklyDigests(site: string): Promise<{ sent: number; s
   }
   const r = await sendAll(mine, j => sendMail(j.email, j.d.subject, j.d.html, j.d.text));
   const sent = r.ok.length, failed = r.failed.length, reason = r.reason;
+  // התראת מערכת למנהלת (8.11.2026): למי השליחה לא הצליחה. אם גם המייל הזה לא יוצא, ההתראה נכנסת לתיבת הפניות באתר.
+  if (failed) {
+    const admin = (Netlify.env.get("GMAIL_USER") || "").trim();
+    const list = r.failed.map(j => j.email);
+    const text = [`מייל קולות קוראים של ${formatDate(day)} לא הגיע אל ${failed === 1 ? "נמען/ת אחד/ת" : `${failed} נמענים ונמענות`} (נשלח בהצלחה אל ${sent}).`, "", ...list.map(e => `• ${e}`), "", reason ? `הסיבה: ${reason}` : "", "המערכת לא תנסה לשלוח אליהם שוב היום. בשבוע הבא הם יקבלו את המייל כרגיל."].filter((x, i, a) => x || a[i - 1]).join("\n");
+    try { await sendMail(admin, `⚠ התראת מערכת: מייל קולות קוראים לא הגיע אל ${failed}`, `<div dir="rtl" style="font-family:Arial,sans-serif;white-space:pre-wrap">${escHtml(text)}</div>`, text); }
+    catch {
+      const { addRequest } = await import("./requests.mts");
+      await addRequest({ type: "feedback", name: "התראת מערכת", email: "", subject: `⚠ מייל קולות קוראים לא הגיע אל ${failed}`, body: text }).catch(() => {});
+    }
+  }
   await data().setJSON("call-mail/last-digest.json", { at: new Date().toISOString(), sent, skipped, failed, reason });
   return { sent, skipped, failed, reason };
 }
