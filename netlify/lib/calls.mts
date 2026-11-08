@@ -732,7 +732,17 @@ export async function sendWeeklyDigests(site: string): Promise<{ sent: number; s
     if (!d) { skipped++; continue; }
     jobs.push({ email, d });
   }
-  const r = await sendAll(jobs, j => sendMail(j.email, j.d.subject, j.d.html, j.d.text));
+  // נגד כפילויות (8.11.2026: המייל הגיע 3 פעמים): לכל נמען/ת "תופסים" רישום של היום לפני השליחה.
+  // הרצה נוספת באותו יום (ניסיון חוזר של השרת, לחיצה כפולה) מדלגת על מי שכבר קיבל/ה. שליחה שנכשלה משחררת את הרישום.
+  const day = israelToday(), st = data();
+  const claimKey = (email: string) => `call-mail/sent/${day}/${email.toLowerCase()}`;
+  const mine: typeof jobs = [];
+  for (const j of jobs) {
+    const w = await st.setJSON(claimKey(j.email), { at: new Date().toISOString() }, { onlyIfNew: true }).catch(() => ({ modified: false }));
+    if (w.modified) mine.push(j); else skipped++;
+  }
+  const r = await sendAll(mine, j => sendMail(j.email, j.d.subject, j.d.html, j.d.text));
+  await Promise.all(r.failed.map(j => st.delete(claimKey(j.email)).catch(() => {})));
   const sent = r.ok.length, failed = r.failed.length, reason = r.reason;
   await data().setJSON("call-mail/last-digest.json", { at: new Date().toISOString(), sent, skipped, failed, reason });
   return { sent, skipped, failed, reason };
