@@ -4443,11 +4443,13 @@ html[data-page="tasks"] #tasks{display:block!important}
     async function load(){const j=await api('GET');V.rows=j.requests;V.types=j.types;V.joinTpl=j.joinTpl||''}
     function render(){
       const cnt=k=>V.rows.filter(r=>r.status===k).length;
-      const rows=V.rows.filter(r=>(V.status==='all'||(V.status==='open'?r.status!=='done':r.status===V.status))&&(!V.type||r.type===V.type)&&(!V.q||[r.name,r.email,r.subject,r.body,r.note].join(' ').toLowerCase().includes(V.q.toLowerCase())));
+      // בקשת הצטרפות שסומנה "טופל" בלי כרטיס בנבחרת נשארת ב"פתוחות", עד שמאשרים אותה (8.11.2026).
+      const noCard=r=>r.type==='join'&&r.status==='done'&&!String(r.note||'').includes('נוסף לנבחרת');
+      const rows=V.rows.filter(r=>(V.status==='all'||(V.status==='open'?(r.status!=='done'||noCard(r)):r.status===V.status))&&(!V.type||r.type===V.type)&&(!V.q||[r.name,r.email,r.subject,r.body,r.note].join(' ').toLowerCase().includes(V.q.toLowerCase())));
       root.innerHTML=`<h2>📥 תיבת הפניות</h2>
         <p class="nv-status">כל הפניות מהאתר במקום אחד: בקשות גישה לנבט, הצעות לקולות קוראים, בקשות ותקלות, הצעות לשיתוף פעולה והצעות מקורות. כל בוקר נשלח אלייך סיכום של הפניות החדשות.</p>
         <div class="nv-row" style="margin:8px 0">
-          ${[['open',`פתוחות (${cnt('new')+cnt('in_progress')})`],['new',`חדשות (${cnt('new')})`],['in_progress',`בטיפול (${cnt('in_progress')})`],['done',`טופלו (${cnt('done')})`],['all',`הכול (${V.rows.length})`]].map(([k,l])=>`<button type="button" class="nv-btn small${V.status===k?' primary':''}" data-f="${k}">${l}</button>`).join('')}
+          ${[['open',`פתוחות (${cnt('new')+cnt('in_progress')+V.rows.filter(noCard).length})`],['new',`חדשות (${cnt('new')})`],['in_progress',`בטיפול (${cnt('in_progress')})`],['done',`טופלו (${cnt('done')})`],['all',`הכול (${V.rows.length})`]].map(([k,l])=>`<button type="button" class="nv-btn small${V.status===k?' primary':''}" data-f="${k}">${l}</button>`).join('')}
           <select data-type style="width:auto"><option value="">כל הסוגים</option>${Object.entries(V.types).map(([k,l])=>`<option value="${k}"${V.type===k?' selected':''}>${h(l)}</option>`).join('')}</select>
           <input data-q placeholder="חיפוש לפי שם, מייל או תוכן" value="${h(V.q)}" style="flex:1;min-width:180px">
         </div>
@@ -4461,7 +4463,7 @@ html[data-page="tasks"] #tasks{display:block!important}
             <input data-note="${h(r.id)}" value="${h(r.note)}" placeholder="הערה פנימית (למשל: שולם, חזרתי אליה)" style="flex:1;min-width:200px">
             ${r.email?`<button type="button" class="nv-btn small primary" data-reply="${h(r.id)}">✉ כתיבת תשובה</button>`:''}
             ${r.type==='source'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-publish-source="${h(r.id)}">✓ פרסום באתר</button>`:''}
-            ${r.type==='join'&&r.status!=='done'?`<button type="button" class="nv-btn small primary" data-approve-join="${h(r.id)}">✓ אישור והוספה לנבחרת</button>`:r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
+            ${r.type==='join'&&!String(r.note||'').includes('נוסף לנבחרת')?`<button type="button" class="nv-btn small primary" data-approve-join="${h(r.id)}">✓ אישור והוספה לנבחרת</button>${r.status==='done'?'<span class="nv-status" style="color:#a3283a;margin:0">עדיין אין כרטיס בנבחרת</span>':''}`:r.link?`<a class="nv-btn small" href="${h(r.link)}">לטיפול ←</a>`:''}</div></div>`).join('')||'<p class="nv-status">אין פניות בתצוגה הזו.</p>'}</div>
         <div class="nv-status" data-st></div>`;
     }
     const msg=(t,k)=>{const el=root.querySelector('[data-st]');if(el){el.className='nv-status'+(k?' '+k:'');el.textContent=t}};
@@ -4549,14 +4551,17 @@ html[data-page="tasks"] #tasks{display:block!important}
       const rc=e.target.closest('[data-reply-cancel]');if(rc){rc.closest('[data-reply-form]').remove();return}
       const ps=e.target.closest('[data-publish-source]');if(ps){openPublish(ps);return}
       const pc=e.target.closest('[data-pub-cancel]');if(pc){pc.closest('[data-pub]').remove();return}
-      const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.\nבמייל ברוכים הבאים יישלח קוד אישי לעדכון הכרטיס.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg((j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת: תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`)+(j.code?(j.mailed?` הקוד האישי (${j.code}) נשלח במייל.`:` הקוד האישי: ${j.code}. המייל לא נשלח${j.mailReason?` (${j.mailReason})`:''}, ואפשר להעביר את הקוד ידנית.`):''),'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
+      const aj=e.target.closest('[data-approve-join]');if(aj){const rid=aj.dataset.approveJoin,r=V.rows.find(x=>x.id===rid);if(!aj.dataset.noconfirm&&!confirm(`להוסיף את ${r?r.name:''} לנבחרת?\nייפתח כרטיס עם הפרטים ותחומי העניין, והמייל ייכנס לכל רשימות השליחה.\nבמייל ברוכים הבאים יישלח קוד אישי לעדכון הכרטיס.`))return;aj.disabled=true;try{const j=await api('POST',{action:'approve-join',id:rid});await load();render();refreshBadge();msg((j.already?'הבקשה כבר אושרה קודם.':j.merged?`${j.person.name} כבר בנבחרת: תחומי העניין נוספו לכרטיס ✓`:`${j.person.name} נוספה לנבחרת ✓ הכרטיס מופיע בעמוד הנבחרת.`)+(j.code?(j.mailed?` הקוד האישי (${j.code}) נשלח במייל.`:` הקוד האישי: ${j.code}. המייל לא נשלח${j.mailReason?` (${j.mailReason})`:''}, ואפשר להעביר את הקוד ידנית.`):''),'ok')}catch(err){aj.disabled=false;msg(err.message,'err')}return}
       const b=e.target.closest('[data-bulk]');if(b){const ids=[...root.querySelectorAll('[data-sel]:checked')].map(i=>i.dataset.sel);if(!ids.length)return msg('לא נבחרו פניות.','err');try{await update(ids,{status:b.dataset.bulk});msg(`עודכנו ${ids.length} פניות ✓`,'ok')}catch(err){msg(err.message,'err')}return}
       if(e.target.matches('[data-allsel]'))root.querySelectorAll('[data-sel]').forEach(i=>i.checked=e.target.checked);
     });
     root.addEventListener('change',async e=>{
       const t=e.target;
       try{
-        if(t.dataset.status){await update([t.dataset.status],{status:t.value});return}
+        if(t.dataset.status){const rr=V.rows.find(x=>x.id===t.dataset.status);
+          // סימון "טופל" לבקשת הצטרפות בלי אישור: הכרטיס לא נפתח, ולכן שואלים אם לאשר עכשיו (8.11.2026).
+          if(rr&&rr.type==='join'&&t.value==='done'&&!String(rr.note||'').includes('נוסף לנבחרת')&&confirm(`עדיין לא נפתח ל${rr.name||'פונה'} כרטיס בנבחרת, ולכן לא יקבל/תקבל את המיילים של הקהילה.\nלאשר עכשיו ולהוסיף לנבחרת?\n(ביטול = רק לסמן "טופל")`)){const b=document.createElement('button');b.dataset.approveJoin=rr.id;b.dataset.noconfirm='1';b.hidden=true;t.closest('.nv-card').appendChild(b);b.click();b.remove();return}
+          await update([t.dataset.status],{status:t.value});return}
         if(t.dataset.note!==undefined){await api('POST',{action:'update',ids:[t.dataset.note],note:t.value});const r=V.rows.find(x=>x.id===t.dataset.note);if(r)r.note=t.value;msg('ההערה נשמרה ✓','ok');return}
         if(t.matches('[data-type]')){V.type=t.value;render();return}
       }catch(err){msg(err.message,'err')}
