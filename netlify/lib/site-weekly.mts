@@ -75,7 +75,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   // ברכה למצטרף/ת עם "person" (חלק מהשם): הפרטים (שם מלא, מוסד, תחום מחקר) נלקחים מהכרטיס בנבחרת או מבקשת ההצטרפות,
   // ונכנסים ל-"template" במקום {שם} {מוסד} {תחום}. לא נמצאו פרטים: נכנס "text".
   const wnotes = (await fetch(`${site}/weekly-notes.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : []).catch(() => [])) as { date: string; section?: string; text: string; person?: string | string[]; template?: string }[];
-  const myNotes = (Array.isArray(wnotes) ? wnotes : []).filter(x => String(x?.date || "") >= since.slice(0, 10) && x.text);
+  const myNotes = (Array.isArray(wnotes) ? wnotes : []).filter(x => String(x?.date || "") > since.slice(0, 10) && x.text); // ">" ולא ">=": הודעה מיום ראשון לא חוזרת בעדכון של השבוע הבא
   const keysOf = (x: { person?: string | string[] }) => (Array.isArray(x.person) ? x.person : x.person ? [x.person] : []).filter(Boolean);
   const hit = (name: unknown, keys: string[]) => keys.some(k => String(name || "").includes(k));
   const firstPart = (v: unknown) => clip(String(v || "").split(/\n|(?<=[.!?])\s/)[0], 220).replace(/[.\s]+$/, "");
