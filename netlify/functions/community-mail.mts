@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { json, validToken } from "../lib/shared.mts";
-import { getOptOut, loadPeople, mailConfigured, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
+import { getOptOut, loadPeople, mailConfigured, mailErrorHint, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addLog, listLog, personalize, plainText, renderHtml } from "../lib/community-mail.mts";
 import { buildSiteWeekly } from "../lib/site-weekly.mts";
 
@@ -60,7 +60,8 @@ export default async (req: Request) => {
       const me = (Netlify.env.get("GMAIL_USER") || "").trim();
       const t = personalize(text, "ד״ר יעל שדה");
       try { await sendMail(me, "[בדיקה] " + subject, renderHtml(t, site), plainText(t)); }
-      catch { return json({ error: "mail", message: "שליחת הבדיקה נכשלה. בדקי את חיבור ה-Gmail." }, 502); }
+      // הסיבה האמיתית מוצגת (10.11.2026), ולא רק "בדקי את החיבור".
+      catch (e) { console.error("test mail failed", String((e as Error)?.message || e)); return json({ error: "mail", message: "שליחת הבדיקה נכשלה: " + mailErrorHint(e) }, 502); }
       await addLog({ subject, sent: 1, failed: [], test: true });
       return json({ ok: true, sent: 1, failed: [] });
     }
