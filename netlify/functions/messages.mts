@@ -78,9 +78,9 @@ export default async (req: Request) => {
     const missing: string[] = [];
 
     if (!body.title) missing.push("כותרת");
-    if (!body.degree) missing.push("תואר אקדמי");
-    if (!body.name) missing.push("שם מלא");
-    if (!body.institution) missing.push("מוסד אקדמי");
+    // שם ותואר לא חובה למנהלת המערכת (10.11.2026: הודעה של הנהלת הקהילה בלי שם). לחברי הקהילה הם עדיין חובה.
+    if (!tokenOK) { if (!body.degree) missing.push("תואר אקדמי"); if (!body.name) missing.push("שם מלא"); }
+    if ((body.name || !tokenOK) && !body.institution) missing.push("מוסד אקדמי");
     if (!body.message) missing.push("הודעה");
 
     if (missing.length) {
@@ -100,9 +100,9 @@ export default async (req: Request) => {
     const x: Message = {
       id:id(),
       title:String(body.title).slice(0,220),
-      degree:String(body.degree).slice(0,40),
-      name:String(body.name).slice(0,120),
-      institution:String(body.institution).slice(0,180),
+      degree:String(body.degree||"").slice(0,40),
+      name:String(body.name||"").slice(0,120),
+      institution:String(body.institution||"").slice(0,180),
       message:String(body.message).slice(0,5000),
       createdAt:now.toISOString(),
       expiresAt:expires ? expires.toISOString() : null,
@@ -129,9 +129,8 @@ export default async (req: Request) => {
     const expires = expiresText ? new Date(expiresText) : null;
     const missing: string[] = [];
     if (!body.title) missing.push("כותרת");
-    if (!body.degree) missing.push("תואר אקדמי");
-    if (!body.name) missing.push("שם מלא");
-    if (!body.institution) missing.push("מוסד אקדמי");
+    // בעריכה (מנהלת המערכת בלבד) שם ותואר לא חובה. מוסד נדרש רק כשיש שם.
+    if (body.name && !body.institution) missing.push("מוסד אקדמי");
     if (!body.message) missing.push("הודעה");
     if (missing.length) return json({ error:"missing_fields", message:`חסרים שדות חובה: ${missing.join(", ")}.` }, 400);
     if (expires && (!Number.isFinite(expires.getTime()) || expires.getTime() <= Date.now())) {
@@ -151,9 +150,9 @@ export default async (req: Request) => {
     const x: Message = {
       ...old,
       title:String(body.title).slice(0,220),
-      degree:String(body.degree).slice(0,40),
-      name:String(body.name).slice(0,120),
-      institution:String(body.institution).slice(0,180),
+      degree:String(body.degree||"").slice(0,40),
+      name:String(body.name||"").slice(0,120),
+      institution:String(body.institution||"").slice(0,180),
       message:String(body.message).slice(0,5000),
       expiresAt:expires ? expires.toISOString() : null,
       links:body.links===undefined ? (old.links || []) : cleanLinks(body.links),

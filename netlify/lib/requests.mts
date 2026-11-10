@@ -1,7 +1,7 @@
 // תיבת פניות: כל הפניות שמגיעות מהאתר במקום אחד, עם סטטוס והערות — למעקב גם כשיש עשרות.
 import { id, store } from "./shared.mts";
 
-export type RequestType = "nevet" | "call" | "feedback" | "idea" | "source" | "join" | "role";
+export type RequestType = "nevet" | "call" | "feedback" | "idea" | "source" | "join" | "role" | "field";
 export type RequestStatus = "new" | "in_progress" | "done";
 export type InboxRequest = {
   id: string; type: RequestType; name: string; email: string; subject: string; body: string; link: string;
@@ -12,7 +12,7 @@ export type InboxRequest = {
 export const TYPE_LABELS: Record<RequestType, string> = {
   nevet: "🌱 בקשת גישה לנבט", call: "📢 הצעת קול קורא", feedback: "💬 בקשה / תיקון / רעיון / תקלה",
   idea: "🤝 הצעה לשיתוף פעולה", source: "📚 הצעת מקור למחקר", join: "🙋 בקשת הצטרפות לקהילה",
-  role: "🧩 התנדבות לתפקיד בקהילה",
+  role: "🧩 התנדבות לתפקיד בקהילה", field: "🌾 מקרה או בעיה מהשטח",
 };
 
 const data = () => store("hosen-data");

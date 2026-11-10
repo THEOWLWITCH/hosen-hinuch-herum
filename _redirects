@@ -2,6 +2,7 @@
 /now /index.html 200
 /kikar /index.html 200
 /journals /index.html 200
+/field /index.html 200
 /match /index.html 200
 /gallery /index.html 200
 /people /index.html 200
@@ -12,6 +13,7 @@
 /grants /index.html 200
 /lectures / 301
 /research-tools /index.html 200
+/measures /index.html 200
 /policy /index.html 200
 /professional /index.html 200
 /library /index.html 200

@@ -47,6 +47,34 @@ async function me(req: Request) {
   return memberFromToken(clip(req.headers.get("x-member-token"), 400));
 }
 
+
+// ---------- ORCID ----------
+function validOrcid(id: string) {
+  if (!/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(id)) return false;
+  const d = id.replace(/-/g, ""); let t = 0;
+  for (let i = 0; i < 15; i++) t = (t + Number(d[i])) * 2;
+  const r = (12 - (t % 11)) % 11; return d[15] === (r === 10 ? "X" : String(r));
+}
+type Work = { t: string; y: string; j: string; doi: string; type: string };
+async function orcidWorks(oid: string): Promise<Work[] | null> {
+  try {
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 9000);
+    const r = await fetch(`https://pub.orcid.org/v3.0/${oid}/works`, { headers: { Accept: "application/json" }, signal: ctl.signal });
+    clearTimeout(timer);
+    if (!r.ok) return null;
+    const d: any = await r.json();
+    const out: Work[] = [];
+    for (const g of d?.group || []) {
+      const w = (g?.["work-summary"] || [])[0]; if (!w) continue;
+      const t = String(w?.title?.title?.value || "").trim(); if (!t) continue;
+      const ids = w?.["external-ids"]?.["external-id"] || [];
+      const doi = String((ids.find((x: any) => String(x?.["external-id-type"]).toLowerCase() === "doi") || {})["external-id-value"] || "");
+      out.push({ t: t.slice(0, 300), y: String(w?.["publication-date"]?.year?.value || ""), j: String(w?.["journal-title"]?.value || "").slice(0, 200), doi: doi.slice(0, 200), type: String(w?.type || "") });
+    }
+    return out.sort((a, b) => b.y.localeCompare(a.y)).slice(0, 200);
+  } catch { return null; }
+}
+
 export default async (req: Request) => {
   const u = new URL(req.url);
   const site = siteUrl(u.origin);
@@ -65,6 +93,7 @@ export default async (req: Request) => {
       motto: p.motto || "", websiteUrl: p.websiteUrl || "", linkedinUrl: p.linkedinUrl || "", facebookUrl: p.facebookUrl || "", instagramUrl: p.instagramUrl || "",
       photoUrl: p.photoUrl || "", topics: personTopics(p), chosen: Array.isArray(p.topics) && p.topics.length > 0, themes: themes(),
       offer: offerOf(p), kinds: KINDS,
+      orcid: p.orcid || "", orcidShow: p.orcidShow === true, orcidCount: Array.isArray(p.orcidWorks) ? p.orcidWorks.length : 0,
     });
   }
 
@@ -152,13 +181,25 @@ export default async (req: Request) => {
           if (p.photoKey) { try { await store("hosen-files").delete(p.photoKey); } catch {} }
         }
       }
+      // ORCID ומפת המומחיות (10.11.2026, מהסקר): רק למי שרוצה. הפרסומים נמשכים מה-API הציבורי של ORCID.
+      if ("orcid" in body) {
+        const raw = clip(body.orcid, 80).replace(/^https?:\/\/(www\.)?orcid\.org\//i, "").replace(/\s+/g, "").toUpperCase();
+        if (raw && !validOrcid(raw)) return json({ error: "bad_orcid", message: "מזהה ORCID נראה כך: 0000-0002-1825-0097. אפשר להעתיק אותו מהפרופיל ב-orcid.org." }, 400);
+        next.orcid = raw;
+        next.orcidShow = !!raw && body.orcidShow === true;
+        if (!next.orcidShow) next.orcidWorks = [];
+        else if (raw !== p.orcid || !Array.isArray(p.orcidWorks) || !p.orcidWorks.length || body.orcidRefresh === true) {
+          const works = await orcidWorks(raw);
+          if (works) { next.orcidWorks = works; next.orcidAt = now; }
+        }
+      }
       if (body.offer && typeof body.offer === "object") {
         const offer = { kinds: cleanKinds(body.offer.kinds), text: clip(body.offer.text, 1500), updatedAt: now };
         if (offer.kinds.length || offer.text) next.offer = offer;
       }
     }
     await store("hosen-data").setJSON(`people/${pid}.json`, next);
-    return json({ ok: true, topics: next.topics || personTopics(next), photoUrl: next.photoKey ? `/api/file?key=${encodeURIComponent(next.photoKey)}` : "" });
+    return json({ ok: true, orcidCount: Array.isArray(next.orcidWorks) ? next.orcidWorks.length : 0, topics: next.topics || personTopics(next), photoUrl: next.photoKey ? `/api/file?key=${encodeURIComponent(next.photoKey)}` : "" });
   }
 
   // ----- מנהלת המערכת -----

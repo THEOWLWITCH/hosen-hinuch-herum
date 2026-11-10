@@ -1,6 +1,7 @@
 import type { Config } from "@netlify/functions";
 import { json, looksHuman, store, validToken } from "../lib/shared.mts";
 import { communityOK } from "../lib/member-code.mts";
+import { addRequest } from "../lib/requests.mts";
 import { bareTitle, getCall, isOpen, israelToday, mailConfigured, sendMail, siteUrl } from "../lib/calls.mts";
 import {
   TEAM_STATUS, type Team, type TeamAccess, type TeamStatus, clip, cleanUrl, createTeam, deleteTeam, getTeam, hashKey, issueKey, listTeams, newItemId, newKey,
@@ -9,6 +10,8 @@ import {
 
 // מה שסביבת העבודה מקבלת: הקבוצה, התפקיד של מי שנכנס/ה (מוביל/ה או חבר/ה) והשם שלו/ה.
 const view = (t: Team, a: Pick<TeamAccess, "role" | "me">) => ({ ...workspaceTeam(t), role: a.role, me: a.me, ...(a.role === "lead" && t.locked ? { lockCode: t.lockCode || "" } : {}) });
+
+const CREDIT_ROLES = ["concept", "data", "analysis", "funding", "investigation", "method", "admin", "resources", "software", "supervision", "validation", "visual", "draft", "editing"];
 
 // פעולות שרק המוביל/ה עושה: מחיקה, ניהול הקבוצה והחברים/ות, אישור בקשות.
 const LEAD_ONLY = new Set(["section-remove", "task-remove", "link-remove", "meta", "request-approve", "request-decline", "delete", "lock", "unlock"]);
@@ -446,6 +449,30 @@ export default async (req: Request) => {
       if (body.need !== undefined) t.need = clip(body.need, 600);
       if (body.deadline !== undefined) t.deadline = /^\d{4}-\d{2}-\d{2}$/.test(String(body.deadline)) ? String(body.deadline) : "";
       if (body.funder !== undefined) t.funder = clip(body.funder, 200);
+      break;
+    }
+    // קרדיט לתוצר (10.11.2026, מהסקר): תפקידי CRediT לכל חבר/ה ורישיון. כל חבר/ה בצוות יכול/ה לעדכן.
+    // "בקשה לפרסום" נכנסת לתיבת הפניות; ההעלאה ל-Zenodo נעשית ידנית בידי מנהלת המערכת.
+    case "credit": {
+      const roles: Record<string, string[]> = {};
+      const src = body.roles && typeof body.roles === "object" ? body.roles : {};
+      for (const m of t.members) { const r = Array.isArray(src[m.name]) ? src[m.name].map(String).filter((x: string) => CREDIT_ROLES.includes(x)) : []; if (r.length) roles[m.name] = [...new Set(r)]; }
+      const prev: any = (t as any).credit || {};
+      const credit: any = {
+        product: clip(body.product, 300), kind: clip(body.kind, 60), license: ["CC-BY-4.0", "CC-BY-NC-4.0", "none"].includes(body.license) ? body.license : "CC-BY-4.0",
+        roles, updatedBy: who, updatedAt: at, requestedAt: prev.requestedAt || "", doi: prev.doi || "",
+      };
+      if (body.publish === true) {
+        if (!credit.product) return json({ error: "missing", message: "נשמח לשם התוצר לפני בקשת הפרסום." }, 400);
+        if (!Object.keys(roles).length) return json({ error: "missing", message: "נשמח לסמן לפחות תפקיד אחד לאחד או אחת מחברי הצוות." }, 400);
+        credit.requestedAt = at;
+        const lines = Object.entries(roles).map(([n, r]) => `${n}: ${r.join(", ")}`);
+        await addRequest({ type: "feedback", name: who, email: "", subject: `📦 תוצר לפרסום ב-Zenodo: ${credit.product}`,
+          body: [`קבוצה: ${t.title}`, `סוג התוצר: ${credit.kind || "לא צוין"}`, `רישיון: ${credit.license}`, "", "תרומות (CRediT):", ...lines, "", "ההעלאה ל-Zenodo נעשית ידנית. את הקובץ הסופי מבקשים מהצוות."].join("\n"), link: "/match" });
+        t.messages.push({ id: newItemId(), name: who, text: `📦 נשלחה בקשה לפרסום התוצר "${credit.product}" ב-Zenodo, ברישיון ${credit.license}. מנהלת האתר תיצור קשר להעלאה.`, at } as any);
+        t.messages = t.messages.slice(-300);
+      }
+      (t as any).credit = credit;
       break;
     }
     case "request-approve":

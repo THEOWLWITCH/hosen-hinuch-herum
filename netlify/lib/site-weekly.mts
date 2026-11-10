@@ -100,7 +100,9 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   };
   const noteKeys = myNotes.filter(x => x.section === "people").flatMap(keysOf);
   const peopleNotes = myNotes.filter(x => x.section === "people").map(x => clip(noteText(x), 600));
-  add("notes", "📌 מהנהלת הקהילה", myNotes.filter(x => x.section !== "people").map(x => clip(x.text, 600)));
+  add("notes", "📌 מהנהלת הקהילה", myNotes.filter(x => x.section !== "people" && x.section !== "ask").map(x => clip(x.text, 600)));
+  // ❓ שאלה לקהילה השבוע (10.11.2026, מהסקר: "בקשה ממוקדת" ו"לתת ולקבל"): section "ask" ב-weekly-notes.json. עונים במייל חוזר.
+  add("ask", "❓ שאלה לקהילה השבוע", [...myNotes.filter(x => x.section === "ask").map(x => clip(x.text, 600)), ...(myNotes.some(x => x.section === "ask") ? ["אפשר לענות במייל חוזר להודעה הזו, בשניים-שלושה משפטים. התשובות יופיעו בעדכון הבא, עם קרדיט."] : [])]);
 
   // מצטרפים השבוע (8.11.2026): גם מי שנפתח לו כרטיס בנבחרת וגם מי ששלח/ה בקשת הצטרפות (עוד בלי כרטיס), עם המוסד.
   const seenKey = new Set<string>();
@@ -137,6 +139,17 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
       add("kikar", "🏛 כיכר הקהילה: שיח מקצועי לשיתוף ידע והעברתו לשדה", kl, ["לכיכר הקהילה", `${site}/kikar`]);
     }
   } catch { /* הכיכר לא זמינה: ממשיכים בלי המדור */ }
+
+  // 🌾 מהשטח (10.11.2026): מקרים ובעיות שפורסמו השבוע, והבעיה שקיבלה הכי הרבה קולות.
+  try {
+    const fieldRows = (await listPrefix("field/")).filter((x: any) => x?.status === "published");
+    const fresh = fieldRows.filter((x: any) => String(x.updatedAt || x.createdAt || "") >= since);
+    const top = fieldRows.filter((x: any) => x.kind === "problem").sort((a: any, b: any) => (b.voters || []).length - (a.voters || []).length)[0];
+    add("field", "🌾 מהשטח: מקרים ובעיות", [
+      ...fresh.slice(0, 5).map((x: any) => `${x.kind === "case" ? "מקרה" : "בעיה"}: ${clip(x.title, 120)}${x.setting ? ` (${clip(x.setting, 40)})` : ""}`),
+      ...(top && (top.voters || []).length ? [`הבעיה שקיבלה הכי הרבה קולות: ${clip(top.title, 120)} (${(top.voters || []).length})`] : []),
+    ], ["למקרים ולבעיות מהשטח", `${site}/field`]);
+  } catch { /* ממשיכים בלי המדור */ }
 
   const albums = gallery.filter(isNew).filter(g => g.active !== false);
   add("gallery", "📷 בגלריה", albums.slice(0, 4).map(g => clip(g.title, 100)), ["לגלריה", `${site}/gallery`]);
@@ -191,7 +204,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   guides.forEach((g, i) => S.splice((changed.length ? 3 : 2) + i, 0, { key: "guide", title: clip(g.title, 120), lines: [...pic(g), ...g.lines.slice(0, 10).map(x => clip(x, 400))] }));
 
   // סדר המדורים (8.11.2026): מה שהקהילה צריכה לראות קודם, ולא לפי סדר החישוב.
-  const ORDER = ["notes", "people", "research", "stats", "kikar", "site", "guide", "board", "collab", "calls", "events", "library", "gallery"];
+  const ORDER = ["notes", "ask", "people", "research", "stats", "kikar", "field", "site", "guide", "board", "collab", "calls", "events", "library", "gallery"];
   const rank = (k: string) => { const i = ORDER.indexOf(k); return i < 0 ? ORDER.length : i; };
   S.splice(0, S.length, ...S.map((s, i) => ({ s, i })).sort((a, b) => rank(a.s.key) - rank(b.s.key) || a.i - b.i).map(x => x.s));
   const count = S.filter(s => s.key !== "research" && s.key !== "stats" && s.key !== "guide").reduce((n, s) => n + s.lines.length, 0) + (fresh ? (rw?.highlights.length || 0) : 0);

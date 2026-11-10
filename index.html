@@ -1086,7 +1086,7 @@ section{padding:58px 0!important}
   border-color:rgba(64,104,124,.24)!important;
   color:#244b61!important;
 }
-#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar,#journals{display:none!important}
+#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar,#journals,#field{display:none!important}
 html[data-page="now"] #now,
 html[data-page="match"] #match,
 html[data-page="gallery"] #gallery,
@@ -1099,11 +1099,13 @@ html[data-page="conferences"] #resources,
 html[data-page="grants"] #resources,
 html[data-page="lectures"] #resources,
 html[data-page="research-tools"] #resources,
+html[data-page="measures"] #resources,
 html[data-page="policy"] #resources,
 html[data-page="professional"] #resources{display:block!important}
 html[data-page="compass"] #compass{display:block!important}
 html[data-page="kikar"] #kikar{display:block!important}
 html[data-page="journals"] #journals{display:block!important}
+html[data-page="field"] #field{display:block!important}
 html[data-resource-page="1"] #resources .topics{display:none!important}
 html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
 html[data-resource-page="1"] #resources .resource-area{
@@ -2335,6 +2337,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
     <a class="site-tab" data-route="journals" href="/journals">🔎 איתור כתב עת</a>
+    <a class="site-tab" data-route="field" href="/field">🌾 מהשטח</a>
     <!-- 5.11.2026: נבט ואריאדנה מוסתרים עד שיוחלט איך משלמים על השימוש בהם. להחזרה: להסיר את hidden. -->
     <a class="site-tab" data-route="apps" href="/apps" hidden>🌱 יישומים</a>
     <a class="site-tab" data-route="tasks" href="/tasks" hidden>🧵 אֲרִיאַדְנֶה</a>
@@ -2391,6 +2394,52 @@ body:has(.feedback-modal.open){
   </div>
   <p class="jf-note">ההמלצות הן נקודת פתיחה. לפני הגשה כדאי לבדוק באתר כתב העת את ההנחיות ואת העלויות, ובמוסד שלכם את ההכרה בו לצורכי קידום.</p>
 </div></section>
+<section id="field" aria-labelledby="fdTitle"><div class="fd-wrap">
+  <header class="fd-head">
+    <div>
+      <span class="fd-pill">מקרים ובעיות מהשטח</span>
+      <h1 id="fdTitle">🌾 מהשטח</h1>
+      <p class="fd-lead">מה שקורה בבתי הספר, בגנים וברשויות, במילים של מי שנמצאים שם. <b>בעיות</b> שמעסיקות אתכם, ו<b>מקרים</b> שכדאי ללמוד מהם: מה תוכנן, מה קרה, למה, ומה נעשה בפעם הבאה. כל אחד ואחת יכולים לשתף ולהצביע. הבעיות שקיבלו הכי הרבה קולות מוצגות ראשונות, ומהן יכולות לצמוח יוזמות מחקר.</p>
+    </div>
+    <button type="button" class="fd-new" data-fd="new">➕ שיתוף בעיה או מקרה</button>
+  </header>
+  <form class="fd-form" id="fdForm" hidden novalidate>
+    <h2>שיתוף מהשטח</h2>
+    <fieldset class="fd-kind"><legend>מה רוצים לשתף?</legend>
+      <label><input type="radio" name="kind" value="problem" checked> 🧩 בעיה שמעסיקה אותנו</label>
+      <label><input type="radio" name="kind" value="case"> 📝 מקרה מהשטח (תחקיר אחרי פעולה, כ-15 דקות)</label>
+    </fieldset>
+    <label class="wide">כותרת קצרה*<input name="title" dir="auto" maxlength="200" placeholder="למשל: איך שומרים על קשר עם תלמידים מפונים"></label>
+    <label>התפקיד שלי<select name="role"><option value="">בחירה</option></select></label>
+    <label>איפה זה קורה<select name="setting"><option value="">בחירה</option></select></label>
+    <label class="wide">מגזר, אזור או סוג יישוב (רשות)<input name="sector" dir="auto" maxlength="80" placeholder="למשל: יישוב בצפון, חינוך ערבי, מועצה אזורית"></label>
+    <div class="wide fd-parts" data-for="problem">
+      <label>מה הבעיה?*<textarea name="p_problem" rows="4" dir="auto"></textarea></label>
+      <label>למי היא מפריעה, ומתי?<textarea name="p_who" rows="2" dir="auto"></textarea></label>
+      <label>מה כבר ניסיתם?<textarea name="p_tried" rows="2" dir="auto"></textarea></label>
+    </div>
+    <div class="wide fd-parts" data-for="case" hidden>
+      <label>מה תוכנן?*<textarea name="p_planned" rows="3" dir="auto"></textarea></label>
+      <label>מה קרה בפועל?*<textarea name="p_happened" rows="3" dir="auto"></textarea></label>
+      <label>למה? מה השפיע על מה שקרה?<textarea name="p_why" rows="3" dir="auto"></textarea></label>
+      <label>מה נעשה בפעם הבאה?<textarea name="p_next" rows="3" dir="auto"></textarea></label>
+    </div>
+    <label>שם (רשות)<input name="name" dir="auto" maxlength="160"></label>
+    <label>מייל (רשות)<input name="email" type="email" dir="ltr" maxlength="240"></label>
+    <p class="wide fd-note">השם והמייל לא מוצגים באתר. הם רק כדי שנוכל לחזור אליכם בשאלה.</p>
+    <input name="website" tabindex="-1" autocomplete="off" class="fd-hp" aria-hidden="true">
+    <label class="wide fd-consent"><input type="checkbox" name="consent"> בדקתי שאין בטקסט פרטים מזהים: שמות של אנשים, של בתי ספר או של ילדים*</label>
+    <div class="wide fd-actions"><button type="submit" class="fd-send">שליחה</button><button type="button" data-fd="cancel">ביטול</button><span class="fd-status" aria-live="polite"></span></div>
+    <p class="wide fd-note">מה ששולחים מתפרסם אחרי בדיקה של מנהלת האתר.</p>
+  </form>
+  <div class="fd-bar">
+    <div class="fd-filters" role="group" aria-label="סינון"><button type="button" class="on" data-ff="">הכול</button><button type="button" data-ff="problem">🧩 בעיות</button><button type="button" data-ff="case">📝 מקרים</button></div>
+    <label class="fd-sort">מיון<select id="fdSort"><option value="votes">הכי הרבה קולות</option><option value="new">החדשים קודם</option></select></label>
+  </div>
+  <div id="fdAdmin"></div>
+  <div id="fdList" class="fd-list"><p class="muted">טוען…</p></div>
+  <p class="fd-foot">בעיה שקיבלה הרבה קולות יכולה להפוך ליוזמת מחקר. אפשר לפתוח יוזמה בעמוד <a href="/match">שיתופי פעולה</a>.</p>
+</div></section>
 <section id="match" class="match"><div class="wrap">
 <div class="section-head"><div><h2>שיתופי פעולה</h2></div></div>
 </div></section>
@@ -2405,6 +2454,7 @@ body:has(.feedback-modal.open){
   <p>הקהילה פעילה כשחברות וחברים לוקחים על עצמם תפקיד, קטן או גדול. בוחרים תפקיד, לוחצים "אני רוצה", והפנייה מגיעה להנהלת הקהילה.</p></div></div>
   <div class="roles-grid" id="rolesGrid"></div>
 </section>
+<div id="expertiseBox" class="expertise-box"><label for="expertiseQ">🔎 מי בקהילה פרסמו על…</label><input id="expertiseQ" type="search" dir="auto" placeholder="למשל: resilience teachers, חוסן מורים, war"><div id="expertiseOut" aria-live="polite"></div><small>לפי הפרסומים ב-ORCID של חברות וחברים שבחרו לחבר אותו לכרטיס. אפשר לחבר ב"👤 הכרטיס שלי".</small></div>
 <input class="search" id="search" placeholder="חיפוש לפי שם, מוסד או תחום..." oninput="filterPeople()"><div class="people" id="peopleGrid">
 <div class="person" data-search="ד״ר איבנה רטנר האקדמית גורדון / משרד החינוך אוריינות מדיה קולנוע ומדיה PISA 2029 מנהלת תחום (מפמ״ר) קולנוע ומדיה באגף אמנויות, משרד החינוך; מרצה ורכזת פדגוגית בחוג להוראת תקשורת ומדיה באקדמית גורדון. עוסקת באוריינות מדיה, אזרחות דיגיטלית, דיאלוג דרך קולנוע ומדיה, חינוך רב־תרבותי ובינה מלאכותית בחינוך; מובילה חשיבה לקראת PISA 2029. מייל: ratnere@gmail.com • טלפון: 0507156711" data-name="ד״ר איבנה רטנר" data-inst="האקדמית גורדון / משרד החינוך" data-detail="מנהלת תחום (מפמ״ר) קולנוע ומדיה באגף אמנויות, משרד החינוך; מרצה ורכזת פדגוגית בחוג להוראת תקשורת ומדיה באקדמית גורדון. עוסקת באוריינות מדיה, אזרחות דיגיטלית, דיאלוג דרך קולנוע ומדיה, חינוך רב־תרבותי ובינה מלאכותית בחינוך; מובילה חשיבה לקראת PISA 2029. מייל: ratnere@gmail.com • טלפון: 0507156711" onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר איבנה רטנר</h3><div class="muted">האקדמית גורדון / משרד החינוך</div></div>
 <div class="person" data-search="ד״ר שרי גנון-שילון האקדמית אחוה חדשנות טכנולוגית ניהול בתי ספר תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך." data-name="ד״ר שרי גנון-שילון" data-inst="האקדמית אחוה" data-detail="תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך." onclick="showPerson(this.dataset.name,this.dataset.inst,this.dataset.detail)"><h3>ד״ר שרי גנון-שילון</h3><div class="muted">האקדמית אחוה</div></div>
@@ -2850,6 +2900,7 @@ body:has(.feedback-modal.open){
 <button type="button" class="topic" data-library-category="publications" onclick="showCategory('publications','פרסומים — ספרים ומאמרים')">פרסומים <span>ספרים ומאמרים</span></button>
 <button type="button" class="topic" data-library-category="policy" onclick="showCategory('policy','מסמכי מדיניות')">מסמכי מדיניות</button>
 <button type="button" class="topic" data-library-category="research-tools" onclick="showCategory('research-tools','כלי מחקר')">כלי מחקר</button>
+<button type="button" class="topic" data-library-category="measures" onclick="showCategory('measures','כלי מדידה: שאלונים וסולמות')">כלי מדידה <span>שאלונים וסולמות</span></button>
 </div>
 <div id="resourceArea" class="resource-area" hidden><div class="resource-area-head"><h3 id="resourceAreaTitle"></h3><button type="button" onclick="closeCategory()">×</button></div><div id="resourceCards" class="resource-cards"></div></div>
 <section class="library-knowledge-section" aria-labelledby="knowledgeStateTitle"><div class="library-knowledge-head"><div><span>עדכון חודשי</span><h3 id="knowledgeStateTitle">מצב הידע</h3></div><p>בכל תחום מתפרסם עדכון שמבחין בין מה שמבוסס היטב, שאלות פתוחות והשאלות החשובות הבאות. התוכן אינו מחליף את המקורות המלאים במאגר.</p></div><div id="knowledgeStateGrid" class="knowledge-state-grid"></div></section>
@@ -4407,13 +4458,14 @@ html[data-page="tasks"] #tasks{display:block!important}
 <script id="library-sections-v1-js">
 /* מקורות מ"חידושים במחקר" ומהמאגר מוצגים גם בארבעת מדורי הספרייה, כל מקור במדור שלו, מהחדש לישן. */
 (function(){
-  const CATS={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
+  const CATS={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר',measures:'כלי מדידה'};
   const practicalIds=()=>new Set((typeof researchPracticalSources!=='undefined'?researchPracticalSources:[]).map(x=>'research-'+x.id));
   function sectionOf(x,practical){
     if(x.section&&CATS[x.section])return x.section;
     const t=String(x.type||'');
     if(t==='מדיניות'||t==='דוח')return 'policy';
     if(practical.has(x.id))return 'professional';
+    if(t==='שאלון'||t==='סולם'||t==='כלי מדידה')return 'measures';
     if(t==='כלי')return 'research-tools';
     if(t==='מאמר'||t==='ספר'||t==='כנס')return 'publications';
     return 'professional';
@@ -4580,7 +4632,7 @@ html[data-page="tasks"] #tasks{display:block!important}
       card.appendChild(f);const ta=f.querySelector('textarea');ta.focus();const pos=ta.value.indexOf('\n\n')+2;ta.setSelectionRange(pos,pos);
     }
     // מקור שהוצע: טופס פרסום ממולא מראש, שאפשר להשלים בו מחברים, שנה ומקור.
-    const SRC_CATS=[['research-institute','חידושי מחקר / מכוני מחקר מובילים'],['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['research-org','חידושי מחקר / חוסן ארגוני'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר']];
+    const SRC_CATS=[['research-institute','חידושי מחקר / מכוני מחקר מובילים'],['research-preparedness','חידושי מחקר / מוכנות'],['research-resilience','חידושי מחקר / חוסן נפשי'],['research-continuity','חידושי מחקר / רציפות למידה'],['research-teachers','חידושי מחקר / צוותי חינוך ומנהיגות'],['research-tech','חידושי מחקר / טכנולוגיה AI וסימולציה בחירום'],['research-org','חידושי מחקר / חוסן ארגוני'],['publications','ספרייה / פרסומים — ספרים ומאמרים'],['professional','ספרייה / משאבים'],['policy','ספרייה / מסמכי מדיניות'],['research-tools','ספרייה / כלי מחקר'],['measures','ספרייה / כלי מדידה (שאלונים וסולמות)']];
     const SECTION_CAT={'מוכנות':'research-preparedness','חוסן נפשי':'research-resilience','רציפות למידה':'research-continuity','צוותי חינוך ומנהיגות':'research-teachers','טכנולוגיה AI וסימולציה בחירום':'research-tech','חוסן ארגוני':'research-org','מכוני מחקר מובילים':'research-institute'};
     function sourceFields(r){
       if(r.data)return r.data;
@@ -5609,7 +5661,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         ${lead()?`<select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>`:`<span class="ch-badge gray">${h(t.statusLabel)}</span>`}
         ${t.locked?'<span class="ch-badge gray" title="אין הצטרפות חדשה. הדיון והחומרים נפתחים רק עם קוד הצוות.">🔒 מרחב סגור לצוות</span>':''}
         ${isMember()||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}${t.locked?'':'<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>'}${lead()?`<button type="button" class="ch-btn small" data-w="go-lock">${t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות'}</button>`:''}${isMember()?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="compass" title="חיפוש מקורות במאגר הקהילה ובמאגרים בעולם, עם דו״ח מסכם">🧭 מצפן המחקר</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
-        <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
+        <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['credit','📜 קרדיט ופרסום']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
     }
     // ---------- מעקב שינויים והערות (6.11.2026) ----------
     // השוואה ברמת מילים: מקצצים התחלה וסוף משותפים, ובאמצע מחשבים LCS (אם האמצע לא ענק).
@@ -5712,6 +5764,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       }
       if(ws.tab==='talk')return `<div class="ch-rows">${t.messages.length?t.messages.map(x=>`<div class="ch-msg"><b>${h(x.name)}</b> <small>${new Date(x.at).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'})}</small>${x.text?`<p dir="auto">${h(x.text)}</p>`:''}${attList(x.attachments)}</div>`).join(''):'<p class="ch-empty">כאן מתייעצות, מחליטות ומעדכנות.</p>'}</div>
         <form class="ch-inline" data-form="message" data-full style="grid-template-columns:1fr auto"><textarea name="text" rows="2" dir="auto" placeholder="הודעה לקבוצה"></textarea><button class="ch-btn small">שליחה</button><div style="grid-column:1/-1">${attachRow('msg')}</div></form>`;
+      if(ws.tab==='credit')return window.hosenCreditHtml?window.hosenCreditHtml(t,h):'';
       if(ws.tab==='team'){
         const invite=(c?.matches||[]).filter(x=>!t.members.some(mm=>mm.name===x.name));
         return `<h4 style="margin:0 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong>${lead()||x.name===me()?`<input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקר/ת ראשי/ת, שיטות)" dir="auto">`:`<span class="grow" dir="auto">${h(x.role||'')}</span>`}${x.name===t.lead.name?'<span class="ch-tag">מוביל/ה</span>':lead()?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:''}</div>`).join('')}</div>
@@ -5886,6 +5939,12 @@ html[data-page="calls"] #resourceArea{display:none!important}
         }catch(err){msg(err.message,'err')}
         return;
       }
+      if(kind==='credit'){
+        const roles={};f.querySelectorAll('[data-cr]:checked').forEach(i=>{(roles[i.dataset.cr]=roles[i.dataset.cr]||[]).push(i.value)});
+        const publish=e.submitter?.dataset.publish==='1';
+        if(publish&&!confirm('לשלוח למנהלת האתר בקשה לפרסם את התוצר ב-Zenodo? ההעלאה נעשית ידנית, והיא תיצור קשר עם הצוות.'))return;
+        try{await act('credit',{product:d.product||'',kind:d.kind||'',license:d.license||'CC-BY-4.0',roles,publish});render(true);msg(publish?'✓ הבקשה נשלחה. מנהלת האתר תיצור קשר להעלאה ל-Zenodo.':'✓ הקרדיט נשמר.','ok')}catch(err){msg(err.message,'err')}
+        return}
       if(kind==='title'){const title=String(d.title||'').trim();if(!title)return msg('הכותרת לא יכולה להיות ריקה.','err');
         try{await act('details',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
       // צירוף קבצים וקישורים: לסעיף, להודעה בדיון, וללשונית הקישורים.
@@ -6177,9 +6236,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
     <p class="muted">ההודעה תופיע בחלון הקהילה עד למועד שתגדירו.</p>
     <div class="board-form-grid">
       <label id="boardCodeLabel">קוד פרסום*<input id="boardCode" type="password" inputmode="numeric" autocomplete="off" placeholder="קוד קהילה"></label>
-      <label>תואר אקדמי*<input id="boardDegree" placeholder="ד״ר / פרופ׳ / MA..."></label>
-      <label>שם מלא*<input id="boardName"></label>
-      <label>מוסד אקדמי*<input id="boardInstitution"></label>
+      <label>תואר אקדמי<input id="boardDegree" placeholder="ד״ר / פרופ׳ / MA..."></label>
+      <label>שם מלא<input id="boardName" placeholder="בניהול אפשר להשאיר ריק"></label>
+      <label>מוסד אקדמי<input id="boardInstitution" placeholder="נדרש כשכותבים שם"></label>
       <label class="wide">כותרת*<input id="boardTitle" dir="auto" placeholder="כותרת ההודעה"></label>
       <label class="wide">הודעה*<textarea id="boardMessage" rows="6" dir="auto" placeholder="אפשר לכתוב טקסט ולהדביק קישורים מלאים (https://...)"></textarea></label>
       <label>הצגה עד <span class="field-hint">אופציונלי — השארת השדה ריק תשאיר את ההודעה עד למחיקה יזומה.</span><input id="boardExpires" type="datetime-local"></label>
@@ -6259,6 +6318,15 @@ html[data-page="calls"] #resourceArea{display:none!important}
     <label id="resAuthorsWrap" hidden>מחברים<input id="resAuthors" dir="auto"></label>
     <label id="resYearWrap" hidden>שנת פרסום<input id="resYear" inputmode="numeric" placeholder="2026"></label>
     <label id="resSourceWrap" hidden>כתב עת / הוצאה / מקור<input id="resSource" dir="auto"></label>
+    <div id="measureFields" class="wide measure-fields" hidden>
+      <p class="admin-note">כלי מדידה: המחברים, שנת הפרסום ופרסום התיקוף נכתבים בשדות שלמעלה. בשדה "תיאור" כותבים מה הכלי מודד.</p>
+      <div class="measure-langs"><span>שפות שבהן הכלי קיים</span><label><input type="checkbox" data-mlang="he"> עברית</label><label><input type="checkbox" data-mlang="ar"> ערבית</label><label><input type="checkbox" data-mlang="en"> אנגלית</label></div>
+      <label>אוכלוסייה<input id="mPop" dir="auto" placeholder="למשל: מורים ומורות, תלמידים בכיתות ז-ט, הורים"></label>
+      <label>מידע על התיקוף<textarea id="mValid" rows="2" dir="auto" placeholder="למשל: אלפא של קרונבך 0.87; תוקף מבנה במדגם של 600 מורים בישראל"></textarea></label>
+      <label>מספר פריטים ומשך המילוי<input id="mItems" dir="auto" placeholder="למשל: 12 פריטים, כ-5 דקות"></label>
+      <label>מי בקהילה השתמשו בו<input id="mUsed" dir="auto" placeholder="שמות ומחקרים"></label>
+      <label>תנאי שימוש<select id="mAccess"><option value="">לא ידוע</option><option value="free">חופשי לשימוש במחקר</option><option value="permission">באישור המחברים</option><option value="paid">בתשלום</option></select></label>
+    </div>
     <label id="resWhyWrap" class="wide" hidden>למה זה חשוב לקהילה?<textarea id="resWhy" rows="2" dir="auto"></textarea></label>
     <label>תאריך תחילת הצגה
       <div class="resource-date-parts" dir="ltr" aria-label="תאריך תחילת הצגה">
@@ -6475,6 +6543,7 @@ const catLabels={
   publications:'ספריה / פרסומים',
   policy:'ספריה / מסמכי מדיניות',
   'research-tools':'ספריה / כלי מחקר',
+  measures:'ספריה / כלי מדידה',
   'research-preparedness':'מחקרים / מוכנות',
   'research-resilience':'מחקרים / חוסן נפשי',
   'research-continuity':'מחקרים / רציפות למידה',
@@ -6486,7 +6555,7 @@ const catLabels={
   'active-project':'מה שקורה עכשיו / פרויקט פעיל'
 };
 const resourceDestinationSections={
-  library:[['professional','משאבים'],['publications','פרסומים — ספרים ומאמרים'],['policy','מסמכי מדיניות'],['research-tools','כלי מחקר']],
+  library:[['professional','משאבים'],['publications','פרסומים — ספרים ומאמרים'],['policy','מסמכי מדיניות'],['research-tools','כלי מחקר'],['measures','כלי מדידה: שאלונים וסולמות']],
   activity:[['community-activity','פעילות חדשה בקהילה']],
   project:[['active-project','פרויקט פעיל']],
   research:[['research-preparedness','מוכנות'],['research-resilience','חוסן נפשי'],['research-continuity','רציפות למידה'],['research-teachers','צוותי חינוך ומנהיגות'],['research-tech','טכנולוגיה AI וסימולציה בחירום'],['research-org','חוסן ארגוני']],
@@ -6510,8 +6579,10 @@ function updateResourceSectionOptions(preferred){
 function updateResourceMetadataFields(){
   const cat=document.getElementById('resCategory')?.value||'';
   const isResearch=cat.startsWith('research-');
-  const isPublication=cat==='publications';
+  const isPublication=cat==='publications'||cat==='measures';
   ['resAuthorsWrap','resYearWrap','resSourceWrap'].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=!(isResearch||isPublication)});
+  const mf=document.getElementById('measureFields');if(mf)mf.hidden=cat!=='measures';
+  const srcL=document.getElementById('resSourceWrap');if(srcL&&srcL.firstChild&&srcL.firstChild.nodeType===3)srcL.firstChild.textContent=cat==='measures'?'פרסום התיקוף (מאמר, כתב עת)':'כתב עת / הוצאה / מקור';
   const why=document.getElementById('resWhyWrap');if(why)why.hidden=!isResearch;
 }
 function todayLocalISO(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
@@ -6593,14 +6664,14 @@ function closeAdmin(){document.getElementById('adminModal').style.display='none'
 function showAdminTab(tab){adminResources.hidden=tab!=='resources';if(window.adminLibrary)adminLibrary.hidden=true;tabRes.classList.toggle('active',tab==='resources');if(tab==='resources'&&currentAccessRole==='admin')loadAdminResources()}
 async function uploadInput(input){const f=input.files&&input.files[0];if(!f)return null;const fd=new FormData();fd.append('file',f);const token=activeAccessToken();const r=await fetch('/api/upload',{method:'POST',headers:token?{Authorization:'Bearer '+token}:{},body:fd});const j=await r.json();if(!r.ok)throw new Error(j.message||'העלאה נכשלה');return j}
 async function uploadResourceGallery(){const input=document.getElementById('resGalleryFiles');const files=[...(input?.files||[])];const out=[];for(const f of files){if(!String(f.type||'').startsWith('image/'))throw new Error('בגלריה ניתן לצרף תמונות בלבד');const fd=new FormData();fd.append('file',f);const token=activeAccessToken();const r=await fetch('/api/upload',{method:'POST',headers:token?{Authorization:'Bearer '+token}:{},body:fd});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||'העלאת התמונה '+f.name+' נכשלה');out.push({key:j.key,name:j.name||f.name,type:f.type})}return out}
-async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const addedGallery=await uploadResourceGallery();const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),authors:resAuthors.value.trim(),year:resYear.value.trim(),source:resSource.value.trim(),whyImportant:resWhy.value.trim(),links:linksGet('resLinks'),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||'',gallery:[...(old.gallery||[]).map(({url,...m})=>m),...addedGallery]};if(!body.title)return alert('יש להזין כותרת');if(body.type==='image-title'&&!(thumb?.key||old.thumbnailKey))return alert('יש להעלות תמונה');if(body.category.startsWith('research-')&&(!body.authors||!body.year||!body.source))return alert('במחקר חדש יש להזין מחברים, שנה ומקור');const method=currentAccessRole==='admin'&&body.id?'PUT':'POST';const r=await fetch('/api/resources',{method,headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error==='forbidden_category'?'אין הרשאה להעלות חומר למדור הזה':(j.message||'שמירה נכשלה'))}clearResourceForm();if(currentAccessRole==='admin')await loadAdminResources();else alert('החומר פורסם בהצלחה.');await loadNowCards();if(document.documentElement.dataset.page==='articles'&&typeof renderResearchWorld==='function')await renderResearchWorld()}catch(e){alert(e.message||'שמירה נכשלה')}}
-function clearResourceForm(){linksSet('resLinks',[]);resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';resAuthors.value='';resYear.value='';resSource.value='';resWhy.value='';resDestination.value='library';updateResourceSectionOptions();setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value='';const g=document.getElementById('resGalleryFiles');if(g)g.value='';const gc=document.getElementById('resGalleryCount');if(gc)gc.textContent=''}
+async function saveResource(){try{syncResourceDates();let file=null,thumb=null;if(resFile.files[0])file=await uploadInput(resFile);if(resThumb.files[0])thumb=await uploadInput(resThumb);const addedGallery=await uploadResourceGallery();const old=adminResourcesCache.find(x=>x.id===resId.value)||{};const body={id:resId.value||undefined,title:resTitle.value.trim(),description:resDescription.value.trim(),category:resCategory.value,type:resType.value,url:resUrl.value.trim(),authors:resAuthors.value.trim(),year:resYear.value.trim(),source:resSource.value.trim(),whyImportant:resWhy.value.trim(),measure:body_measure(),links:linksGet('resLinks'),startDate:resStart.value,endDate:resEnd.value,active:resActive.checked,fileKey:file?.key||old.fileKey||'',fileName:file?.name||old.fileName||'',thumbnailKey:thumb?.key||old.thumbnailKey||'',thumbnailName:thumb?.name||old.thumbnailName||'',gallery:[...(old.gallery||[]).map(({url,...m})=>m),...addedGallery]};if(!body.title)return alert('יש להזין כותרת');if(body.type==='image-title'&&!(thumb?.key||old.thumbnailKey))return alert('יש להעלות תמונה');if(body.category.startsWith('research-')&&(!body.authors||!body.year||!body.source))return alert('במחקר חדש יש להזין מחברים, שנה ומקור');const method=currentAccessRole==='admin'&&body.id?'PUT':'POST';const r=await fetch('/api/resources',{method,headers:apiHeaders(),body:JSON.stringify(body)});if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.error==='forbidden_category'?'אין הרשאה להעלות חומר למדור הזה':(j.message||'שמירה נכשלה'))}clearResourceForm();if(currentAccessRole==='admin')await loadAdminResources();else alert('החומר פורסם בהצלחה.');await loadNowCards();if(document.documentElement.dataset.page==='articles'&&typeof renderResearchWorld==='function')await renderResearchWorld()}catch(e){alert(e.message||'שמירה נכשלה')}}
+function clearResourceForm(){linksSet('resLinks',[]);resId.value='';resTitle.value='';resDescription.value='';resUrl.value='';resAuthors.value='';resYear.value='';resSource.value='';resWhy.value='';measureSet({});resDestination.value='library';updateResourceSectionOptions();setResourceDateParts('resStart',todayLocalISO());setResourceDateParts('resEnd','');resActive.checked=true;resFile.value='';resThumb.value='';const g=document.getElementById('resGalleryFiles');if(g)g.value='';const gc=document.getElementById('resGalleryCount');if(gc)gc.textContent=''}
 async function loadAdminResources(){const r=await fetch('/api/resources?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminResourcesCache=await r.json();adminResourceList.innerHTML=adminResourcesCache.length?adminResourcesCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${esc(catLabels[x.category]||x.category)} · ${esc(x.type||'')} ${x.endDate?'· עד '+esc(formatResourceDate(x.endDate)):''} ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editResource('${x.id}')">עריכה</button><button class="danger" onclick="deleteResource('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין משאבים עדיין.</p>'}
-function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;linksSet('resLinks',x.links||[]);resId.value=x.id;resDestination.value=resourceDestinationForCategory(x.category);updateResourceSectionOptions(x.category);resTitle.value=x.title||'';resDescription.value=x.description||'';resType.value=x.type||'text';resUrl.value=x.url||'';resAuthors.value=x.authors||'';resYear.value=x.year||'';resSource.value=x.source||'';resWhy.value=x.whyImportant||'';setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;updateResourceMetadataFields();document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
+function editResource(id){const x=adminResourcesCache.find(a=>a.id===id);if(!x)return;linksSet('resLinks',x.links||[]);resId.value=x.id;resDestination.value=resourceDestinationForCategory(x.category);updateResourceSectionOptions(x.category);resTitle.value=x.title||'';resDescription.value=x.description||'';resType.value=x.type||'text';resUrl.value=x.url||'';resAuthors.value=x.authors||'';resYear.value=x.year||'';resSource.value=x.source||'';resWhy.value=x.whyImportant||'';measureSet(x.measure||{});setResourceDateParts('resStart',x.startDate||'');setResourceDateParts('resEnd',x.endDate||'');resActive.checked=x.active!==false;updateResourceMetadataFields();document.querySelector('#adminResources').scrollIntoView({behavior:'smooth'})}
 async function deleteResource(id){if(!confirm('למחוק את המשאב?'))return;await fetch('/api/resources',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminResources();await refreshPublicResources()}
 async function showCategory(cat,label){currentCategory=cat;resourceArea.hidden=false;resourceAreaTitle.textContent=label;document.querySelectorAll('[data-library-category]').forEach(b=>b.classList.toggle('active',b.dataset.libraryCategory===cat));const r=await fetch('/api/resources?category='+encodeURIComponent(cat));const rows=await r.json();renderResourceCards(rows);resourceArea.scrollIntoView({behavior:'smooth',block:'nearest'})}
 function closeCategory(){resourceArea.hidden=true;currentCategory=''}
-function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4 dir="auto" class="auto-dir">${esc(x.title)}</h4>${x.description?`<p dir="auto" class="auto-dir">${esc(x.description)}</p>`:''}${x.endDate?`<p><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
+function renderResourceCards(rows){resourceCards.innerHTML=rows.length?rows.map(x=>`<article class="resource-card">${x.thumbnailUrl?`<img src="${escAttr(x.thumbnailUrl)}" alt="">`:''}<h4 dir="auto" class="auto-dir">${esc(x.title)}</h4>${x.description?`<p dir="auto" class="auto-dir">${esc(x.description)}</p>`:''}${measureHtml(x)}${x.endDate?`<p><b>עד ${esc(formatResourceDate(x.endDate))}</b></p>`:''}${resourceLink(x)}</article>`).join(''):'<p class="muted">אין כרגע פריטים להצגה.</p>'}
 // קישורים מצורפים (כמה קישורים לכל פריט): עורך בטפסים ותצוגה בכרטיסים.
 function linksRowHtml(l){l=l||{};return `<div class="lk-row"><input class="lk-label" dir="auto" placeholder="כותרת הקישור (לא חובה)" value="${escAttr(l.label||'')}"><input class="lk-url" dir="ltr" inputmode="url" placeholder="https://..." value="${escAttr(l.url||'')}"><button type="button" class="lk-del" aria-label="הסרת הקישור">×</button></div>`}
 function linksSet(id,list){const box=document.getElementById(id);if(!box)return;const rows=Array.isArray(list)&&list.length?list:[{}];box.innerHTML=`<div class="lk-list">${rows.map(linksRowHtml).join('')}</div><button type="button" class="lk-add">＋ הוספת קישור</button>`}
@@ -6758,7 +6829,7 @@ function renderBoardMessage(){
   const files=(x.attachments||[]).filter(a=>!boardAttachmentIsImage(a)).map(a=>`<a href="${escAttr(a.url)}" target="_blank" rel="noopener">${attachmentIcon(a)} ${esc(a.name)}</a>`).join('');
   const cover=x.coverAttachment?.url?`<div class="board-message-cover"><img src="${escAttr(x.coverAttachment.url)}" alt=""></div>`:'';
   const gallery=boardAttachmentGallery(x);
-  feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div><div class="board-message-inst">${esc(x.institution)}</div><div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${linksHtml(x.links)}${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;
+  feed.innerHTML=`<article class="board-message-card">${cover}${x.title?`<h3 class="board-message-title" dir="auto">${esc(x.title)}</h3>`:''}${x.degree||x.name?`<div class="board-message-author">${esc(x.degree)} ${esc(x.name)}</div>`:''}${x.institution?`<div class="board-message-inst">${esc(x.institution)}</div>`:''}<div class="board-message-date">${heDateTime(x.createdAt)}</div><div class="board-message-text">${linkifyText(x.message)}</div>${linksHtml(x.links)}${gallery}${files?`<div class="board-attachments">${files}</div>`:''}</article>`;
   counter.textContent=`${boardIndex+1} / ${boardMessages.length}`;
   boardRestartImageTimer();
   requestAnimationFrame(()=>{
@@ -6784,7 +6855,7 @@ async function boardUploadFile(f,code,asEditor=false){const fd=new FormData();if
 async function submitBoardMessage(){
  const editing=!!boardEditingId,authenticatedUpload=!editing&&!!activeAccessToken()&&(currentAccessRole==='uploader'||currentAccessRole==='admin'),code=boardCode.value.trim(),degree=boardDegree.value.trim(),name=boardName.value.trim(),institution=boardInstitution.value.trim(),title=boardTitle.value.trim(),message=boardMessage.value.trim(),expiresAt=boardExpires.value,coverFile=boardCover.files?.[0]||null;
  const missing=[];
- if(!editing&&!authenticatedUpload&&!code)missing.push('קוד פרסום');if(!degree)missing.push('תואר אקדמי');if(!name)missing.push('שם מלא');if(!institution)missing.push('מוסד אקדמי');if(!title)missing.push('כותרת');if(!message)missing.push('הודעה');
+ if(!editing&&!authenticatedUpload&&!code)missing.push('קוד פרסום');const anonOK=editing||authenticatedUpload;if(!anonOK){if(!degree)missing.push('תואר אקדמי');if(!name)missing.push('שם מלא')}if((name||!anonOK)&&!institution)missing.push('מוסד אקדמי');if(!title)missing.push('כותרת');if(!message)missing.push('הודעה');
  if(missing.length){setBoardStatus('חסרים שדות חובה: '+missing.join(', ')+'.','error');return}
  const exp=expiresAt?new Date(expiresAt):null;
  if(exp&&(!Number.isFinite(exp.getTime())||exp.getTime()<=Date.now())){setBoardStatus('מועד סיום ההצגה חייב להיות בעתיד.','error');return}
@@ -7473,10 +7544,10 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
 <script id="separate-pages-v38-js">
 (function(){
   const labels={calls:'קולות קוראים',conferences:'כנסים',grants:'מענקי מחקר'}; // הרצאות הוסרו (5.11.2026)
-  const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
+  const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר',measures:'כלי מדידה: שאלונים וסולמות'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar','journals']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar','journals','field']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
@@ -7485,7 +7556,7 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   try{const d=new Date().toISOString().slice(0,10),k='hosen_pv_'+resolved,v=localStorage.getItem('hosen_visit_id')||'';if(/^[a-z0-9]{10,32}$/.test(v)&&localStorage.getItem(k)!==d){localStorage.setItem(k,d);setTimeout(()=>fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({v,p:resolved})}).catch(()=>{}),3000)}}catch(e){}
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
   // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
-  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',journals:'איתור כתב עת לפרסום מאמר',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
+  try{const T={field:'מהשטח: מקרים ובעיות',kikar:'כיכר הקהילה · ساحة المجتمع',journals:'איתור כתב עת לפרסום מאמר',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
     if(T[resolved])document.title=T[resolved]+' · '+base;
     const c=document.getElementById('canonicalLink');if(c)c.href='https://hosen-hinuch-herum.netlify.app/'+(resolved==='now'?'':resolved);}catch(e){}
 
@@ -8001,6 +8072,9 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
         ${field('linkedinUrl','LinkedIn (רשות)','dir="ltr" placeholder="https://"')}
         ${field('facebookUrl','Facebook (רשות)','dir="ltr" placeholder="https://"')}
         ${field('instagramUrl','Instagram (רשות)','dir="ltr" placeholder="https://"')}
+        <div class="wide mc-orcid"><strong style="font-size:13px">🔎 ORCID ומפת המומחיות</strong> <span class="nv-status">רשות, רק למי שרוצה. הפרסומים נמשכים מ-ORCID, מופיעים בכרטיס ובחיפוש "מי בקהילה פרסמו על...", ומתעדכנים בכל שמירה. אפשר להסיר בכל רגע.</span>
+          <div class="nv-row" style="align-items:center;margin-top:6px"><input name="orcid" value="${h(d.orcid||'')}" dir="ltr" placeholder="0000-0002-1825-0097" style="max-width:240px"><label style="display:inline-flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" name="orcidShow"${d.orcidShow||!d.orcid?' checked':''}> להציג את הפרסומים שלי באתר</label></div>
+          ${d.orcidCount?`<span class="nv-status">כרגע מוצגים ${d.orcidCount} פרסומים מ-ORCID.</span>`:''}</div>
         <div class="wide"><strong style="font-size:13px">🎯 תחומי העניין שלי</strong> <span class="nv-status">לפיהם נשלחים קולות קוראים, מענקים וכנסים, והסיכום השבועי.</span>${checks(d.themes,d.topics)}</div>
         <div class="wide"><strong style="font-size:13px">✏️ מה אני יכול/ה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד שיתופי פעולה.</span><div class="jt-topics">${kinds}</div>
           <textarea name="offer" rows="3" dir="auto" placeholder="הפעילות, הרעיון או הנושא שאוכל לקדם" style="width:100%;margin-top:8px;box-sizing:border-box">${h(d.offer?.text||'')}</textarea></div>
@@ -8033,13 +8107,14 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
       const btn=f.querySelector('[type=submit]');btn.disabled=true;st.className='nv-status';st.textContent='שומרת…';
       const data={action:'card-save',topics,offer:{kinds:[...f.querySelectorAll('[name=kinds]:checked')].map(i=>i.value),text:v('offer')}};
       ['name','institution','description','email','phone','motto','websiteUrl','linkedinUrl','facebookUrl','instagramUrl'].forEach(k=>data[k]=v(k));
+      data.orcid=v('orcid');data.orcidShow=!!f.elements.orcidShow.checked;data.orcidRefresh=!!data.orcid;
       try{
         if(photoFile){st.textContent='מעלה את התמונה…';const up=await uploadPhoto(photoFile);data.photoKey=up.key;data.photoName=up.name}
         else if(photoRemoved)data.photoKey='';
         st.textContent='שומרת…';
         const j=await post('/api/member',data,{'x-member-token':tok});
         d.photoUrl=j.photoUrl||'';photoFile=null;photoRemoved=false;phInput.value='';if(photoPreview)URL.revokeObjectURL(photoPreview);photoPreview='';drawPhoto();
-        btn.disabled=false;st.className='nv-status ok';st.textContent='✓ הכרטיס נשמר.';if(typeof loadPeople==='function')loadPeople().catch(()=>{})}
+        btn.disabled=false;st.className='nv-status ok';st.textContent='✓ הכרטיס נשמר.'+(j.orcidCount?` נמשכו ${j.orcidCount} פרסומים מ-ORCID.`:(data.orcid&&data.orcidShow?' לא נמצאו פרסומים ציבוריים ב-ORCID, או שהחיבור ל-ORCID לא הצליח כרגע.':''));if(typeof loadPeople==='function')loadPeople().catch(()=>{})}
       catch(err){btn.disabled=false;st.className='nv-status err';st.textContent=err.message}
     });
   }
@@ -9044,4 +9119,179 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 .hc-row{display:flex;gap:12px;align-items:center}.hc-row img{width:150px;height:auto;border-radius:6px;border:1px solid #e0e5e7}
 .icer-project-card[hidden],.sv-card[hidden]{display:none!important}.hc-noimg{display:grid;place-items:center;width:150px;height:62px;border-radius:6px;background:#fff8e6;font-size:28px}
 </style>
+<script id="measures-v1">
+/* ספריית כלי מדידה (10.11.2026, מהסקר: "ספריית כלי מדידה משותפת"): מדור בספרייה לשאלונים ולסולמות בעברית ובערבית */
+function body_measure(){if(document.getElementById('resCategory')?.value!=='measures')return undefined;
+  return{langs:[...document.querySelectorAll('[data-mlang]:checked')].map(i=>i.dataset.mlang),population:mPop.value.trim(),validation:mValid.value.trim(),items:mItems.value.trim(),usedBy:mUsed.value.trim(),access:mAccess.value};}
+function measureSet(m){m=m||{};document.querySelectorAll('[data-mlang]').forEach(i=>i.checked=(m.langs||[]).includes(i.dataset.mlang));
+  if(window.mPop){mPop.value=m.population||'';mValid.value=m.validation||'';mItems.value=m.items||'';mUsed.value=m.usedBy||'';mAccess.value=m.access||'';}}
+function measureHtml(x){
+  if(x.category!=='measures')return '';const m=x.measure||{},e=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const L={he:'עברית',ar:'العربية',en:'English'},A={free:'חופשי לשימוש במחקר',permission:'באישור המחברים',paid:'בתשלום'};
+  const rows=[['שפות',(m.langs||[]).map(l=>L[l]).join(' · ')],['אוכלוסייה',m.population],['פריטים ומשך',m.items],['פיתוח',[x.authors,x.year].filter(Boolean).join(', ')],['תיקוף',m.validation],['פרסום התיקוף',x.source],['מי בקהילה השתמשו',m.usedBy],['תנאי שימוש',A[m.access]]].filter(r=>r[1]);
+  return rows.length?`<dl class="measure-meta">${rows.map(([k,v])=>`<dt>${k}</dt><dd dir="auto">${e(v)}</dd>`).join('')}</dl>`:'';
+}
+</script>
+<style id="measures-v1-css">
+.measure-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;border:1px dashed #9ec3cf;border-radius:8px;padding:10px 12px;background:#f6fbfc}
+.measure-fields .admin-note,.measure-fields .measure-langs{grid-column:1/-1}
+.measure-langs{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}.measure-langs>span{font-weight:700;color:#244b61}.measure-langs label{display:inline-flex;gap:6px;align-items:center;font-weight:400}
+.measure-meta{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0;font-size:13px}.measure-meta dt{color:#5e7581;font-weight:700}.measure-meta dd{margin:0}
+@media(max-width:700px){.measure-fields{grid-template-columns:1fr}}
+</style>
+<script id="orcid-v1">
+/* ORCID ומפת מומחיות, למי שרוצה (10.11.2026, מהסקר) */
+(function(){
+  let ROWS=[];
+  const e=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const works=x=>x&&x.orcidShow&&Array.isArray(x.orcidWorks)?x.orcidWorks:[];
+  const oDetail=window.personDetailText;
+  window.personDetailText=function(x){const w=works(x);let t=oDetail(x);if(w.length)t+=`\n\n📚 פרסומים (מ-ORCID, ${w.length}):\n`+w.slice(0,15).map(a=>'• '+a.t+(a.y?' ('+a.y+')':'')+(a.j?', '+a.j:'')).join('\n')+(w.length>15?`\n…ועוד ${w.length-15}. כל הרשימה: orcid.org/${x.orcid}`:'');return t};
+  const oSearch=window.personSearchText;
+  window.personSearchText=function(x){return oSearch(x)+' '+works(x).map(a=>a.t+' '+a.j).join(' ')};
+  const oLinks=window.personLinksMarkup;
+  window.personLinksMarkup=function(x){let h=oLinks(x);if(x.orcid&&x.orcidShow){const n=works(x).length;const a=`<a class="orcid-link" href="https://orcid.org/${e(x.orcid)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">ORCID${n?' · '+n+' פרסומים':''}</a>`;h=h?h.replace(/<\/div>\s*$/,' '+a+'</div>'):`<div class="person-links">${a}</div>`;}return h};
+  const oRender=window.renderPeople;
+  window.renderPeople=function(rows){ROWS=Array.isArray(rows)?rows:[];oRender(rows);search();};
+  const norm=t=>String(t||'').toLowerCase();
+  function search(){
+    const q=norm(document.getElementById('expertiseQ')?.value).trim(),out=document.getElementById('expertiseOut');if(!out)return;
+    const withW=ROWS.filter(x=>works(x).length);
+    if(!q){out.innerHTML=withW.length?`<p class="muted">${withW.length} חברות וחברים חיברו ORCID.</p>`:'';return;}
+    const words=q.split(/\s+/).filter(Boolean);
+    const hits=withW.map(x=>({x,w:works(x).filter(a=>{const hay=norm(a.t+' '+a.j);return words.every(w=>hay.includes(w))})})).filter(r=>r.w.length).sort((a,b)=>b.w.length-a.w.length);
+    out.innerHTML=hits.length?hits.map(({x,w})=>`<div class="ex-hit"><b>${e(x.name)}</b>${x.institution?` <span class="muted">· ${e(x.institution)}</span>`:''} <span class="ex-n">${w.length} פרסומים</span><ul>${w.slice(0,3).map(a=>`<li dir="auto">${a.doi?`<a href="https://doi.org/${e(a.doi)}" target="_blank" rel="noopener">${e(a.t)}</a>`:e(a.t)}${a.y?` (${e(a.y)})`:''}${a.j?`, <i>${e(a.j)}</i>`:''}</li>`).join('')}</ul></div>`).join(''):'<p class="muted">לא נמצאו פרסומים עם המילים האלה. אפשר לנסות מילה אחרת, גם באנגלית.</p>';
+  }
+  document.addEventListener('DOMContentLoaded',()=>{document.getElementById('expertiseQ')?.addEventListener('input',search)});
+})();
+</script>
+<style id="orcid-v1-css">
+.expertise-box{border:1px solid #d6e4e8;border-radius:10px;background:#fbfdfd;padding:12px 14px;margin:0 0 14px;display:grid;gap:6px}
+.expertise-box label{font-weight:700;color:#244b61}.expertise-box input{min-height:40px;border:1px solid #9bbac6;border-radius:6px;padding:6px 10px;font:inherit}
+.expertise-box small{color:#5e7581}.ex-hit{border-top:1px solid #e5edf1;padding:8px 0}.ex-hit ul{margin:4px 0 0;padding-inline-start:20px;font-size:13px}.ex-n{font-size:12px;background:#e6eff3;border-radius:999px;padding:0 8px;color:#456071}
+.orcid-link{color:#5b8a1f!important}
+</style>
+<script id="field-v1">
+/* מהשטח: מקרים ובעיות (10.11.2026) */
+(function(){
+  const e=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const LBL={problem:{problem:'מה הבעיה',who:'למי היא מפריעה, ומתי',tried:'מה כבר ניסו'},case:{planned:'מה תוכנן',happened:'מה קרה בפועל',why:'למה',next:'מה נעשה בפעם הבאה'}};
+  let items=[],filter='',opened=Date.now(),voted={};
+  try{voted=JSON.parse(localStorage.getItem('hosen_field_voted')||'{}')}catch(_){}
+  const vid=()=>{try{let v=localStorage.getItem('hosen_visit_id')||'';if(!/^[a-z0-9]{10,32}$/.test(v)){v=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('hosen_visit_id',v)}return v}catch(_){return ''}};
+  const adminTok=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(_){return ''}};
+  const card=(x,admin)=>`<article class="fd-item ${x.kind}${x.status==='pending'?' pending':''}" data-id="${e(x.id)}">
+    <div class="fd-top"><span class="fd-tag">${x.kind==='case'?'📝 מקרה':'🧩 בעיה'}</span>${x.status==='pending'?'<span class="fd-tag wait">ממתין לאישור</span>':''}<span class="fd-meta">${[x.role,x.setting,x.sector].filter(Boolean).map(e).join(' · ')}</span></div>
+    <h3 dir="auto">${e(x.title)}</h3>
+    ${Object.entries(LBL[x.kind]).filter(([k])=>x.parts?.[k]).map(([k,l])=>`<p dir="auto"><b>${l}:</b> ${e(x.parts[k])}</p>`).join('')}
+    <div class="fd-act">${x.status==='pending'?'':`<button type="button" class="fd-vote${voted[x.id]?' on':''}" data-vote="${e(x.id)}" aria-pressed="${voted[x.id]?'true':'false'}">${x.kind==='case'?'💡 מלמד':'👍 חשוב לחקור'} · <b>${x.votes||0}</b></button>`}
+    ${admin?`${x.status==='pending'?`<button type="button" data-fa="approve" data-id="${e(x.id)}">✓ אישור ופרסום</button><button type="button" data-fa="reject" data-id="${e(x.id)}">דחייה</button>`:''}<button type="button" class="danger" data-fa="delete" data-id="${e(x.id)}">🗑 מחיקה</button>${x.name||x.email?`<span class="fd-meta">שלח/ה: ${e(x.name)} ${e(x.email)}</span>`:''}`:''}</div></article>`;
+  function render(){
+    const box=document.getElementById('fdList');if(!box)return;
+    const sort=document.getElementById('fdSort')?.value||'votes';
+    const rows=items.filter(x=>!filter||x.kind===filter).sort((a,b)=>sort==='new'?b.createdAt.localeCompare(a.createdAt):(b.votes-a.votes)||b.createdAt.localeCompare(a.createdAt));
+    box.innerHTML=rows.length?rows.map(x=>card(x,!!adminTok())).join(''):'<p class="muted">עוד אין כאן פריטים. אפשר להיות הראשונים לשתף.</p>';
+  }
+  async function load(){
+    try{const r=await fetch('/api/field');const d=await r.json();items=d.items||[];
+      const f=document.getElementById('fdForm');
+      if(f&&d.roles){f.elements.role.innerHTML='<option value="">בחירה</option>'+d.roles.map(x=>`<option>${e(x)}</option>`).join('');f.elements.setting.innerHTML='<option value="">בחירה</option>'+d.settings.map(x=>`<option>${e(x)}</option>`).join('');}
+    }catch(_){items=[]}
+    render();
+    const t=adminTok(),ad=document.getElementById('fdAdmin');
+    if(t&&ad){try{const r=await fetch('/api/field?admin=1',{headers:{Authorization:'Bearer '+t}});if(r.ok){const all=await r.json();const pend=all.filter(x=>x.status==='pending');
+      ad.innerHTML=pend.length?`<div class="fd-adminbox"><h2>ממתינים לאישור (${pend.length})</h2>${pend.map(x=>card(x,true)).join('')}</div>`:'';
+      const byId=new Map(all.map(x=>[x.id,x]));items=items.map(x=>({...x,name:byId.get(x.id)?.name||'',email:byId.get(x.id)?.email||''}));render();}}catch(_){}}
+  }
+  function setKind(k){const f=document.getElementById('fdForm');f.querySelectorAll('.fd-parts').forEach(p=>p.hidden=p.dataset.for!==k)}
+  document.addEventListener('change',ev=>{if(ev.target.matches('#fdForm [name=kind]'))setKind(ev.target.value);if(ev.target.id==='fdSort')render()});
+  document.addEventListener('click',async ev=>{
+    const b=ev.target.closest('[data-fd],[data-ff],[data-vote],[data-fa]');if(!b||!b.closest('#field'))return;
+    const f=document.getElementById('fdForm');
+    if(b.dataset.fd==='new'){f.hidden=false;opened=Date.now();f.scrollIntoView({behavior:'smooth',block:'start'});f.elements.title.focus();}
+    else if(b.dataset.fd==='cancel'){f.hidden=true;}
+    else if(b.dataset.ff!==undefined){filter=b.dataset.ff;document.querySelectorAll('#field [data-ff]').forEach(x=>x.classList.toggle('on',x===b));render();}
+    else if(b.dataset.vote){const id=b.dataset.vote;b.disabled=true;
+      try{const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'vote',id,v:vid()})});const d=await r.json();if(r.ok){const x=items.find(i=>i.id===id);if(x)x.votes=d.votes;if(d.voted)voted[id]=1;else delete voted[id];try{localStorage.setItem('hosen_field_voted',JSON.stringify(voted))}catch(_){}}}catch(_){}
+      render();}
+    else if(b.dataset.fa){const a=b.dataset.fa;if(a==='delete'&&!confirm('למחוק את הפריט?'))return;
+      const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+adminTok()},body:JSON.stringify({action:a,id:b.dataset.id})});
+      if(!r.ok)alert('הפעולה לא הצליחה. ייתכן שצריך להיכנס שוב לניהול.');load();}
+  });
+  document.addEventListener('submit',async ev=>{
+    if(ev.target.id!=='fdForm')return;ev.preventDefault();const f=ev.target,st=f.querySelector('.fd-status'),v=k=>(f.elements[k]?.value||'').trim();
+    const kind=f.querySelector('[name=kind]:checked').value;const keys=kind==='case'?['planned','happened','why','next']:['problem','who','tried'];
+    const parts={};keys.forEach(k=>parts[k]=v('p_'+k));
+    const need=kind==='case'?(parts.planned&&parts.happened):parts.problem;
+    if(!v('title')||!need){st.className='fd-status err';st.textContent='נשמח לכותרת ולשדות שמסומנים בכוכבית.';return}
+    if(!f.elements.consent.checked){st.className='fd-status err';st.textContent='נשמח לאישור שאין בטקסט פרטים מזהים.';return}
+    const btn=f.querySelector('.fd-send');btn.disabled=true;st.className='fd-status';st.textContent='שולחים…';
+    try{const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'submit',kind,title:v('title'),role:v('role'),setting:v('setting'),sector:v('sector'),parts,name:v('name'),email:v('email'),consent:true,website:v('website'),elapsed:Date.now()-opened})});
+      const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||'השליחה לא הצליחה. אפשר לנסות שוב.');
+      f.reset();setKind('problem');st.className='fd-status ok';st.textContent='✓ תודה! נשלח, ויתפרסם אחרי בדיקה.';btn.disabled=false;load();}
+    catch(err){btn.disabled=false;st.className='fd-status err';st.textContent=err.message}
+  });
+  document.addEventListener('DOMContentLoaded',()=>{if(document.documentElement.dataset.page==='field')load()});
+})();
+</script>
+<style id="field-v1-css">
+#field{background:#fdfbf6}
+#field .fd-wrap{max-width:1000px;margin:0 auto;padding:28px 20px 50px;display:flex;flex-direction:column;gap:16px}
+#field .fd-head{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;position:static!important;min-height:0!important}
+#field .fd-pill{display:inline-block;background:#f6e3e6;color:#8a2338;font-weight:700;font-size:13px;padding:3px 12px;border-radius:20px}
+#field h1{font-size:34px;margin:6px 0;color:#1f4a63}#field .fd-lead{max-width:700px;color:#3f5866;font-size:15.5px;line-height:1.65;margin:0}
+#field .fd-new{background:#1f4a63;color:#fff;border:0;border-radius:30px;padding:12px 22px;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
+#field .fd-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;background:#fff;border:1px solid #eadfca;border-radius:12px;padding:16px 18px}
+#field .fd-form h2,#field .fd-form .wide,#field .fd-kind{grid-column:1/-1}#field .fd-form h2{margin:0;font-size:20px;color:#1f4a63}
+#field .fd-form label{display:flex;flex-direction:column;gap:4px;font-weight:700;color:#244b61;font-size:14px}
+#field .fd-form input,#field .fd-form select,#field .fd-form textarea{font:inherit;font-weight:400;border:1px solid #c9d6dc;border-radius:6px;padding:8px 10px}
+#field .fd-kind{border:1px solid #eadfca;border-radius:8px;display:flex;flex-wrap:wrap;gap:6px 18px}#field .fd-kind label,#field .fd-consent{flex-direction:row;align-items:center;gap:8px;font-weight:400}
+#field .fd-parts{display:grid;gap:10px}#field .fd-parts[hidden]{display:none}
+#field .fd-note{margin:0;font-size:13px;color:#5e7581}#field .fd-hp{position:absolute;left:-9999px;width:1px;height:1px}
+#field .fd-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}#field .fd-actions button{font:inherit;border-radius:20px;padding:8px 18px;border:1px solid #c9d6dc;background:#fff;cursor:pointer}#field .fd-send{background:#8a2338!important;color:#fff;border-color:#8a2338!important;font-weight:700}
+#field .fd-status.err{color:#a3303b}#field .fd-status.ok{color:#1b6e43;font-weight:700}
+#field .fd-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+#field .fd-filters button{font:inherit;border:1px solid #c9d6dc;background:#fff;border-radius:20px;padding:5px 14px;cursor:pointer;margin-inline-end:4px}#field .fd-filters button.on{background:#1f4a63;color:#fff;border-color:#1f4a63}
+#field .fd-sort{display:flex;gap:6px;align-items:center;font-size:14px}#field .fd-sort select{font:inherit;padding:4px 8px;border-radius:6px;border:1px solid #c9d6dc}
+#field .fd-list,#field .fd-adminbox{display:grid;gap:12px}#field .fd-adminbox{border:2px dashed #e7c06a;border-radius:12px;padding:12px;background:#fffcf3}#field .fd-adminbox h2{margin:0;font-size:18px}
+#field .fd-item{background:#fff;border:1px solid #eadfca;border-inline-start:5px solid #1f4a63;border-radius:10px;padding:14px 16px}#field .fd-item.case{border-inline-start-color:#d4a033}
+#field .fd-item h3{margin:6px 0;font-size:18px;color:#1f4a63}#field .fd-item p{margin:4px 0;font-size:14.5px;line-height:1.6;color:#33444f;white-space:pre-line}
+#field .fd-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}#field .fd-tag{font-size:12px;font-weight:700;background:#eef3f6;border-radius:999px;padding:1px 9px}#field .fd-tag.wait{background:#fff4dc;color:#7a5200}
+#field .fd-meta{font-size:12.5px;color:#6b7d88}
+#field .fd-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}#field .fd-act button{font:inherit;font-size:13.5px;border:1px solid #c9d6dc;background:#fff;border-radius:20px;padding:4px 12px;cursor:pointer}#field .fd-act button.danger{color:#a3303b}
+#field .fd-vote.on{background:#e1f2e7!important;border-color:#1b6e43!important;color:#1b6e43}
+#field .fd-foot{font-size:14px;color:#5e7581;margin:0}
+@media(max-width:700px){#field .fd-form{grid-template-columns:1fr}#field h1{font-size:28px}}
+</style>
+<script id="credit-v1">
+/* קרדיט אקדמי ותוצרים פתוחים (10.11.2026, מהסקר): תפקידי CRediT ורישיון CC BY בכל מרחב עבודה */
+window.hosenCreditHtml=function(t,h){
+  const R=[['concept','המשגה'],['method','מתודולוגיה'],['investigation','איסוף נתונים וחקירה'],['data','אוצרות נתונים'],['analysis','ניתוח'],['validation','תיקוף'],['visual','הדמיה חזותית'],['software','תוכנה'],['resources','משאבים'],['draft','כתיבת הטיוטה'],['editing','עריכה וביקורת'],['supervision','הנחיה ופיקוח'],['admin','ניהול הפרויקט'],['funding','השגת מימון']];
+  const c=t.credit||{},roles=c.roles||{};
+  const L={'CC-BY-4.0':'CC BY 4.0: כל אחד ואחת יכולים להשתמש ולהפיץ, עם קרדיט','CC-BY-NC-4.0':'CC BY-NC 4.0: כמו CC BY, בלי שימוש מסחרי','none':'עוד לא הוחלט על רישיון פתוח'};
+  const lab=Object.fromEntries(R);
+  const summary=Object.entries(roles).map(([n,r])=>`<li><b>${h(n)}</b>: ${r.map(x=>lab[x]||x).join(', ')}</li>`).join('');
+  return `<div class="cr-wrap"><p class="ch-note">כשהצוות מסיים תוצר (סקירה, נייר עמדה, כלי, מאמר), רושמים כאן מי עשה מה לפי <a href="https://credit.niso.org/" target="_blank" rel="noopener">תפקידי CRediT</a>, ובוחרים רישיון. כך העבודה המשותפת נספרת גם בקורות החיים האקדמיים. <b>ההעלאה ל-Zenodo, שנותנת לתוצר DOI חינמי, נעשית ידנית בידי מנהלת האתר</b>: לוחצים "בקשה לפרסום", והיא יוצרת קשר עם הצוות.</p>
+  ${c.requestedAt?`<p class="cr-sent">📦 נשלחה בקשה לפרסום ב-Zenodo ב-${new Date(c.requestedAt).toLocaleDateString('he-IL')}.${c.doi?` DOI: <a href="https://doi.org/${h(c.doi)}" target="_blank" rel="noopener">${h(c.doi)}</a>`:' ההעלאה נעשית ידנית.'}</p>`:''}
+  <form data-form="credit" class="cr-form">
+    <div class="cr-grid"><label>שם התוצר<input name="product" value="${h(c.product||'')}" dir="auto" placeholder="למשל: נייר עמדה על רציפות למידה בפינוי"></label>
+    <label>סוג התוצר<select name="kind">${['','סקירה','נייר עמדה','כלי','מאמר','מצגת','מדריך','אחר'].map(k=>`<option value="${k}"${k===(c.kind||'')?' selected':''}>${k||'בחירה'}</option>`).join('')}</select></label>
+    <label class="wide">רישיון<select name="license">${Object.entries(L).map(([k,v])=>`<option value="${k}"${k===(c.license||'CC-BY-4.0')?' selected':''}>${v}</option>`).join('')}</select></label></div>
+    <h4 style="margin:12px 0 6px">מי עשה מה</h4>
+    ${t.members.map(m=>`<details class="cr-person"${(roles[m.name]||[]).length?'':' open'}><summary><b>${h(m.name)}</b> <small>${(roles[m.name]||[]).map(x=>lab[x]).join(' · ')||'עוד לא סומן'}</small></summary><div class="cr-roles">${R.map(([k,v])=>`<label><input type="checkbox" data-cr="${h(m.name)}" value="${k}"${(roles[m.name]||[]).includes(k)?' checked':''}> ${v}</label>`).join('')}</div></details>`).join('')}
+    <div class="cr-actions"><button class="ch-btn small primary" type="submit">שמירה</button><button class="ch-btn small" type="submit" data-publish="1">📦 בקשה לפרסום ב-Zenodo</button></div>
+  </form>
+  ${summary?`<h4 style="margin:14px 0 6px">התרומות לציטוט</h4><ul class="cr-sum">${summary}</ul>`:''}</div>`;
+};
+</script>
+<style id="credit-v1-css">
+.cr-wrap .cr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.cr-wrap .cr-grid .wide{grid-column:1/-1}
+.cr-wrap label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}.cr-wrap input,.cr-wrap select{font:inherit;font-weight:400;padding:6px 8px;border:1px solid #c9d6dc;border-radius:6px}
+.cr-person{border:1px solid #dbe6ea;border-radius:8px;padding:6px 10px;margin:6px 0;background:#fbfdfd}.cr-person summary{cursor:pointer}.cr-person small{color:#5e7581;font-weight:400}
+.cr-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 10px;margin-top:6px}.cr-roles label{flex-direction:row;align-items:center;gap:6px;font-weight:400}
+.cr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.cr-sent{background:#e1f2e7;color:#1b6e43;border-radius:8px;padding:8px 12px;margin:0 0 10px}.cr-sum{margin:0;padding-inline-start:20px;font-size:14px}
+@media(max-width:700px){.cr-wrap .cr-grid{grid-template-columns:1fr}}
+</style>
+<style id="board-edit-front-v1">/* עריכת הודעה מתוך הניהול (10.11.2026: "כשאני מנסה לערוך לא קורה כלום"): חלון ההודעה נפתח מעל חלון הניהול */
+html body #boardSubmitModal[aria-hidden="false"]{z-index:22050!important}</style>
 </body></html>
