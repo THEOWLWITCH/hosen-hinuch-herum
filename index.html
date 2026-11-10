@@ -2288,7 +2288,7 @@ body:has(.feedback-modal.open){
 <style id="compass-library-modal-v1">
 .compass-library-modal{position:fixed;inset:0;z-index:11000;display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;background:rgba(25,45,57,.48);overflow:auto}.compass-library-modal.open{display:flex}.compass-library-dialog{position:relative;width:min(100%,1080px);margin:auto;background:#fbfcfc;border-radius:12px;box-shadow:0 22px 64px rgba(16,42,57,.3);overflow:hidden}.compass-library-close{position:sticky;top:10px;z-index:1;float:left;margin:10px;border:0;border-radius:50%;width:36px;height:36px;background:#fff;color:#315d71;font-size:23px;cursor:pointer;box-shadow:0 2px 8px rgba(20,50,65,.18)}.compass-library-dialog #compass{display:block!important;padding:0 0 28px!important}.compass-library-dialog #compass .wrap{width:min(100%,980px)!important;padding:28px 24px 0!important}.compass-library-dialog .compass-hero{margin-top:0!important}@media(max-width:700px){.compass-library-modal{padding:0}.compass-library-dialog{min-height:100vh;border-radius:0}.compass-library-dialog #compass .wrap{padding:20px 16px 0!important}}</style>
 <style id="journals-finder-v1">
-/* איתור כתב עת למאמר (10.11.2026): מסך שמציג את הכלי ומפנה אליו. הכלי עצמו רץ בתוך Claude. */
+/* איתור כתב עת לפרסום מאמר (10.11.2026): מסך שמציג את הכלי ומפנה אליו. הכלי עצמו רץ בתוך Claude. */
 #journals{background:#fdfbf6}
 #journals .jf-wrap{max-width:1080px;margin:0 auto;padding:30px 24px 56px;display:flex;flex-direction:column;gap:22px}
 #journals header.jf-head{display:flex;gap:24px;align-items:center;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;min-height:0!important;position:static!important}
@@ -2351,7 +2351,7 @@ body:has(.feedback-modal.open){
 </aside>
 <div class="top-now-content">
 <div class="grid">
-<a class="icer-project-card" href="/journals" aria-label="איתור כתב עת למאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת למאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
+<a class="icer-project-card" href="/journals" aria-label="איתור כתב עת לפרסום מאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת לפרסום מאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
 <a class="icer-project-card" href="/kikar" aria-label="כיכר הקהילה: שיח מקצועי לשיתוף ידע והעברתו לשדה. לכניסה לכיכר"><img src="/assets/kikar-card.webp" alt="כיכר הקהילה · ساحة المجتمع. נושא אחד במרכז ושבע שיחות סביבו"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
@@ -2364,7 +2364,7 @@ body:has(.feedback-modal.open){
     <img src="/assets/journals-icon.svg" alt="" width="120" height="120">
     <div>
       <span class="jf-pill">חדש באתר · כלי לחוקרות ולחוקרים</span>
-      <h1 id="jfTitle">איתור כתב עת למאמר</h1>
+      <h1 id="jfTitle">איתור כתב עת לפרסום מאמר</h1>
       <p class="jf-sub">באנגלית, בעברית ובערבית</p>
       <p class="jf-lead">מתחילים מרשימת הפרסומים, מעלים את המאמר שרוצים לפרסם, ומקבלים חמישה כתבי עת לפי סדר עדיפות, עם הסבר למה כל אחד מתאים יותר או פחות.</p>
     </div>
@@ -7483,7 +7483,7 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   try{const d=new Date().toISOString().slice(0,10),k='hosen_pv_'+resolved,v=localStorage.getItem('hosen_visit_id')||'';if(/^[a-z0-9]{10,32}$/.test(v)&&localStorage.getItem(k)!==d){localStorage.setItem(k,d);setTimeout(()=>fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({v,p:resolved})}).catch(()=>{}),3000)}}catch(e){}
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
   // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
-  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',journals:'איתור כתב עת למאמר',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
+  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',journals:'איתור כתב עת לפרסום מאמר',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
     if(T[resolved])document.title=T[resolved]+' · '+base;
     const c=document.getElementById('canonicalLink');if(c)c.href='https://hosen-hinuch-herum.netlify.app/'+(resolved==='now'?'':resolved);}catch(e){}
 
