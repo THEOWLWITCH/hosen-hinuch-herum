@@ -13,6 +13,16 @@ export default async (req: Request) => {
 
   // "מה חדש באתר השבוע": טיוטה מוכנה מהשבוע האחרון, נטענת לחלון "עדכון לקהילה" לעריכה ולשליחה.
   if (req.method === "GET" && u.searchParams.get("weekly") === "1") {
+    // עדכון שנכתב ביד (weekly-draft.json, 10.11.2026): כשהטיוטה האוטומטית לא טובה מספיק, נוסח מלא שנכתב מחדש
+    // נטען לחלון במקומה, עד התאריך שב-"until". אחרי כן חוזרים לטיוטה האוטומטית.
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
+    const manual = await fetch(`${site}/weekly-draft.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : null).catch(() => null) as
+      { date: string; until: string; subject: string; body: string } | null;
+    if (!u.searchParams.get("auto") && manual?.body && manual.date <= today && today <= manual.until) {
+      const d = (x: string) => x.split("-").reverse().map(Number).join(".");
+      const from = d(new Date(Date.parse(manual.date) - 9 * 86400000).toISOString().slice(0, 10));
+      return json({ subject: manual.subject, body: manual.body, sections: [], count: 1, from, to: d(manual.date), manual: true });
+    }
     const w = await buildSiteWeekly(site, Math.min(Math.max(Number(u.searchParams.get("days")) || 7, 1), 31));
     return json(w);
   }

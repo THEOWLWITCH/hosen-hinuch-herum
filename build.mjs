@@ -25,6 +25,10 @@ await copyFile("site-changes.json", "dist/site-changes.json");
 const notes = JSON.parse(await readFile("weekly-notes.json", "utf8"));
 if (!Array.isArray(notes) || notes.some(n => !/^\d{4}-\d{2}-\d{2}$/.test(n.date) || !n.text)) { console.error("weekly-notes.json לא תקין"); process.exit(1); }
 await copyFile("weekly-notes.json", "dist/weekly-notes.json");
+// עדכון שבועי שנכתב ביד (weekly-draft.json, 10.11.2026): נטען לחלון העדכון במקום הטיוטה האוטומטית עד "until".
+const wd = JSON.parse(await readFile("weekly-draft.json", "utf8"));
+if (!/^\d{4}-\d{2}-\d{2}$/.test(wd.date) || !/^\d{4}-\d{2}-\d{2}$/.test(wd.until) || !wd.subject || !wd.body) { console.error("weekly-draft.json לא תקין"); process.exit(1); }
+await copyFile("weekly-draft.json", "dist/weekly-draft.json");
 // גוגל: robots.txt ו-sitemap.xml
 await copyFile("robots.txt", "dist/robots.txt");
 await copyFile("sitemap.xml", "dist/sitemap.xml");
