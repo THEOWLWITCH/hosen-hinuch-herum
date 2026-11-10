@@ -58,7 +58,7 @@ export default async (req: Request) => {
     if (!uploaderOK) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
     if (!adminOK) {
-      const uploaderCategories = new Set(["professional","publications","policy","research-tools","community-activity","active-project"]);
+      const uploaderCategories = new Set(["professional","publications","policy","research-tools","measures","community-activity","active-project"]);
       if (!uploaderCategories.has(String(body.category || ""))) return json({ error: "forbidden_category" }, 403);
     }
     const now = new Date().toISOString();
