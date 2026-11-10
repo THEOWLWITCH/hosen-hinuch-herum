@@ -4699,7 +4699,7 @@ https://hosen-hinuch-herum.netlify.app/apps
         // הטקסט הקודם נשמר בגיבוי (hosen_weekly_prev), כדי שטיוטה ישנה לא תסתיר את העדכון החדש (8.11.2026).
         try{const old=f.elements.body.value.trim();if(old&&old!==DEFAULT_BODY.trim()&&old!==w.body.trim())localStorage.setItem('hosen_weekly_prev',JSON.stringify({at:new Date().toISOString(),subject:f.elements.subject.value,body:f.elements.body.value}))}catch(e){}
         f.elements.subject.value=w.subject;f.elements.body.value=w.body;save();
-        msg(w.count?`✓ העדכון השבועי מוכן (${w.from}–${w.to}). כדאי לקרוא, להוסיף פתיח אישי, ולשלוח בדיקה לפני השליחה לכולם.`:'✓ נטען, אבל השבוע כמעט לא נוסף תוכן חדש באתר. אולי כדאי לדלג השבוע.','ok')}
+        msg(w.manual?`✓ נטען העדכון שנכתב מחדש (${w.to}). כדאי לעבור עליו, ללחוץ "תצוגה מקדימה" ולשלוח בדיקה לפני השליחה לכולם.`:w.count?`✓ העדכון השבועי מוכן (${w.from}–${w.to}). כדאי לקרוא, להוסיף פתיח אישי, ולשלוח בדיקה לפני השליחה לכולם.`:'✓ נטען, אבל השבוע כמעט לא נוסף תוכן חדש באתר. אולי כדאי לדלג השבוע.','ok')}
       catch(e){msg('לא הצלחתי להכין את העדכון השבועי, והטקסט בחלון לא השתנה ('+e.message+'). אפשר לנסות שוב.','err')}};
     root.querySelector('[data-weekly]').onclick=loadWeekly;
     if(window.__weeklyMail){window.__weeklyMail=false;loadWeekly()}

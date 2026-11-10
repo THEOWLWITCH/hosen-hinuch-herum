@@ -3,6 +3,8 @@ import { json, validToken } from "../lib/shared.mts";
 import { getOptOut, loadPeople, mailConfigured, mailErrorHint, sendAll, sendMail, siteUrl } from "../lib/calls.mts";
 import { addLog, listLog, personalize, plainText, renderHtml } from "../lib/community-mail.mts";
 import { buildSiteWeekly } from "../lib/site-weekly.mts";
+// נוסח שנכתב ביד, נארז עם הפונקציה (10.11.2026): בלי לקרוא אותו דרך האתר, כדי שלא תיטען גרסה ישנה מהמטמון.
+import manualDraft from "../../weekly-draft.json";
 
 const clip = (v: unknown, n: number) => String(v ?? "").trim().slice(0, n);
 
@@ -16,8 +18,7 @@ export default async (req: Request) => {
     // עדכון שנכתב ביד (weekly-draft.json, 10.11.2026): כשהטיוטה האוטומטית לא טובה מספיק, נוסח מלא שנכתב מחדש
     // נטען לחלון במקומה, עד התאריך שב-"until". אחרי כן חוזרים לטיוטה האוטומטית.
     const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
-    const manual = await fetch(`${site}/weekly-draft.json`, { headers: { "cache-control": "no-cache" } }).then(r => r.ok ? r.json() : null).catch(() => null) as
-      { date: string; until: string; subject: string; body: string } | null;
+    const manual = manualDraft as { date: string; until: string; subject: string; body: string } | null;
     if (!u.searchParams.get("auto") && manual?.body && manual.date <= today && today <= manual.until) {
       const d = (x: string) => x.split("-").reverse().map(Number).join(".");
       const from = d(new Date(Date.parse(manual.date) - 9 * 86400000).toISOString().slice(0, 10));
