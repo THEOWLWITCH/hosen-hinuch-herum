@@ -2359,6 +2359,12 @@ body:has(.feedback-modal.open){
 </div>
 <div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button><a class="join-guide" href="/guide">🗺️ המדריך לקהילה</a></div>
 </div>
+<aside class="community-board news-board" aria-label="פורסם בישראל ובעולם">
+  <div class="community-board-head"><h2>📰 פורסם בישראל ובעולם</h2></div>
+  <div id="newsFeed" class="board-feed"><p class="muted">טוען ידיעות...</p></div>
+  <div class="board-controls"><button type="button" onclick="newsStep(-1)" aria-label="ידיעה חדשה יותר">ידיעה קודמת</button><span id="newsCounter"></span><button type="button" onclick="newsStep(1)" aria-label="ידיעה ישנה יותר">ידיעה הבאה</button></div>
+  <p class="news-board-note">ידיעות מהעיתונות בעברית, בערבית ובאנגלית. מתעדכן כל שבוע.</p>
+</aside>
 </div></section>
 <section id="journals" aria-labelledby="jfTitle"><div class="jf-wrap">
   <header class="jf-head">
@@ -9317,4 +9323,41 @@ window.hosenCreditHtml=function(t,h){
 </style>
 <style id="board-edit-front-v1">/* עריכת הודעה מתוך הניהול (10.11.2026: "כשאני מנסה לערוך לא קורה כלום"): חלון ההודעה נפתח מעל חלון הניהול */
 html body #boardSubmitModal[aria-hidden="false"]{z-index:22050!important}</style>
+
+<style id="news-board-v1">/* 10.11.2026: "פורסם בישראל ובעולם" בעמוד הראשי, בגודל לוח ההודעות */
+@media(min-width:851px){html body .top-dynamic-grid .news-board{grid-column:1}html body .top-dynamic-grid .top-now-content{grid-row:1 / span 2;grid-column:2}}
+@media(max-width:850px){html body .top-dynamic-grid .news-board{order:2}}
+.news-board .news-place{font-weight:700;color:#173b5d;font-size:15px;margin:0}
+.news-board .news-meta{font-size:11px;color:#7a8a94;margin-top:2px}
+.news-board .news-link{display:inline-block;margin-top:2px;font-size:12px;padding:5px 10px;border:1px solid #d7e4eb;border-radius:13px;background:#f8fbfd;color:#17649a;text-decoration:none}
+.news-board .news-link:hover{background:#eef5f8}
+.news-board-note{font-size:10.5px;color:#80909a;text-align:center;margin:8px 0 0}
+</style>
+<script id="news-board-v1-js">
+(function(){
+  let items=[],idx=0;
+  const E=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function parse(x){
+    let t=String(x.text||'').trim();
+    const url=(t.match(/https?:\/\/[^\s]+/)||[''])[0].replace(/[.,)]+$/,'');
+    t=t.replace(/\s*https?:\/\/[^\s]+/g,'').trim();
+    const m=t.match(/^([^(:]{1,40}?)\s*\(([^)]{1,80})\)\s*:\s*/);
+    return {place:m?m[1]:'',meta:m?m[2]:'',body:m?t.slice(m[0].length):t,url,date:x.date};
+  }
+  function render(){
+    const feed=document.getElementById('newsFeed'),cnt=document.getElementById('newsCounter');
+    if(!feed)return;
+    if(!items.length){feed.innerHTML='<p class="muted">הידיעות הראשונות יופיעו כאן בקרוב.</p>';if(cnt)cnt.textContent='';return}
+    const x=items[idx];
+    feed.innerHTML='<article class="board-message-card">'+(x.place?'<h3 class="news-place">'+E(x.place)+'</h3>':'')+(x.meta?'<div class="news-meta">'+E(x.meta)+'</div>':'')+'<div class="board-message-text">'+E(x.body)+'</div>'+(x.url?'<a class="news-link" href="'+E(x.url)+'" target="_blank" rel="noopener">לידיעה המקורית ↗</a>':'')+'</article>';
+    if(cnt)cnt.textContent=(idx+1)+' / '+items.length;
+  }
+  window.newsStep=function(d){if(!items.length)return;idx=(idx+d+items.length)%items.length;render()};
+  fetch('/weekly-notes.json',{cache:'no-cache'}).then(r=>r.json()).then(a=>{
+    // החדשות למעלה: לפי תאריך, ובאותו תאריך לפי הסדר בקובץ
+    items=(Array.isArray(a)?a:[]).map((x,i)=>({x,i})).filter(o=>o.x&&o.x.section==='news'&&o.x.text).sort((p,q)=>String(q.x.date).localeCompare(String(p.x.date))||p.i-q.i).map(o=>parse(o.x));
+    render();
+  }).catch(()=>{const f=document.getElementById('newsFeed');if(f)f.innerHTML='<p class="muted">לא ניתן לטעון ידיעות כרגע.</p>'});
+})();
+</script>
 </body></html>
