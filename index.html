@@ -4244,7 +4244,7 @@ html[data-page="tasks"] #tasks{display:block!important}
   function mountCard(){
     const host=document.querySelector('#now .top-now-content');
     if(!host||document.querySelector('.sv-card'))return;
-    const c=document.createElement('div');c.className='sv-card';
+    const c=document.createElement('div');c.className='sv-card';c.dataset.cardId='survey';c.dataset.cardLabel='סקר: מה תרצו שיהיה באתר?';c.dataset.defaultHidden='1';c.hidden=true;
     c.innerHTML=`<div><h3>💡 מה תרצו שיהיה באתר?</h3><p>14 רעיונות לקהילה. מסמנים מה הייתם רוצים, ומוסיפים רעיונות משלכם. בעילום שם, כ-3 דקות.</p></div>`+(done()?'<span>✓ השתתפת בסקר. תודה!</span>':`<button type="button" class="sv-go" aria-label="לסקר: מה תרצו שיהיה באתר"><svg class="sv-art" viewBox="8 30 164 104" aria-hidden="true"><defs><radialGradient id="svBody" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#8CC4FF"/><stop offset=".6" stop-color="#4A8FE8"/><stop offset="1" stop-color="#2B63C4"/></radialGradient></defs><ellipse cx="95" cy="130" rx="76" ry="3.6" fill="#000" opacity=".1"/><g transform="translate(4 34) scale(1.2)"><ellipse cx="31" cy="70.5" rx="6.5" ry="3.6" fill="#1F4E9E"/><ellipse cx="49" cy="70.5" rx="6.5" ry="3.6" fill="#1F4E9E"/><path d="M19.5 50 Q11.5 47 12.5 39.5" fill="none" stroke="#2B63C4" stroke-width="5.5" stroke-linecap="round"/><circle cx="40" cy="48" r="22.5" fill="url(#svBody)"/><ellipse cx="31" cy="37" rx="7.5" ry="4" fill="#fff" opacity=".38" transform="rotate(-28 31 37)"/><circle cx="33" cy="46.5" r="3.3" fill="#13233F"/><circle cx="47" cy="46.5" r="3.3" fill="#13233F"/><circle cx="34.2" cy="45.3" r="1.1" fill="#fff"/><circle cx="48.2" cy="45.3" r="1.1" fill="#fff"/><ellipse cx="27.5" cy="53" rx="3.6" ry="2.2" fill="#FF8FA3" opacity=".75"/><ellipse cx="52.5" cy="53" rx="3.6" ry="2.2" fill="#FF8FA3" opacity=".75"/><path d="M34.5 54.5 Q40 60.5 45.5 54.5" fill="none" stroke="#13233F" stroke-width="2.4" stroke-linecap="round"/></g><polygon points="158,86 166,79 166,123 158,130" fill="#C8DAF5" stroke="#1F4E9E" stroke-width="1.6" stroke-linejoin="round"/><polygon points="92,86 158,86 166,79 100,79" fill="#DDE9FB" stroke="#1F4E9E" stroke-width="1.6" stroke-linejoin="round"/><rect x="92" y="86" width="66" height="44" rx="2" fill="#F6F9FF" stroke="#1F4E9E" stroke-width="1.8"/><rect x="92" y="97" width="66" height="7" fill="#2B63C4"/><text x="125" y="121" text-anchor="middle" font-family="Heebo,Arial,sans-serif" font-weight="700" font-size="12" fill="#1F4E9E">קלפי</text><rect x="103" y="80.6" width="26" height="3.2" rx="1.6" fill="#13233F"/><g class="sv-slip"><g transform="translate(4 34) scale(1.2) rotate(30 60 45)"><path d="M60 45 Q67.5 37 66 28" fill="none" stroke="#2B63C4" stroke-width="5.5" stroke-linecap="round"/><g transform="rotate(-28 66 16)"><rect x="56.5" y="3.5" width="19" height="23" rx="2.2" fill="#fff" stroke="#13233F" stroke-width="1.6"/><rect x="56.5" y="6.5" width="19" height="2.2" fill="#2B63C4"/><rect x="56.5" y="21.3" width="19" height="2.2" fill="#2B63C4"/><path d="M60.8 15 l3.6 3.6 l6.8-7.6" fill="none" stroke="#8A1538" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></g><circle cx="66" cy="27.5" r="3.8" fill="#2B63C4"/></g></g><path d="M150 50l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FFC929"/><path d="M24 40l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#FFC929"/></svg><span class="sv-pill">לסקר <span class="sv-arrow" aria-hidden="true">←</span></span></button>`);
     c.querySelector('button')?.addEventListener('click',openSurvey);
     const strip=host.querySelector('.join-strip');strip?host.insertBefore(c,strip):host.appendChild(c);
@@ -4881,7 +4881,7 @@ html.admin-menu-on #adminTabs,html.admin-menu-on .admin-head-actions .admin-comm
   const GROUPS=[
     ['🤝 צוותים ושיתופי פעולה',[['tabTeams','🔒 צוותים: סגירה בקוד וניהול'],['adminResearch','🔬 רעיונות למחקר'],['tabSurvey','📊 סקר רעיונות']]],
     ['👥 הנבחרת',[['tabPeople','כרטיסי הנבחרת: עריכה והוספה'],['adminMemberCode','👤 קוד כניסה אישי לחבר/ה אחד/ת'],['adminMemberCodes','👤 שליחת קודי כניסה לכולם'],['adminTopicsInvite','🎯 קישור לבחירת נושאים']]],
-    ['📚 תוכן באתר',[['tabRes','כל החומרים: העלאה ועריכה'],['tabLib','מאגר מקורות'],['tabLibraryFeed','מקורות חדשים לספרייה'],['tabCalls','📢 קולות קוראים'],['tabMsg','הודעות לקהילה'],['tabGal','גלריה']]],
+    ['📚 תוכן באתר',[['tabHomeCards','🏠 כרטיסים בעמוד הראשי'],['tabRes','כל החומרים: העלאה ועריכה'],['tabLib','מאגר מקורות'],['tabLibraryFeed','מקורות חדשים לספרייה'],['tabCalls','📢 קולות קוראים'],['tabMsg','הודעות לקהילה'],['tabGal','גלריה']]],
     ['✉ מיילים ופניות',[['adminCommunityMail','✉ עדכון לקהילה והעדכון השבועי'],['adminRequests',null]]],
   ];
   const HIDE=new Set(['tabNevet']); // נבט מוסתר באתר (5.11.2026)
@@ -9012,21 +9012,28 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     new MutationObserver(()=>apply(list,box)).observe(list,{childList:true});apply(list,box);
   }
   let hidden=[];
-  const cards=()=>[...document.querySelectorAll('#now .icer-project-card[data-card-id]')];
-  function applyHidden(){for(const c of cards())c.hidden=hidden.includes(c.dataset.cardId);}
+  const cards=()=>[...document.querySelectorAll('#now [data-card-id]')];
+  /* כרטיס עם data-default-hidden מוסתר עד שמחזירים אותו (נשמר כ-show-<id>) */
+  const isOff=c=>{const id=c.dataset.cardId;return c.dataset.defaultHidden?!hidden.includes('show-'+id):hidden.includes(id);};
+  function applyHidden(){for(const c of cards())c.hidden=isOff(c);}
   function renderAdmin(){
     const box=document.getElementById('hcList');if(!box)return;
-    box.innerHTML=cards().map(c=>{const id=c.dataset.cardId,off=hidden.includes(id),img=c.querySelector('img');
-      return `<div class="admin-row"><div class="hc-row"><img src="${img?img.getAttribute('src'):''}" alt="${(img?.alt||'').replace(/"/g,'&quot;')}"><div><h4 dir="auto">${(c.getAttribute('aria-label')||id).split(':')[0].replace(/</g,'&lt;')}</h4><small>${off?'מוסתר מהעמוד הראשי':'מוצג בעמוד הראשי'}</small></div></div><div class="admin-row-actions"><button type="button" class="${off?'':'danger'}" data-hc="${id}">${off?'החזרה לעמוד':'הסתרה'}</button></div></div>`;}).join('')||'<p class="muted">אין כרטיסים.</p>';
+    box.innerHTML=cards().map(c=>{const id=c.dataset.cardId,off=isOff(c),img=c.querySelector('img');
+      return `<div class="admin-row"><div class="hc-row">${img?`<img src="${img.getAttribute('src')}" alt="${(img.alt||'').replace(/"/g,'&quot;')}">`:'<span class="hc-noimg">💡</span>'}<div><h4 dir="auto">${(c.dataset.cardLabel||(c.getAttribute('aria-label')||id).split(':')[0]).replace(/</g,'&lt;')}</h4><small>${off?'מוסתר מהעמוד הראשי':'מוצג בעמוד הראשי'}</small></div></div><div class="admin-row-actions"><button type="button" class="${off?'':'danger'}" data-hc="${id}">${off?'החזרה לעמוד':'הסתרה'}</button></div></div>`;}).join('')||'<p class="muted">אין כרטיסים.</p>';
   }
   async function save(next){
     const prev=hidden;hidden=next;applyHidden();renderAdmin();
     try{const r=await fetch('/api/home-cards',{method:'PUT',headers:apiHeaders(),body:JSON.stringify({hidden:next})});if(!r.ok)throw 0;}
     catch(e){hidden=prev;applyHidden();renderAdmin();alert('השמירה לא הצליחה. אפשר לנסות שוב, או להיכנס מחדש לניהול.');}
   }
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-hc]');if(!b)return;const id=b.dataset.hc;save(hidden.includes(id)?hidden.filter(x=>x!==id):hidden.concat(id));});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-hc]');if(!b)return;const id=b.dataset.hc;const c=cards().find(x=>x.dataset.cardId===id);if(!c)return;
+    const key=c.dataset.defaultHidden?'show-'+id:id,has=hidden.includes(key);save(has?hidden.filter(x=>x!==key):hidden.concat(key));});
+  /* כפתור בתפריט הניהול: פותח את "כל החומרים" וגולל לכרטיסים */
+  function addTab(){const t=document.getElementById('adminTabs');if(!t||document.getElementById('tabHomeCards'))return;if(typeof currentAccessRole!=='undefined'&&currentAccessRole!=='admin')return;
+    const b=document.createElement('button');b.id='tabHomeCards';b.type='button';b.textContent='🏠 כרטיסים בעמוד הראשי';
+    b.onclick=()=>{document.getElementById('tabRes')?.click();setTimeout(()=>{renderAdmin();const d=document.getElementById('hcAdmin');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}},120);};t.appendChild(b);}
   document.addEventListener('DOMContentLoaded',()=>{
-    renderAdmin();LISTS.forEach(attach);
+    renderAdmin();LISTS.forEach(attach);addTab();const t=document.getElementById('adminTabs');if(t)new MutationObserver(addTab).observe(t,{childList:true});
     fetch('/api/home-cards').then(r=>r.ok?r.json():{hidden:[]}).then(d=>{hidden=Array.isArray(d.hidden)?d.hidden:[];applyHidden();renderAdmin();}).catch(()=>{});
   });
 })();
@@ -9035,6 +9042,6 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 .admin-search{display:flex;align-items:center;gap:10px;margin:8px 0}.admin-search input{flex:1;min-height:38px;border:1px solid #9bbac6;border-radius:6px;padding:6px 10px;font:inherit}.admin-search small{color:#5e7581;white-space:nowrap}
 .hc-admin{border:1px solid #d6e4e8;border-radius:8px;padding:8px 12px;margin:0 0 14px;background:#fff}.hc-admin summary{cursor:pointer;font-weight:700;color:#244b61}
 .hc-row{display:flex;gap:12px;align-items:center}.hc-row img{width:150px;height:auto;border-radius:6px;border:1px solid #e0e5e7}
-.icer-project-card[hidden]{display:none!important}
+.icer-project-card[hidden],.sv-card[hidden]{display:none!important}.hc-noimg{display:grid;place-items:center;width:150px;height:62px;border-radius:6px;background:#fff8e6;font-size:28px}
 </style>
 </body></html>
