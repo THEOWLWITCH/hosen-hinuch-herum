@@ -1086,7 +1086,7 @@ section{padding:58px 0!important}
   border-color:rgba(64,104,124,.24)!important;
   color:#244b61!important;
 }
-#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar{display:none!important}
+#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar,#journals{display:none!important}
 html[data-page="now"] #now,
 html[data-page="match"] #match,
 html[data-page="gallery"] #gallery,
@@ -1103,6 +1103,7 @@ html[data-page="policy"] #resources,
 html[data-page="professional"] #resources{display:block!important}
 html[data-page="compass"] #compass{display:block!important}
 html[data-page="kikar"] #kikar{display:block!important}
+html[data-page="journals"] #journals{display:block!important}
 html[data-resource-page="1"] #resources .topics{display:none!important}
 html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
 html[data-resource-page="1"] #resources .resource-area{
@@ -2286,6 +2287,35 @@ body:has(.feedback-modal.open){
 .compass-workspace{margin-top:22px;padding:22px 24px;background:#fff;border:1px solid #d6e4e8;border-radius:10px}.compass-workspace-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;border-bottom:1px solid #e0eaed;padding-bottom:10px}.compass-workspace-head span{font-size:11px;color:#6f8d99}.compass-workspace-head h2{margin:2px 0 0;font-size:22px}.compass-workspace-head a{font-size:12px;color:#2b667e}.compass-start-form{margin:0}.compass-how{margin-top:14px;padding:12px 14px;background:#f6fafb;border-right:3px solid #86aeba;color:#506975}.compass-how summary{cursor:pointer;color:#315d71;font-weight:650}.compass-how p{margin:9px 0 0;font-size:13px;line-height:1.65}.compass-result{margin-top:18px}.compass-result .compass-source{padding:11px 0}.compass-result .compass-source .apa-citation{margin:0 0 3px;color:#294f62;font-size:12px;line-height:1.55}.compass-result .compass-source .relevance{margin:0;color:#60747d;font-size:12px;line-height:1.55}.compass-next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.compass-next-grid article{padding:10px;background:#f7fafb;border-right:3px solid #8cb1bc}.compass-next-grid h4{margin:0 0 4px;color:#31576a;font-size:13px}.compass-next-grid p{margin:0;font-size:12px;line-height:1.55;color:#5c737e}@media(max-width:700px){.compass-workspace{padding:17px}.compass-workspace-head{align-items:flex-start;flex-direction:column}.compass-next-grid{grid-template-columns:1fr}}</style>
 <style id="compass-library-modal-v1">
 .compass-library-modal{position:fixed;inset:0;z-index:11000;display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;background:rgba(25,45,57,.48);overflow:auto}.compass-library-modal.open{display:flex}.compass-library-dialog{position:relative;width:min(100%,1080px);margin:auto;background:#fbfcfc;border-radius:12px;box-shadow:0 22px 64px rgba(16,42,57,.3);overflow:hidden}.compass-library-close{position:sticky;top:10px;z-index:1;float:left;margin:10px;border:0;border-radius:50%;width:36px;height:36px;background:#fff;color:#315d71;font-size:23px;cursor:pointer;box-shadow:0 2px 8px rgba(20,50,65,.18)}.compass-library-dialog #compass{display:block!important;padding:0 0 28px!important}.compass-library-dialog #compass .wrap{width:min(100%,980px)!important;padding:28px 24px 0!important}.compass-library-dialog .compass-hero{margin-top:0!important}@media(max-width:700px){.compass-library-modal{padding:0}.compass-library-dialog{min-height:100vh;border-radius:0}.compass-library-dialog #compass .wrap{padding:20px 16px 0!important}}</style>
+<style id="journals-finder-v1">
+/* איתור כתב עת למאמר (10.11.2026): מסך שמציג את הכלי ומפנה אליו. הכלי עצמו רץ בתוך Claude. */
+#journals{background:#fdfbf6}
+#journals .jf-wrap{max-width:1080px;margin:0 auto;padding:30px 24px 56px;display:flex;flex-direction:column;gap:22px}
+#journals header.jf-head{display:flex;gap:24px;align-items:center;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;min-height:0!important;position:static!important}
+#journals .jf-feat{align-items:start}
+#journals .jf-head img{width:120px;height:120px;flex:none}
+#journals .jf-pill{display:inline-block;background:#f6e3e6;color:#8a2338;font-weight:700;font-size:13px;padding:3px 12px;border-radius:20px}
+#journals h1{font-size:36px;margin:6px 0 4px;color:#1f4a63;line-height:1.15}
+#journals .jf-sub{font-size:18px;color:#8a2338;font-weight:650;margin:0}
+#journals .jf-lead{font-size:16px;color:#3f5866;margin:6px 0 0;max-width:720px}
+#journals .jf-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#journals .jf-step{background:#fff;border:1px solid #eadfca;border-radius:12px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start}
+#journals .jf-step b.n{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#8a2338;color:#fff;font-size:17px}
+#journals .jf-step h3{margin:2px 0 4px;font-size:17px;color:#1f4a63}
+#journals .jf-step p{margin:0;font-size:14px;color:#4c6573;line-height:1.55}
+#journals .jf-cta{background:#1f4a63;color:#fff;border-radius:14px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+#journals .jf-cta p{margin:0;font-size:15px;line-height:1.6;max-width:640px;color:#e6eff5}
+#journals .jf-cta a.jf-open{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#1f4a63;font-weight:750;font-size:17px;padding:12px 26px;border-radius:30px;text-decoration:none;white-space:nowrap}
+#journals .jf-cta a.jf-open:hover{background:#f1e8d6}
+#journals .jf-feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#journals .jf-box{background:#fff;border:1px solid #eadfca;border-radius:12px;padding:16px 18px}
+#journals .jf-box h2{font-size:18px;margin:0 0 8px;color:#1f4a63}
+#journals .jf-box ul{margin:0;padding-inline-start:20px;font-size:14px;line-height:1.65;color:#3f5866}
+#journals details.jf-box summary{cursor:pointer;font-weight:700;color:#1f4a63;font-size:17px}
+#journals details.jf-box p{font-size:14px;line-height:1.65;color:#3f5866;margin:8px 0 0}
+#journals .jf-note{font-size:13px;color:#5e7581;margin:0}
+@media(max-width:760px){#journals .jf-steps,#journals .jf-feat{grid-template-columns:1fr}#journals .jf-head{flex-direction:column;align-items:flex-start}#journals .jf-head img{width:84px;height:84px}#journals h1{font-size:28px}#journals .jf-wrap{padding:22px 14px 40px}}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2304,6 +2334,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="conferences" href="/conferences">כנסים</a>
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
+    <a class="site-tab" data-route="journals" href="/journals">🔎 איתור כתב עת</a>
     <!-- 5.11.2026: נבט ואריאדנה מוסתרים עד שיוחלט איך משלמים על השימוש בהם. להחזרה: להסיר את hidden. -->
     <a class="site-tab" data-route="apps" href="/apps" hidden>🌱 יישומים</a>
     <a class="site-tab" data-route="tasks" href="/tasks" hidden>🧵 אֲרִיאַדְנֶה</a>
@@ -2320,12 +2351,47 @@ body:has(.feedback-modal.open){
 </aside>
 <div class="top-now-content">
 <div class="grid">
+<a class="icer-project-card" href="/journals" aria-label="איתור כתב עת למאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת למאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
 <a class="icer-project-card" href="/kikar" aria-label="כיכר הקהילה: שיח מקצועי לשיתוף ידע והעברתו לשדה. לכניסה לכיכר"><img src="/assets/kikar-card.webp" alt="כיכר הקהילה · ساحة المجتمع. נושא אחד במרכז ושבע שיחות סביבו"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 <a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
 </div>
 <div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button><a class="join-guide" href="/guide">🗺️ המדריך לקהילה</a></div>
 </div>
+</div></section>
+<section id="journals" aria-labelledby="jfTitle"><div class="jf-wrap">
+  <header class="jf-head">
+    <img src="/assets/journals-icon.svg" alt="" width="120" height="120">
+    <div>
+      <span class="jf-pill">חדש באתר · כלי לחוקרות ולחוקרים</span>
+      <h1 id="jfTitle">איתור כתב עת למאמר</h1>
+      <p class="jf-sub">באנגלית, בעברית ובערבית</p>
+      <p class="jf-lead">מתחילים מרשימת הפרסומים, מעלים את המאמר שרוצים לפרסם, ומקבלים חמישה כתבי עת לפי סדר עדיפות, עם הסבר למה כל אחד מתאים יותר או פחות.</p>
+    </div>
+  </header>
+  <div class="jf-steps">
+    <div class="jf-step"><b class="n">1</b><div><h3>רשימת הפרסומים</h3><p>מדביקים קורות חיים או רשימה מ-Google Scholar או מ-ORCID, או מעלים קובץ. אפשר להוסיף את הרשימות של כל מי שכותבים יחד את המאמר.</p></div></div>
+    <div class="jf-step"><b class="n">2</b><div><h3>המאמר</h3><p>מעלים את המאמר או מדביקים תקציר, ועונים על כמה שאלות: באילו שפות אפשר לפרסם, מה הכי חשוב, האם צריך כתב עת מדורג, ומהי תקרת דמי הפרסום.</p></div></div>
+    <div class="jf-step"><b class="n">3</b><div><h3>חמישה כתבי עת</h3><p>לפי סדר הגשה, ועוד שלוש חלופות. לכל כתב עת: למה מתאים, מה פחות מתאים ומה כדאי להדגיש. אחר כך עוקבים אחרי ההגשות.</p></div></div>
+  </div>
+  <div class="jf-cta">
+    <p>הכלי פועל בתוך Claude, ולכן צריך להיות מחוברים לחשבון Claude. כל אחד ואחת עובדים בחשבון שלהם. רשימות הפרסומים, המאמרים וההגשות נשמרים באופן פרטי, וחברות וחברים אחרים בקהילה לא רואים אותם.</p>
+    <a class="jf-open" href="https://claude.ai/artifact/Ad1GZnbmV3HpDjGrxMQT9a" target="_blank" rel="noopener">פתיחת הכלי ←</a>
+  </div>
+  <div class="jf-feat">
+    <div class="jf-box"><h2>מה יש בכלי</h2><ul>
+      <li>מאגר של 6,471 כתבי עת: 6,445 מדירוג SCImago 2025 בתחומי הקהילה, ועוד 26 כתבי עת שפיטים בעברית ובערבית</li>
+      <li>כמה חוקרות וחוקרים למאמר אחד: ההמלצות מתחשבות בתחומים ובכתבי העת של כולם</li>
+      <li>דיוק החיפוש: פרמטרים משלכם (חובה, חשוב או יתרון), הנחיות חופשיות וקבצים, כמו קול קורא או הערות שופטים</li>
+      <li>הסברים בעברית, בערבית או באנגלית</li>
+      <li>מעקב אחרי הגשות, קבלות ודחיות</li>
+    </ul></div>
+    <details class="jf-box"><summary>לפי מה נבחרים כתבי העת</summary>
+      <p>קודם הכלי מסנן לפי התשובות שלכם: שפה, דירוג, מודל פרסום ודמי פרסום. כתבי עת שכבר דחו את המאמר יוצאים מהרשימה. אחר כך הוא מדרג לפי החפיפה בין תחומי המאמר לתחומי כתב העת, לפי מילות המפתח ולפי כתבי העת שכבר פרסמתם בהם. כתבי עת על השכלה גבוהה מקבלים משקל נמוך, כי הקהילה מתמקדת בבתי ספר ובצוותי חינוך.</p>
+      <p>בסוף Claude קורא את המאמר ואת הפרופיל המחקרי ובונה סולם הגשה, מהשאפתני לבטוח. הוא מתחשב בנושא, בשיטה, בשפה, בדחיות קודמות ובפרמטרים שהוספתם. ההסבר המלא נמצא בכפתור "אודות" שבכלי.</p>
+    </details>
+  </div>
+  <p class="jf-note">ההמלצות הן נקודת פתיחה. לפני הגשה כדאי לבדוק באתר כתב העת את ההנחיות ואת העלויות, ובמוסד שלכם את ההכרה בו לצורכי קידום.</p>
 </div></section>
 <section id="match" class="match"><div class="wrap">
 <div class="section-head"><div><h2>שיתופי פעולה</h2></div></div>
@@ -7408,7 +7474,7 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar','journals']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
@@ -7417,7 +7483,7 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   try{const d=new Date().toISOString().slice(0,10),k='hosen_pv_'+resolved,v=localStorage.getItem('hosen_visit_id')||'';if(/^[a-z0-9]{10,32}$/.test(v)&&localStorage.getItem(k)!==d){localStorage.setItem(k,d);setTimeout(()=>fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({v,p:resolved})}).catch(()=>{}),3000)}}catch(e){}
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
   // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
-  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
+  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',journals:'איתור כתב עת למאמר',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
     if(T[resolved])document.title=T[resolved]+' · '+base;
     const c=document.getElementById('canonicalLink');if(c)c.href='https://hosen-hinuch-herum.netlify.app/'+(resolved==='now'?'':resolved);}catch(e){}
 
