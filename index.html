@@ -1086,7 +1086,7 @@ section{padding:58px 0!important}
   border-color:rgba(64,104,124,.24)!important;
   color:#244b61!important;
 }
-#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar{display:none!important}
+#now,#match,#gallery,#people,#resources,#researchWorld,#compass,#kikar,#journals{display:none!important}
 html[data-page="now"] #now,
 html[data-page="match"] #match,
 html[data-page="gallery"] #gallery,
@@ -1103,6 +1103,7 @@ html[data-page="policy"] #resources,
 html[data-page="professional"] #resources{display:block!important}
 html[data-page="compass"] #compass{display:block!important}
 html[data-page="kikar"] #kikar{display:block!important}
+html[data-page="journals"] #journals{display:block!important}
 html[data-resource-page="1"] #resources .topics{display:none!important}
 html[data-resource-page="1"] #resources .resource-area-head{display:none!important}
 html[data-resource-page="1"] #resources .resource-area{
@@ -2286,6 +2287,35 @@ body:has(.feedback-modal.open){
 .compass-workspace{margin-top:22px;padding:22px 24px;background:#fff;border:1px solid #d6e4e8;border-radius:10px}.compass-workspace-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;border-bottom:1px solid #e0eaed;padding-bottom:10px}.compass-workspace-head span{font-size:11px;color:#6f8d99}.compass-workspace-head h2{margin:2px 0 0;font-size:22px}.compass-workspace-head a{font-size:12px;color:#2b667e}.compass-start-form{margin:0}.compass-how{margin-top:14px;padding:12px 14px;background:#f6fafb;border-right:3px solid #86aeba;color:#506975}.compass-how summary{cursor:pointer;color:#315d71;font-weight:650}.compass-how p{margin:9px 0 0;font-size:13px;line-height:1.65}.compass-result{margin-top:18px}.compass-result .compass-source{padding:11px 0}.compass-result .compass-source .apa-citation{margin:0 0 3px;color:#294f62;font-size:12px;line-height:1.55}.compass-result .compass-source .relevance{margin:0;color:#60747d;font-size:12px;line-height:1.55}.compass-next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.compass-next-grid article{padding:10px;background:#f7fafb;border-right:3px solid #8cb1bc}.compass-next-grid h4{margin:0 0 4px;color:#31576a;font-size:13px}.compass-next-grid p{margin:0;font-size:12px;line-height:1.55;color:#5c737e}@media(max-width:700px){.compass-workspace{padding:17px}.compass-workspace-head{align-items:flex-start;flex-direction:column}.compass-next-grid{grid-template-columns:1fr}}</style>
 <style id="compass-library-modal-v1">
 .compass-library-modal{position:fixed;inset:0;z-index:11000;display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;background:rgba(25,45,57,.48);overflow:auto}.compass-library-modal.open{display:flex}.compass-library-dialog{position:relative;width:min(100%,1080px);margin:auto;background:#fbfcfc;border-radius:12px;box-shadow:0 22px 64px rgba(16,42,57,.3);overflow:hidden}.compass-library-close{position:sticky;top:10px;z-index:1;float:left;margin:10px;border:0;border-radius:50%;width:36px;height:36px;background:#fff;color:#315d71;font-size:23px;cursor:pointer;box-shadow:0 2px 8px rgba(20,50,65,.18)}.compass-library-dialog #compass{display:block!important;padding:0 0 28px!important}.compass-library-dialog #compass .wrap{width:min(100%,980px)!important;padding:28px 24px 0!important}.compass-library-dialog .compass-hero{margin-top:0!important}@media(max-width:700px){.compass-library-modal{padding:0}.compass-library-dialog{min-height:100vh;border-radius:0}.compass-library-dialog #compass .wrap{padding:20px 16px 0!important}}</style>
+<style id="journals-finder-v1">
+/* איתור כתב עת לפרסום מאמר (10.11.2026): מסך שמציג את הכלי ומפנה אליו. הכלי עצמו רץ בתוך Claude. */
+#journals{background:#fdfbf6}
+#journals .jf-wrap{max-width:1080px;margin:0 auto;padding:30px 24px 56px;display:flex;flex-direction:column;gap:22px}
+#journals header.jf-head{display:flex;gap:24px;align-items:center;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;min-height:0!important;position:static!important}
+#journals .jf-feat{align-items:start}
+#journals .jf-head img{width:120px;height:120px;flex:none}
+#journals .jf-pill{display:inline-block;background:#f6e3e6;color:#8a2338;font-weight:700;font-size:13px;padding:3px 12px;border-radius:20px}
+#journals h1{font-size:36px;margin:6px 0 4px;color:#1f4a63;line-height:1.15}
+#journals .jf-sub{font-size:18px;color:#8a2338;font-weight:650;margin:0}
+#journals .jf-lead{font-size:16px;color:#3f5866;margin:6px 0 0;max-width:720px}
+#journals .jf-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#journals .jf-step{background:#fff;border:1px solid #eadfca;border-radius:12px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start}
+#journals .jf-step b.n{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#8a2338;color:#fff;font-size:17px}
+#journals .jf-step h3{margin:2px 0 4px;font-size:17px;color:#1f4a63}
+#journals .jf-step p{margin:0;font-size:14px;color:#4c6573;line-height:1.55}
+#journals .jf-cta{background:#1f4a63;color:#fff;border-radius:14px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+#journals .jf-cta p{margin:0;font-size:15px;line-height:1.6;max-width:640px;color:#e6eff5}
+#journals .jf-cta a.jf-open{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#1f4a63;font-weight:750;font-size:17px;padding:12px 26px;border-radius:30px;text-decoration:none;white-space:nowrap}
+#journals .jf-cta a.jf-open:hover{background:#f1e8d6}
+#journals .jf-feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#journals .jf-box{background:#fff;border:1px solid #eadfca;border-radius:12px;padding:16px 18px}
+#journals .jf-box h2{font-size:18px;margin:0 0 8px;color:#1f4a63}
+#journals .jf-box ul{margin:0;padding-inline-start:20px;font-size:14px;line-height:1.65;color:#3f5866}
+#journals details.jf-box summary{cursor:pointer;font-weight:700;color:#1f4a63;font-size:17px}
+#journals details.jf-box p{font-size:14px;line-height:1.65;color:#3f5866;margin:8px 0 0}
+#journals .jf-note{font-size:13px;color:#5e7581;margin:0}
+@media(max-width:760px){#journals .jf-steps,#journals .jf-feat{grid-template-columns:1fr}#journals .jf-head{flex-direction:column;align-items:flex-start}#journals .jf-head img{width:84px;height:84px}#journals h1{font-size:28px}#journals .jf-wrap{padding:22px 14px 40px}}
+</style>
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -2304,6 +2334,7 @@ body:has(.feedback-modal.open){
     <a class="site-tab" data-route="conferences" href="/conferences">כנסים</a>
     <a class="site-tab" data-route="grants" href="/grants">מענקי מחקר</a>
     <a class="site-tab" data-route="library" href="/library">ספריה</a>
+    <a class="site-tab" data-route="journals" href="/journals">🔎 איתור כתב עת</a>
     <!-- 5.11.2026: נבט ואריאדנה מוסתרים עד שיוחלט איך משלמים על השימוש בהם. להחזרה: להסיר את hidden. -->
     <a class="site-tab" data-route="apps" href="/apps" hidden>🌱 יישומים</a>
     <a class="site-tab" data-route="tasks" href="/tasks" hidden>🧵 אֲרִיאַדְנֶה</a>
@@ -2320,12 +2351,45 @@ body:has(.feedback-modal.open){
 </aside>
 <div class="top-now-content">
 <div class="grid">
-<a class="icer-project-card" href="/kikar" aria-label="כיכר הקהילה: שיח מקצועי לשיתוף ידע והעברתו לשדה. לכניסה לכיכר"><img src="/assets/kikar-card.webp" alt="כיכר הקהילה · ساحة المجتمع. נושא אחד במרכז ושבע שיחות סביבו"></a>
-<a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
-<a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"><img src="/assets/save-the-date.webp" alt="Save the Date — מועדי המפגשים הקרובים של קהילת חוסן חינוך חרום"></a>
+<a class="icer-project-card" data-card-id="journals" href="/journals" aria-label="איתור כתב עת לפרסום מאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת לפרסום מאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
+<a class="icer-project-card" data-card-id="icer2027" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 </div>
 <div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button><a class="join-guide" href="/guide">🗺️ המדריך לקהילה</a></div>
 </div>
+</div></section>
+<section id="journals" aria-labelledby="jfTitle"><div class="jf-wrap">
+  <header class="jf-head">
+    <img src="/assets/journals-icon.svg" alt="" width="120" height="120">
+    <div>
+      <span class="jf-pill">חדש באתר · כלי לחוקרות ולחוקרים</span>
+      <h1 id="jfTitle">איתור כתב עת לפרסום מאמר</h1>
+      <p class="jf-sub">באנגלית, בעברית ובערבית</p>
+      <p class="jf-lead">מתחילים מרשימת הפרסומים, מעלים את המאמר שרוצים לפרסם, ומקבלים חמישה כתבי עת לפי סדר עדיפות, עם הסבר למה כל אחד מתאים יותר או פחות.</p>
+    </div>
+  </header>
+  <div class="jf-steps">
+    <div class="jf-step"><b class="n">1</b><div><h3>רשימת הפרסומים</h3><p>מדביקים קורות חיים או רשימה מ-Google Scholar או מ-ORCID, או מעלים קובץ. אפשר להוסיף את הרשימות של כל מי שכותבים יחד את המאמר.</p></div></div>
+    <div class="jf-step"><b class="n">2</b><div><h3>המאמר</h3><p>מעלים את המאמר או מדביקים תקציר, ועונים על כמה שאלות: באילו שפות אפשר לפרסם, מה הכי חשוב, האם צריך כתב עת מדורג, ומהי תקרת דמי הפרסום.</p></div></div>
+    <div class="jf-step"><b class="n">3</b><div><h3>חמישה כתבי עת</h3><p>לפי סדר הגשה, ועוד שלוש חלופות. לכל כתב עת: למה מתאים, מה פחות מתאים ומה כדאי להדגיש. אחר כך עוקבים אחרי ההגשות.</p></div></div>
+  </div>
+  <div class="jf-cta">
+    <p>הכלי פועל בתוך Claude, ולכן צריך להיות מחוברים לחשבון Claude. כל אחד ואחת עובדים בחשבון שלהם. רשימות הפרסומים, המאמרים וההגשות נשמרים באופן פרטי, וחברות וחברים אחרים בקהילה לא רואים אותם.</p>
+    <a class="jf-open" href="https://claude.ai/artifact/Ad1GZnbmV3HpDjGrxMQT9a" target="_blank" rel="noopener">פתיחת הכלי ←</a>
+  </div>
+  <div class="jf-feat">
+    <div class="jf-box"><h2>מה יש בכלי</h2><ul>
+      <li>מאגר של 6,471 כתבי עת: 6,445 מדירוג SCImago 2025 בתחומי הקהילה, ועוד 26 כתבי עת שפיטים בעברית ובערבית</li>
+      <li>כמה חוקרות וחוקרים למאמר אחד: ההמלצות מתחשבות בתחומים ובכתבי העת של כולם</li>
+      <li>דיוק החיפוש: פרמטרים משלכם (חובה, חשוב או יתרון), הנחיות חופשיות וקבצים, כמו קול קורא או הערות שופטים</li>
+      <li>הסברים בעברית, בערבית או באנגלית</li>
+      <li>מעקב אחרי הגשות, קבלות ודחיות</li>
+    </ul></div>
+    <details class="jf-box"><summary>לפי מה נבחרים כתבי העת</summary>
+      <p>קודם הכלי מסנן לפי התשובות שלכם: שפה, דירוג, מודל פרסום ודמי פרסום. כתבי עת שכבר דחו את המאמר יוצאים מהרשימה. אחר כך הוא מדרג לפי החפיפה בין תחומי המאמר לתחומי כתב העת, לפי מילות המפתח ולפי כתבי העת שכבר פרסמתם בהם. כתבי עת על השכלה גבוהה מקבלים משקל נמוך, כי הקהילה מתמקדת בבתי ספר ובצוותי חינוך.</p>
+      <p>בסוף Claude קורא את המאמר ואת הפרופיל המחקרי ובונה סולם הגשה, מהשאפתני לבטוח. הוא מתחשב בנושא, בשיטה, בשפה, בדחיות קודמות ובפרמטרים שהוספתם. ההסבר המלא נמצא בכפתור "אודות" שבכלי.</p>
+    </details>
+  </div>
+  <p class="jf-note">ההמלצות הן נקודת פתיחה. לפני הגשה כדאי לבדוק באתר כתב העת את ההנחיות ואת העלויות, ובמוסד שלכם את ההכרה בו לצורכי קידום.</p>
 </div></section>
 <section id="match" class="match"><div class="wrap">
 <div class="section-head"><div><h2>שיתופי פעולה</h2></div></div>
@@ -6170,6 +6234,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
   <div class="admin-head"><h2 id="adminPanelTitle">ניהול מערכת</h2><div class="admin-head-actions"><button id="adminCommunityMail" type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-min" onclick="hosenDock&&hosenDock.minimizeAdmin()" title="הקטנה — חוזרים בלחיצה על הלשונית למטה, בלי לצאת">▁ הקטנה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
   <div class="admin-tabs" id="adminTabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">כל החומרים</button><button id="tabLib" onclick="showAdminTab('library')">מאגר מקורות</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
   <section id="adminResources">
+   <details class="hc-admin" id="hcAdmin" open><summary>🏠 כרטיסים בעמוד הראשי</summary>
+    <p class="admin-note">הכרטיסים הגדולים בראש העמוד הראשי. "הסתרה" מורידה כרטיס מהעמוד, ו"החזרה" מחזירה אותו.</p>
+    <div id="hcList" class="admin-list"></div>
+   </details>
    <h3 id="adminResourcesTitle">ניהול כל החומרים באתר</h3>
    <p id="adminResourcesNote" class="admin-note">כאן מרוכזים החומרים מכל מדורי האתר. מנהלת המערכת יכולה להוסיף, לערוך ולמחוק.</p>
    <input type="hidden" id="resId">
@@ -6760,7 +6828,7 @@ async function uploadOneGalleryFile(file){const prepared=await compressGalleryFi
 function validateGalleryMedia(media){for(let i=0;i<media.length;i++){const m=media[i];if(!String(m.title||'').trim())return `חסרה כותרת לתמונה מספר ${i+1}.`;if(!String(m.credit||'').trim())return `חסר קרדיט / שם צלם לתמונה מספר ${i+1}.`;if(!String(m.date||'').trim())return `חסר תאריך צילום לתמונה מספר ${i+1}.`}return ''}
 async function saveGalleryItem(){const publishButtons=[...document.querySelectorAll('.gallery-publish-btn')];publishButtons.forEach(b=>{b.disabled=true;b.textContent='מפרסם...'});galleryStatus('');try{const eventTitle=galleryTitle.value.trim(),eventDate=galleryDate.value;if(!eventTitle){galleryStatus('יש להזין כותרת לאירוע / לאלבום.','error');return}if(!eventDate){galleryStatus('יש להזין תאריך אירוע.','error');return}if(!galleryEditMedia.length&&!galleryPendingFiles.length){galleryStatus('יש לבחור לפחות תמונה אחת.','error');return}const existing=galleryEditMedia.map(({key,name,type,title,credit,date})=>({key,name,type,title:String(title||'').trim(),credit:String(credit||'').trim(),date:date||eventDate}));const pendingMeta=galleryPendingFiles.map(x=>({title:String(x.title||'').trim(),credit:String(x.credit||'').trim(),date:x.date||eventDate}));const err=validateGalleryMedia([...existing,...pendingMeta]);if(err){galleryStatus(err,'error');return}galleryStatus(galleryPendingFiles.length?`מעלה ${galleryPendingFiles.length} תמונות...`:'שומר...');const fresh=[];for(let i=0;i<galleryPendingFiles.length;i++){const p=galleryPendingFiles[i];galleryStatus(`מעלה תמונה ${i+1} מתוך ${galleryPendingFiles.length}: ${p.file.name}`);const uploaded=await uploadOneGalleryFile(p.file);fresh.push({...uploaded,title:p.title.trim(),credit:p.credit.trim(),date:p.date||eventDate})}const media=[...existing,...fresh];const body={id:galleryId.value||undefined,title:eventTitle,date:eventDate,description:galleryDescription.value.trim(),links:linksGet('galleryLinks'),media,active:galleryActive.checked};const r=await fetch('/api/gallery',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});let j={};try{j=await r.json()}catch{}if(!r.ok){if(j.error==='media_metadata')throw new Error(j.message||'חסרים פרטי קרדיט באחת התמונות.');throw new Error(j.message||'שמירת הגלריה נכשלה')}galleryStatus('הפריט נשמר בהצלחה.','success');clearGalleryForm(false);if(currentAccessRole==='admin')await loadAdminGallery();await loadGallery()}catch(e){galleryStatus(e.message||'פרסום הגלריה נכשל.','error')}finally{publishButtons.forEach(b=>{b.disabled=false;b.textContent='פרסום'})}}
 function clearGalleryForm(clearStatus=true){linksSet('galleryLinks',[]);galleryId.value='';galleryTitle.value='';galleryDate.value='';galleryDescription.value='';galleryFiles.value='';galleryActive.checked=true;galleryEditMedia=[];for(const x of galleryPendingFiles){if(x.preview)URL.revokeObjectURL(x.preview)}galleryPendingFiles=[];renderGalleryExistingMedia();renderGalleryPendingMedia();if(clearStatus)galleryStatus('')}
-async function loadAdminGallery(){const r=await fetch('/api/gallery?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminGalleryCache=await r.json();adminGalleryList.innerHTML=adminGalleryCache.length?adminGalleryCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${heDate(x.date)} · ${x.media?.length||0} תמונות ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editGalleryItem('${x.id}')">עריכה</button><button class="danger" onclick="deleteGalleryItem('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין עדיין פריטי גלריה.</p>'}
+async function loadAdminGallery(){const r=await fetch('/api/gallery?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminGalleryCache=await r.json();adminGalleryList.innerHTML=adminGalleryCache.length?adminGalleryCache.map(x=>`<div class="admin-row" data-search="${esc([(x.description||'')].concat((x.media||[]).map(m=>(m.title||'')+' '+(m.name||''))).join(' '))}"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${heDate(x.date)} · ${x.media?.length||0} תמונות ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editGalleryItem('${x.id}')">עריכה</button><button class="danger" onclick="deleteGalleryItem('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין עדיין פריטי גלריה.</p>'}
 function editGalleryItem(id){const x=adminGalleryCache.find(a=>a.id===id);if(!x)return;linksSet('galleryLinks',x.links||[]);galleryId.value=x.id;galleryTitle.value=x.title||'';galleryDate.value=x.date||'';galleryDescription.value=x.description||'';galleryActive.checked=x.active!==false;galleryEditMedia=(x.media||[]).map(m=>({...m,title:m.title||galleryDefaultTitle(m.name),credit:m.credit||'',date:m.date||x.date||''}));for(const p of galleryPendingFiles){if(p.preview)URL.revokeObjectURL(p.preview)}galleryPendingFiles=[];renderGalleryExistingMedia();renderGalleryPendingMedia();galleryStatus('');document.querySelector('#adminGallery').scrollIntoView({behavior:'smooth'})}
 async function deleteGalleryItem(id){if(!confirm('למחוק את פריט הגלריה ואת התמונות שלו?'))return;await fetch('/api/gallery',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminGallery();await loadGallery()}
 
@@ -7408,7 +7476,7 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   const libraryLabels={professional:'משאבים',publications:'פרסומים — ספרים ומאמרים',policy:'מסמכי מדיניות','research-tools':'כלי מחקר'};
   const path=(location.pathname||'/').replace(/^\/+|\/+$/g,'');
   const requested=path||'now';
-  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar']);
+  const simplePages=new Set(['now','match','gallery','people','articles','library','compass','apps','tasks','kikar','journals']);
   const resourcePages=new Set(Object.keys(labels));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
@@ -7417,7 +7485,7 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   try{const d=new Date().toISOString().slice(0,10),k='hosen_pv_'+resolved,v=localStorage.getItem('hosen_visit_id')||'';if(/^[a-z0-9]{10,32}$/.test(v)&&localStorage.getItem(k)!==d){localStorage.setItem(k,d);setTimeout(()=>fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({v,p:resolved})}).catch(()=>{}),3000)}}catch(e){}
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
   // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
-  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
+  try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',journals:'איתור כתב עת לפרסום מאמר',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';
     if(T[resolved])document.title=T[resolved]+' · '+base;
     const c=document.getElementById('canonicalLink');if(c)c.href='https://hosen-hinuch-herum.netlify.app/'+(resolved==='now'?'':resolved);}catch(e){}
 
@@ -8926,4 +8994,47 @@ section#collabHub.cb{padding:20px 22px 24px!important}
   window.hosenDateIL={toIL,toISO};
 })();
 </script>
+<script id="admin-search-v1">
+/* חיפוש בכלי הניהול וכרטיסי העמוד הראשי (10.11.2026: "אין מערכת חיפוש בתוך כלי הניהול... הרשימה ארוכה מכדי לגלול") */
+(function(){
+  const LISTS=['hcList','adminResourceList','adminGalleryList','adminMessageList','adminPeopleList'];
+  const norm=t=>String(t||'').toLowerCase().replace(/["'״׳]/g,'');
+  function apply(list,box){
+    const q=norm(box.querySelector('input').value).trim();const rows=[...list.querySelectorAll(':scope > .admin-row')];let n=0;
+    for(const r of rows){const hay=norm(r.textContent+' '+(r.dataset.search||'')+' '+[...r.querySelectorAll('img')].map(i=>i.alt+' '+i.getAttribute('src')).join(' '));const ok=!q||q.split(/\s+/).every(w=>hay.includes(w));r.hidden=!ok;if(ok)n++;}
+    box.querySelector('small').textContent=q?(n?`נמצאו ${n} מתוך ${rows.length}`:'לא נמצא. אפשר לנסות מילה אחרת.'):(rows.length?`${rows.length} פריטים`:'');
+  }
+  function attach(id){
+    const list=document.getElementById(id);if(!list||list.previousElementSibling?.classList.contains('admin-search'))return;
+    const box=document.createElement('div');box.className='admin-search';
+    box.innerHTML='<input type="search" dir="auto" placeholder="🔍 חיפוש לפי מילה מהכותרת, מהתיאור או משם התמונה" aria-label="חיפוש ברשימה"><small></small>';
+    list.before(box);box.querySelector('input').addEventListener('input',()=>apply(list,box));
+    new MutationObserver(()=>apply(list,box)).observe(list,{childList:true});apply(list,box);
+  }
+  let hidden=[];
+  const cards=()=>[...document.querySelectorAll('#now .icer-project-card[data-card-id]')];
+  function applyHidden(){for(const c of cards())c.hidden=hidden.includes(c.dataset.cardId);}
+  function renderAdmin(){
+    const box=document.getElementById('hcList');if(!box)return;
+    box.innerHTML=cards().map(c=>{const id=c.dataset.cardId,off=hidden.includes(id),img=c.querySelector('img');
+      return `<div class="admin-row"><div class="hc-row"><img src="${img?img.getAttribute('src'):''}" alt="${(img?.alt||'').replace(/"/g,'&quot;')}"><div><h4 dir="auto">${(c.getAttribute('aria-label')||id).split(':')[0].replace(/</g,'&lt;')}</h4><small>${off?'מוסתר מהעמוד הראשי':'מוצג בעמוד הראשי'}</small></div></div><div class="admin-row-actions"><button type="button" class="${off?'':'danger'}" data-hc="${id}">${off?'החזרה לעמוד':'הסתרה'}</button></div></div>`;}).join('')||'<p class="muted">אין כרטיסים.</p>';
+  }
+  async function save(next){
+    const prev=hidden;hidden=next;applyHidden();renderAdmin();
+    try{const r=await fetch('/api/home-cards',{method:'PUT',headers:apiHeaders(),body:JSON.stringify({hidden:next})});if(!r.ok)throw 0;}
+    catch(e){hidden=prev;applyHidden();renderAdmin();alert('השמירה לא הצליחה. אפשר לנסות שוב, או להיכנס מחדש לניהול.');}
+  }
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-hc]');if(!b)return;const id=b.dataset.hc;save(hidden.includes(id)?hidden.filter(x=>x!==id):hidden.concat(id));});
+  document.addEventListener('DOMContentLoaded',()=>{
+    renderAdmin();LISTS.forEach(attach);
+    fetch('/api/home-cards').then(r=>r.ok?r.json():{hidden:[]}).then(d=>{hidden=Array.isArray(d.hidden)?d.hidden:[];applyHidden();renderAdmin();}).catch(()=>{});
+  });
+})();
+</script>
+<style id="admin-search-v1-css">
+.admin-search{display:flex;align-items:center;gap:10px;margin:8px 0}.admin-search input{flex:1;min-height:38px;border:1px solid #9bbac6;border-radius:6px;padding:6px 10px;font:inherit}.admin-search small{color:#5e7581;white-space:nowrap}
+.hc-admin{border:1px solid #d6e4e8;border-radius:8px;padding:8px 12px;margin:0 0 14px;background:#fff}.hc-admin summary{cursor:pointer;font-weight:700;color:#244b61}
+.hc-row{display:flex;gap:12px;align-items:center}.hc-row img{width:150px;height:auto;border-radius:6px;border:1px solid #e0e5e7}
+.icer-project-card[hidden]{display:none!important}
+</style>
 </body></html>
