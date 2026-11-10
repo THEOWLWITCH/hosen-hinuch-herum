@@ -2351,8 +2351,8 @@ body:has(.feedback-modal.open){
 </aside>
 <div class="top-now-content">
 <div class="grid">
-<a class="icer-project-card" href="/journals" aria-label="איתור כתב עת לפרסום מאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת לפרסום מאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
-<a class="icer-project-card" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
+<a class="icer-project-card" data-card-id="journals" href="/journals" aria-label="איתור כתב עת לפרסום מאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת לפרסום מאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
+<a class="icer-project-card" data-card-id="icer2027" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 </div>
 <div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button><a class="join-guide" href="/guide">🗺️ המדריך לקהילה</a></div>
 </div>
@@ -6234,6 +6234,10 @@ html[data-page="calls"] #resourceArea{display:none!important}
   <div class="admin-head"><h2 id="adminPanelTitle">ניהול מערכת</h2><div class="admin-head-actions"><button id="adminCommunityMail" type="button" class="admin-community-mail" onclick="openCommunityMail()">שליחת עדכון לקהילה</button><button type="button" class="admin-min" onclick="hosenDock&&hosenDock.minimizeAdmin()" title="הקטנה — חוזרים בלחיצה על הלשונית למטה, בלי לצאת">▁ הקטנה</button><button type="button" class="admin-exit" onclick="logoutEditor()">יציאה</button></div></div><div id="communityMailStatus" class="community-mail-status" aria-live="polite"></div>
   <div class="admin-tabs" id="adminTabs"><button class="active" id="tabRes" onclick="showAdminTab('resources')">כל החומרים</button><button id="tabLib" onclick="showAdminTab('library')">מאגר מקורות</button><button id="tabGal" onclick="showAdminTab('gallery')">גלריה</button><button id="tabMsg" onclick="showAdminTab('messages')">הודעות קהילה</button><button id="tabPeople" onclick="showAdminTab('people')">הנבחרת</button></div>
   <section id="adminResources">
+   <details class="hc-admin" id="hcAdmin" open><summary>🏠 כרטיסים בעמוד הראשי</summary>
+    <p class="admin-note">הכרטיסים הגדולים בראש העמוד הראשי. "הסתרה" מורידה כרטיס מהעמוד, ו"החזרה" מחזירה אותו.</p>
+    <div id="hcList" class="admin-list"></div>
+   </details>
    <h3 id="adminResourcesTitle">ניהול כל החומרים באתר</h3>
    <p id="adminResourcesNote" class="admin-note">כאן מרוכזים החומרים מכל מדורי האתר. מנהלת המערכת יכולה להוסיף, לערוך ולמחוק.</p>
    <input type="hidden" id="resId">
@@ -6824,7 +6828,7 @@ async function uploadOneGalleryFile(file){const prepared=await compressGalleryFi
 function validateGalleryMedia(media){for(let i=0;i<media.length;i++){const m=media[i];if(!String(m.title||'').trim())return `חסרה כותרת לתמונה מספר ${i+1}.`;if(!String(m.credit||'').trim())return `חסר קרדיט / שם צלם לתמונה מספר ${i+1}.`;if(!String(m.date||'').trim())return `חסר תאריך צילום לתמונה מספר ${i+1}.`}return ''}
 async function saveGalleryItem(){const publishButtons=[...document.querySelectorAll('.gallery-publish-btn')];publishButtons.forEach(b=>{b.disabled=true;b.textContent='מפרסם...'});galleryStatus('');try{const eventTitle=galleryTitle.value.trim(),eventDate=galleryDate.value;if(!eventTitle){galleryStatus('יש להזין כותרת לאירוע / לאלבום.','error');return}if(!eventDate){galleryStatus('יש להזין תאריך אירוע.','error');return}if(!galleryEditMedia.length&&!galleryPendingFiles.length){galleryStatus('יש לבחור לפחות תמונה אחת.','error');return}const existing=galleryEditMedia.map(({key,name,type,title,credit,date})=>({key,name,type,title:String(title||'').trim(),credit:String(credit||'').trim(),date:date||eventDate}));const pendingMeta=galleryPendingFiles.map(x=>({title:String(x.title||'').trim(),credit:String(x.credit||'').trim(),date:x.date||eventDate}));const err=validateGalleryMedia([...existing,...pendingMeta]);if(err){galleryStatus(err,'error');return}galleryStatus(galleryPendingFiles.length?`מעלה ${galleryPendingFiles.length} תמונות...`:'שומר...');const fresh=[];for(let i=0;i<galleryPendingFiles.length;i++){const p=galleryPendingFiles[i];galleryStatus(`מעלה תמונה ${i+1} מתוך ${galleryPendingFiles.length}: ${p.file.name}`);const uploaded=await uploadOneGalleryFile(p.file);fresh.push({...uploaded,title:p.title.trim(),credit:p.credit.trim(),date:p.date||eventDate})}const media=[...existing,...fresh];const body={id:galleryId.value||undefined,title:eventTitle,date:eventDate,description:galleryDescription.value.trim(),links:linksGet('galleryLinks'),media,active:galleryActive.checked};const r=await fetch('/api/gallery',{method:body.id?'PUT':'POST',headers:apiHeaders(),body:JSON.stringify(body)});let j={};try{j=await r.json()}catch{}if(!r.ok){if(j.error==='media_metadata')throw new Error(j.message||'חסרים פרטי קרדיט באחת התמונות.');throw new Error(j.message||'שמירת הגלריה נכשלה')}galleryStatus('הפריט נשמר בהצלחה.','success');clearGalleryForm(false);if(currentAccessRole==='admin')await loadAdminGallery();await loadGallery()}catch(e){galleryStatus(e.message||'פרסום הגלריה נכשל.','error')}finally{publishButtons.forEach(b=>{b.disabled=false;b.textContent='פרסום'})}}
 function clearGalleryForm(clearStatus=true){linksSet('galleryLinks',[]);galleryId.value='';galleryTitle.value='';galleryDate.value='';galleryDescription.value='';galleryFiles.value='';galleryActive.checked=true;galleryEditMedia=[];for(const x of galleryPendingFiles){if(x.preview)URL.revokeObjectURL(x.preview)}galleryPendingFiles=[];renderGalleryExistingMedia();renderGalleryPendingMedia();if(clearStatus)galleryStatus('')}
-async function loadAdminGallery(){const r=await fetch('/api/gallery?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminGalleryCache=await r.json();adminGalleryList.innerHTML=adminGalleryCache.length?adminGalleryCache.map(x=>`<div class="admin-row"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${heDate(x.date)} · ${x.media?.length||0} תמונות ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editGalleryItem('${x.id}')">עריכה</button><button class="danger" onclick="deleteGalleryItem('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין עדיין פריטי גלריה.</p>'}
+async function loadAdminGallery(){const r=await fetch('/api/gallery?admin=1',{headers:{Authorization:'Bearer '+editorToken}});if(r.status===401){logoutEditor();return}adminGalleryCache=await r.json();adminGalleryList.innerHTML=adminGalleryCache.length?adminGalleryCache.map(x=>`<div class="admin-row" data-search="${esc([(x.description||'')].concat((x.media||[]).map(m=>(m.title||'')+' '+(m.name||''))).join(' '))}"><div><h4 dir="auto" class="auto-dir">${esc(x.title)}</h4><small>${heDate(x.date)} · ${x.media?.length||0} תמונות ${x.active===false?'· מושבת':''}</small></div><div class="admin-row-actions"><button onclick="editGalleryItem('${x.id}')">עריכה</button><button class="danger" onclick="deleteGalleryItem('${x.id}')">מחיקה</button></div></div>`).join(''):'<p class="muted">אין עדיין פריטי גלריה.</p>'}
 function editGalleryItem(id){const x=adminGalleryCache.find(a=>a.id===id);if(!x)return;linksSet('galleryLinks',x.links||[]);galleryId.value=x.id;galleryTitle.value=x.title||'';galleryDate.value=x.date||'';galleryDescription.value=x.description||'';galleryActive.checked=x.active!==false;galleryEditMedia=(x.media||[]).map(m=>({...m,title:m.title||galleryDefaultTitle(m.name),credit:m.credit||'',date:m.date||x.date||''}));for(const p of galleryPendingFiles){if(p.preview)URL.revokeObjectURL(p.preview)}galleryPendingFiles=[];renderGalleryExistingMedia();renderGalleryPendingMedia();galleryStatus('');document.querySelector('#adminGallery').scrollIntoView({behavior:'smooth'})}
 async function deleteGalleryItem(id){if(!confirm('למחוק את פריט הגלריה ואת התמונות שלו?'))return;await fetch('/api/gallery',{method:'DELETE',headers:apiHeaders(),body:JSON.stringify({id})});await loadAdminGallery();await loadGallery()}
 
@@ -8990,4 +8994,47 @@ section#collabHub.cb{padding:20px 22px 24px!important}
   window.hosenDateIL={toIL,toISO};
 })();
 </script>
+<script id="admin-search-v1">
+/* חיפוש בכלי הניהול וכרטיסי העמוד הראשי (10.11.2026: "אין מערכת חיפוש בתוך כלי הניהול... הרשימה ארוכה מכדי לגלול") */
+(function(){
+  const LISTS=['hcList','adminResourceList','adminGalleryList','adminMessageList','adminPeopleList'];
+  const norm=t=>String(t||'').toLowerCase().replace(/["'״׳]/g,'');
+  function apply(list,box){
+    const q=norm(box.querySelector('input').value).trim();const rows=[...list.querySelectorAll(':scope > .admin-row')];let n=0;
+    for(const r of rows){const hay=norm(r.textContent+' '+(r.dataset.search||'')+' '+[...r.querySelectorAll('img')].map(i=>i.alt+' '+i.getAttribute('src')).join(' '));const ok=!q||q.split(/\s+/).every(w=>hay.includes(w));r.hidden=!ok;if(ok)n++;}
+    box.querySelector('small').textContent=q?(n?`נמצאו ${n} מתוך ${rows.length}`:'לא נמצא. אפשר לנסות מילה אחרת.'):(rows.length?`${rows.length} פריטים`:'');
+  }
+  function attach(id){
+    const list=document.getElementById(id);if(!list||list.previousElementSibling?.classList.contains('admin-search'))return;
+    const box=document.createElement('div');box.className='admin-search';
+    box.innerHTML='<input type="search" dir="auto" placeholder="🔍 חיפוש לפי מילה מהכותרת, מהתיאור או משם התמונה" aria-label="חיפוש ברשימה"><small></small>';
+    list.before(box);box.querySelector('input').addEventListener('input',()=>apply(list,box));
+    new MutationObserver(()=>apply(list,box)).observe(list,{childList:true});apply(list,box);
+  }
+  let hidden=[];
+  const cards=()=>[...document.querySelectorAll('#now .icer-project-card[data-card-id]')];
+  function applyHidden(){for(const c of cards())c.hidden=hidden.includes(c.dataset.cardId);}
+  function renderAdmin(){
+    const box=document.getElementById('hcList');if(!box)return;
+    box.innerHTML=cards().map(c=>{const id=c.dataset.cardId,off=hidden.includes(id),img=c.querySelector('img');
+      return `<div class="admin-row"><div class="hc-row"><img src="${img?img.getAttribute('src'):''}" alt="${(img?.alt||'').replace(/"/g,'&quot;')}"><div><h4 dir="auto">${(c.getAttribute('aria-label')||id).split(':')[0].replace(/</g,'&lt;')}</h4><small>${off?'מוסתר מהעמוד הראשי':'מוצג בעמוד הראשי'}</small></div></div><div class="admin-row-actions"><button type="button" class="${off?'':'danger'}" data-hc="${id}">${off?'החזרה לעמוד':'הסתרה'}</button></div></div>`;}).join('')||'<p class="muted">אין כרטיסים.</p>';
+  }
+  async function save(next){
+    const prev=hidden;hidden=next;applyHidden();renderAdmin();
+    try{const r=await fetch('/api/home-cards',{method:'PUT',headers:apiHeaders(),body:JSON.stringify({hidden:next})});if(!r.ok)throw 0;}
+    catch(e){hidden=prev;applyHidden();renderAdmin();alert('השמירה לא הצליחה. אפשר לנסות שוב, או להיכנס מחדש לניהול.');}
+  }
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-hc]');if(!b)return;const id=b.dataset.hc;save(hidden.includes(id)?hidden.filter(x=>x!==id):hidden.concat(id));});
+  document.addEventListener('DOMContentLoaded',()=>{
+    renderAdmin();LISTS.forEach(attach);
+    fetch('/api/home-cards').then(r=>r.ok?r.json():{hidden:[]}).then(d=>{hidden=Array.isArray(d.hidden)?d.hidden:[];applyHidden();renderAdmin();}).catch(()=>{});
+  });
+})();
+</script>
+<style id="admin-search-v1-css">
+.admin-search{display:flex;align-items:center;gap:10px;margin:8px 0}.admin-search input{flex:1;min-height:38px;border:1px solid #9bbac6;border-radius:6px;padding:6px 10px;font:inherit}.admin-search small{color:#5e7581;white-space:nowrap}
+.hc-admin{border:1px solid #d6e4e8;border-radius:8px;padding:8px 12px;margin:0 0 14px;background:#fff}.hc-admin summary{cursor:pointer;font-weight:700;color:#244b61}
+.hc-row{display:flex;gap:12px;align-items:center}.hc-row img{width:150px;height:auto;border-radius:6px;border:1px solid #e0e5e7}
+.icer-project-card[hidden]{display:none!important}
+</style>
 </body></html>
