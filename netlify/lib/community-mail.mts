@@ -24,8 +24,11 @@ const inline = (s: string) => esc(s)
 
 // טקסט פשוט ← HTML: פסקאות, תבליטים ("- "), **הדגשה** וקישורים.
 export function renderHtml(text: string, site: string): string {
-  let html = "", list = false;
-  const close = () => { if (list) { html += "</ul>"; list = false; } };
+  let html = "", list = false, quote = false;
+  const closeList = () => { if (list) { html += "</ul>"; list = false; } };
+  // מסגרת (10.11.2026): שורות רצופות שמתחילות ב-"> " נכנסות לתיבה אחת עם מסגרת, למשל ציטוט.
+  const closeQuote = () => { if (quote) { html += "</div>"; quote = false; } };
+  const close = () => { closeList(); closeQuote(); };
   for (const raw of String(text || "").split("\n")) {
     const l = raw.trim();
     if (!l) { close(); continue; }
@@ -37,6 +40,9 @@ export function renderHtml(text: string, site: string): string {
       html += `<div style="margin:4px 0 14px">${img[3] ? `<a href="${esc(img[3])}">${tag}</a>` : tag}</div>`;
       continue;
     }
+    const qm = l.match(/^>\s?(.*)$/);
+    if (qm) { closeList(); if (!quote) { html += '<div style="margin:6px 0 16px;padding:14px 18px;border:2px solid #c9973a;border-radius:14px;background:#fffaf0">'; quote = true; } html += `<p style="margin:0 0 6px">${inline(qm[1])}</p>`; continue; }
+    closeQuote();
     const m = l.match(/^[-•]\s+(.*)$/);
     if (m) { if (!list) { html += '<ul style="margin:0 0 12px;padding-inline-start:20px">'; list = true; } html += `<li style="margin:0 0 4px">${inline(m[1])}</li>`; continue; }
     close();
@@ -50,7 +56,8 @@ export function renderHtml(text: string, site: string): string {
 export function plainText(text: string): string {
   return String(text || "")
     .replace(/^(?:[-•]\s+)?!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)(?:\((https?:\/\/[^\s)]+)\))?$/gm, (_m, alt, _src, link) => link ? `${alt}: ${link}` : alt)
-    .replace(/\*\*(.+?)\*\*/g, "$1");
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/^>\s?/gm, "");
 }
 
 export type MailLog = { id: string; at: string; subject: string; sent: number; failed: string[]; test: boolean };
