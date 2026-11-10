@@ -2348,7 +2348,7 @@ body:has(.feedback-modal.open){
 
 <section id="now" class="top-dynamic-zone"><div class="wrap top-dynamic-grid">
 <aside class="community-board" aria-label="דברי קהילה">
-  <div class="community-board-head"><h2>דברי קהילה</h2><button type="button" onclick="openBoardSubmit()">פרסום הודעה</button></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h8A2.5 2.5 0 0 1 17 5.5v5a2.5 2.5 0 0 1-2.5 2.5H9.5L6 16v-3h0.5A2.5 2.5 0 0 1 4 10.5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 8.5a2 2 0 0 1 1 1.7v4.3a2 2 0 0 1-2 2h-.5V19l-3-2.5H12" fill="none" stroke="#8a2240" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="#d9a23a"/><circle cx="10.5" cy="8" r="1" fill="#d9a23a"/><circle cx="13" cy="8" r="1" fill="#d9a23a"/></svg></span><div><h2>דברי קהילה</h2><span class="cb-sub">מחברות וחברי הקהילה</span></div></div><button type="button" onclick="openBoardSubmit()">פרסום הודעה</button></div>
   <div id="boardFeed" class="board-feed"><p class="muted">טוען הודעות...</p></div>
   <div class="board-controls"><button type="button" onclick="boardPrev()" aria-label="הודעה קודמת">הודעה קודמת</button><span id="boardCounter"></span><button type="button" onclick="boardNext()" aria-label="הודעה הבאה">הודעה הבאה</button></div>
 </aside>
@@ -2360,9 +2360,9 @@ body:has(.feedback-modal.open){
 <div class="join-strip"><button type="button" class="join-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="join-topics" onclick="hosenMyCard()">👤 כבר בנבחרת? הכרטיס שלי (קוד אישי)</button><a class="join-guide" href="/guide">🗺️ המדריך לקהילה</a></div>
 </div>
 <aside class="community-board news-board" aria-label="פורסם בישראל ובעולם">
-  <div class="community-board-head"><h2>📰 פורסם בישראל ובעולם</h2></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#1d4466" stroke-width="1.7"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5M12 3.5C9.4 5.9 8.2 8.7 8.2 12s1.2 6.1 3.8 8.5" fill="none" stroke="#5a8cc0" stroke-width="1.4"/><circle cx="18.5" cy="6" r="2.3" fill="#8a2240"/><circle cx="5.3" cy="17.6" r="1.6" fill="#d9a23a"/></svg></span><div><h2>פורסם בישראל ובעולם</h2><span class="cb-sub">ידיעות מהעיתונות, בעברית, בערבית ובאנגלית</span></div></div></div>
   <div id="newsFeed" class="board-feed news-feed" tabindex="0" aria-label="רשימת ידיעות, אפשר לגלול"><p class="muted">טוען ידיעות...</p></div>
-  <p class="news-board-note">ידיעות מהעיתונות בעברית, בערבית ובאנגלית. מתעדכן כל שבוע, החדשות למעלה. <span id="newsCounter"></span></p>
+  <p class="news-board-note">מתעדכן כל שבוע, החדשות למעלה. <span id="newsCounter"></span></p>
 </aside>
 </div></section>
 <section id="journals" aria-labelledby="jfTitle"><div class="jf-wrap">
@@ -9360,4 +9360,17 @@ html body #boardSubmitModal[aria-hidden="false"]{z-index:22050!important}</style
   }).catch(()=>{const f=document.getElementById('newsFeed');if(f)f.innerHTML='<p class="muted">לא ניתן לטעון ידיעות כרגע.</p>'});
 })();
 </script>
+
+<style id="board-headers-v1">/* 10.11.2026: כותרות חדשות ל"דברי קהילה" ול"פורסם בישראל ובעולם", בצבעי הבאנר */
+html body #now .community-board{overflow:hidden}
+html body #now .community-board-head{margin:-15px -15px 12px!important;padding:13px 15px 12px!important;background:linear-gradient(180deg,#fbf7ee,#f7f1e3)!important;border-bottom:0!important;position:relative;align-items:center}
+html body #now .community-board-head::after{content:"";position:absolute;inset-inline:0;bottom:0;height:3px;background:linear-gradient(90deg,#1d4466 0 40%,#8a2240 40% 75%,#d9a23a 75%)}
+html body #now .cb-title{display:flex;align-items:center;gap:10px;min-width:0}
+html body #now .cb-icon{flex:0 0 40px;width:40px;height:40px;border-radius:50%;background:#fff;border:1px solid #eadfc8;display:grid;place-items:center;box-shadow:0 1px 4px rgba(29,68,102,.08)}
+html body #now .cb-icon svg{width:24px;height:24px}
+html body #now .community-board-head h2{font-size:19px!important;font-weight:700!important;color:#1d4466!important;margin:0!important;line-height:1.2;white-space:nowrap}
+html body #now .cb-sub{display:block;font-size:11.5px;color:#7a6a55;margin-top:2px;line-height:1.3}
+html body #now .community-board-head button{flex:0 0 auto;white-space:nowrap;border-radius:999px!important;border:1px solid #8a2240!important;color:#8a2240!important;background:#fff!important;font-weight:600!important}
+html body #now .community-board-head button:hover{background:#8a2240!important;color:#fff!important}
+</style>
 </body></html>
