@@ -2399,7 +2399,7 @@ body:has(.feedback-modal.open){
     <div>
       <span class="fd-pill">מקרים ובעיות מהשטח</span>
       <h1 id="fdTitle">🌾 מהשטח</h1>
-      <p class="fd-lead">מה שקורה בבתי הספר, בגנים וברשויות, במילים של מי שנמצאים שם. <b>בעיות</b> שמעסיקות אתכם, ו<b>מקרים</b> שכדאי ללמוד מהם: מה תוכנן, מה קרה, למה, ומה נעשה בפעם הבאה. כל אחד ואחת יכולים לשתף ולהצביע. הבעיות שקיבלו הכי הרבה קולות מוצגות ראשונות, ומהן יכולות לצמוח יוזמות מחקר.</p>
+      <p class="fd-lead">מה שקורה בבתי הספר, בגנים וברשויות, במילים של מי שנמצאים שם. <b>בעיות</b> שמעסיקות אתכם, ו<b>מקרים</b> שכדאי ללמוד מהם: מה תוכנן, מה קרה, למה, ומה נעשה בפעם הבאה. כל אחד ואחת יכולים לשתף, להגיב ולהצביע. מהבעיות שקיבלו הכי הרבה קולות יכולות לצמוח יוזמות מחקר.</p>
     </div>
     <button type="button" class="fd-new" data-fd="new">➕ שיתוף בעיה או מקרה</button>
   </header>
@@ -2434,9 +2434,8 @@ body:has(.feedback-modal.open){
   </form>
   <div class="fd-bar">
     <div class="fd-filters" role="group" aria-label="סינון"><button type="button" class="on" data-ff="">הכול</button><button type="button" data-ff="problem">🧩 בעיות</button><button type="button" data-ff="case">📝 מקרים</button></div>
-    <label class="fd-sort">סדר<select id="fdSort"><option value="votes">הכי הרבה 👍 קודם</option><option value="new">החדשים קודם</option></select></label>
   </div>
-  <p class="fd-howvote">ליד כל בעיה יש כפתור "👍 חשוב לחקור", וליד כל מקרה "💡 מלמד". לוחצים אם זה רלוונטי גם לכם. כל מכשיר נספר פעם אחת, ולחיצה נוספת מבטלת.</p>
+  <p class="fd-howvote">ליד כל בעיה יש כפתור "👍 חשוב לחקור", וליד כל מקרה "💡 מלמד". לוחצים אם זה רלוונטי גם לכם. השיתופים החדשים מופיעים למעלה.</p>
   <div id="fdAdmin"></div>
   <div id="fdList" class="fd-list"><p class="muted">טוען…</p></div>
   <p class="fd-foot">בעיה שקיבלה הרבה קולות יכולה להפוך ליוזמת מחקר. אפשר לפתוח יוזמה בעמוד <a href="/match">שיתופי פעולה</a>.</p>
@@ -9195,7 +9194,7 @@ function measureHtml(x){
     <form class="fd-c-form" data-fcform="${e(x.id)}"><textarea name="text" rows="2" dir="auto" maxlength="1500" placeholder="מה דעתכם? יש לכם ניסיון דומה, רעיון או מקור שיכולים לעזור?" required></textarea><div class="fd-c-row"><input name="name" dir="auto" maxlength="80" placeholder="שם (רשות)"><input name="website" tabindex="-1" autocomplete="off" class="fd-hp" aria-hidden="true"><button type="submit">שליחה</button><span class="fd-c-st"></span></div></form></details>`;}
   function render(){
     const box=document.getElementById('fdList');if(!box)return;
-    const sort=document.getElementById('fdSort')?.value||'votes';
+    const sort='new'; /* האחרון שנוסף למעלה (10.11.2026) */
     const rows=items.filter(x=>!filter||x.kind===filter).sort((a,b)=>sort==='new'?b.createdAt.localeCompare(a.createdAt):(b.votes-a.votes)||b.createdAt.localeCompare(a.createdAt));
     box.innerHTML=rows.length?rows.map(x=>card(x,!!adminTok())).join(''):'<p class="muted">עוד אין כאן פריטים. אפשר להיות הראשונים לשתף.</p>';
   }
