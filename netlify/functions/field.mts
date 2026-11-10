@@ -19,6 +19,7 @@ type Item = {
   id: string; kind: "problem" | "case"; title: string; role: string; setting: string; sector: string;
   parts: Record<string, string>; status: "pending" | "published" | "rejected";
   voters: string[]; name: string; email: string; createdAt: string; updatedAt: string;
+  comments?: { id: string; name: string; text: string; at: string }[];
 };
 
 async function listAll(): Promise<Item[]> {
@@ -27,7 +28,10 @@ async function listAll(): Promise<Item[]> {
   const rows = await Promise.all(blobs.map(b => st.get(b.key, { type: "json" }).catch(() => null)));
   return (rows.filter(Boolean) as Item[]).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
-const pub = (x: Item) => ({ id: x.id, kind: x.kind, title: x.title, role: x.role, setting: x.setting, sector: x.sector, parts: x.parts, votes: (x.voters || []).length, createdAt: x.createdAt });
+const pub = (x: Item) => ({ id: x.id, kind: x.kind, title: x.title, role: x.role, setting: x.setting, sector: x.sector, parts: x.parts, votes: (x.voters || []).length, createdAt: x.createdAt,
+  comments: (x.comments || []).map(c => ({ id: c.id, name: c.name, text: c.text, at: c.at })) });
+// "אחר" עם פירוט (10.11.2026: "להוסיף אפשרות להוסיף אם חסר משהו ברשימה"): נשמר הפירוט עצמו.
+const pick = (list: string[], v: unknown, other: unknown) => { const x = String(v ?? ""); if (x === "אחר") return clip(other, 60) || "אחר"; return list.includes(x) ? x : ""; };
 
 export default async (req: Request) => {
   const u = new URL(req.url);
@@ -55,7 +59,7 @@ export default async (req: Request) => {
     if (body.consent !== true) return json({ error: "consent", message: "נשמח לאישור שאין בטקסט פרטים מזהים." }, 400);
     const now = new Date().toISOString();
     const x: Item = {
-      id: id(), kind, title, role: ROLES.includes(body.role) ? body.role : "", setting: SETTINGS.includes(body.setting) ? body.setting : "",
+      id: id(), kind, title, role: pick(ROLES, body.role, body.roleOther), setting: pick(SETTINGS, body.setting, body.settingOther),
       sector: clip(body.sector, 80), parts, status: "pending", voters: [], name: clip(body.name, 160), email: clip(body.email, 240), createdAt: now, updatedAt: now,
     };
     await st.setJSON(`field/${x.id}.json`, x);
@@ -76,12 +80,27 @@ export default async (req: Request) => {
     return json({ ok: true, votes: x.voters.length, voted: voters.has(v) });
   }
 
+  // שיח בעקבות השיתוף (10.11.2026): כל אחד ואחת יכולים להגיב על פריט שפורסם. מנהלת המערכת יכולה למחוק תגובה.
+  if (action === "comment") {
+    if (!looksHuman(body)) return json({ ok: true });
+    const key = `field/${clip(body.id, 40)}.json`;
+    const x = await st.get(key, { type: "json" }) as Item | null;
+    if (!x || x.status !== "published") return json({ error: "not_found" }, 404);
+    const text = clip(body.text, 1500);
+    if (!text) return json({ error: "missing", message: "נשמח לכמה מילים." }, 400);
+    x.comments = [...(x.comments || []), { id: id(), name: clip(body.name, 80), text, at: new Date().toISOString() }].slice(-200);
+    await st.setJSON(key, x);
+    return json({ ok: true, comments: pub(x).comments });
+  }
+
   // ניהול: אישור, דחייה, מחיקה ועריכת כותרת.
   if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
   const key = `field/${clip(body.id, 40)}.json`;
   const x = await st.get(key, { type: "json" }) as Item | null;
   if (!x) return json({ error: "not_found" }, 404);
   if (action === "delete") { await st.delete(key); return json({ ok: true }); }
+  if (action === "comment-delete") { x.comments = (x.comments || []).filter(c => c.id !== clip(body.commentId, 40)); }
+  else
   if (action === "approve" || action === "reject") { x.status = action === "approve" ? "published" : "rejected"; }
   else if (action === "edit") {
     if (body.title) x.title = clip(body.title, 200);

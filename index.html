@@ -2410,8 +2410,8 @@ body:has(.feedback-modal.open){
       <label><input type="radio" name="kind" value="case"> 📝 מקרה מהשטח (תחקיר אחרי פעולה, כ-15 דקות)</label>
     </fieldset>
     <label class="wide">כותרת קצרה*<input name="title" dir="auto" maxlength="200" placeholder="למשל: איך שומרים על קשר עם תלמידים מפונים"></label>
-    <label>התפקיד שלי<select name="role"><option value="">בחירה</option></select></label>
-    <label>איפה זה קורה<select name="setting"><option value="">בחירה</option></select></label>
+    <label>התפקיד שלי<select name="role"><option value="">בחירה</option></select><input name="roleOther" dir="auto" maxlength="60" placeholder="מה התפקיד?" hidden></label>
+    <label>איפה זה קורה<select name="setting"><option value="">בחירה</option></select><input name="settingOther" dir="auto" maxlength="60" placeholder="איפה?" hidden></label>
     <label class="wide">מגזר, אזור או סוג יישוב (רשות)<input name="sector" dir="auto" maxlength="80" placeholder="למשל: יישוב בצפון, חינוך ערבי, מועצה אזורית"></label>
     <div class="wide fd-parts" data-for="problem">
       <label>מה הבעיה?*<textarea name="p_problem" rows="4" dir="auto"></textarea></label>
@@ -2434,8 +2434,9 @@ body:has(.feedback-modal.open){
   </form>
   <div class="fd-bar">
     <div class="fd-filters" role="group" aria-label="סינון"><button type="button" class="on" data-ff="">הכול</button><button type="button" data-ff="problem">🧩 בעיות</button><button type="button" data-ff="case">📝 מקרים</button></div>
-    <label class="fd-sort">מיון<select id="fdSort"><option value="votes">הכי הרבה קולות</option><option value="new">החדשים קודם</option></select></label>
+    <label class="fd-sort">סדר<select id="fdSort"><option value="votes">הכי הרבה 👍 קודם</option><option value="new">החדשים קודם</option></select></label>
   </div>
+  <p class="fd-howvote">ליד כל בעיה יש כפתור "👍 חשוב לחקור", וליד כל מקרה "💡 מלמד". לוחצים אם זה רלוונטי גם לכם. כל מכשיר נספר פעם אחת, ולחיצה נוספת מבטלת.</p>
   <div id="fdAdmin"></div>
   <div id="fdList" class="fd-list"><p class="muted">טוען…</p></div>
   <p class="fd-foot">בעיה שקיבלה הרבה קולות יכולה להפוך ליוזמת מחקר. אפשר לפתוח יוזמה בעמוד <a href="/match">שיתופי פעולה</a>.</p>
@@ -9176,7 +9177,8 @@ function measureHtml(x){
 (function(){
   const e=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const LBL={problem:{problem:'מה הבעיה',who:'למי היא מפריעה, ומתי',tried:'מה כבר ניסו'},case:{planned:'מה תוכנן',happened:'מה קרה בפועל',why:'למה',next:'מה נעשה בפעם הבאה'}};
-  let items=[],filter='',opened=Date.now(),voted={};
+  let items=[],filter='',opened=Date.now(),voted={};const openTalk=new Set(),talkT={};
+  document.addEventListener('toggle',ev=>{const d=ev.target;if(d.dataset&&d.dataset.talk){if(d.open){openTalk.add(d.dataset.talk);talkT[d.dataset.talk]=Date.now()}else openTalk.delete(d.dataset.talk)}},true);
   try{voted=JSON.parse(localStorage.getItem('hosen_field_voted')||'{}')}catch(_){}
   const vid=()=>{try{let v=localStorage.getItem('hosen_visit_id')||'';if(!/^[a-z0-9]{10,32}$/.test(v)){v=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('hosen_visit_id',v)}return v}catch(_){return ''}};
   const adminTok=()=>{try{return sessionStorage.getItem('hosen_editor_token')||''}catch(_){return ''}};
@@ -9185,7 +9187,12 @@ function measureHtml(x){
     <h3 dir="auto">${e(x.title)}</h3>
     ${Object.entries(LBL[x.kind]).filter(([k])=>x.parts?.[k]).map(([k,l])=>`<p dir="auto"><b>${l}:</b> ${e(x.parts[k])}</p>`).join('')}
     <div class="fd-act">${x.status==='pending'?'':`<button type="button" class="fd-vote${voted[x.id]?' on':''}" data-vote="${e(x.id)}" aria-pressed="${voted[x.id]?'true':'false'}">${x.kind==='case'?'💡 מלמד':'👍 חשוב לחקור'} · <b>${x.votes||0}</b></button>`}
-    ${admin?`${x.status==='pending'?`<button type="button" data-fa="approve" data-id="${e(x.id)}">✓ אישור ופרסום</button><button type="button" data-fa="reject" data-id="${e(x.id)}">דחייה</button>`:''}<button type="button" class="danger" data-fa="delete" data-id="${e(x.id)}">🗑 מחיקה</button>${x.name||x.email?`<span class="fd-meta">שלח/ה: ${e(x.name)} ${e(x.email)}</span>`:''}`:''}</div></article>`;
+    ${admin?`${x.status==='pending'?`<button type="button" data-fa="approve" data-id="${e(x.id)}">✓ אישור ופרסום</button><button type="button" data-fa="reject" data-id="${e(x.id)}">דחייה</button>`:''}<button type="button" class="danger" data-fa="delete" data-id="${e(x.id)}">🗑 מחיקה</button>${x.name||x.email?`<span class="fd-meta">שלח/ה: ${e(x.name)} ${e(x.email)}</span>`:''}`:''}</div>${x.status==='pending'?'':talk(x,admin)}</article>`;
+  /* שיח בעקבות השיתוף (10.11.2026) */
+  function talk(x,admin){const c=x.comments||[];const open=openTalk.has(x.id);
+    return `<details class="fd-talk"${open?' open':''} data-talk="${e(x.id)}"><summary>💬 שיח${c.length?` (${c.length})`:': להגיב, לשאול, לשתף ניסיון דומה'}</summary>
+    ${c.map(m=>`<div class="fd-c"><div class="fd-c-h"><b>${e(m.name||'ללא שם')}</b> <small>${new Date(m.at).toLocaleDateString('he-IL')}</small>${admin?` <button type="button" class="fd-c-del" data-fcdel="${e(m.id)}" data-id="${e(x.id)}">מחיקה</button>`:''}</div><p dir="auto">${e(m.text)}</p></div>`).join('')}
+    <form class="fd-c-form" data-fcform="${e(x.id)}"><textarea name="text" rows="2" dir="auto" maxlength="1500" placeholder="מה דעתכם? יש לכם ניסיון דומה, רעיון או מקור שיכולים לעזור?" required></textarea><div class="fd-c-row"><input name="name" dir="auto" maxlength="80" placeholder="שם (רשות)"><input name="website" tabindex="-1" autocomplete="off" class="fd-hp" aria-hidden="true"><button type="submit">שליחה</button><span class="fd-c-st"></span></div></form></details>`;}
   function render(){
     const box=document.getElementById('fdList');if(!box)return;
     const sort=document.getElementById('fdSort')?.value||'votes';
@@ -9204,8 +9211,11 @@ function measureHtml(x){
       const byId=new Map(all.map(x=>[x.id,x]));items=items.map(x=>({...x,name:byId.get(x.id)?.name||'',email:byId.get(x.id)?.email||''}));render();}}catch(_){}}
   }
   function setKind(k){const f=document.getElementById('fdForm');f.querySelectorAll('.fd-parts').forEach(p=>p.hidden=p.dataset.for!==k)}
-  document.addEventListener('change',ev=>{if(ev.target.matches('#fdForm [name=kind]'))setKind(ev.target.value);if(ev.target.id==='fdSort')render()});
+  document.addEventListener('change',ev=>{if(ev.target.matches('#fdForm [name=kind]'))setKind(ev.target.value);if(ev.target.id==='fdSort')render();
+    if(ev.target.matches('#fdForm [name=role],#fdForm [name=setting]')){const o=ev.target.form.elements[ev.target.name+'Other'];o.hidden=ev.target.value!=='אחר';if(!o.hidden)o.focus();}});
   document.addEventListener('click',async ev=>{
+    const cd=ev.target.closest('[data-fcdel]');
+    if(cd){if(!confirm('למחוק את התגובה?'))return;const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+adminTok()},body:JSON.stringify({action:'comment-delete',id:cd.dataset.id,commentId:cd.dataset.fcdel})});if(!r.ok)alert('המחיקה לא הצליחה.');openTalk.add(cd.dataset.id);load();return}
     const b=ev.target.closest('[data-fd],[data-ff],[data-vote],[data-fa]');if(!b||!b.closest('#field'))return;
     const f=document.getElementById('fdForm');
     if(b.dataset.fd==='new'){f.hidden=false;opened=Date.now();f.scrollIntoView({behavior:'smooth',block:'start'});f.elements.title.focus();}
@@ -9219,6 +9229,13 @@ function measureHtml(x){
       if(!r.ok)alert('הפעולה לא הצליחה. ייתכן שצריך להיכנס שוב לניהול.');load();}
   });
   document.addEventListener('submit',async ev=>{
+    const cf=ev.target.closest('[data-fcform]');
+    if(cf){ev.preventDefault();const st=cf.querySelector('.fd-c-st'),id=cf.dataset.fcform,text=cf.elements.text.value.trim();if(!text)return;
+      const btn=cf.querySelector('button');btn.disabled=true;st.textContent='שולחים…';
+      try{const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'comment',id,text,name:cf.elements.name.value.trim(),website:cf.elements.website.value,elapsed:Date.now()-(talkT[id]||opened)})});const d=await r.json().catch(()=>({}));
+        if(!r.ok)throw new Error(d.message||'השליחה לא הצליחה. אפשר לנסות שוב.');const x=items.find(i=>i.id===id);if(x&&d.comments)x.comments=d.comments;openTalk.add(id);render();}
+      catch(err){btn.disabled=false;st.textContent=err.message}
+      return}
     if(ev.target.id!=='fdForm')return;ev.preventDefault();const f=ev.target,st=f.querySelector('.fd-status'),v=k=>(f.elements[k]?.value||'').trim();
     const kind=f.querySelector('[name=kind]:checked').value;const keys=kind==='case'?['planned','happened','why','next']:['problem','who','tried'];
     const parts={};keys.forEach(k=>parts[k]=v('p_'+k));
@@ -9226,9 +9243,9 @@ function measureHtml(x){
     if(!v('title')||!need){st.className='fd-status err';st.textContent='נשמח לכותרת ולשדות שמסומנים בכוכבית.';return}
     if(!f.elements.consent.checked){st.className='fd-status err';st.textContent='נשמח לאישור שאין בטקסט פרטים מזהים.';return}
     const btn=f.querySelector('.fd-send');btn.disabled=true;st.className='fd-status';st.textContent='שולחים…';
-    try{const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'submit',kind,title:v('title'),role:v('role'),setting:v('setting'),sector:v('sector'),parts,name:v('name'),email:v('email'),consent:true,website:v('website'),elapsed:Date.now()-opened})});
+    try{const r=await fetch('/api/field',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'submit',kind,title:v('title'),role:v('role'),roleOther:v('roleOther'),setting:v('setting'),settingOther:v('settingOther'),sector:v('sector'),parts,name:v('name'),email:v('email'),consent:true,website:v('website'),elapsed:Date.now()-opened})});
       const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||'השליחה לא הצליחה. אפשר לנסות שוב.');
-      f.reset();setKind('problem');st.className='fd-status ok';st.textContent='✓ תודה! נשלח, ויתפרסם אחרי בדיקה.';btn.disabled=false;load();}
+      f.reset();setKind('problem');f.elements.roleOther.hidden=true;f.elements.settingOther.hidden=true;st.className='fd-status ok';st.textContent='✓ תודה! נשלח, ויתפרסם אחרי בדיקה.';btn.disabled=false;load();}
     catch(err){btn.disabled=false;st.className='fd-status err';st.textContent=err.message}
   });
   document.addEventListener('DOMContentLoaded',()=>{if(document.documentElement.dataset.page==='field')load()});
@@ -9260,6 +9277,13 @@ function measureHtml(x){
 #field .fd-meta{font-size:12.5px;color:#6b7d88}
 #field .fd-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}#field .fd-act button{font:inherit;font-size:13.5px;border:1px solid #c9d6dc;background:#fff;border-radius:20px;padding:4px 12px;cursor:pointer}#field .fd-act button.danger{color:#a3303b}
 #field .fd-vote.on{background:#e1f2e7!important;border-color:#1b6e43!important;color:#1b6e43}
+#field .fd-talk{margin-top:10px;border-top:1px dashed #eadfca;padding-top:8px}#field .fd-talk summary{cursor:pointer;font-weight:700;color:#8a2338;font-size:14px}
+#field .fd-c{background:#fbf8f1;border-radius:8px;padding:6px 10px;margin:6px 0}#field .fd-c p{margin:2px 0;font-size:14px}#field .fd-c-h small{color:#6b7d88}
+#field .fd-c-del{font:inherit;font-size:12px;border:0;background:none;color:#a3303b;cursor:pointer}
+#field .fd-c-form{display:grid;gap:6px;margin-top:6px}#field .fd-c-form textarea,#field .fd-c-form input{font:inherit;border:1px solid #c9d6dc;border-radius:6px;padding:6px 8px}
+#field .fd-c-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}#field .fd-c-row input[name=name]{flex:1;min-width:140px}#field .fd-c-row button{font:inherit;background:#1f4a63;color:#fff;border:0;border-radius:18px;padding:6px 16px;cursor:pointer}
+#field .fd-c-st{font-size:13px;color:#a3303b}#field .fd-form input[hidden]{display:none}
+#field .fd-howvote{margin:-6px 0 0;font-size:13px;color:#5e7581}
 #field .fd-foot{font-size:14px;color:#5e7581;margin:0}
 @media(max-width:700px){#field .fd-form{grid-template-columns:1fr}#field h1{font-size:28px}}
 </style>
