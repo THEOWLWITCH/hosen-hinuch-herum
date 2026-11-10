@@ -158,8 +158,15 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const vst = data();
   const visitKeys = (await Promise.all(visitDays.map(d => vst.list({ prefix: `visits/${d}/` }).then(r => r.blobs.map(b => b.key)).catch(() => [] as string[])))).flat();
   const visitors = new Set(visitKeys.map(k => k.split("/").pop())).size;
+  // העמודים שנקראו הכי הרבה (10.11.2026): מכשירים שונים בכל עמוד, כל יום בנפרד.
+  const PAGE_NAMES: Record<string, string> = { now: "העמוד הראשי", match: "שיתופי פעולה", people: "הנבחרת", articles: "חידושים במחקר", library: "הספרייה", gallery: "הגלריה", compass: "מצפן המחקר", kikar: "כיכר הקהילה", calls: "קולות קוראים", conferences: "כנסים", grants: "מענקי מחקר", apps: "כלים", tasks: "משימות" };
+  const pageKeys = (await Promise.all(visitDays.map(d => vst.list({ prefix: `pages/${d}/` }).then(r => r.blobs.map(b => b.key)).catch(() => [] as string[])))).flat();
+  const perPage = new Map<string, number>();
+  for (const k of pageKeys) { const pg = k.split("/")[2]; if (PAGE_NAMES[pg]) perPage.set(pg, (perPage.get(pg) || 0) + 1); }
+  const topPages = [...perPage.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
   const stats = [
     ...(visitors ? [`${q(visitKeys.length, "כניסה אחת", "כניסות")} לאתר השבוע, ${visitors === 1 ? "ממכשיר אחד" : `מ־${n(visitors)} מכשירים שונים`} (כל מכשיר נספר פעם אחת ביום)`] : []),
+    ...(pageKeys.length >= 10 ? [`העמודים שנקראו הכי הרבה השבוע: ${topPages.map(([pg, c]) => `${PAGE_NAMES[pg]} (${n(c)})`).join(", ")}`] : []),
     `${q(people.length, "חבר/ה אחד/ת בנבחרת", "חברות וחברים בנבחרת")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
     `${q(library.length, "מקור אחד בספרייה", "מקורות בספרייה")}${added(lib.length)}`,
     ...(rw?.total ? [`${q(rw.total, "מחקר אחד", "מחקרים")} ב"חידושים במחקר"${fresh ? added(rw.added) : ""}${comments ? `. ${q(comments, "תגובה אחת", "תגובות")} בדיון השבוע` : ""}`] : []),
@@ -204,7 +211,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
 // ניקוי ספירת המבקרים: נשמרים רק 60 הימים האחרונים.
 export async function pruneVisits(keepDays = 60) {
   const st = data(), cut = new Date(Date.now() - keepDays * 86400000).toISOString().slice(0, 10);
-  const { blobs } = await st.list({ prefix: "visits/" });
+  const blobs = [...(await st.list({ prefix: "visits/" })).blobs, ...(await st.list({ prefix: "pages/" })).blobs];
   const old = blobs.filter(b => (b.key.split("/")[1] || "9999") < cut);
   await pool(old, b => st.delete(b.key).catch(() => {}), 20);
   return old.length;

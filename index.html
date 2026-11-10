@@ -7413,6 +7413,8 @@ window.addEventListener('hashchange',()=>openResearchTheme(location.hash));
   const libraryAliases=new Set(Object.keys(libraryLabels));
   const resolved=libraryAliases.has(requested)?'library':(simplePages.has(requested)||resourcePages.has(requested)?requested:'now');
   document.documentElement.dataset.page=resolved;
+  // אילו עמודים נקראים (10.11.2026): כל מכשיר נספר פעם אחת ביום בכל עמוד, עם אותו מזהה אקראי של ספירת המבקרים.
+  try{const d=new Date().toISOString().slice(0,10),k='hosen_pv_'+resolved,v=localStorage.getItem('hosen_visit_id')||'';if(/^[a-z0-9]{10,32}$/.test(v)&&localStorage.getItem(k)!==d){localStorage.setItem(k,d);setTimeout(()=>fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({v,p:resolved})}).catch(()=>{}),3000)}}catch(e){}
   if(resourcePages.has(resolved))document.documentElement.dataset.resourcePage='1';
   // לגוגל (5.11.2026): כותרת וקישור קנוני לכל עמוד.
   try{const T={kikar:'כיכר הקהילה · ساحة المجتمع',match:'שיתופי פעולה',people:'הנבחרת',articles:'חידושים במחקר',library:'ספריה',gallery:'גלריה',...labels};const base='בינה מלאכותית: חוסן-חינוך-חרום';

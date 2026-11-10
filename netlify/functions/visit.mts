@@ -4,12 +4,20 @@
 import type { Config } from "@netlify/functions";
 import { json, store } from "../lib/shared.mts";
 
+const PAGES = new Set(["now", "match", "gallery", "people", "articles", "library", "compass", "apps", "tasks", "kikar", "calls", "conferences", "grants"]);
+
 export default async (req: Request) => {
   if (req.method !== "POST") return json({ error: "method" }, 405);
   const body = await req.json().catch(() => ({} as any));
   const v = String(body?.v || "");
   if (!/^[a-z0-9]{10,32}$/.test(v)) return json({ ok: true });
   const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
+  // צפייה בעמוד (10.11.2026): pages/<יום>/<עמוד>/<מזהה>.json. מכשיר נספר פעם אחת ביום בכל עמוד.
+  const p = String(body?.p || "");
+  if (p) {
+    if (PAGES.has(p)) await store("hosen-data").setJSON(`pages/${day}/${p}/${v}.json`, {}).catch(() => {});
+    return json({ ok: true });
+  }
   await store("hosen-data").setJSON(`visits/${day}/${v}.json`, { m: body?.m === 1 ? 1 : 0 }).catch(() => {});
   return json({ ok: true });
 };

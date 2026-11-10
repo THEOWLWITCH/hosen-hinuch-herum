@@ -21,7 +21,13 @@ export default async (req: Request) => {
     if (!u.searchParams.get("auto") && manual?.body && manual.date <= today && today <= manual.until) {
       const d = (x: string) => x.split("-").reverse().map(Number).join(".");
       const from = d(new Date(Date.parse(manual.date) - 9 * 86400000).toISOString().slice(0, 10));
-      return json({ subject: manual.subject, body: manual.body, sections: [], count: 1, from, to: d(manual.date), manual: true });
+      // {{מספרים}} בנוסח: מוחלף בנתונים העדכניים מ"הקהילה במספרים" (10.11.2026).
+      let body = manual.body;
+      if (body.includes("{{מספרים}}")) {
+        const st = (await buildSiteWeekly(site, 7).catch(() => null))?.sections.find(s => s.key === "stats");
+        body = body.replace("{{מספרים}}", st ? st.lines.map(l => "- " + l).join("\n") : "");
+      }
+      return json({ subject: manual.subject, body, sections: [], count: 1, from, to: d(manual.date), manual: true });
     }
     const w = await buildSiteWeekly(site, Math.min(Math.max(Number(u.searchParams.get("days")) || 7, 1), 31));
     return json(w);
