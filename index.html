@@ -2361,9 +2361,8 @@ body:has(.feedback-modal.open){
 </div>
 <aside class="community-board news-board" aria-label="פורסם בישראל ובעולם">
   <div class="community-board-head"><h2>📰 פורסם בישראל ובעולם</h2></div>
-  <div id="newsFeed" class="board-feed"><p class="muted">טוען ידיעות...</p></div>
-  <div class="board-controls"><button type="button" onclick="newsStep(-1)" aria-label="ידיעה חדשה יותר">ידיעה קודמת</button><span id="newsCounter"></span><button type="button" onclick="newsStep(1)" aria-label="ידיעה ישנה יותר">ידיעה הבאה</button></div>
-  <p class="news-board-note">ידיעות מהעיתונות בעברית, בערבית ובאנגלית. מתעדכן כל שבוע.</p>
+  <div id="newsFeed" class="board-feed news-feed" tabindex="0" aria-label="רשימת ידיעות, אפשר לגלול"><p class="muted">טוען ידיעות...</p></div>
+  <p class="news-board-note">ידיעות מהעיתונות בעברית, בערבית ובאנגלית. מתעדכן כל שבוע, החדשות למעלה. <span id="newsCounter"></span></p>
 </aside>
 </div></section>
 <section id="journals" aria-labelledby="jfTitle"><div class="jf-wrap">
@@ -9331,11 +9330,13 @@ html body #boardSubmitModal[aria-hidden="false"]{z-index:22050!important}</style
 .news-board .news-meta{font-size:11px;color:#7a8a94;margin-top:2px}
 .news-board .news-link{display:inline-block;margin-top:2px;font-size:12px;padding:5px 10px;border:1px solid #d7e4eb;border-radius:13px;background:#f8fbfd;color:#17649a;text-decoration:none}
 .news-board .news-link:hover{background:#eef5f8}
+.news-board .news-feed{max-height:460px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:10px;padding-inline-end:4px;scrollbar-width:thin}
+.news-board .news-feed .board-message-card{animation:none}
 .news-board-note{font-size:10.5px;color:#80909a;text-align:center;margin:8px 0 0}
 </style>
 <script id="news-board-v1-js">
 (function(){
-  let items=[],idx=0;
+  let items=[];
   const E=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   function parse(x){
     let t=String(x.text||'').trim();
@@ -9348,11 +9349,10 @@ html body #boardSubmitModal[aria-hidden="false"]{z-index:22050!important}</style
     const feed=document.getElementById('newsFeed'),cnt=document.getElementById('newsCounter');
     if(!feed)return;
     if(!items.length){feed.innerHTML='<p class="muted">הידיעות הראשונות יופיעו כאן בקרוב.</p>';if(cnt)cnt.textContent='';return}
-    const x=items[idx];
-    feed.innerHTML='<article class="board-message-card">'+(x.place?'<h3 class="news-place">'+E(x.place)+'</h3>':'')+(x.meta?'<div class="news-meta">'+E(x.meta)+'</div>':'')+'<div class="board-message-text">'+E(x.body)+'</div>'+(x.url?'<a class="news-link" href="'+E(x.url)+'" target="_blank" rel="noopener">לידיעה המקורית ↗</a>':'')+'</article>';
-    if(cnt)cnt.textContent=(idx+1)+' / '+items.length;
+    // 10.11.2026: גלילה למטה ולא דפדוף ("כשיש הרבה ידיעות הגלילה האופקית לא נוחה")
+    feed.innerHTML=items.map(x=>'<article class="board-message-card">'+(x.place?'<h3 class="news-place">'+E(x.place)+'</h3>':'')+(x.meta?'<div class="news-meta">'+E(x.meta)+'</div>':'')+'<div class="board-message-text">'+E(x.body)+'</div>'+(x.url?'<a class="news-link" href="'+E(x.url)+'" target="_blank" rel="noopener">לידיעה המקורית ↗</a>':'')+'</article>').join('');
+    if(cnt)cnt.textContent='('+items.length+' ידיעות)';
   }
-  window.newsStep=function(d){if(!items.length)return;idx=(idx+d+items.length)%items.length;render()};
   fetch('/weekly-notes.json',{cache:'no-cache'}).then(r=>r.json()).then(a=>{
     // החדשות למעלה: לפי תאריך, ובאותו תאריך לפי הסדר בקובץ
     items=(Array.isArray(a)?a:[]).map((x,i)=>({x,i})).filter(o=>o.x&&o.x.section==='news'&&o.x.text).sort((p,q)=>String(q.x.date).localeCompare(String(p.x.date))||p.i-q.i).map(o=>parse(o.x));
