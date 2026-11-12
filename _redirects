@@ -21,3 +21,5 @@
 /compass /library 301
 /apps /index.html 200
 /tasks /index.html 200
+/calendar/meeting-2026-11-18 https://calendar.google.com/calendar/render?action=TEMPLATE&text=%D7%9E%D7%A4%D7%92%D7%A9+%D7%94%D7%A7%D7%94%D7%99%D7%9C%D7%94%3A+%D7%97%D7%95%D7%A1%D7%9F-%D7%97%D7%99%D7%A0%D7%95%D7%9A-%D7%97%D7%A8%D7%95%D7%9D&dates=20261118T160000Z%2F20261118T173000Z&location=Zoom&details=%D7%9E%D7%A4%D7%92%D7%A9+%D7%94%D7%A7%D7%94%D7%99%D7%9C%D7%94+%D7%91%D7%96%D7%95%D7%9D.+https%3A%2F%2Fhosen-hinuch-herum.netlify.app 302
+/calendar/meeting-2026-11-18.ics /assets/community-meeting-2026-11-18.ics 200

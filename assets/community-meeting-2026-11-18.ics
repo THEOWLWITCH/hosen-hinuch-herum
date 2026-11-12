@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hosen-hinuch-herum//community//HE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:community-meeting-2026-11-18@hosen-hinuch-herum.netlify.app
+DTSTAMP:20261112T120000Z
+DTSTART:20261118T160000Z
+DTEND:20261118T173000Z
+SUMMARY:מפגש הקהילה: חוסן-חינוך-חרום
+LOCATION:Zoom
+DESCRIPTION:מפגש הקהילה בזום. https://hosen-hinuch-herum.netlify.app
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:מפגש הקהילה: חוסן-חינוך-חרום
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+END:VCALENDAR

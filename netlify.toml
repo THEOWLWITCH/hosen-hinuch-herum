@@ -4,3 +4,9 @@
 
 [functions]
   directory = "netlify/functions"
+
+[[headers]]
+  for = "/assets/*.ics"
+  [headers.values]
+    Content-Type = "text/calendar; charset=utf-8"
+    Content-Disposition = "attachment; filename=\"community-meeting.ics\""
