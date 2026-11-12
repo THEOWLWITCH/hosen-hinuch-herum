@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בונים כלי מלווה מחקר · בינה מלאכותית: חוסן-חינוך-חרום</title>
+<link rel="canonical" href="https://hosen-hinuch-herum.netlify.app/research-companion">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Assistant:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;600;700&family=Noto+Kufi+Arabic:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: one reading column, a language bar, infographic band on top, the prompt as the visual anchor */
+  --bg:#F3F6F5;
+  --surface:#FFFFFF;
+  --ink:#16262E;
+  --muted:#53656D;
+  --line:#D5DEDC;
+  --accent:#0E6B68;
+  --accent-soft:#DDEFEC;
+  --sun:#D9961A;
+  --sun-soft:#FBF0D9;
+  --code-bg:#F7FAF9;
+  --c1:#2F6FB0; --c2:#1F8A8A; --c3:#B87010; --c4:#7A4FB5; --c5:#C2453A; --c6:#3C8A3F;
+  --display:"Frank Ruhl Libre", "David", Georgia, serif;
+  --body:"Assistant", "Arial Hebrew", Arial, sans-serif;
+  --arabic:"Noto Sans Arabic", "Assistant", Tahoma, sans-serif;
+  --arabic-display:"Noto Kufi Arabic", "Noto Sans Arabic", Tahoma, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A1D; --surface:#16252A; --ink:#E6EEEC; --muted:#9DB0B3; --line:#2A3D42;
+    --accent:#5CC4BC; --accent-soft:#173A3A; --sun:#F0B54A; --sun-soft:#3A2F17; --code-bg:#12211F;
+    --c1:#79AEE8; --c2:#5CC8C8; --c3:#F0B54A; --c4:#B595E8; --c5:#F08A7E; --c6:#82CC85;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A1D; --surface:#16252A; --ink:#E6EEEC; --muted:#9DB0B3; --line:#2A3D42;
+  --accent:#5CC4BC; --accent-soft:#173A3A; --sun:#F0B54A; --sun-soft:#3A2F17; --code-bg:#12211F;
+  --c1:#79AEE8; --c2:#5CC8C8; --c3:#F0B54A; --c4:#B595E8; --c5:#F08A7E; --c6:#82CC85;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.65}
+body.ar{font-family:var(--arabic);line-height:1.8}
+body.ar h1,body.ar h2,body.ar h3{font-family:var(--arabic-display);line-height:1.45}
+body.ar .lang-he{display:none}
+body:not(.ar) .lang-ar{display:none}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:4px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+.read{max-width:68ch}
+h1,h2,h3{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:900}
+h2{font-size:clamp(1.55rem,3.4vw,2.1rem);font-weight:700;margin-bottom:.6rem}
+h3{font-size:1.25rem;font-weight:700;margin-bottom:.4rem}
+p{margin:.4rem 0 .9rem}
+
+.langbar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.langbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:8px;padding-bottom:8px}
+.langbar .lbl{font-size:.9rem;color:var(--muted)}
+.langs{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
+.langs button{font:inherit;font-size:.95rem;border:0;background:transparent;color:var(--ink);padding:5px 16px;cursor:pointer}
+.langs button[aria-pressed="true"]{background:var(--accent);color:var(--surface);font-weight:700}
+.langs button[data-lang="ar"]{font-family:var(--arabic)}
+.langs button[data-lang="he"]{font-family:var(--body)}
+
+header.top{padding:40px 0 28px;border-bottom:1px solid var(--line)}
+.kicker{color:var(--accent);font-weight:700;letter-spacing:.02em;margin-bottom:.5rem}
+.lead{font-size:1.15rem;color:var(--muted);max-width:62ch}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+nav.toc a{text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:4px 12px;border-radius:999px;font-size:.92rem}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+section{padding:44px 0;border-bottom:1px solid var(--line);scroll-margin-top:56px}
+.stepno{display:inline-flex;align-items:center;justify-content:center;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:700;font-family:var(--body);margin-left:.6rem;font-size:1.05rem;vertical-align:middle}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+ul,ol{padding-inline-start:1.3rem;margin:.3rem 0 .8rem}
+li{margin:.25rem 0}
+.note{background:var(--sun-soft);border-inline-start:4px solid var(--sun);padding:12px 16px;border-radius:8px;margin:14px 0}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;padding:1px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.sun{background:var(--sun-soft);color:var(--ink)}
+.small-muted{color:var(--muted);font-size:.88rem}
+
+/* infographic */
+.flow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:22px}
+.node{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 12px 14px;position:relative;text-align:center}
+.node .n{width:42px;height:42px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.15rem;background:var(--accent);color:var(--surface);font-family:var(--body)}
+.node.key{border:2px solid var(--sun);background:var(--sun-soft)}
+.node.key .n{background:var(--sun);color:#1b1404}
+.node b{display:block;font-size:1.02rem;line-height:1.3}
+.node span{display:block;font-size:.86rem;color:var(--muted);line-height:1.4;margin-top:4px}
+.node:not(:last-child)::after{content:"";position:absolute;top:36px;left:-11px;width:12px;height:2px;background:var(--accent)}
+.phase{margin:22px 0 -8px;font-weight:700;color:var(--accent);font-size:1rem}
+.flow.three{grid-template-columns:repeat(3,1fr)}
+.loop{margin-top:12px;display:flex;align-items:center;gap:10px;justify-content:center;color:var(--muted);font-size:.95rem;text-align:center}
+.loop svg{flex:none}
+@media (max-width:820px){
+  .flow{grid-template-columns:repeat(2,1fr)}
+  .node:not(:last-child)::after{display:none}
+}
+
+/* prompt */
+.promptbox{background:var(--code-bg);border:2px solid var(--accent);border-radius:14px;overflow:hidden;margin-top:18px}
+.promptbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px;background:var(--accent);color:var(--surface);flex-wrap:wrap}
+.promptbar strong{font-size:1.02rem}
+button.copy{font:inherit;font-weight:700;font-size:.92rem;border:0;border-radius:8px;padding:6px 14px;cursor:pointer;background:var(--surface);color:var(--accent)}
+button.copy:hover{filter:brightness(.95)}
+button.copy.small{background:var(--accent-soft);color:var(--accent)}
+pre.prompt{margin:0;padding:18px 20px;white-space:pre-wrap;word-wrap:break-word;font-family:inherit;font-size:1rem;line-height:1.75;color:var(--ink)}
+pre.prompt .ph{background:var(--sun-soft);border:1px dashed var(--sun);border-radius:4px;padding:0 4px}
+pre.prompt .hd{font-weight:700;color:var(--accent)}
+.followups{display:grid;gap:12px;margin-top:14px}
+.fu{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.fu-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fu pre{margin:.5rem 0 0;white-space:pre-wrap;font-family:inherit;font-size:.97rem;background:var(--code-bg);border-radius:8px;padding:10px 12px;border:1px solid var(--line)}
+
+/* tables */
+.tablewrap{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.96rem}
+th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--accent-soft);color:var(--ink);font-weight:700}
+tr:last-child td{border-bottom:0}
+td.comp{font-weight:700;white-space:nowrap}
+td.comp .cwrap{display:flex;align-items:center;gap:10px}
+
+/* resilience icons */
+.ico{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;flex:none;color:var(--cc);background:color-mix(in srgb, var(--cc) 14%, transparent);border:1.5px solid color-mix(in srgb, var(--cc) 45%, transparent)}
+.badge.sm{width:26px;height:26px;border-radius:8px}
+.badge.sm .ico{width:17px;height:17px}
+.badge.lg{width:64px;height:64px;border-radius:18px}
+.badge.lg .ico{width:38px;height:38px}
+.k1{--cc:var(--c1)} .k2{--cc:var(--c2)} .k3{--cc:var(--c3)} .k4{--cc:var(--c4)} .k5{--cc:var(--c5)} .k6{--cc:var(--c6)}
+.icongrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;margin-top:12px}
+.iconcard{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.iconcard strong{display:block;color:var(--cc)}
+.iconcard span{font-size:.93rem;color:var(--muted)}
+
+.checklist{list-style:none;padding:0;display:grid;gap:8px}
+.checklist li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;gap:10px}
+.checklist li::before{content:"☐";color:var(--accent);font-size:1.2rem;line-height:1.3}
+
+.slides{counter-reset:s;list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.slides li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-height:118px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;font-size:.95rem}
+.lang-he .slides li::before{content:"שקופית " counter(s);font-size:.78rem;color:var(--muted);font-weight:700}
+.lang-ar .slides li::before{content:"شريحة " counter(s);font-size:.78rem;color:var(--muted);font-weight:700}
+
+/* dashboard demo */
+.dash{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px}
+.dash[lang="ar"]{font-family:var(--arabic)}
+.dash[lang="he"]{font-family:var(--body)}
+.dash-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.dash-head h3{font-family:inherit;font-size:1.2rem}
+.dash-sub{color:var(--muted);font-size:.88rem}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:16px 0}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.kpi .v{font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2;font-family:var(--body)}
+.kpi .l{font-size:.86rem;color:var(--muted)}
+.kpi .pill{display:inline-block;margin-top:6px;font-size:.76rem;font-weight:700;padding:1px 9px;border-radius:999px;background:#DCF2E3;color:#17653A}
+:root[data-theme="dark"] .kpi .pill{background:#173B26;color:#8EE0AE}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kpi .pill{background:#173B26;color:#8EE0AE}}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.chart{border:1px solid var(--line);border-radius:12px;padding:14px}
+.chart h4{margin:0 0 10px;font-size:.98rem}
+.legend{display:flex;gap:14px;font-size:.84rem;color:var(--muted);margin-bottom:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.barrow{display:grid;grid-template-columns:minmax(130px,44%) 1fr;gap:8px;align-items:center;margin:8px 0;font-size:.86rem}
+.barrow .bl{display:flex;align-items:center;gap:7px;line-height:1.3}
+.bars{display:grid;gap:3px}
+.bars .r{display:flex;gap:6px;align-items:center}
+.bar{height:10px;border-radius:3px}
+.bar.pre{background:var(--line)}
+.bar.post{background:var(--accent)}
+.bars small{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.78rem;font-family:var(--body)}
+.insight{margin-top:12px;font-size:.92rem;background:var(--accent-soft);border-radius:8px;padding:8px 12px}
+.dash-foot{margin-top:12px;font-size:.84rem;color:var(--muted)}
+
+.contact{background:var(--accent);color:var(--surface);border-radius:16px;padding:28px 26px;margin:44px 0 56px}
+.contact h2{color:var(--surface)}
+.contact a{color:var(--surface);font-weight:700}
+.contact .line{font-size:1.1rem}
+</style>
+</head>
+<body>
+
+<!-- resilience-language icons: original set, one per component -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-belong" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.6"/><circle cx="5" cy="17.5" r="2.6"/><circle cx="19" cy="17.5" r="2.6"/><path d="M10.6 7.3 6.4 15.2M13.4 7.3l4.2 7.9M7.6 17.5h8.8"/></symbol>
+  <symbol id="i-regulate" viewBox="0 0 24 24"><path d="M2.5 7.5c2.4-3 4.8 3 7.2 0s4.8-3 7.2 0 3.3 1.5 4.6 0"/><path d="M2.5 12.5c2.4-1.8 4.8 1.8 7.2 0s4.8-1.8 7.2 0 3.3 0.9 4.6 0"/><path d="M2.5 17.5h19"/></symbol>
+  <symbol id="i-prepare" viewBox="0 0 24 24"><rect x="4.5" y="8" width="15" height="13" rx="3"/><path d="M9 8V6.2a3 3 0 0 1 6 0V8"/><path d="M8 14h8M12 12v4"/></symbol>
+  <symbol id="i-practice" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4.5v4h-4"/><path d="m9 12.2 2 2 4-4.2"/></symbol>
+  <symbol id="i-future" viewBox="0 0 24 24"><path d="M12 21.5V12"/><path d="M12 12 6.5 6.5M12 12l5.5-5.5"/><path d="M5.5 10V5.5H10M18.5 10V5.5H14"/></symbol>
+  <symbol id="i-together" viewBox="0 0 24 24"><path d="M2.8 11 12 3.8l9.2 7.2"/><circle cx="9" cy="13" r="1.9"/><circle cx="15" cy="13" r="1.9"/><path d="M5.8 20.5c0-2.4 1.4-3.9 3.2-3.9s3 1.2 3 1.2 1.2-1.2 3-1.2 3.2 1.5 3.2 3.9"/></symbol>
+</svg>
+
+<div class="langbar">
+  <div class="wrap">
+    <a class="lbl" href="/match#workspaces" style="text-decoration:none"><span class="lang-he">→ חזרה לצוותים הפעילים</span><span class="lang-ar" lang="ar">→ العودة إلى الفرق الفعّالة</span></a>
+    <div class="langs" role="group" aria-label="שפה / اللغة" id="pageLangs">
+      <button type="button" data-lang="he" aria-pressed="true">עברית</button>
+      <button type="button" data-lang="ar" aria-pressed="false" lang="ar">العربية</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== HEBREW ===================== -->
+<div class="lang-he" lang="he">
+<header class="top">
+  <div class="wrap">
+    <div class="kicker">מדריך לחוקרים ולחוקרות</div>
+    <h1>בונים כלי מלווה מחקר בעזרת AI</h1>
+    <p class="lead">איך הופכים שיחה עם Claude או ChatGPT לשותף מחקר: מעלים את החומרים, נותנים פרומפט פתיחה אחד מדויק, ומתקדמים בשלבים עד מסגרת מחקר, סקירת ספרות, מתודולוגיה, חומרים לכיתה ודשבורד. בסוף הדף יש דוגמה מלאה.</p>
+    <nav class="toc" aria-label="תוכן הדף">
+      <a href="#process">התהליך במבט אחד</a>
+      <a href="#upload">1. העלאת המחקר</a>
+      <a href="#prompt">2. פרומפט הפתיחה</a>
+      <a href="#next">3. איך מתקדמים</a>
+      <a href="#review">4. הגהה</a>
+      <a href="#share">5. שיתוף</a>
+      <a href="#dashboard">6. דשבורד</a>
+      <a href="#collect">7. איסוף ממצאים</a>
+      <a href="#analyze">8. ניתוח</a>
+      <a href="#write">9. כתיבה</a>
+      <a href="#example">דוגמה: שפת החוסן</a>
+      <a href="#contact">ליצירת קשר</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section id="process">
+  <div class="wrap">
+    <h2>התהליך במבט אחד</h2>
+    <p class="read">תשעה שלבים בשני חלקים. השלב המודגש הוא הלב: פרומפט פתיחה טוב קובע את איכות כל מה שבא אחריו.</p>
+    <div class="phase">בונים את המחקר</div>
+    <div class="flow" role="list">
+      <div class="node" role="listitem"><div class="n">1</div><b>מעלים</b><span>הצעת מחקר, טיוטות, מאמרים, שאלונים</span></div>
+      <div class="node key" role="listitem"><div class="n">2</div><b>פרומפט פתיחה</b><span>תפקיד, פרטי המחקר, כללים, 4 חלקי תוצר</span></div>
+      <div class="node" role="listitem"><div class="n">3</div><b>מתקדמים בשלבים</b><span>חלק אחר חלק, עם אישור שלכם בכל שלב</span></div>
+      <div class="node" role="listitem"><div class="n">4</div><b>הגהה</b><span>מקורות, עקביות, שפה, אתיקה</span></div>
+      <div class="node" role="listitem"><div class="n">5</div><b>משתפים</b><span>קישור, ייצוא, פרויקט משותף</span></div>
+      <div class="node" role="listitem"><div class="n">6</div><b>דשבורד</b><span>מעקב חי אחרי הנתונים, בעברית ובערבית</span></div>
+    </div>
+    <div class="phase">מבצעים את המחקר</div>
+    <div class="flow three" role="list">
+      <div class="node" role="listitem"><div class="n">7</div><b>איסוף ממצאים</b><span>קודים במקום שמות, טפסים, יומן שטח</span></div>
+      <div class="node" role="listitem"><div class="n">8</div><b>ניתוח</b><span>כמותי ואיכותני, עם בדיקת החישוב</span></div>
+      <div class="node" role="listitem"><div class="n">9</div><b>כתיבה</b><span>ממצאים, דיון, דוח לבית הספר</span></div>
+    </div>
+    <div class="loop">
+      <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M30 4 H10 a7 7 0 0 0 0 14 H26" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 14 l5 4 -5 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span>בכל שלב עובדים בלולאה: כותבים, בודקים, מתקנים, וממשיכים הלאה.</span>
+    </div>
+  </div>
+</section>
+
+<section id="upload">
+  <div class="wrap">
+    <h2><span class="stepno">1</span>העלאת המחקר לצ'אט</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>מה להעלות</h3>
+        <ul>
+          <li>הצעת המחקר או הטיוטה הנוכחית, גם אם היא חלקית</li>
+          <li>3–10 מאמרים מרכזיים שעליהם המחקר נשען (PDF)</li>
+          <li>שאלונים, כלים או חומרי לימוד שכבר קיימים</li>
+          <li>דרישות של המוסד, הקרן או כתב העת, אם יש</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>איך להעלות נכון</h3>
+        <ul>
+          <li>לפתוח <strong>פרויקט</strong> (Project) ב־Claude או ב־ChatGPT ולהעלות אליו את הקבצים. כך הם זמינים בכל שיחה חדשה בפרויקט.</li>
+          <li>לתת לקבצים שמות ברורים: <span class="tag">הצעת-מחקר-טיוטה-2</span></li>
+          <li><strong>לפני ההעלאה:</strong> להסיר שמות, פרטים מזהים ונתונים גולמיים של משתתפים.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prompt">
+  <div class="wrap">
+    <h2><span class="stepno">2</span>פרומפט הפתיחה</h2>
+    <p class="read">מעתיקים, ממלאים את השדות המסומנים בצהוב, ושולחים בהודעה הראשונה בשיחה. הפרומפט בנוי כך שה־AI ישאל קודם שאלות הבהרה ויכתוב חלק אחד בכל פעם. כך אפשר לתקן כיוון מוקדם, לפני שנכתבים עשרים עמודים לא מדויקים.</p>
+    <div class="promptbox">
+      <div class="promptbar"><strong>פרומפט פתיחה: מלווה מחקר</strong><button class="copy" type="button" data-copy="mainPrompt">העתקת הפרומפט</button></div>
+<pre class="prompt" id="mainPrompt"><span class="hd">התפקיד שלך</span>
+בשיחה הזאת תפקידך הוא מלווה מחקר אקדמי: עמית או עמיתה עם ניסיון רב במתודולוגיה של מחקר חינוכי, שעוזרים לי לבנות מחקר שלם, מבוסס וניתן לביצוע.
+
+<span class="hd">פרטי המחקר</span>
+אני חוקר/ת בתחום <span class="ph">[התחום, למשל: חינוך וחוסן]</span>. צירפתי את הקבצים הבאים: <span class="ph">[הצעת מחקר / טיוטה / מאמרים מרכזיים / שאלונים]</span>.
+- נושא המחקר: <span class="ph">[...]</span>
+- שאלת המחקר (גם אם עדיין לא מנוסחת סופית): <span class="ph">[...]</span>
+- מטרת המחקר: <span class="ph">[...]</span>
+- אוכלוסייה והקשר: <span class="ph">[גילים, סוג מסגרת, מספר משתתפים משוער, שפות]</span>
+- מה כבר קיים אצלי: <span class="ph">[...]</span>
+- התוצר הסופי שאני צריך/ה: <span class="ph">[מאמר / עבודת גמר / דוח לקרן / ערכה לבית הספר]</span>
+- לוח זמנים: <span class="ph">[...]</span>
+
+<span class="hd">כללי עבודה</span>
+1. קודם לקרוא את כל הקבצים המצורפים ולהשתמש בהם כבסיס. כשמשהו לא מופיע בקבצים, לציין שזה ידע כללי.
+2. לא להמציא מקורות. כל מקור שאינו מהקבצים שלי יסומן [לאימות] ויכלול מחבר, שנה וכותר, כדי שאוכל לבדוק אותו. כשאין ודאות שמקור קיים, לכתוב זאת במפורש.
+3. לעבוד בשלבים: לפני הכתיבה, לשאול אותי עד 5 שאלות הבהרה. אחרי כל חלק, לעצור ולחכות לאישור שלי.
+4. לכתוב בעברית אקדמית בהירה ותקנית, בפנייה לשני המגדרים או בלשון לא מגדרית. מקורות לפי APA מהדורה 7.
+5. בכל חלק לציין: מה חזק, מה חסר, ומה דורש החלטה שלי.
+
+<span class="hd">התוצר: ארבעה חלקים</span>
+
+חלק א: מסגרת המחקר
+רקע ורציונל; בעיית המחקר; מטרות; שאלת מחקר מרכזית ושאלות משנה; השערות מחקר (השערה מכוונת לכל שאלה כמותית); מושגי מפתח, לכל מושג הגדרה מושגית והגדרה אופרטיבית (איך מודדים אותו); מסגרת תיאורטית; תרומה צפויה, מחקרית ומעשית.
+
+חלק ב: סקירת ספרות
+סקירה לפי נושאים ולא לפי מאמרים. בכל נושא: מה ידוע, איפה יש מחלוקת, ואיזה פער המחקר שלי ממלא.
+בסוף: טבלת מקורות עם העמודות מחבר | שנה | כותר | טענה מרכזית | איך המקור תורם למחקר | סטטוס (מהקבצים / לאימות).
+
+חלק ג: מתודולוגיה
+מערך המחקר (כמותי, איכותני, משולב, מחקר פעולה) ונימוק לבחירה; משתתפים ודגימה; כלי המחקר, ולכל כלי: מה הוא מודד, דוגמאות לפריטים, סולם, ומה ידוע ומה צריך עוד לבדוק לגבי אמינות ותוקף; הליך איסוף הנתונים ולוח זמנים; ניתוח הנתונים, לכל שאלת מחקר בנפרד; אתיקה (הסכמה מדעת, אישור הורים, פרטיות, אישורים נדרשים, כמו אישור המדען הראשי במשרד החינוך); מגבלות המחקר.
+בסוף: טבלת התאמה שאלת מחקר | כלי | ניתוח.
+
+חלק ד: מעורבות ה־AI במחקר
+הצעה מפורטת:
+- באילו שלבים AI יכול לעזור (הכנת חומרים, קידוד ראשוני של נתונים איכותניים, ניתוח, בניית דשבורד, הגהה)
+- באילו שלבים ההחלטה נשארת אצלי (החלטות מחקריות, פרשנות סופית, קשר עם המשתתפים)
+- איך שומרים על פרטיות המשתתפים
+- איך מתעדים את השימוש: יומן עם העמודות תאריך | כלי | מטרה | מה נלקח | מה נבדק ותוקן
+- נוסח מוצע לפסקת שקיפות על השימוש ב־AI במאמר
+
+<span class="hd">בסוף כל תשובה</span>
+- רשימה "לבדיקה שלי": מקורות, מספרים והחלטות שעליי לאמת
+- 3 הצעות לצעד הבא
+
+<span class="hd">מתחילים</span>
+לקרוא את הקבצים, לכתוב סיכום של 5 שורות על המחקר כפי שהוא עולה מהקבצים, ולשאול את שאלות ההבהרה. עדיין לא לכתוב את חלק א.</pre>
+    </div>
+    <div class="grid3" style="margin-top:18px">
+      <div class="card"><h3>למה זה עובד</h3><p>תפקיד ברור, הקשר מלא, כללים מפורשים ותוצר מוגדר. ארבעת הרכיבים האלה מצמצמים תשובות כלליות.</p></div>
+      <div class="card"><h3>הכלל החשוב ביותר</h3><p>כלל 2: סימון [לאימות]. מודלי שפה עלולים לייצר מקורות שנשמעים אמיתיים ואינם קיימים. הסימון הופך את הבדיקה לשגרה.</p></div>
+      <div class="card"><h3>מה לא לשנות</h3><p>את העבודה בשלבים. גם אם מפתה לבקש הכול בבת אחת, התוצר יוצא שטחי יותר וקשה יותר לבדוק אותו.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="next">
+  <div class="wrap">
+    <h2><span class="stepno">3</span>איך מתקדמים אחרי הפרומפט הראשון</h2>
+    <p class="read">כל הודעה מקדמת חלק אחד. אלה פרומפטי המשך מוכנים, לפי הסדר המומלץ:</p>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>א. עונים על שאלות ההבהרה</strong><button class="copy small" type="button" data-copy="fu1">העתקה</button></div>
+<pre id="fu1">אלה התשובות שלי: [...]. עכשיו אפשר לכתוב את חלק א: מסגרת המחקר. בסיום, לעצור ולחכות להערות שלי.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ב. מחדדים שאלת מחקר והשערות</strong><button class="copy small" type="button" data-copy="fuQ">העתקה</button></div>
+<pre id="fuQ">לפני שממשיכים, לחדד את שאלת המחקר: להציע 3 ניסוחים לשאלה מרכזית, ולכל ניסוח שאלות משנה. לכל שאלה כמותית לנסח השערה מכוונת שאפשר לבדוק, ולציין באיזה כלי ובאיזה ניתוח היא תיבדק. לשאלה איכותנית, להסביר למה אין לה השערה. לסמן איזה ניסוח מתאים ביותר להיקף ולזמן שלי, ולנמק.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ג. מעמיקים בסקירה</strong><button class="copy small" type="button" data-copy="fu2">העתקה</button></div>
+<pre id="fu2">בחלק ב, להרחיב את הנושא [...]. להוסיף מחקרים מהשנים האחרונות שעוסקים ב[...], כל אחד מסומן [לאימות], ולהסביר איך כל אחד מהם קשור לשאלת המחקר שלי.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ד. בונים כלי מדידה</strong><button class="copy small" type="button" data-copy="fu3">העתקה</button></div>
+<pre id="fu3">לבנות את [שם הכלי] במלואו: הוראות למשתתפים, כל הפריטים, סולם תשובות, מפתח ציינון, פריטים הפוכים, והצעה לבדיקת אמינות במחקר חלוץ. לנסח בשפה מותאמת ל[גיל].</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ה. מכינים חומרים לשטח</strong><button class="copy small" type="button" data-copy="fu4">העתקה</button></div>
+<pre id="fu4">על בסיס המסגרת שאישרתי, לכתוב מערך שיעור של 45 דקות על [נושא]: מטרות, ציוד, פתיחה, הקניה, משחק או תרגיל, סיכום, ודרך קצרה להעריך מה נלמד.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ו. אייקונים לשפה</strong><button class="copy small" type="button" data-copy="fu8">העתקה</button></div>
+<pre id="fu8">לעצב אייקון ייחודי לכל רכיב בשפת החוסן: פשוט, ברור לילדים ולילדות, בקו אחיד, ובצבע משלו. להסביר מה כל אייקון מסמל, ולהציע איפה הוא יופיע (כרטיסים, פוסטר, משחקים, דשבורד).</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ז. מצגת לצוות החינוכי</strong><button class="copy small" type="button" data-copy="fu5">העתקה</button></div>
+<pre id="fu5">לבנות מצגת מלווה למחנכים ולמחנכות שמפעילים את התוכנית: 10 שקופיות, טקסט קצר בכל שקופית, והערות למציג/ה מתחת לכל שקופית.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ח. דשבורד</strong><button class="copy small" type="button" data-copy="fu6">העתקה</button></div>
+<pre id="fu6">לבנות דשבורד מחקר בעברית ובערבית, עם כפתור להחלפת שפה. להציג: מספר משתתפים, התקדמות בהעברת השיעורים, ממוצעים לפני ואחרי לכל רכיב, ומגמה שבועית. להשתמש בנתוני דוגמה מסומנים עד שיגיעו הנתונים האמיתיים. בלי שמות ובלי פרטים מזהים.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ט. סוגרים שלב: "מסמך אם"</strong><button class="copy small" type="button" data-copy="fu7">העתקה</button></div>
+<pre id="fu7">לכתוב "מסמך אם" מעודכן שמרכז את כל ההחלטות עד עכשיו: שאלות המחקר, ההגדרות, הכלים, המערך, ומה עוד פתוח. אני אשתמש בו כדי להמשיך בשיחה חדשה.</pre></div>
+    </div>
+    <div class="note"><strong>טיפ:</strong> שיחה ארוכה מאוד מאבדת דיוק. בסוף כל שלב גדול, לבקש "מסמך אם", לשמור אותו בפרויקט ולפתוח שיחה חדשה שמתחילה ממנו.</div>
+  </div>
+</section>
+
+<section id="review">
+  <div class="wrap">
+    <h2><span class="stepno">4</span>הגהה על התוצר</h2>
+    <p class="read">ה־AI כותב מהר, אבל האחריות על המחקר נשארת אצלכם. רשימת בדיקה לכל חלק:</p>
+    <ul class="checklist">
+      <li><span><strong>מקורות:</strong> לחפש כל מקור ב־Google Scholar או לפי DOI. לבדוק שהמקור קיים, שהמחברים והשנה נכונים, ושהוא באמת טוען את מה שנכתב בשמו.</span></li>
+      <li><span><strong>עקביות:</strong> לעבור על טבלת ההתאמה. לכל שאלת מחקר יש כלי, ולכל כלי יש ניתוח.</span></li>
+      <li><span><strong>קוהרנטיות:</strong> לבדוק שיש חוט אחד שעובר בכל המסמך: הרקע מוביל לבעיה, הבעיה לשאלה, השאלה להשערות, ההשערות לכלים ולניתוח, והממצאים לדיון ולמסקנות. אותם מושגים באותו שם לאורך כל הדרך, וכל מסקנה נשענת על ממצא.</span></li>
+      <li><span><strong>מספרים:</strong> לכל מספר (גודל מדגם, אמינות, אחוזים) לבדוק מאיפה הגיע.</span></li>
+      <li><span><strong>אתיקה ופרטיות:</strong> הסכמה מדעת, אישור הורים, אישורים נדרשים, אין פרטים מזהים בשום קובץ.</span></li>
+      <li><span><strong>שפה:</strong> עברית תקנית, מונחים אחידים לאורך כל המסמך, פנייה לשני המגדרים.</span></li>
+      <li><span><strong>השפה השנייה:</strong> כל טקסט בערבית או בעברית עובר בדיקה של דובר או דוברת השפה מהתחום.</span></li>
+      <li><span><strong>קריאה אנושית:</strong> מנחה, עמית או עמיתה קוראים לפני שהמסמך יוצא.</span></li>
+    </ul>
+    <div class="note"><strong>טיפ: פאנל של 10 מומחים.</strong> מבקשים מה־AI לקרוא את המסמך דרך עיניהם של 10 מומחים ומומחיות מתחומי תוכן שונים. כל אחד ואחת רואים בעיות אחרות: מתודולוג/ית יזהה חולשה במערך המחקר, ומומחה/ית לאתיקה יזהה בעיה בהסכמה מדעת. הפאנל המדומה לא מחליף מומחים אמיתיים: את ההערות החשובות כדאי להעביר לבדיקה של 2–3 אנשי ונשות מקצוע מהתחום.</div>
+    <div class="fu" style="margin-top:16px"><div class="fu-head"><strong>פרומפט הגהה: פאנל של 10 מומחים (בשיחה חדשה, עם המסמך מצורף)</strong><button class="copy small" type="button" data-copy="rv">העתקה</button></div>
+<pre id="rv">לקרוא את המסמך המצורף כפאנל של 10 מומחים ומומחיות, כל אחד ואחת מתחום אחר:
+1. מתודולוגיה של מחקר כמותי
+2. מחקר איכותני
+3. חוסן חברתי וקהילתי
+4. פדגוגיה בבית הספר היסודי
+5. פסיכולוגיה חינוכית והתפתחותית
+6. מוכנות לחירום
+7. סטטיסטיקה
+8. אתיקה במחקר עם ילדים
+9. חינוך בחברה הערבית ורב־תרבותיות
+10. עריכה אקדמית ולשונית
+[אפשר להחליף את התחומים לפי המחקר שלכם]
+
+לכל מומחה/ית בנפרד: 3–5 הערות מתוך התחום שלו או שלה. לא לתקן את המסמך.
+לרשום את כל ההערות בטבלה עם העמודות מומחה/ית | מיקום | הבעיה | חומרה (גבוהה/בינונית/נמוכה) | הצעה.
+לחפש במיוחד: טענות בלי מקור, מקורות שנראים חשודים, סתירות בין חלקים, אי־התאמה בין שאלות המחקר, ההשערות, הכלים והניתוח, וניסוחים לא ברורים.
+בנוסף, בדיקת קוהרנטיות: האם יש חוט אחד מהרקע, דרך שאלת המחקר וההשערות, ועד הממצאים והמסקנות? לסמן כל מקום שבו החוט נקטע, כל מושג שמשנה את שמו, וכל מסקנה שלא נשענת על ממצא.
+בסוף: 5 ההערות החשובות ביותר מכל הפאנל, ואיפה המומחים והמומחיות חלוקים ביניהם.</pre></div>
+    <div class="fu" style="margin-top:12px"><div class="fu-head"><strong>בדיקת קוהרנטיות (למסמך המלא)</strong><button class="copy small" type="button" data-copy="coh">העתקה</button></div>
+<pre id="coh">לבדוק את הקוהרנטיות של המסמך המצורף:
+1. לכתוב בשורה אחת את הטענה המרכזית של כל פרק.
+2. לבדוק שכל פרק מוביל לפרק שאחריו: רקע ← בעיה ← שאלה ← השערות ← שיטה ← ממצאים ← דיון ← מסקנות.
+3. לבנות טבלה עם העמודות שאלת מחקר | השערה | כלי | ניתוח | ממצא | מסקנה, ולסמן כל שורה שחסרה בה חוליה.
+4. לרשום מושגים שמופיעים בשמות שונים במקומות שונים.
+5. לסמן מסקנות או המלצות שאינן נשענות על ממצא.
+לא לתקן. רק לרשום את הבעיות ולהציע תיקון קצר לכל אחת.</pre></div>
+    <p class="read" style="margin-top:12px">למה בשיחה חדשה? שיחה שכתבה את הטקסט נוטה להסכים עם עצמה. מבט "טרי" מוצא יותר בעיות.</p>
+  </div>
+</section>
+
+<section id="share">
+  <div class="wrap">
+    <h2><span class="stepno">5</span>שיתוף עם אחרים</h2>
+    <div class="grid3">
+      <div class="card"><h3>קישור</h3><p>גם ב־Claude וגם ב־ChatGPT יש כפתור שיתוף שיוצר קישור לשיחה או לתוצר. מי שמקבל את הקישור רואה את התוכן.</p></div>
+      <div class="card"><h3>ייצוא</h3><p>להעתיק ל־Word או ל־Google Docs, או לשמור כ־PDF. מתאים למנחה, לוועדה ולבית הספר.</p></div>
+      <div class="card"><h3>פרויקט משותף</h3><p>בחשבונות צוות אפשר לשתף פרויקט שלם: הקבצים, ההנחיות והשיחות זמינים לכל חברי וחברות הצוות.</p></div>
+    </div>
+    <div class="note"><strong>לפני כל שיתוף:</strong> לבדוק מה הקישור חושף. אין לשתף שיחה שיש בה נתונים גולמיים או פרטים מזהים. כדאי לשתף גם את הפרומפט עצמו, כדי שחוקרים וחוקרות אחרים יוכלו להשתמש בו.</div>
+  </div>
+</section>
+
+<section id="dashboard">
+  <div class="wrap">
+    <h2><span class="stepno">6</span>מה זה דשבורד ואיך הוא עוזר למחקר</h2>
+    <p class="read">דשבורד הוא מסך אחד שמרכז את נתוני המחקר במספרים ובגרפים, ומתעדכן כשמגיעים נתונים חדשים. במקום לפתוח עשרה קבצים, רואים במבט אחד איפה המחקר עומד.</p>
+    <div class="grid2">
+      <div class="card"><h3>מה הוא נותן</h3>
+        <ul>
+          <li>מעקב אחרי איסוף הנתונים: כמה שאלונים חזרו, אילו כיתות בפיגור</li>
+          <li>תמונת מצב לפני ואחרי, לכל רכיב בנפרד</li>
+          <li>זיהוי מוקדם של בעיה, כמו כיתה שלא מתקדמת</li>
+          <li>שיתוף ממצאים עם בית הספר בלי לחשוף משתתפים</li>
+        </ul></div>
+      <div class="card"><h3>כללים לדשבורד מחקרי</h3>
+        <ul>
+          <li>נתונים מצרפיים בלבד, בלי שמות</li>
+          <li>נתוני דוגמה מסומנים בבירור עד שמגיעים הנתונים האמיתיים</li>
+          <li>דו־לשוני, כדי שכל צוות יקרא בשפה שלו</li>
+          <li>כל מספר מראה מאיזה כלי הוא הגיע</li>
+        </ul></div>
+    </div>
+    <p class="read" style="margin-top:12px">דוגמה חיה לדשבורד כזה מופיעה בסוף הדוגמה למטה.</p>
+  </div>
+</section>
+
+<section id="collect">
+  <div class="wrap">
+    <h2><span class="stepno">7</span>איסוף הממצאים</h2>
+    <p class="read">אחרי שהמחקר בנוי והכלים מוכנים, יוצאים לשטח. כאן ה־AI עוזר להכין את מערכת האיסוף. הוא לא אוסף בעצמו נתונים מהמשתתפים.</p>
+    <div class="grid2">
+      <div class="card"><h3>מה מכינים לפני שמתחילים</h3>
+        <ul>
+          <li><strong>ספר קודים</strong> (codebook): לכל משתנה שם, תיאור, ערכים אפשריים ודרך לסמן נתון חסר</li>
+          <li>טופס איסוף לכל כלי, למשל Google Forms לשאלון וטופס תצפית למחנכים ולמחנכות</li>
+          <li>קוד לכל משתתף ומשתתפת במקום שם. טבלת המפתח בין שמות לקודים נשמרת בנפרד ולא עולה לשום צ'אט</li>
+          <li>לוח זמנים: מי אוסף, מתי, ואיך מוודאים שהשאלונים חוזרים</li>
+        </ul></div>
+      <div class="card"><h3>במהלך האיסוף</h3>
+        <ul>
+          <li>קובץ נתונים מרכזי אחד: שורה לכל משתתף/ת ועמודה לכל משתנה</li>
+          <li>יומן שטח: מה קרה בפועל, חריגות, שיעורים שלא הועברו</li>
+          <li>בדיקה שבועית בדשבורד: כמה נתונים חזרו ואיפה יש פער</li>
+          <li>לפני כל העלאה ל־AI: רק קבצים מקודדים, בלי שמות, ובלי שמות בתי ספר אם הם מזהים</li>
+        </ul></div>
+    </div>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>בונים ספר קודים וטופס איסוף</strong><button class="copy small" type="button" data-copy="fc1">העתקה</button></div>
+<pre id="fc1">על בסיס כלי המחקר שאישרתי, לבנות ספר קודים: שם משתנה (באנגלית, בלי רווחים), תיאור, ערכים אפשריים, פריטים הפוכים ודרך לסמן נתון חסר. אחר כך לבנות טופס איסוף לכל כלי, ותבנית Excel ריקה שבה כל שורה היא משתתף/ת לפי קוד.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>בונים תוכנית איסוף</strong><button class="copy small" type="button" data-copy="fc2">העתקה</button></div>
+<pre id="fc2">לבנות תוכנית שבועית לאיסוף הנתונים: מה נאסף בכל שבוע, מי אחראי/ת, כמה זמן זה לוקח מהצוות, ומה עושים כשחסר נתון. לסמן מראש נקודות סיכון (למשל שאלונים שלא חוזרים) ולהציע פתרון לכל אחת.</pre></div>
+    </div>
+    <div class="note"><strong>חשוב:</strong> קובץ שמגיע ל־AI צריך להיות כזה שגם אם ייחשף, אי אפשר לזהות ממנו אף ילד או ילדה.</div>
+  </div>
+</section>
+
+<section id="analyze">
+  <div class="wrap">
+    <h2><span class="stepno">8</span>ניתוח הנתונים</h2>
+    <p class="read">Claude ו־ChatGPT יכולים להריץ ניתוחים סטטיסטיים על קובץ Excel או CSV שמעלים אליהם, ולעזור בקידוד ראשוני של טקסטים. התנאי: לבקש לראות את החישוב, ולבדוק אותו.</p>
+    <div class="grid2">
+      <div class="card"><h3>ניתוח כמותי</h3>
+        <ul>
+          <li>סטטיסטיקה תיאורית: ממוצעים, סטיות תקן, התפלגויות</li>
+          <li>אמינות הכלים (אלפא של קרונבך)</li>
+          <li>השוואת לפני ואחרי: מבחן t למדגמים מזווגים, או וילקוקסון כשההתפלגות אינה נורמלית, וגודל אפקט</li>
+          <li>גרפים לדוח ולדשבורד</li>
+        </ul></div>
+      <div class="card"><h3>ניתוח איכותני</h3>
+        <ul>
+          <li>קידוד ראשוני של טקסטים (יומנים, משפטים פתוחים) לפי ספר הקודים</li>
+          <li>הצעה לתמות וציטוטים מייצגים</li>
+          <li>החוקר/ת בודק/ת מדגם של לפחות 20% מהקידוד ומחשב/ת הסכמה</li>
+          <li>ההחלטה הסופית על התמות נשארת אצלכם</li>
+        </ul></div>
+    </div>
+    <h3 style="margin-top:20px">כללי בטיחות בניתוח</h3>
+    <ul class="checklist">
+      <li><span>להריץ רק את הניתוחים שתוכננו בחלק ג. כל ניתוח נוסף מסומן כ"גישוש".</span></li>
+      <li><span>לבקש את הקוד או את שלבי החישוב, ולבדוק כמה מספרים ידנית או בתוכנה אחרת (JASP, SPSS, Excel).</span></li>
+      <li><span>לדווח על כל התוצאות, גם על אלה שלא יצאו מובהקות.</span></li>
+      <li><span>לא לבקש מה־AI "למצוא משהו מעניין" בנתונים.</span></li>
+    </ul>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>ניתוח כמותי</strong><button class="copy small" type="button" data-copy="fa1">העתקה</button></div>
+<pre id="fa1">מצורפים קובץ נתונים מקודד וספר הקודים. לבצע את הניתוחים שתוכננו בחלק ג, לפי הסדר: 1. בדיקת נתונים חסרים וחריגים. 2. אמינות לכל סולם. 3. סטטיסטיקה תיאורית. 4. השוואת לפני ואחרי לכל רכיב, כולל גודל אפקט. לכל ניתוח להציג את הקוד, את הטבלה ומשפט פרשנות זהיר אחד. לא להוסיף ניתוחים שלא ביקשתי.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>קידוד איכותני</strong><button class="copy small" type="button" data-copy="fa2">העתקה</button></div>
+<pre id="fa2">מצורפים טקסטים מקודדים (בלי שמות) וספר קודים לפי ששת רכיבי החוסן. לקודד כל קטע לרכיב אחד או יותר, עם נימוק קצר. לסמן קטעים שלא מתאימים לאף קוד. בסוף: טבלת שכיחויות לפי רכיב, 2–3 ציטוטים מייצגים לכל רכיב, והצעה לתמות. אני אבדוק מדגם מהקידוד.</pre></div>
+    </div>
+  </div>
+</section>
+
+<section id="write">
+  <div class="wrap">
+    <h2><span class="stepno">9</span>כתיבה</h2>
+    <p class="read">ה־AI עוזר לבנות מבנה, לנסח טיוטה ולהדק. הקול, הטענה והפרשנות שלכם.</p>
+    <div class="grid3">
+      <div class="card"><h3>פרק הממצאים</h3><p>לפי שאלות המחקר, שאלה אחר שאלה. לכל שאלה: הממצא, טבלה או גרף, ומשפט סיכום. בלי פרשנות בשלב הזה.</p></div>
+      <div class="card"><h3>פרק הדיון</h3><p>מה הממצאים אומרים ביחס לספרות מחלק ב, מה מפתיע, מגבלות, והמלצות מעשיות לבית הספר.</p></div>
+      <div class="card"><h3>תוצרים נוספים</h3><p>תקציר, דוח קצר לבית הספר, עדכון הדשבורד, ופסקת שקיפות על השימוש ב־AI.</p></div>
+    </div>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>פרק הממצאים</strong><button class="copy small" type="button" data-copy="fw1">העתקה</button></div>
+<pre id="fw1">על בסיס תוצאות הניתוח המצורפות, לכתוב טיוטה לפרק הממצאים לפי שאלות המחקר. לכל שאלה: הממצא העיקרי, טבלה בפורמט APA ומשפט סיכום. רק מה שמופיע בתוצאות, בלי פרשנות ובלי מספרים חדשים.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>פרק הדיון</strong><button class="copy small" type="button" data-copy="fw2">העתקה</button></div>
+<pre id="fw2">לכתוב טיוטה לפרק הדיון: לקשר כל ממצא לספרות מחלק ב (רק מקורות שאימתתי), להסביר ממצאים לא צפויים, לפרט מגבלות ולהציע המלצות מעשיות. לסמן כל טענה שאינה נשענת על הממצאים או על מקור.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>דוח לבית הספר</strong><button class="copy small" type="button" data-copy="fw3">העתקה</button></div>
+<pre id="fw3">להפוך את הממצאים לדוח של 2 עמודים לצוות בית הספר ולהורים, בעברית ובערבית: שפה פשוטה, 3 ממצאים מרכזיים, 3 המלצות, בלי מונחים סטטיסטיים ובלי פרטים מזהים.</pre></div>
+    </div>
+    <div class="note"><strong>לפני הגשה:</strong> לבדוק את מדיניות כתב העת לגבי שימוש ב־AI, להעביר את הטיוטה דרך פרומפט ההגהה (שלב 4), ולכתוב מחדש במילים שלכם כל פסקה שה־AI ניסח.</div>
+  </div>
+</section>
+
+<section id="example">
+  <div class="wrap">
+    <span class="tag sun">דוגמה</span>
+    <h2 style="margin-top:8px">לימוד שפת החוסן החברתי בבית ספר יסודי</h2>
+    <p class="read">כך יכול להיראות התוצר אחרי כמה סבבים עם הפרומפט. כל הפרטים כאן הם דוגמה להמחשה.</p>
+
+    <div class="card" style="margin-top:14px">
+      <h3>מסגרת המחקר בקצרה</h3>
+      <p><strong>מטרה:</strong> להעלות את החשיבות של מוכנות, ואת המודעות של תלמידים ותלמידות לתהליכי מוכנות, אימון וחשיבה על תוצאות עתידיות, באמצעות שפה משותפת של חוסן.</p>
+      <p><strong>שאלת המחקר המרכזית:</strong> האם וכיצד לימוד שפת החוסן החברתי בבית הספר היסודי מעלה את המודעות של תלמידים ותלמידות לתהליכי מוכנות, אימון וחשיבה על תוצאות עתידיות?</p>
+      <p><strong>שאלות משנה:</strong></p>
+      <ol>
+        <li>האם לימוד שפת החוסן מעלה את המודעות של תלמידים ותלמידות לתהליכי מוכנות ואימון?</li>
+        <li>האם יש שינוי בשימוש במילים ובמושגים של שפת החוסן בשיח הכיתתי לאורך התוכנית?</li>
+        <li>איך מחנכים ומחנכות תופסים את תרומת התוכנית לחשיבה של התלמידים והתלמידות על תוצאות עתידיות?</li>
+      </ol>
+      <p><strong>השערות המחקר:</strong></p>
+      <ol>
+        <li><strong>השערה 1 (לשאלה 1):</strong> ממוצעי המודעות לרכיבי החוסן, ובמיוחד לרכיבי המוכנות, האימון והחשיבה על העתיד, יהיו גבוהים יותר אחרי התוכנית מאשר לפניה.</li>
+        <li><strong>השערה 2 (לשאלה 2):</strong> מספר השימושים במילים ובמושגים של שפת החוסן בשיח הכיתתי יעלה לאורך 12 שבועות התוכנית.</li>
+      </ol>
+      <p class="small-muted">שאלה 3 היא איכותנית, ולכן אין לה השערה. היא נבחנת באופן פתוח.</p>
+      <p><strong>מערך:</strong> מחקר פעולה במערך משולב (כמותי ואיכותני), מדידה לפני ואחרי, 12 שבועות.<br>
+      <strong>משתתפים:</strong> 6 כיתות ד'–ו', כ־150 תלמידים ותלמידות, בבתי ספר דוברי עברית ודוברי ערבית.</p>
+    </div>
+
+    <h3 style="margin-top:28px">אייקוני שפת החוסן</h3>
+    <p class="read">לכל רכיב יש אייקון משלו וצבע משלו. האייקונים חוזרים בכרטיסים, בפוסטרים, במשחקים ובדשבורד, כדי שגם תלמידים ותלמידות שעוד לא קוראים בשטף יזהו את הרכיב.</p>
+    <div class="icongrid">
+      <div class="iconcard k1"><span class="badge lg"><svg class="ico"><use href="#i-belong"/></svg></span><div><strong>שייכות וקשר</strong><span>שלוש דמויות מחוברות: יש לי מקום ויש לי קשר.</span></div></div>
+      <div class="iconcard k2"><span class="badge lg"><svg class="ico"><use href="#i-regulate"/></svg></span><div><strong>ויסות רגשי</strong><span>גלים שנרגעים: הנשימה מרגיעה את הסערה.</span></div></div>
+      <div class="iconcard k3"><span class="badge lg"><svg class="ico"><use href="#i-prepare"/></svg></span><div><strong>מוכנות ותכנון</strong><span>תיק מוכן: מתכוננים מראש.</span></div></div>
+      <div class="iconcard k4"><span class="badge lg"><svg class="ico"><use href="#i-practice"/></svg></span><div><strong>אימון ותרגול</strong><span>חץ שחוזר וסימן הצלחה: כל תרגול מחזק.</span></div></div>
+      <div class="iconcard k5"><span class="badge lg"><svg class="ico"><use href="#i-future"/></svg></span><div><strong>חשיבה על העתיד</strong><span>צומת דרכים: מה יקרה אם אבחר כך או אחרת?</span></div></div>
+      <div class="iconcard k6"><span class="badge lg"><svg class="ico"><use href="#i-together"/></svg></span><div><strong>עזרה הדדית וקהילה</strong><span>גג ושתי דמויות: אנחנו שומרים אחד על השני.</span></div></div>
+    </div>
+
+    <h3 style="margin-top:28px">שפת החוסן: רכיבים, מילים, מושגים ומשפטים</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>רכיב החוסן</th><th>מילה</th><th>מושג</th><th>משפט חוסן</th></tr></thead>
+        <tbody>
+          <tr><td class="comp k1"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-belong"/></svg></span>שייכות וקשר</span></td><td>שייכות</td><td>רשת תמיכה</td><td>"יש לי למי לפנות כשקשה לי."</td></tr>
+          <tr><td class="comp k2"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-regulate"/></svg></span>ויסות רגשי</span></td><td>נשימה</td><td>מד הרגש</td><td>"אני מרגיש/ה ___, ואני יודע/ת מה עוזר לי להירגע."</td></tr>
+          <tr><td class="comp k3"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-prepare"/></svg></span>מוכנות ותכנון</span></td><td>מוכנות</td><td>תוכנית מוכנות</td><td>"כשאני מתכונן/ת מראש, אני יודע/ת מה לעשות."</td></tr>
+          <tr><td class="comp k4"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-practice"/></svg></span>אימון ותרגול</span></td><td>תרגול</td><td>אימון חוזר</td><td>"כל תרגול מחזק אותי, גם כשלא מצליח בפעם הראשונה."</td></tr>
+          <tr><td class="comp k5"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-future"/></svg></span>חשיבה על העתיד</span></td><td>מה יקרה אם</td><td>תוצאה עתידית</td><td>"לפני שאני מחליט/ה, אני חושב/ת מה יקרה אחר כך."</td></tr>
+          <tr><td class="comp k6"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-together"/></svg></span>עזרה הדדית וקהילה</span></td><td>עוזרים</td><td>ערבות הדדית</td><td>"אני יכול/ה לעזור לאחרים, ואחרים יכולים לעזור לי."</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:28px">משחקים, תרגילים ומערכי שיעור</h3>
+    <div class="grid3">
+      <div class="card"><span class="tag">משחק</span><h3 style="margin-top:6px">"מה יקרה אם...?"</h3><p>קבוצות מקבלות כרטיס מצב: שוכחים ציוד לטיול, תרגיל חירום בבית הספר, תלמיד חדש או תלמידה חדשה בכיתה. כל קבוצה כותבת 3 תוצאות אפשריות ותוכנית מוכנות קצרה.</p><p class="small-muted">רכיבים: חשיבה על העתיד, מוכנות</p></div>
+      <div class="card"><span class="tag">משחק</span><h3 style="margin-top:6px">בינגו מילות חוסן</h3><p>המחנך או המחנכת מקריאים משפט מתוך סיפור, והכיתה מסמנת בלוח את האייקון ואת מילת החוסן המתאימה.</p><p class="small-muted">רכיבים: כל השישה, בעיקר אוצר מילים</p></div>
+      <div class="card"><span class="tag">תרגיל</span><h3 style="margin-top:6px">התיק והרשת שלי</h3><p>מציירים "תיק מוכנות" ומה יש בו, ולידו את רשת התמיכה: מי האנשים שאפשר לפנות אליהם.</p><p class="small-muted">רכיבים: מוכנות, שייכות</p></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="tag">מערך שיעור לדוגמה · 45 דקות</span>
+      <h3 style="margin-top:6px">לפני, בזמן, אחרי: חושבים קדימה</h3>
+      <p><strong>מטרות:</strong> להכיר 3 מילים ממשפחת המוכנות; לתרגל חשיבה על תוצאות עתידיות; לבנות תוכנית מוכנות אישית קטנה.</p>
+      <div class="tablewrap" style="margin-top:6px">
+        <table>
+          <thead><tr><th>זמן</th><th>שלב</th><th>מה קורה</th></tr></thead>
+          <tbody>
+            <tr><td>5 דק'</td><td>פתיחה</td><td>"מד הרגש": כל אחד ואחת מסמנים איך הם מרגישים היום.</td></tr>
+            <tr><td>10 דק'</td><td>הקניה</td><td>3 מילים חדשות והאייקונים שלהן: מוכנות, תרגול, תוצאה עתידית. דוגמאות מחיי בית הספר.</td></tr>
+            <tr><td>15 דק'</td><td>משחק</td><td>"מה יקרה אם...?" בקבוצות של 4.</td></tr>
+            <tr><td>10 דק'</td><td>תרגול</td><td>כל אחד ואחת כותבים תוכנית מוכנות קצרה למצב שבחרו.</td></tr>
+            <tr><td>5 דק'</td><td>סיכום</td><td>משפט חוסן אחד ליומן הכיתתי. כך גם נאספים נתונים לכלי "משפט אחד".</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 style="margin-top:28px">כלי מדידה לדוגמה</h3>
+    <div class="note">אלה כלים לדוגמה שנבנו לצורך המחקר. האמינות שלהם נבדקת במחקר חלוץ, אבל <strong>הם לא עברו תיקוף</strong>. במאמר יש לכתוב זאת במפורש, ולהציג את הממצאים כראשוניים.</div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>כלי</th><th>מה מודד</th><th>פריטים לדוגמה</th><th>אמינות</th><th>תיקוף</th></tr></thead>
+        <tbody>
+          <tr><td><strong>שאלון שפת החוסן</strong><br><span class="small-muted">18 פריטים, סולם 1–4 עם פרצופונים, לפני ואחרי</span></td><td>מודעות לששת הרכיבים</td><td>"אני יודע/ת מה לעשות אם משהו לא צפוי קורה בבית הספר."<br>"לפני שאני עושה משהו, אני חושב/ת מה יקרה אחריו."</td><td>עקביות פנימית (אלפא של קרונבך), יעד 0.70 ומעלה</td><td><span class="tag sun">לא תוקף</span></td></tr>
+          <tr><td><strong>מבחן התאמה</strong><br><span class="small-muted">10 פריטים, נכון/לא נכון</span></td><td>הבנת המילים והמושגים</td><td>התאמת מושג למצב: "תוכנית מוכנות" ← "לפני הטיול בדקנו מה צריך להביא".</td><td>KR-20 במחקר חלוץ</td><td><span class="tag sun">לא תוקף</span></td></tr>
+          <tr><td><strong>תצפית כיתתית</strong><br><span class="small-muted">10 דקות בשיעור, פעם בשבוע</span></td><td>שימוש בשפת החוסן בשיח</td><td>ספירת מילים ומשפטים מהמילון, לפי רכיב.</td><td>הסכמה בין שני צופים (קאפא של כהן), יעד 0.70 ומעלה</td><td><span class="tag sun">לא תוקף</span></td></tr>
+          <tr><td><strong>"משפט אחד"</strong><br><span class="small-muted">משימה פתוחה בסוף שיעור</span></td><td>חשיבה על תוצאות עתידיות</td><td>השלמת המשפט: "כשאני מתכונן/ת מראש..."</td><td>קידוד לפי הרכיבים, בדיקת הסכמה בין מקודדים</td><td><span class="tag sun">לא תוקף</span></td></tr>
+          <tr><td><strong>יומן רפלקציה לצוות</strong><br><span class="small-muted">3 שאלות בשבוע</span></td><td>תפיסת התרומה של התוכנית</td><td>"מה שמעת השבוע מהתלמידים והתלמידות שקשור למוכנות?"</td><td>ניתוח תמטי</td><td>כלי איכותני</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:28px">איסוף, ניתוח וכתיבה בדוגמה</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>שלב</th><th>מה עושים</th><th>מתי</th></tr></thead>
+        <tbody>
+          <tr><td><strong>איסוף "לפני"</strong></td><td>שאלון שפת החוסן ומבחן התאמה</td><td>שבוע 0</td></tr>
+          <tr><td><strong>איסוף שוטף</strong></td><td>תצפית של 10 דקות, "משפט אחד", יומן רפלקציה</td><td>שבועות 1–12</td></tr>
+          <tr><td><strong>איסוף "אחרי"</strong></td><td>שאלון שפת החוסן ומבחן התאמה</td><td>שבוע 13</td></tr>
+          <tr><td><strong>ניתוח שאלה 1</strong></td><td>בדיקת השערה 1: השוואת לפני ואחרי לכל רכיב (t מזווג או וילקוקסון) וגודל אפקט</td><td>שבוע 14</td></tr>
+          <tr><td><strong>ניתוח שאלה 2</strong></td><td>בדיקת השערה 2: מגמת השימוש במילות חוסן לאורך 12 השבועות, מנתוני התצפית</td><td>שבוע 14</td></tr>
+          <tr><td><strong>ניתוח שאלה 3</strong></td><td>ניתוח תמטי של היומנים וקידוד "משפט אחד" לפי הרכיבים</td><td>שבועות 14–15</td></tr>
+          <tr><td><strong>כתיבה</strong></td><td>פרק ממצאים, דיון, ודוח לבית הספר בעברית ובערבית</td><td>שבועות 16–18</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card"><h3>קוד משתתף/ת לדוגמה</h3><p><bdi dir="rtl">ב2-כ5-017</bdi>: בית ספר 2, כיתה 5, משתתף/ת 17. בלי שם ובלי תאריך לידה.</p></div>
+      <div class="card"><h3>משפט ממצא לדוגמה</h3><p>"ממוצע רכיב המוכנות והתכנון עלה מ־2.2 לפני התוכנית ל־3.1 אחריה, העלייה הגדולה ביותר מבין ששת הרכיבים."</p><p class="small-muted">נתוני דוגמה, כמו בדשבורד</p></div>
+    </div>
+
+    <h3 style="margin-top:28px">תוצרי המחקר לדוגמה</h3>
+    <div class="grid3">
+      <div class="card"><strong>מילון שפת החוסן</strong><br>עברית וערבית, כ־60 מילים, מושגים ומשפטים</div>
+      <div class="card"><strong>סט אייקונים</strong><br>אייקון וצבע לכל רכיב</div>
+      <div class="card"><strong>ערכת משחקים</strong><br>6 משחקים, משחק לכל רכיב</div>
+      <div class="card"><strong>12 מערכי שיעור</strong><br>2 לכל רכיב, 45 דקות כל אחד</div>
+      <div class="card"><strong>כרטיסי משפטי חוסן</strong><br>לתלייה בכיתה</div>
+      <div class="card"><strong>מצגת מלווה</strong><br>למחנכים ולמחנכות</div>
+      <div class="card"><strong>דשבורד מחקר</strong><br>דו־לשוני, עם נתונים מצרפיים</div>
+      <div class="card"><strong>דוח ממצאים ומאמר</strong><br>כולל פסקת שקיפות על השימוש ב־AI</div>
+    </div>
+
+    <h3 style="margin-top:28px">המצגת המלווה למחנכים ולמחנכות</h3>
+    <ol class="slides">
+      <li><strong>למה שפת חוסן?</strong>מילים משותפות מאפשרות לדבר על מוכנות לפני שצריך אותה</li>
+      <li><strong>ששת הרכיבים</strong>מפה אחת של התוכנית, עם האייקונים</li>
+      <li><strong>המילון</strong>מילים, מושגים ומשפטים לכל רכיב</li>
+      <li><strong>מבנה התוכנית</strong>12 שבועות, שיעור אחד בשבוע</li>
+      <li><strong>שיעור לדוגמה</strong>"לפני, בזמן, אחרי"</li>
+      <li><strong>משחקים ותרגילים</strong>איך מפעילים ומה מחפשים</li>
+      <li><strong>איך מודדים</strong>בלי להעמיס: 10 דקות תצפית בשבוע</li>
+      <li><strong>כשעולים רגשות חזקים</strong>איך מגיבים ומתי פונים לייעוץ</li>
+      <li><strong>הדשבורד</strong>איפה רואים את ההתקדמות של הכיתה</li>
+      <li><strong>ליווי ותמיכה</strong>למי פונים עם שאלות</li>
+    </ol>
+
+    <h3 style="margin-top:28px">הדשבורד: עברית וערבית</h3>
+    <p class="read">אפשר להחליף שפה בכפתור שבתוך הדשבורד. כל המספרים כאן הם נתוני דוגמה.</p>
+    <div id="dashSlot-he"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="contact" id="contact">
+    <h2>צריכים עזרה בבניית הכלי?</h2>
+    <p class="line">אפשר לפנות אליי לסיוע בבניית כלי מלווה מחקר, בניסוח הפרומפט ובבניית דשבורד למחקר שלכם.</p>
+    <p class="line"><strong>ד״ר יעל שדה</strong> · חוסן | קהילה | חינוך</p>
+    <p class="line">טלפון: <bdi dir="ltr">052-3969417</bdi><br>דוא״ל: <a href="mailto:yael.sade@gmail.com">yael.sade@gmail.com</a></p>
+  </div>
+</div>
+</main>
+</div>
+
+<!-- ===================== ARABIC ===================== -->
+<div class="lang-ar" lang="ar">
+<header class="top">
+  <div class="wrap">
+    <div class="kicker">دليل للباحثين والباحثات</div>
+    <h1>بناء أداة مرافِقة للبحث بمساعدة الذكاء الاصطناعي</h1>
+    <p class="lead">كيف تتحوّل محادثة مع Claude أو ChatGPT إلى شريك في البحث: نرفع المواد، نكتب برومبت (موجّهًا) افتتاحيًا واحدًا دقيقًا، ثم نتقدّم على مراحل حتى نصل إلى إطار البحث، ومراجعة الأدبيات، والمنهجية، ومواد للصف، ولوحة متابعة. في نهاية الصفحة مثال كامل.</p>
+    <nav class="toc" aria-label="محتوى الصفحة">
+      <a href="#process-ar">العملية بنظرة واحدة</a>
+      <a href="#upload-ar">1. رفع البحث</a>
+      <a href="#prompt-ar">2. البرومبت الافتتاحي</a>
+      <a href="#next-ar">3. كيف نتقدّم</a>
+      <a href="#review-ar">4. التدقيق</a>
+      <a href="#share-ar">5. المشاركة</a>
+      <a href="#dashboard-ar">6. لوحة المتابعة</a>
+      <a href="#collect-ar">7. جمع البيانات</a>
+      <a href="#analyze-ar">8. التحليل</a>
+      <a href="#write-ar">9. الكتابة</a>
+      <a href="#example-ar">مثال: لغة المناعة</a>
+      <a href="#contact-ar">للتواصل</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section id="process-ar">
+  <div class="wrap">
+    <h2>العملية بنظرة واحدة</h2>
+    <p class="read">تسع مراحل في قسمين. المرحلة المميّزة هي القلب: البرومبت الافتتاحي الجيد يحدّد جودة كل ما يأتي بعده.</p>
+    <div class="phase">نبني البحث</div>
+    <div class="flow" role="list">
+      <div class="node" role="listitem"><div class="n">1</div><b>نرفع</b><span>اقتراح البحث، مسودات، مقالات، استبيانات</span></div>
+      <div class="node key" role="listitem"><div class="n">2</div><b>البرومبت الافتتاحي</b><span>الدور، تفاصيل البحث، القواعد، 4 أجزاء للناتج</span></div>
+      <div class="node" role="listitem"><div class="n">3</div><b>نتقدّم على مراحل</b><span>جزء بعد جزء، مع موافقتنا في كل مرحلة</span></div>
+      <div class="node" role="listitem"><div class="n">4</div><b>التدقيق</b><span>المصادر، الاتساق، اللغة، الأخلاقيات</span></div>
+      <div class="node" role="listitem"><div class="n">5</div><b>نشارك</b><span>رابط، تصدير، مشروع مشترك</span></div>
+      <div class="node" role="listitem"><div class="n">6</div><b>لوحة المتابعة</b><span>متابعة حيّة للبيانات بالعربية والعبرية</span></div>
+    </div>
+    <div class="phase">ننفّذ البحث</div>
+    <div class="flow three" role="list">
+      <div class="node" role="listitem"><div class="n">7</div><b>جمع البيانات</b><span>رموز بدل الأسماء، نماذج، دفتر ميدان</span></div>
+      <div class="node" role="listitem"><div class="n">8</div><b>التحليل</b><span>كمّي ونوعي، مع فحص الحساب</span></div>
+      <div class="node" role="listitem"><div class="n">9</div><b>الكتابة</b><span>النتائج، النقاش، تقرير للمدرسة</span></div>
+    </div>
+    <div class="loop">
+      <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M30 4 H10 a7 7 0 0 0 0 14 H26" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 14 l5 4 -5 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span>في كل مرحلة نعمل في حلقة: نكتب، نفحص، نصحّح، ثم نتابع.</span>
+    </div>
+  </div>
+</section>
+
+<section id="upload-ar">
+  <div class="wrap">
+    <h2><span class="stepno">1</span>رفع البحث إلى المحادثة</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>ماذا نرفع</h3>
+        <ul>
+          <li>اقتراح البحث أو المسودة الحالية، حتى لو كانت جزئية</li>
+          <li>3–10 مقالات مركزية يستند إليها البحث (PDF)</li>
+          <li>استبيانات أو أدوات أو مواد تعليمية موجودة</li>
+          <li>متطلبات المؤسسة أو صندوق الدعم أو المجلة، إن وُجدت</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>كيف نرفع بشكل صحيح</h3>
+        <ul>
+          <li>نفتح <strong>مشروعًا</strong> (Project) في Claude أو ChatGPT ونرفع إليه الملفات، فتكون متاحة في كل محادثة جديدة داخل المشروع.</li>
+          <li>نعطي الملفات أسماء واضحة: <span class="tag">اقتراح-بحث-مسودة-2</span></li>
+          <li><strong>قبل الرفع:</strong> نحذف الأسماء والتفاصيل التعريفية والبيانات الخام للمشاركين.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prompt-ar">
+  <div class="wrap">
+    <h2><span class="stepno">2</span>البرومبت الافتتاحي</h2>
+    <p class="read">ننسخ البرومبت، نملأ الحقول المظلّلة بالأصفر، ونرسله في الرسالة الأولى من المحادثة. البرومبت مبني بحيث يطرح الذكاء الاصطناعي أسئلة توضيحية أولًا، ثم يكتب جزءًا واحدًا في كل مرة. هكذا يمكن تصحيح الاتجاه مبكرًا، قبل كتابة عشرين صفحة غير دقيقة.</p>
+    <div class="promptbox">
+      <div class="promptbar"><strong>برومبت افتتاحي: مرافِق البحث</strong><button class="copy" type="button" data-copy="mainPrompt-ar">نسخ البرومبت</button></div>
+<pre class="prompt" id="mainPrompt-ar"><span class="hd">دورك</span>
+في هذه المحادثة دورك هو مرافِق بحث أكاديمي: زميل أو زميلة من ذوي الخبرة الواسعة في منهجية البحث التربوي، يساعدونني على بناء بحث متكامل، مبني على أسس سليمة وقابل للتنفيذ.
+
+<span class="hd">تفاصيل البحث</span>
+أنا باحث/ة في مجال <span class="ph">[المجال، مثلًا: التربية والمناعة]</span>. أرفقت الملفات التالية: <span class="ph">[اقتراح بحث / مسودة / مقالات مركزية / استبيانات]</span>.
+- موضوع البحث: <span class="ph">[...]</span>
+- سؤال البحث (حتى لو لم تكتمل صياغته بعد): <span class="ph">[...]</span>
+- هدف البحث: <span class="ph">[...]</span>
+- الفئة المستهدفة والسياق: <span class="ph">[الأعمار، نوع الإطار، العدد التقريبي للمشاركين، اللغات]</span>
+- ما هو موجود لديّ: <span class="ph">[...]</span>
+- الناتج النهائي الذي أحتاجه: <span class="ph">[مقال / رسالة / تقرير لصندوق دعم / حقيبة للمدرسة]</span>
+- الجدول الزمني: <span class="ph">[...]</span>
+
+<span class="hd">قواعد العمل</span>
+1. أولًا قراءة جميع الملفات المرفقة واعتمادها أساسًا. عندما لا يرد شيء في الملفات، الإشارة إلى أنه معرفة عامة.
+2. عدم اختلاق مصادر. كل مصدر ليس من ملفاتي يُعلَّم بـ [للتحقق] ويتضمن اسم المؤلف والسنة والعنوان، لكي أتمكن من فحصه. وعند عدم التأكد من وجود المصدر، كتابة ذلك بوضوح.
+3. العمل على مراحل: قبل الكتابة، طرح حتى 5 أسئلة توضيحية عليّ. بعد كل جزء، التوقف وانتظار موافقتي.
+4. الكتابة بلغة عربية أكاديمية واضحة وسليمة، بصيغة تخاطب الجنسين أو بصيغة محايدة. المصادر وفق APA الإصدار السابع.
+5. في كل جزء، الإشارة إلى: ما هو قوي، ما هو ناقص، وما يحتاج إلى قرار مني.
+
+<span class="hd">الناتج: أربعة أجزاء</span>
+
+الجزء أ: إطار البحث
+الخلفية والمبرّرات؛ مشكلة البحث؛ الأهداف؛ سؤال البحث المركزي والأسئلة الفرعية؛ فرضيات البحث (فرضية موجَّهة لكل سؤال كمّي)؛ المفاهيم المركزية، ولكل مفهوم تعريف نظري وتعريف إجرائي (كيف نقيسه)؛ الإطار النظري؛ المساهمة المتوقعة، البحثية والعملية.
+
+الجزء ب: مراجعة الأدبيات
+مراجعة حسب المواضيع وليس حسب المقالات. في كل موضوع: ما هو معروف، أين يوجد خلاف، وأي فجوة يسدّها بحثي.
+في النهاية: جدول مصادر بالأعمدة المؤلف | السنة | العنوان | الادعاء المركزي | كيف يساهم المصدر في البحث | الحالة (من الملفات / للتحقق).
+
+الجزء ج: المنهجية
+تصميم البحث (كمّي، نوعي، مدمج، بحث إجرائي) ومبرّر الاختيار؛ المشاركون والعيّنة؛ أدوات البحث، ولكل أداة: ماذا تقيس، أمثلة على البنود، السلّم، وما هو معروف وما يجب فحصه بشأن الثبات والصدق؛ إجراءات جمع البيانات والجدول الزمني؛ تحليل البيانات، لكل سؤال بحث على حدة؛ الأخلاقيات (الموافقة المستنيرة، موافقة الأهل، الخصوصية، الموافقات المطلوبة، مثل موافقة العالِم الرئيسي في وزارة التربية والتعليم)؛ حدود البحث.
+في النهاية: جدول ملاءمة سؤال البحث | الأداة | التحليل.
+
+الجزء د: دور الذكاء الاصطناعي في البحث
+اقتراح مفصّل:
+- في أي مراحل يمكن للذكاء الاصطناعي أن يساعد (إعداد المواد، الترميز الأولي للبيانات النوعية، التحليل، بناء لوحة متابعة، التدقيق)
+- في أي مراحل يبقى القرار لي (القرارات البحثية، التفسير النهائي، التواصل مع المشاركين)
+- كيف نحافظ على خصوصية المشاركين
+- كيف نوثّق الاستخدام: سجلّ بالأعمدة التاريخ | الأداة | الهدف | ما أُخذ | ما فُحص وصُحّح
+- صيغة مقترحة لفقرة شفافية حول استخدام الذكاء الاصطناعي في المقال
+
+<span class="hd">في نهاية كل إجابة</span>
+- قائمة "للفحص من قِبلي": مصادر وأرقام وقرارات عليّ التحقق منها
+- 3 اقتراحات للخطوة التالية
+
+<span class="hd">نبدأ</span>
+قراءة الملفات، كتابة ملخّص من 5 أسطر للبحث كما يظهر في الملفات، وطرح الأسئلة التوضيحية. عدم كتابة الجزء أ بعد.</pre>
+    </div>
+    <div class="grid3" style="margin-top:18px">
+      <div class="card"><h3>لماذا ينجح هذا</h3><p>دور واضح، سياق كامل، قواعد صريحة وناتج محدّد. هذه المركّبات الأربعة تقلّل من الإجابات العامة.</p></div>
+      <div class="card"><h3>القاعدة الأهم</h3><p>القاعدة 2: علامة [للتحقق]. قد تنتج النماذج اللغوية مصادر تبدو حقيقية لكنها غير موجودة. العلامة تجعل الفحص عادة ثابتة.</p></div>
+      <div class="card"><h3>ما لا نغيّره</h3><p>العمل على مراحل. حتى لو كان مغريًا طلب كل شيء دفعة واحدة، يخرج الناتج أكثر سطحية ويصعب فحصه.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="next-ar">
+  <div class="wrap">
+    <h2><span class="stepno">3</span>كيف نتقدّم بعد البرومبت الأول</h2>
+    <p class="read">كل رسالة تتقدّم بجزء واحد. هذه برومبتات متابعة جاهزة، حسب الترتيب الموصى به:</p>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>أ. نجيب عن الأسئلة التوضيحية</strong><button class="copy small" type="button" data-copy="fu1-ar">نسخ</button></div>
+<pre id="fu1-ar">هذه إجاباتي: [...]. الآن يمكن كتابة الجزء أ: إطار البحث. عند الانتهاء، التوقف وانتظار ملاحظاتي.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ب. ندقّق سؤال البحث والفرضيات</strong><button class="copy small" type="button" data-copy="fuQ-ar">نسخ</button></div>
+<pre id="fuQ-ar">قبل المتابعة، تدقيق سؤال البحث: اقتراح 3 صياغات لسؤال مركزي، ولكل صياغة أسئلة فرعية. لكل سؤال كمّي صياغة فرضية موجَّهة قابلة للفحص، مع تحديد الأداة والتحليل اللذين ستُفحص بهما. للسؤال النوعي، شرح لماذا لا تُصاغ له فرضية. تحديد الصياغة الأنسب لحجم البحث وللوقت المتاح لي، مع التعليل.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ج. نتعمّق في المراجعة</strong><button class="copy small" type="button" data-copy="fu2-ar">نسخ</button></div>
+<pre id="fu2-ar">في الجزء ب، التوسّع في موضوع [...]. إضافة أبحاث من السنوات الأخيرة تتناول [...]، كل منها مُعلَّم بـ [للتحقق]، مع شرح علاقة كل بحث بسؤال بحثي.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>د. نبني أدوات القياس</strong><button class="copy small" type="button" data-copy="fu3-ar">نسخ</button></div>
+<pre id="fu3-ar">بناء [اسم الأداة] بالكامل: تعليمات للمشاركين، جميع البنود، سلّم الإجابات، مفتاح التصحيح، البنود العكسية، واقتراح لفحص الثبات في دراسة استطلاعية. الصياغة بلغة ملائمة لـ[العمر].</pre></div>
+      <div class="fu"><div class="fu-head"><strong>هـ. نحضّر مواد للميدان</strong><button class="copy small" type="button" data-copy="fu4-ar">نسخ</button></div>
+<pre id="fu4-ar">بناءً على الإطار الذي وافقت عليه، كتابة خطة درس مدتها 45 دقيقة حول [الموضوع]: الأهداف، الأدوات، الافتتاح، التعليم، لعبة أو تمرين، التلخيص، وطريقة قصيرة لتقييم ما تم تعلّمه.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>و. أيقونات للغة</strong><button class="copy small" type="button" data-copy="fu8-ar">نسخ</button></div>
+<pre id="fu8-ar">تصميم أيقونة خاصة لكل مركّب من مركّبات لغة المناعة: بسيطة، واضحة للأولاد، بخط موحّد، ولكل منها لون خاص. شرح ما ترمز إليه كل أيقونة، واقتراح أين ستظهر (بطاقات، ملصق، ألعاب، لوحة متابعة).</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ز. عرض تقديمي للطاقم التربوي</strong><button class="copy small" type="button" data-copy="fu5-ar">نسخ</button></div>
+<pre id="fu5-ar">بناء عرض تقديمي مرافِق للمربّين والمربّيات الذين يطبّقون البرنامج: 10 شرائح، نص قصير في كل شريحة، وملاحظات للمقدِّم/ة تحت كل شريحة.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ح. لوحة متابعة</strong><button class="copy small" type="button" data-copy="fu6-ar">نسخ</button></div>
+<pre id="fu6-ar">بناء لوحة متابعة للبحث بالعربية والعبرية، مع زر لتبديل اللغة. عرض: عدد المشاركين، التقدّم في تنفيذ الدروس، المعدلات قبل وبعد لكل مركّب، والاتجاه الأسبوعي. استخدام بيانات توضيحية مُعلَّمة حتى وصول البيانات الحقيقية. دون أسماء ودون تفاصيل تعريفية.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ط. نغلق مرحلة: "الوثيقة الأم"</strong><button class="copy small" type="button" data-copy="fu7-ar">نسخ</button></div>
+<pre id="fu7-ar">كتابة "وثيقة أم" محدّثة تجمع كل القرارات حتى الآن: أسئلة البحث، التعريفات، الأدوات، التصميم، وما زال مفتوحًا. سأستخدمها للمتابعة في محادثة جديدة.</pre></div>
+    </div>
+    <div class="note"><strong>نصيحة:</strong> المحادثة الطويلة جدًا تفقد دقّتها. في نهاية كل مرحلة كبيرة، نطلب "وثيقة أم"، نحفظها في المشروع ونفتح محادثة جديدة تبدأ منها.</div>
+  </div>
+</section>
+
+<section id="review-ar">
+  <div class="wrap">
+    <h2><span class="stepno">4</span>تدقيق الناتج</h2>
+    <p class="read">الذكاء الاصطناعي يكتب بسرعة، لكن المسؤولية عن البحث تبقى علينا. قائمة فحص لكل جزء:</p>
+    <ul class="checklist">
+      <li><span><strong>المصادر:</strong> نبحث عن كل مصدر في Google Scholar أو حسب DOI. نتأكد أن المصدر موجود، وأن المؤلفين والسنة صحيحة، وأنه يقول فعلًا ما نُسب إليه.</span></li>
+      <li><span><strong>الاتساق:</strong> نراجع جدول الملاءمة. لكل سؤال بحث أداة، ولكل أداة تحليل.</span></li>
+      <li><span><strong>الترابط:</strong> نتأكد من وجود خيط واحد يمرّ في كل الوثيقة: الخلفية تقود إلى المشكلة، والمشكلة إلى السؤال، والسؤال إلى الفرضيات، والفرضيات إلى الأدوات والتحليل، والنتائج إلى النقاش والاستنتاجات. المفاهيم نفسها بالأسماء نفسها على طول الطريق، وكل استنتاج يستند إلى نتيجة.</span></li>
+      <li><span><strong>الأرقام:</strong> لكل رقم (حجم العيّنة، الثبات، النسب المئوية) نفحص من أين جاء.</span></li>
+      <li><span><strong>الأخلاقيات والخصوصية:</strong> موافقة مستنيرة، موافقة الأهل، الموافقات المطلوبة، ولا تفاصيل تعريفية في أي ملف.</span></li>
+      <li><span><strong>اللغة:</strong> لغة سليمة، مصطلحات موحّدة في كل الوثيقة، مخاطبة الجنسين.</span></li>
+      <li><span><strong>اللغة الثانية:</strong> كل نص بالعبرية أو بالعربية يفحصه ناطق أو ناطقة بتلك اللغة من المجال.</span></li>
+      <li><span><strong>القراءة البشرية:</strong> مرشد أو مرشدة، زميل أو زميلة يقرؤون الوثيقة قبل خروجها.</span></li>
+    </ul>
+    <div class="note"><strong>نصيحة: لجنة من 10 خبراء.</strong> نطلب من الذكاء الاصطناعي قراءة الوثيقة بعيون 10 خبراء وخبيرات من مجالات مضمون مختلفة. كل واحد وواحدة يرون مشاكل مختلفة: خبير/ة المنهجية يلاحظ ضعفًا في تصميم البحث، وخبير/ة الأخلاقيات يلاحظ مشكلة في الموافقة المستنيرة. اللجنة الافتراضية لا تحلّ محلّ خبراء حقيقيين: من المفيد تمرير الملاحظات المهمة لفحص 2–3 مختصين ومختصات من المجال.</div>
+    <div class="fu" style="margin-top:16px"><div class="fu-head"><strong>برومبت التدقيق: لجنة من 10 خبراء (في محادثة جديدة، مع إرفاق الوثيقة)</strong><button class="copy small" type="button" data-copy="rv-ar">نسخ</button></div>
+<pre id="rv-ar">قراءة الوثيقة المرفقة بدور لجنة من 10 خبراء وخبيرات، كل واحد وواحدة من مجال مختلف:
+1. منهجية البحث الكمّي
+2. البحث النوعي
+3. المناعة الاجتماعية والمجتمعية
+4. التربية والتدريس في المدرسة الابتدائية
+5. علم النفس التربوي والنمائي
+6. الجاهزية في حالة طوارئ
+7. الإحصاء
+8. الأخلاقيات في البحث مع الأولاد
+9. التربية في المجتمع العربي والتعددية الثقافية
+10. التحرير الأكاديمي واللغوي
+[يمكن تغيير المجالات حسب بحثكم]
+
+لكل خبير/ة على حدة: 3–5 ملاحظات من مجال التخصّص. عدم تصحيح الوثيقة.
+تسجيل كل الملاحظات في جدول بالأعمدة الخبير/ة | الموقع | المشكلة | الخطورة (عالية/متوسطة/منخفضة) | الاقتراح.
+البحث بشكل خاص عن: ادعاءات دون مصدر، مصادر تبدو مشكوكًا فيها، تناقضات بين الأجزاء، عدم ملاءمة بين أسئلة البحث والفرضيات والأدوات والتحليل، وصياغات غير واضحة.
+إضافة إلى ذلك، فحص الترابط: هل يوجد خيط واحد من الخلفية، مرورًا بسؤال البحث والفرضيات، حتى النتائج والاستنتاجات؟ تعليم كل موضع ينقطع فيه الخيط، وكل مفهوم يتغيّر اسمه، وكل استنتاج لا يستند إلى نتيجة.
+في النهاية: أهم 5 ملاحظات من اللجنة كلها، وأين يختلف الخبراء والخبيرات فيما بينهم.</pre></div>
+    <div class="fu" style="margin-top:12px"><div class="fu-head"><strong>فحص الترابط (للوثيقة الكاملة)</strong><button class="copy small" type="button" data-copy="coh-ar">نسخ</button></div>
+<pre id="coh-ar">فحص ترابط الوثيقة المرفقة:
+1. كتابة الادعاء المركزي لكل فصل في سطر واحد.
+2. التأكد من أن كل فصل يقود إلى الفصل الذي يليه: الخلفية ← المشكلة ← السؤال ← الفرضيات ← المنهجية ← النتائج ← النقاش ← الاستنتاجات.
+3. بناء جدول بالأعمدة سؤال البحث | الفرضية | الأداة | التحليل | النتيجة | الاستنتاج، وتعليم كل صف تنقصه حلقة.
+4. تسجيل المفاهيم التي تظهر بأسماء مختلفة في أماكن مختلفة.
+5. تعليم الاستنتاجات أو التوصيات التي لا تستند إلى نتيجة.
+عدم التصحيح. فقط تسجيل المشاكل واقتراح تصحيح قصير لكل منها.</pre></div>
+    <p class="read" style="margin-top:12px">لماذا في محادثة جديدة؟ المحادثة التي كتبت النص تميل إلى الموافقة على نفسها. النظرة الجديدة تكشف مشاكل أكثر.</p>
+  </div>
+</section>
+
+<section id="share-ar">
+  <div class="wrap">
+    <h2><span class="stepno">5</span>المشاركة مع الآخرين</h2>
+    <div class="grid3">
+      <div class="card"><h3>رابط</h3><p>في Claude وفي ChatGPT يوجد زر مشاركة ينشئ رابطًا للمحادثة أو للناتج. من يتلقى الرابط يرى المحتوى.</p></div>
+      <div class="card"><h3>تصدير</h3><p>النسخ إلى Word أو Google Docs، أو الحفظ كملف PDF. مناسب للمرشد/ة، للجنة وللمدرسة.</p></div>
+      <div class="card"><h3>مشروع مشترك</h3><p>في حسابات الفرق يمكن مشاركة مشروع كامل: الملفات والتعليمات والمحادثات متاحة لكل أعضاء الفريق.</p></div>
+    </div>
+    <div class="note"><strong>قبل كل مشاركة:</strong> نفحص ما يكشفه الرابط. لا نشارك محادثة فيها بيانات خام أو تفاصيل تعريفية. من المفيد مشاركة البرومبت نفسه أيضًا، لكي يستخدمه باحثون وباحثات آخرون.</div>
+  </div>
+</section>
+
+<section id="dashboard-ar">
+  <div class="wrap">
+    <h2><span class="stepno">6</span>ما هي لوحة المتابعة (داشبورد) وكيف تساعد البحث</h2>
+    <p class="read">لوحة المتابعة هي شاشة واحدة تجمع بيانات البحث بالأرقام والرسوم البيانية، وتتحدّث عند وصول بيانات جديدة. بدل فتح عشرة ملفات، نرى بنظرة واحدة أين يقف البحث.</p>
+    <div class="grid2">
+      <div class="card"><h3>ماذا تقدّم</h3>
+        <ul>
+          <li>متابعة جمع البيانات: كم استبيانًا عاد، وأي الصفوف متأخرة</li>
+          <li>صورة الوضع قبل وبعد، لكل مركّب على حدة</li>
+          <li>اكتشاف مبكر لمشكلة، مثل صف لا يتقدّم</li>
+          <li>مشاركة النتائج مع المدرسة دون كشف المشاركين</li>
+        </ul></div>
+      <div class="card"><h3>قواعد للوحة متابعة بحثية</h3>
+        <ul>
+          <li>بيانات مجمّعة فقط، دون أسماء</li>
+          <li>بيانات توضيحية مُعلَّمة بوضوح حتى وصول البيانات الحقيقية</li>
+          <li>ثنائية اللغة، لكي يقرأ كل طاقم بلغته</li>
+          <li>كل رقم يُظهر من أي أداة جاء</li>
+        </ul></div>
+    </div>
+    <p class="read" style="margin-top:12px">مثال حيّ على لوحة كهذه يظهر في نهاية المثال أدناه.</p>
+  </div>
+</section>
+
+<section id="collect-ar">
+  <div class="wrap">
+    <h2><span class="stepno">7</span>جمع البيانات</h2>
+    <p class="read">بعد بناء البحث وتجهيز الأدوات، نخرج إلى الميدان. هنا يساعد الذكاء الاصطناعي في تجهيز منظومة الجمع، ولا يجمع البيانات من المشاركين بنفسه.</p>
+    <div class="grid2">
+      <div class="card"><h3>ماذا نجهّز قبل البدء</h3>
+        <ul>
+          <li><strong>دليل ترميز</strong> (codebook): لكل متغيّر اسم ووصف وقيم ممكنة وطريقة لتعليم البيانات الناقصة</li>
+          <li>نموذج جمع لكل أداة، مثلًا Google Forms للاستبيان ونموذج مشاهدة للمربّين والمربّيات</li>
+          <li>رمز لكل مشارك ومشاركة بدل الاسم. جدول الربط بين الأسماء والرموز يُحفظ بشكل منفصل، ولا يُرفع إلى أي محادثة</li>
+          <li>جدول زمني: من يجمع، متى، وكيف نتأكد من عودة الاستبيانات</li>
+        </ul></div>
+      <div class="card"><h3>أثناء الجمع</h3>
+        <ul>
+          <li>ملف بيانات مركزي واحد: صف لكل مشارك/ة وعمود لكل متغيّر</li>
+          <li>دفتر ميدان: ما حدث فعلًا، الاستثناءات، الدروس التي لم تُنفَّذ</li>
+          <li>فحص أسبوعي في لوحة المتابعة: كم من البيانات عاد وأين توجد فجوة</li>
+          <li>قبل كل رفع إلى الذكاء الاصطناعي: ملفات مرمّزة فقط، دون أسماء، ودون أسماء مدارس إذا كانت تكشف الهوية</li>
+        </ul></div>
+    </div>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>نبني دليل ترميز ونموذج جمع</strong><button class="copy small" type="button" data-copy="fc1-ar">نسخ</button></div>
+<pre id="fc1-ar">بناءً على أدوات البحث التي وافقت عليها، بناء دليل ترميز: اسم المتغيّر (بالإنجليزية، دون مسافات)، الوصف، القيم الممكنة، البنود العكسية وطريقة تعليم البيانات الناقصة. بعد ذلك بناء نموذج جمع لكل أداة، وقالب Excel فارغ يكون فيه كل صف مشاركًا/ة حسب الرمز.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>نبني خطة الجمع</strong><button class="copy small" type="button" data-copy="fc2-ar">نسخ</button></div>
+<pre id="fc2-ar">بناء خطة أسبوعية لجمع البيانات: ماذا يُجمع في كل أسبوع، من المسؤول/ة، كم من الوقت يأخذ ذلك من الطاقم، وماذا نفعل عند نقص البيانات. تحديد نقاط الخطر مسبقًا (مثل استبيانات لا تعود) واقتراح حلّ لكل منها.</pre></div>
+    </div>
+    <div class="note"><strong>مهم:</strong> الملف الذي يصل إلى الذكاء الاصطناعي يجب أن يكون بحيث لا يمكن، حتى لو انكشف، التعرّف منه على أي ولد أو بنت.</div>
+  </div>
+</section>
+
+<section id="analyze-ar">
+  <div class="wrap">
+    <h2><span class="stepno">8</span>تحليل البيانات</h2>
+    <p class="read">يمكن لـ Claude وChatGPT إجراء تحليلات إحصائية على ملف Excel أو CSV نرفعه إليهما، والمساعدة في الترميز الأولي للنصوص. الشرط: أن نطلب رؤية الحساب، وأن نفحصه.</p>
+    <div class="grid2">
+      <div class="card"><h3>التحليل الكمّي</h3>
+        <ul>
+          <li>إحصاء وصفي: معدلات، انحرافات معيارية، توزيعات</li>
+          <li>ثبات الأدوات (ألفا كرونباخ)</li>
+          <li>مقارنة قبل وبعد: اختبار t للعيّنات المترابطة، أو ويلكوكسون عندما لا يكون التوزيع طبيعيًا، مع حجم الأثر</li>
+          <li>رسوم بيانية للتقرير وللوحة المتابعة</li>
+        </ul></div>
+      <div class="card"><h3>التحليل النوعي</h3>
+        <ul>
+          <li>ترميز أولي للنصوص (الدفاتر، الجمل المفتوحة) حسب دليل الترميز</li>
+          <li>اقتراح محاور واقتباسات ممثِّلة</li>
+          <li>الباحث/ة يفحص عيّنة من 20% على الأقل من الترميز ويحسب الاتفاق</li>
+          <li>القرار النهائي بشأن المحاور يبقى لنا</li>
+        </ul></div>
+    </div>
+    <h3 style="margin-top:20px">قواعد أمان في التحليل</h3>
+    <ul class="checklist">
+      <li><span>إجراء التحليلات المخطَّطة في الجزء ج فقط. كل تحليل إضافي يُعلَّم كـ"استكشافي".</span></li>
+      <li><span>طلب الكود أو خطوات الحساب، وفحص بعض الأرقام يدويًا أو ببرنامج آخر (JASP، SPSS، Excel).</span></li>
+      <li><span>الإبلاغ عن كل النتائج، بما فيها غير الدالّة إحصائيًا.</span></li>
+      <li><span>عدم الطلب من الذكاء الاصطناعي "إيجاد شيء مثير" في البيانات.</span></li>
+    </ul>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>تحليل كمّي</strong><button class="copy small" type="button" data-copy="fa1-ar">نسخ</button></div>
+<pre id="fa1-ar">مرفق ملف بيانات مرمّز ودليل الترميز. إجراء التحليلات المخطَّطة في الجزء ج بالترتيب: 1. فحص البيانات الناقصة والقيم الشاذة. 2. الثبات لكل سلّم. 3. إحصاء وصفي. 4. مقارنة قبل وبعد لكل مركّب، مع حجم الأثر. لكل تحليل عرض الكود والجدول وجملة تفسير حذرة واحدة. عدم إضافة تحليلات لم أطلبها.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>ترميز نوعي</strong><button class="copy small" type="button" data-copy="fa2-ar">نسخ</button></div>
+<pre id="fa2-ar">مرفقة نصوص مرمّزة (دون أسماء) ودليل ترميز حسب مركّبات المناعة الستة. ترميز كل مقطع إلى مركّب واحد أو أكثر، مع تعليل قصير. تعليم المقاطع التي لا تناسب أي رمز. في النهاية: جدول تكرارات حسب المركّب، 2–3 اقتباسات ممثِّلة لكل مركّب، واقتراح محاور. سأفحص عيّنة من الترميز.</pre></div>
+    </div>
+  </div>
+</section>
+
+<section id="write-ar">
+  <div class="wrap">
+    <h2><span class="stepno">9</span>الكتابة</h2>
+    <p class="read">يساعد الذكاء الاصطناعي في بناء المبنى، وصياغة مسودة، وشدّ النص. الصوت والادعاء والتفسير لنا.</p>
+    <div class="grid3">
+      <div class="card"><h3>فصل النتائج</h3><p>حسب أسئلة البحث، سؤالًا بعد سؤال. لكل سؤال: النتيجة، جدول أو رسم بياني، وجملة تلخيص. دون تفسير في هذه المرحلة.</p></div>
+      <div class="card"><h3>فصل النقاش</h3><p>ماذا تقول النتائج مقارنة بالأدبيات في الجزء ب، ما المفاجئ، الحدود، وتوصيات عملية للمدرسة.</p></div>
+      <div class="card"><h3>نواتج إضافية</h3><p>ملخّص، تقرير قصير للمدرسة، تحديث لوحة المتابعة، وفقرة شفافية حول استخدام الذكاء الاصطناعي.</p></div>
+    </div>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>فصل النتائج</strong><button class="copy small" type="button" data-copy="fw1-ar">نسخ</button></div>
+<pre id="fw1-ar">بناءً على نتائج التحليل المرفقة، كتابة مسودة لفصل النتائج حسب أسئلة البحث. لكل سؤال: النتيجة الرئيسية، جدول بتنسيق APA، وجملة تلخيص. فقط ما يظهر في النتائج، دون تفسير ودون أرقام جديدة.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>فصل النقاش</strong><button class="copy small" type="button" data-copy="fw2-ar">نسخ</button></div>
+<pre id="fw2-ar">كتابة مسودة لفصل النقاش: ربط كل نتيجة بالأدبيات من الجزء ب (فقط المصادر التي تحقّقت منها)، شرح النتائج غير المتوقعة، تفصيل الحدود، واقتراح توصيات عملية. تعليم كل ادعاء لا يستند إلى النتائج أو إلى مصدر.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>تقرير للمدرسة</strong><button class="copy small" type="button" data-copy="fw3-ar">نسخ</button></div>
+<pre id="fw3-ar">تحويل النتائج إلى تقرير من صفحتين لطاقم المدرسة وللأهل، بالعربية والعبرية: لغة بسيطة، 3 نتائج مركزية، 3 توصيات، دون مصطلحات إحصائية ودون تفاصيل تعريفية.</pre></div>
+    </div>
+    <div class="note"><strong>قبل التقديم:</strong> فحص سياسة المجلة بشأن استخدام الذكاء الاصطناعي، تمرير المسودة عبر برومبت التدقيق (المرحلة 4)، وإعادة كتابة كل فقرة صاغها الذكاء الاصطناعي بكلماتنا.</div>
+  </div>
+</section>
+
+<section id="example-ar">
+  <div class="wrap">
+    <span class="tag sun">مثال</span>
+    <h2 style="margin-top:8px">تعلّم لغة المناعة الاجتماعية في مدرسة ابتدائية</h2>
+    <p class="read">هكذا قد يبدو الناتج بعد عدة جولات مع البرومبت. كل التفاصيل هنا مثال للتوضيح.</p>
+
+    <div class="card" style="margin-top:14px">
+      <h3>إطار البحث باختصار</h3>
+      <p><strong>الهدف:</strong> رفع أهمية الجاهزية، ورفع وعي الطلاب والطالبات لعمليات الجاهزية والتدريب والتفكير في النتائج المستقبلية، من خلال لغة مناعة مشتركة.</p>
+      <p><strong>سؤال البحث المركزي:</strong> هل وكيف يرفع تعلّم لغة المناعة الاجتماعية في المدرسة الابتدائية وعي الطلاب والطالبات لعمليات الجاهزية والتدريب والتفكير في النتائج المستقبلية؟</p>
+      <p><strong>أسئلة فرعية:</strong></p>
+      <ol>
+        <li>هل يرفع تعلّم لغة المناعة وعي الطلاب والطالبات لعمليات الجاهزية والتدريب؟</li>
+        <li>هل يحدث تغيير في استخدام كلمات لغة المناعة ومفاهيمها في النقاش الصفي على امتداد البرنامج؟</li>
+        <li>كيف يرى المربّون والمربّيات مساهمة البرنامج في تفكير الطلاب والطالبات في النتائج المستقبلية؟</li>
+      </ol>
+      <p><strong>فرضيات البحث:</strong></p>
+      <ol>
+        <li><strong>الفرضية 1 (للسؤال 1):</strong> ستكون معدلات الوعي بمركّبات المناعة، وخاصة الجاهزية والتدريب والتفكير في المستقبل، أعلى بعد البرنامج منها قبله.</li>
+        <li><strong>الفرضية 2 (للسؤال 2):</strong> سيرتفع عدد مرات استخدام كلمات لغة المناعة ومفاهيمها في النقاش الصفي على امتداد أسابيع البرنامج الاثني عشر.</li>
+      </ol>
+      <p class="small-muted">السؤال 3 نوعي، لذلك لا تُصاغ له فرضية، ويُفحص بشكل مفتوح.</p>
+      <p><strong>التصميم:</strong> بحث إجرائي بتصميم مدمج (كمّي ونوعي)، قياس قبل وبعد، 12 أسبوعًا.<br>
+      <strong>المشاركون:</strong> 6 صفوف من الرابع حتى السادس، نحو 150 طالبًا وطالبة، في مدارس ناطقة بالعبرية وناطقة بالعربية.</p>
+    </div>
+
+    <h3 style="margin-top:28px">أيقونات لغة المناعة</h3>
+    <p class="read">لكل مركّب أيقونة خاصة ولون خاص. تتكرّر الأيقونات في البطاقات والملصقات والألعاب ولوحة المتابعة، لكي يتعرّف على المركّب حتى الطلاب والطالبات الذين لا يقرؤون بطلاقة بعد.</p>
+    <div class="icongrid">
+      <div class="iconcard k1"><span class="badge lg"><svg class="ico"><use href="#i-belong"/></svg></span><div><strong>الانتماء والتواصل</strong><span>ثلاث شخصيات مترابطة: لي مكان ولي علاقات.</span></div></div>
+      <div class="iconcard k2"><span class="badge lg"><svg class="ico"><use href="#i-regulate"/></svg></span><div><strong>تنظيم المشاعر</strong><span>أمواج تهدأ: التنفّس يهدّئ العاصفة.</span></div></div>
+      <div class="iconcard k3"><span class="badge lg"><svg class="ico"><use href="#i-prepare"/></svg></span><div><strong>الجاهزية والتخطيط</strong><span>حقيبة جاهزة: نستعدّ مسبقًا.</span></div></div>
+      <div class="iconcard k4"><span class="badge lg"><svg class="ico"><use href="#i-practice"/></svg></span><div><strong>التدريب والممارسة</strong><span>سهم دائري وعلامة نجاح: كل تدريب يقوّي.</span></div></div>
+      <div class="iconcard k5"><span class="badge lg"><svg class="ico"><use href="#i-future"/></svg></span><div><strong>التفكير في المستقبل</strong><span>مفترق طرق: ماذا سيحدث إذا اخترت هذا أو ذاك؟</span></div></div>
+      <div class="iconcard k6"><span class="badge lg"><svg class="ico"><use href="#i-together"/></svg></span><div><strong>التعاون والمجتمع</strong><span>سقف وشخصيتان: نحمي بعضنا بعضًا.</span></div></div>
+    </div>
+
+    <h3 style="margin-top:28px">لغة المناعة: المركّبات والكلمات والمفاهيم والجمل</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>مركّب المناعة</th><th>كلمة</th><th>مفهوم</th><th>جملة مناعة</th></tr></thead>
+        <tbody>
+          <tr><td class="comp k1"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-belong"/></svg></span>الانتماء والتواصل</span></td><td>الانتماء</td><td>شبكة الدعم</td><td>"عندي من ألجأ إليه عندما أشعر بصعوبة."</td></tr>
+          <tr><td class="comp k2"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-regulate"/></svg></span>تنظيم المشاعر</span></td><td>التنفّس</td><td>مقياس المشاعر</td><td>"أشعر بـ___، وأعرف ما يساعدني على الهدوء."</td></tr>
+          <tr><td class="comp k3"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-prepare"/></svg></span>الجاهزية والتخطيط</span></td><td>الجاهزية</td><td>خطة الجاهزية</td><td>"عندما أستعدّ مسبقًا، أعرف ماذا أفعل."</td></tr>
+          <tr><td class="comp k4"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-practice"/></svg></span>التدريب والممارسة</span></td><td>التدريب</td><td>التدريب المتكرّر</td><td>"كل تدريب يقوّيني، حتى عندما لا أنجح من المرة الأولى."</td></tr>
+          <tr><td class="comp k5"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-future"/></svg></span>التفكير في المستقبل</span></td><td>ماذا لو</td><td>نتيجة مستقبلية</td><td>"قبل أن أقرّر، أفكّر ماذا سيحدث بعد ذلك."</td></tr>
+          <tr><td class="comp k6"><span class="cwrap"><span class="badge sm"><svg class="ico"><use href="#i-together"/></svg></span>التعاون والمجتمع</span></td><td>نتعاون</td><td>المسؤولية المتبادلة</td><td>"أستطيع أن أساعد الآخرين، والآخرون يستطيعون مساعدتي."</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:28px">ألعاب وتمارين وخطط دروس</h3>
+    <div class="grid3">
+      <div class="card"><span class="tag">لعبة</span><h3 style="margin-top:6px">"ماذا لو...؟"</h3><p>تحصل المجموعات على بطاقة موقف: نسيان أغراض الرحلة، تمرين طوارئ في المدرسة، تلميذ جديد أو تلميذة جديدة في الصف. تكتب كل مجموعة 3 نتائج ممكنة وخطة جاهزية قصيرة.</p><p class="small-muted">المركّبات: التفكير في المستقبل، الجاهزية</p></div>
+      <div class="card"><span class="tag">لعبة</span><h3 style="margin-top:6px">بينغو كلمات المناعة</h3><p>يقرأ المربّي أو المربّية جملة من قصة، ويعلّم الصف على اللوح الأيقونة وكلمة المناعة المناسبة.</p><p class="small-muted">المركّبات: الستة كلها، وخاصة المفردات</p></div>
+      <div class="card"><span class="tag">تمرين</span><h3 style="margin-top:6px">حقيبتي وشبكتي</h3><p>نرسم "حقيبة جاهزية" وما فيها، وإلى جانبها شبكة الدعم: الأشخاص الذين يمكن اللجوء إليهم.</p><p class="small-muted">المركّبات: الجاهزية، الانتماء</p></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <span class="tag">خطة درس نموذجية · 45 دقيقة</span>
+      <h3 style="margin-top:6px">قبل، أثناء، بعد: نفكّر إلى الأمام</h3>
+      <p><strong>الأهداف:</strong> التعرّف على 3 كلمات من عائلة الجاهزية؛ التدرّب على التفكير في النتائج المستقبلية؛ بناء خطة جاهزية شخصية صغيرة.</p>
+      <div class="tablewrap" style="margin-top:6px">
+        <table>
+          <thead><tr><th>الوقت</th><th>المرحلة</th><th>ماذا يحدث</th></tr></thead>
+          <tbody>
+            <tr><td>5 د</td><td>الافتتاح</td><td>"مقياس المشاعر": كل واحد وواحدة يحدّدون شعورهم اليوم.</td></tr>
+            <tr><td>10 د</td><td>التعليم</td><td>3 كلمات جديدة وأيقوناتها: الجاهزية، التدريب، نتيجة مستقبلية. أمثلة من الحياة المدرسية.</td></tr>
+            <tr><td>15 د</td><td>لعبة</td><td>"ماذا لو...؟" في مجموعات من 4.</td></tr>
+            <tr><td>10 د</td><td>تدريب</td><td>كل واحد وواحدة يكتبون خطة جاهزية قصيرة لموقف يختارونه.</td></tr>
+            <tr><td>5 د</td><td>التلخيص</td><td>جملة مناعة واحدة لدفتر الصف. هكذا تُجمع أيضًا بيانات لأداة "جملة واحدة".</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 style="margin-top:28px">أدوات قياس نموذجية</h3>
+    <div class="note">هذه أدوات نموذجية بُنيت لغرض البحث. يُفحص ثباتها في دراسة استطلاعية، لكن <strong>لم يتم التحقق من صدقها</strong>. يجب ذكر ذلك صراحة في المقال، وعرض النتائج كنتائج أولية.</div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>الأداة</th><th>ماذا تقيس</th><th>بنود نموذجية</th><th>الثبات</th><th>الصدق</th></tr></thead>
+        <tbody>
+          <tr><td><strong>استبيان لغة المناعة</strong><br><span class="small-muted">18 بندًا، سلّم 1–4 مع وجوه تعبيرية، قبل وبعد</span></td><td>الوعي بالمركّبات الستة</td><td>"أعرف ماذا أفعل إذا حدث شيء غير متوقع في المدرسة."<br>"قبل أن أفعل شيئًا، أفكّر ماذا سيحدث بعده."</td><td>اتساق داخلي (ألفا كرونباخ)، الهدف 0.70 فما فوق</td><td><span class="tag sun">لم يُفحص</span></td></tr>
+          <tr><td><strong>اختبار المطابقة</strong><br><span class="small-muted">10 بنود، صح/خطأ</span></td><td>فهم الكلمات والمفاهيم</td><td>مطابقة مفهوم بموقف: "خطة جاهزية" ← "قبل الرحلة فحصنا ما يجب أن نحضره".</td><td>KR-20 في دراسة استطلاعية</td><td><span class="tag sun">لم يُفحص</span></td></tr>
+          <tr><td><strong>مشاهدة صفية</strong><br><span class="small-muted">10 دقائق في الدرس، مرة في الأسبوع</span></td><td>استخدام لغة المناعة في النقاش</td><td>عدّ الكلمات والجمل من القاموس، حسب المركّب.</td><td>اتفاق بين مشاهِدَين (كابا كوهين)، الهدف 0.70 فما فوق</td><td><span class="tag sun">لم يُفحص</span></td></tr>
+          <tr><td><strong>"جملة واحدة"</strong><br><span class="small-muted">مهمة مفتوحة في نهاية الدرس</span></td><td>التفكير في النتائج المستقبلية</td><td>إكمال الجملة: "عندما أستعدّ مسبقًا..."</td><td>ترميز حسب المركّبات، فحص الاتفاق بين المرمّزين</td><td><span class="tag sun">لم يُفحص</span></td></tr>
+          <tr><td><strong>دفتر تأمّل للطاقم</strong><br><span class="small-muted">3 أسئلة في الأسبوع</span></td><td>رؤية مساهمة البرنامج</td><td>"ماذا سمعت هذا الأسبوع من الطلاب والطالبات له علاقة بالجاهزية؟"</td><td>تحليل موضوعاتي</td><td>أداة نوعية</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:28px">الجمع والتحليل والكتابة في المثال</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>المرحلة</th><th>ماذا نفعل</th><th>متى</th></tr></thead>
+        <tbody>
+          <tr><td><strong>جمع قبلي</strong></td><td>استبيان لغة المناعة واختبار المطابقة</td><td>الأسبوع 0</td></tr>
+          <tr><td><strong>جمع جارٍ</strong></td><td>مشاهدة 10 دقائق، "جملة واحدة"، دفتر تأمّل</td><td>الأسابيع 1–12</td></tr>
+          <tr><td><strong>جمع بعدي</strong></td><td>استبيان لغة المناعة واختبار المطابقة</td><td>الأسبوع 13</td></tr>
+          <tr><td><strong>تحليل السؤال 1</strong></td><td>فحص الفرضية 1: مقارنة قبل وبعد لكل مركّب (t للعيّنات المترابطة أو ويلكوكسون) وحجم الأثر</td><td>الأسبوع 14</td></tr>
+          <tr><td><strong>تحليل السؤال 2</strong></td><td>فحص الفرضية 2: اتجاه استخدام كلمات المناعة على امتداد 12 أسبوعًا، من بيانات المشاهدة</td><td>الأسبوع 14</td></tr>
+          <tr><td><strong>تحليل السؤال 3</strong></td><td>تحليل موضوعاتي للدفاتر وترميز "جملة واحدة" حسب المركّبات</td><td>الأسبوعان 14–15</td></tr>
+          <tr><td><strong>الكتابة</strong></td><td>فصل النتائج، النقاش، وتقرير للمدرسة بالعربية والعبرية</td><td>الأسابيع 16–18</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card"><h3>رمز مشارك/ة نموذجي</h3><p><bdi dir="rtl">م2-ص5-017</bdi>: مدرسة 2، صف 5، مشارك/ة 17. دون اسم ودون تاريخ ميلاد.</p></div>
+      <div class="card"><h3>جملة نتيجة نموذجية</h3><p>"ارتفع معدل مركّب الجاهزية والتخطيط من 2.2 قبل البرنامج إلى 3.1 بعده، وهو أكبر ارتفاع بين المركّبات الستة."</p><p class="small-muted">بيانات توضيحية، كما في لوحة المتابعة</p></div>
+    </div>
+
+    <h3 style="margin-top:28px">نواتج بحث نموذجية</h3>
+    <div class="grid3">
+      <div class="card"><strong>قاموس لغة المناعة</strong><br>بالعربية والعبرية، نحو 60 كلمة ومفهومًا وجملة</div>
+      <div class="card"><strong>مجموعة أيقونات</strong><br>أيقونة ولون لكل مركّب</div>
+      <div class="card"><strong>مجموعة ألعاب</strong><br>6 ألعاب، لعبة لكل مركّب</div>
+      <div class="card"><strong>12 خطة درس</strong><br>درسان لكل مركّب، 45 دقيقة لكل درس</div>
+      <div class="card"><strong>بطاقات جمل المناعة</strong><br>للتعليق في الصف</div>
+      <div class="card"><strong>عرض تقديمي مرافِق</strong><br>للمربّين والمربّيات</div>
+      <div class="card"><strong>لوحة متابعة للبحث</strong><br>ثنائية اللغة، ببيانات مجمّعة</div>
+      <div class="card"><strong>تقرير نتائج ومقال</strong><br>يشمل فقرة شفافية حول استخدام الذكاء الاصطناعي</div>
+    </div>
+
+    <h3 style="margin-top:28px">العرض التقديمي المرافِق للمربّين والمربّيات</h3>
+    <ol class="slides">
+      <li><strong>لماذا لغة مناعة؟</strong>كلمات مشتركة تتيح الحديث عن الجاهزية قبل أن نحتاجها</li>
+      <li><strong>المركّبات الستة</strong>خريطة واحدة للبرنامج، مع الأيقونات</li>
+      <li><strong>القاموس</strong>كلمات ومفاهيم وجمل لكل مركّب</li>
+      <li><strong>مبنى البرنامج</strong>12 أسبوعًا، درس واحد في الأسبوع</li>
+      <li><strong>درس نموذجي</strong>"قبل، أثناء، بعد"</li>
+      <li><strong>ألعاب وتمارين</strong>كيف نطبّقها وماذا نلاحظ</li>
+      <li><strong>كيف نقيس</strong>دون إثقال: 10 دقائق مشاهدة في الأسبوع</li>
+      <li><strong>عندما تظهر مشاعر قوية</strong>كيف نستجيب ومتى نتوجّه إلى الاستشارة</li>
+      <li><strong>لوحة المتابعة</strong>أين نرى تقدّم الصف</li>
+      <li><strong>مرافقة ودعم</strong>لمن نتوجّه بالأسئلة</li>
+    </ol>
+
+    <h3 style="margin-top:28px">لوحة المتابعة: العربية والعبرية</h3>
+    <p class="read">يمكن تبديل اللغة بالزر داخل اللوحة. كل الأرقام هنا بيانات توضيحية.</p>
+    <div id="dashSlot-ar"></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="contact" id="contact-ar">
+    <h2>تحتاجون مساعدة في بناء الأداة؟</h2>
+    <p class="line">يمكن التوجّه إليّ للمساعدة في بناء أداة مرافِقة للبحث، وصياغة البرومبت، وبناء لوحة متابعة لبحثكم.</p>
+    <p class="line"><strong>د. ياعيل ساديه</strong> · مناعة | مجتمع | تربية</p>
+    <p class="line">هاتف: <bdi dir="ltr">052-3969417</bdi><br>بريد إلكتروني: <a href="mailto:yael.sade@gmail.com">yael.sade@gmail.com</a></p>
+  </div>
+</div>
+</main>
+</div>
+
+<!-- shared dashboard (moved into the active language's slot) -->
+<div class="dash" id="dash" lang="he" dir="rtl">
+  <div class="dash-head">
+    <div>
+      <h3 data-t="title"></h3>
+      <div class="dash-sub" data-t="sub"></div>
+    </div>
+    <div class="langs" role="group" aria-label="שפת הדשבורד / لغة اللوحة" id="dashLangs">
+      <button type="button" data-lang="he" aria-pressed="true">עברית</button>
+      <button type="button" data-lang="ar" aria-pressed="false" lang="ar">العربية</button>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="v">148</div><div class="l" data-t="k1"></div></div>
+    <div class="kpi"><div class="v">6</div><div class="l" data-t="k2"></div></div>
+    <div class="kpi"><div class="v"><bdi dir="ltr">58 / 72</bdi></div><div class="l" data-t="k3"></div><span class="pill" data-t="onTrack"></span></div>
+    <div class="kpi"><div class="v"><bdi dir="ltr">131 / 148</bdi></div><div class="l" data-t="k4"></div></div>
+  </div>
+  <div class="charts">
+    <div class="chart">
+      <h4 data-t="c1"></h4>
+      <div class="legend"><span><i style="background:var(--line)"></i><span data-t="pre"></span></span><span><i style="background:var(--accent)"></i><span data-t="post"></span></span></div>
+      <div id="bars"></div>
+      <div class="insight" data-t="ins"></div>
+    </div>
+    <div class="chart">
+      <h4 data-t="c2"></h4>
+      <svg id="line" viewBox="0 0 340 190" width="100%" role="img" style="direction:ltr;display:block"></svg>
+      <div class="dash-sub" data-t="src2"></div>
+    </div>
+  </div>
+  <div class="dash-foot" data-t="foot"></div>
+</div>
+
+<script>
+(function(){
+  var pageLang = 'he';
+  var UI = {
+    he:{copied:'הועתק ✓', manual:'סמנו והעתיקו ידנית'},
+    ar:{copied:'تم النسخ ✓', manual:'يُرجى التحديد والنسخ يدويًا'}
+  };
+
+  // copy buttons
+  document.querySelectorAll('button.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      if(!el) return;
+      var orig = btn.textContent, u = UI[pageLang];
+      function done(ok){
+        btn.textContent = ok ? u.copied : u.manual;
+        setTimeout(function(){ btn.textContent = orig; }, 2000);
+      }
+      try{
+        navigator.clipboard.writeText(el.textContent).then(function(){done(true)}, function(){selectText(el); done(false)});
+      }catch(e){ selectText(el); done(false); }
+    });
+  });
+  function selectText(el){
+    try{ var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);}catch(e){}
+  }
+
+  // dashboard
+  var icons=['i-belong','i-regulate','i-prepare','i-practice','i-future','i-together'];
+  var T = {
+    he:{
+      title:'דשבורד המחקר: שפת החוסן החברתי',
+      sub:'נתוני דוגמה להמחשה בלבד · שבוע 12 מתוך 12',
+      k1:'תלמידים ותלמידות משתתפים', k2:'כיתות', k3:'שיעורים שהועברו', k4:'שאלוני "אחרי" שחזרו',
+      onTrack:'בקצב המתוכנן',
+      c1:'ממוצע לכל רכיב חוסן: לפני ואחרי (1–4)', pre:'לפני', post:'אחרי',
+      ins:'העלייה הגדולה ביותר: מוכנות ותכנון (+0.9)',
+      c2:'שימוש במילות חוסן בשיח הכיתתי (ממוצע לשיעור)',
+      src2:'מקור: תצפית כיתתית שבועית', week:'שבוע',
+      foot:'הדשבורד מציג נתונים מצרפיים בלבד, בלי שמות ובלי פרטים מזהים. מקור הממוצעים: שאלון שפת החוסן.',
+      comps:['שייכות וקשר','ויסות רגשי','מוכנות ותכנון','אימון ותרגול','חשיבה על העתיד','עזרה הדדית וקהילה']
+    },
+    ar:{
+      title:'لوحة متابعة البحث: لغة المناعة الاجتماعية',
+      sub:'بيانات توضيحية فقط · الأسبوع 12 من 12',
+      k1:'الطلاب والطالبات المشاركون', k2:'الصفوف', k3:'الدروس المنجزة', k4:'استبيانات القياس البعدي المُعادة',
+      onTrack:'حسب الخطة',
+      c1:'معدل كل مركّب من مركّبات المناعة: قبل وبعد (1–4)', pre:'قبل', post:'بعد',
+      ins:'أكبر ارتفاع: الجاهزية والتخطيط (+0.9)',
+      c2:'استخدام كلمات المناعة في النقاش الصفي (المعدل لكل درس)',
+      src2:'المصدر: مشاهدة صفية أسبوعية', week:'الأسبوع',
+      foot:'تعرض اللوحة بيانات مجمّعة فقط، دون أسماء أو تفاصيل تعريفية. مصدر المعدلات: استبيان لغة المناعة.',
+      comps:['الانتماء والتواصل','تنظيم المشاعر','الجاهزية والتخطيط','التدريب والممارسة','التفكير في المستقبل','التعاون والمجتمع']
+    }
+  };
+  var pre=[2.9,2.5,2.2,2.4,2.1,3.0], post=[3.3,3.0,3.1,3.0,2.9,3.4];
+  var weekly=[3,4,4,6,7,7,9,10,11,11,13,14];
+  var dash=document.getElementById('dash');
+
+  function renderDash(lang){
+    var t=T[lang];
+    dash.setAttribute('lang',lang);
+    dash.querySelectorAll('[data-t]').forEach(function(el){ el.textContent=t[el.getAttribute('data-t')]; });
+    setPressed(document.getElementById('dashLangs'), lang);
+    var bars=document.getElementById('bars'); bars.innerHTML='';
+    t.comps.forEach(function(name,i){
+      var row=document.createElement('div'); row.className='barrow';
+      row.innerHTML='<div class="bl k'+(i+1)+'"><span class="badge sm"><svg class="ico"><use href="#'+icons[i]+'"/></svg></span><span></span></div>'+
+        '<div class="bars"><div class="r"><div class="bar pre" style="width:'+(pre[i]/4*85)+'%"></div><small>'+pre[i].toFixed(1)+'</small></div>'+
+        '<div class="r"><div class="bar post" style="width:'+(post[i]/4*85)+'%"></div><small>'+post[i].toFixed(1)+'</small></div></div>';
+      row.querySelector('.bl span:last-child').textContent=name;
+      bars.appendChild(row);
+    });
+    drawLine(t);
+  }
+
+  function drawLine(t){
+    var svg=document.getElementById('line');
+    svg.setAttribute('aria-label', t.c2);
+    var W=340,H=190,L=34,R=12,Tp=12,B=34,max=16;
+    var x=function(i){return L+(W-L-R)*i/(weekly.length-1)};
+    var y=function(v){return Tp+(H-Tp-B)*(1-v/max)};
+    var s='';
+    [0,4,8,12,16].forEach(function(g){
+      s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="var(--line)" stroke-width="1"/>';
+      s+='<text x="'+(L-6)+'" y="'+(y(g)+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+g+'</text>';
+    });
+    var pts=weekly.map(function(v,i){return x(i)+','+y(v)}).join(' ');
+    s+='<polygon points="'+x(0)+','+y(0)+' '+pts+' '+x(weekly.length-1)+','+y(0)+'" fill="var(--accent)" opacity="0.12"/>';
+    s+='<polyline points="'+pts+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>';
+    var li=weekly.length-1;
+    s+='<circle cx="'+x(li)+'" cy="'+y(weekly[li])+'" r="4.5" fill="var(--accent)"/>';
+    s+='<text x="'+(x(li)-8)+'" y="'+(y(weekly[li])-8)+'" text-anchor="end" font-size="12" font-weight="700" fill="var(--ink)">'+weekly[li]+'</text>';
+    [0,3,7,11].forEach(function(i){
+      s+='<text x="'+x(i)+'" y="'+(H-B+16)+'" text-anchor="middle" font-size="11" fill="var(--muted)">'+(i+1)+'</text>';
+    });
+    s+='<text x="'+((L+W-R)/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="11" fill="var(--muted)">'+t.week+'</text>';
+    svg.innerHTML=s;
+  }
+
+  function setPressed(group, lang){
+    group.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-lang')===lang ? 'true':'false'); });
+  }
+
+  function setPageLang(lang, updateHash){
+    pageLang = lang;
+    document.body.classList.toggle('ar', lang==='ar');
+    document.documentElement.setAttribute('lang', lang);
+    document.title = lang==='ar' ? 'بناء أداة مرافِقة للبحث' : 'בונים כלי מלווה מחקר';
+    setPressed(document.getElementById('pageLangs'), lang);
+    document.getElementById('dashSlot-'+lang).appendChild(dash);
+    renderDash(lang);
+    if(updateHash){ try{ history.replaceState(null,'', lang==='ar' ? '#ar' : '#he'); }catch(e){} }
+  }
+
+  document.querySelectorAll('#pageLangs button').forEach(function(b){
+    b.addEventListener('click', function(){ setPageLang(b.getAttribute('data-lang'), true); window.scrollTo(0,0); });
+  });
+  document.querySelectorAll('#dashLangs button').forEach(function(b){
+    b.addEventListener('click', function(){ renderDash(b.getAttribute('data-lang')); });
+  });
+
+  var h=(location.hash||'').replace('#','');
+  setPageLang((h==='ar' || /-ar$/.test(h)) ? 'ar' : 'he', false);
+})();
+</script>
+</body>
+</html>
