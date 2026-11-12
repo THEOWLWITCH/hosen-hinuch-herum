@@ -96,7 +96,7 @@ li{margin:.25rem 0}
 .node span{display:block;font-size:.86rem;color:var(--muted);line-height:1.4;margin-top:4px}
 .node:not(:last-child)::after{content:"";position:absolute;top:36px;left:-11px;width:12px;height:2px;background:var(--accent)}
 .phase{margin:22px 0 -8px;font-weight:700;color:var(--accent);font-size:1rem}
-.flow.three{grid-template-columns:repeat(3,1fr)}
+.flow.three{grid-template-columns:repeat(4,1fr)}
 .loop{margin-top:12px;display:flex;align-items:center;gap:10px;justify-content:center;color:var(--muted);font-size:.95rem;text-align:center}
 .loop svg{flex:none}
 @media (max-width:820px){
@@ -261,6 +261,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
       <a href="#collect">7. איסוף ממצאים</a>
       <a href="#analyze">8. ניתוח</a>
       <a href="#write">9. כתיבה</a>
+      <a href="#conference">10. הצעה לכנס</a>
       <a href="#mistakes">טעויות נפוצות</a>
       <a href="#example">דוגמה: שפת החוסן</a>
       <a href="#sheet-sec">דף עזר</a>
@@ -274,7 +275,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
   <div class="wrap">
     <h2>התהליך במבט אחד</h2>
     <p class="read">אפשר לסמן כל שלב שסיימתם, והסימון נשמר רק בדפדפן שלכם.</p>
-    <p class="read">תשעה שלבים בשני חלקים. השלב המודגש הוא הלב: פרומפט פתיחה טוב קובע את איכות כל מה שבא אחריו.</p>
+    <p class="read">עשרה שלבים בשני חלקים. השלב המודגש הוא הלב: פרומפט פתיחה טוב קובע את איכות כל מה שבא אחריו.</p>
     <div class="phase">בונים את המחקר</div>
     <div class="flow" role="list">
       <div class="node" role="listitem"><div class="n">1</div><b>מעלים</b><span>הצעת מחקר, טיוטות, מאמרים, שאלונים</span></div>
@@ -289,6 +290,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
       <div class="node" role="listitem"><div class="n">7</div><b>איסוף ממצאים</b><span>קודים במקום שמות, טפסים, יומן שטח</span></div>
       <div class="node" role="listitem"><div class="n">8</div><b>ניתוח</b><span>כמותי ואיכותני, עם בדיקת החישוב</span></div>
       <div class="node" role="listitem"><div class="n">9</div><b>כתיבה</b><span>ממצאים, דיון, דוח לבית הספר</span></div>
+      <div class="node key" role="listitem"><div class="n">10</div><b>הצעה לכנס</b><span>לפי ההנחיות, אנונימית, עם ספירת מילים</span></div>
     </div>
     <div class="loop">
       <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M30 4 H10 a7 7 0 0 0 0 14 H26" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 14 l5 4 -5 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
@@ -655,6 +657,74 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
   </div>
 </section>
 
+<section id="conference">
+  <div class="wrap">
+    <h2><span class="stepno">10</span>כתיבת הצעה לכנס</h2>
+    <p class="read">כנס הוא הזדמנות להציג את המחקר עוד לפני שהמאמר מוכן, ולקבל משוב. לכל כנס הנחיות משלו, וההצעות נבדקות לפי מחוון. לכן מתחילים מההנחיות של הכנס, ולא מהמחקר.</p>
+    <div class="grid2">
+      <div class="card"><h3>איך עובדים</h3><ol>
+        <li>מעתיקים את קול הקורא המלא של הכנס ומעלים אותו לשיחה, יחד עם "מסמך האם" ותוצאות הניתוח.</li>
+        <li>בוחרים סוג הצגה שמתאים לשלב שבו המחקר נמצא.</li>
+        <li>ה־AI כותב טיוטה לפי המבנה ומגבלות המילים, וסופר מילים בכל סעיף.</li>
+        <li>בודקים אנונימיות: בלי שמות, מוסדות או הפניות שחושפות את הכותבים.</li>
+        <li>מעבירים דרך ההגהה (שלב 4) ודרך מחוון ההערכה של הכנס.</li>
+        <li>מגישים במערכת של הכנס, לפני המועד האחרון.</li></ol></div>
+      <div class="card"><h3>לפני ההגשה בודקים</h3><ul>
+        <li>מספר המילים בכל סעיף ובסך הכול</li>
+        <li>תקציר נפרד, אם נדרש</li>
+        <li>אנונימיות, גם בשם הקובץ ובשדה "מחבר" במאפייני קובץ ה־Word</li>
+        <li>עיצוב לפי ההנחיות: APA, גופן, רווח בין שורות</li>
+        <li>מועד ההרשמה של כל המציגים והמציגות</li></ul></div>
+    </div>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>כתיבת ההצעה</strong><button class="copy small" type="button" data-copy="fuC1">העתקה</button></div>
+<pre id="fuC1">מצורפים קול הקורא של הכנס, "מסמך האם" של המחקר ותוצאות הניתוח. לכתוב הצעה ל[סוג ההצגה] לפי ההנחיות בדיוק:
+1. לפי המבנה ומגבלות המילים שבקול הקורא. אחרי כל סעיף לכתוב בסוגריים כמה מילים יש בו, ובסוף את הסך הכול.
+2. רק ממצאים שמופיעים בתוצאות שלי. אם הממצאים עדיין ראשוניים, לכתוב זאת במפורש.
+3. מקורות לפי APA, רק מתוך הרשימה שאימתתי, ובמספר שמותר.
+4. אנונימיות מלאה: בלי שמות, מוסדות, מקומות או הפניות שחושפות את הכותבים. לסמן כל מקום שעלול לחשוף.
+5. תקציר נפרד באורך שנדרש, לתוכנית הכנס.
+6. בסוף: טבלה שבודקת כל דרישה בקול הקורא, עם העמודות הדרישה | מתקיימת? | איפה.
+לא להמציא נתונים.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>בדיקה לפי מחוון הכנס</strong><button class="copy small" type="button" data-copy="fuC2">העתקה</button></div>
+<pre id="fuC2">מצורפים ההצעה ומחוון ההערכה של הכנס. לקרוא את ההצעה בתפקיד שופט/ת של הכנס, ולתת ציון לכל קריטריון במחוון עם נימוק קצר. לסמן את 3 השינויים שהכי ישפרו את הציון, בלי לחרוג ממגבלת המילים.</pre></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <span class="tag sun">דוגמה</span>
+      <h3 style="margin-top:6px">ICER 2027: הכנס הישראלי למחקר בחינוך</h3>
+      <ul>
+        <li>מכון מופ"ת, תל אביב, 20–22 בספטמבר 2027. הכנס מתקיים פעם בשנתיים.</li>
+        <li><strong>מועד אחרון להגשה: 31 בדצמבר 2026.</strong> התשובות יישלחו עד 31 במרץ 2027, וכל המציגים והמציגות נרשמים עד 15 באפריל 2027.</li>
+        <li>סוגי הצגה: הרצאה, סימפוזיון, פוסטר, שולחן עגול וסדנה.</li>
+        <li>הרצאה, פוסטר ושולחן עגול: עד 700 מילים בלי רשימת המקורות, ובנוסף תקציר נפרד של עד 200 מילים לתוכנית הכנס.</li>
+        <li>ההצעה אנונימית לגמרי, גם בהפניות לעבודות קודמות של הכותבים.</li>
+        <li>עברית, ואפשר גם באנגלית. APA, גופן 12, רווח של שורה וחצי. הצעה שחורגת מההנחיות לא נבדקת.</li>
+        <li>אפשר להגיש הצגה אחת ככותב/ת ראשון/ה, ועד שלוש נוספות ככותבים שותפים.</li>
+        <li>מחקר שכבר פורסם בכתב לפני 2026 לא מתקבל.</li>
+        <li>ההגשה במערכת Oxford Abstracts. <a href="https://icer.org.il/call-to-action/" target="_blank" rel="noopener">לקול הקורא המלא באתר הכנס</a></li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>סעיף (הרצאה, פוסטר, שולחן עגול)</th><th>לפי ההנחיות</th><th>בדוגמה של שפת החוסן</th></tr></thead>
+          <tbody>
+            <tr><td>מבוא ורקע תיאורטי</td><td>100–200 מילים</td><td>180</td></tr>
+            <tr><td>מטרות המחקר</td><td>מנוסחות במפורש</td><td>40</td></tr>
+            <tr><td>שיטה</td><td>50–100 מילים</td><td>90</td></tr>
+            <tr><td>ממצאים ומשמעותם</td><td>50–200 מילים</td><td>180</td></tr>
+            <tr><td>דיון ומסקנות, ביחס לספרות</td><td>100–200 מילים</td><td>180</td></tr>
+            <tr><td><strong>סך הכול</strong></td><td><strong>עד 700 מילים</strong></td><td><strong>670</strong></td></tr>
+            <tr><td>מקורות</td><td>עד 8, לא נספרים</td><td>8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:12px"><strong>איזה סוג הצגה מתאים לשפת החוסן?</strong> אם עד מועד ההגשה יהיו ממצאים מלאים, הרצאה. אם יהיו רק ממצאים ראשוניים מכיתות החלוץ, פוסטר או שולחן עגול. מסלולים מתאימים: גיל רך וחינוך יסודי, או שילוב טכנולוגיה בחינוך. את שמות המסלולים המדויקים בודקים באתר הכנס.</p>
+      <p class="small-muted">ההנחיות לפי אתר הכנס, נובמבר 2026. לפני ההגשה כדאי לבדוק שלא עודכנו.</p>
+    </div>
+    <div class="sitebox"><strong>🔗 באתר הקהילה:</strong> בעמוד <a href="/conferences" target="_blank" rel="noopener">📅 כנסים</a> מרוכזים כנסים קרובים ומועדי הגשה.</div>
+  </div>
+</section>
+
 <section id="mistakes">
   <div class="wrap">
     <h2>טעויות נפוצות ואיך נמנעים מהן</h2>
@@ -812,8 +882,8 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
     <div class="sheet" id="sheet">
       <h3>בונים כלי AI מלווה מחקר: דף עזר</h3>
       <div class="sheet-grid">
-        <div><h3>תשעת השלבים</h3><ol>
-          <li>מעלים חומרים, בלי פרטים מזהים</li><li>פרומפט פתיחה</li><li>מתקדמים חלק אחר חלק</li><li>הגהה ופאנל מומחים</li><li>משתפים</li><li>דשבורד</li><li>איסוף ממצאים בקודים</li><li>ניתוח שתוכנן מראש</li><li>כתיבה במילים שלכם</li></ol></div>
+        <div><h3>עשרת השלבים</h3><ol>
+          <li>מעלים חומרים, בלי פרטים מזהים</li><li>פרומפט פתיחה</li><li>מתקדמים חלק אחר חלק</li><li>הגהה ופאנל מומחים</li><li>משתפים</li><li>דשבורד</li><li>איסוף ממצאים בקודים</li><li>ניתוח שתוכנן מראש</li><li>כתיבה במילים שלכם</li><li>הצעה לכנס לפי ההנחיות</li></ol></div>
         <div><h3>פרומפט פתיחה מקוצר</h3><pre id="sheetPrompt">תפקידך: מלווה מחקר אקדמי. צירפתי [קבצים]. נושא: [...]. שאלה: [...]. אוכלוסייה: [...].
 כללים: לקרוא קודם את הקבצים; לא להמציא מקורות, ולסמן כל מקור [לאימות]; לשאול עד 5 שאלות הבהרה; חלק אחד בכל פעם; עברית תקנית ולשני המגדרים.
 תוצר: א. מסגרת (שאלה והשערות) ב. סקירת ספרות ג. מתודולוגיה ד. מעורבות ה־AI.
@@ -855,6 +925,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
       <a href="#collect-ar">7. جمع البيانات</a>
       <a href="#analyze-ar">8. التحليل</a>
       <a href="#write-ar">9. الكتابة</a>
+      <a href="#conference-ar">10. اقتراح لمؤتمر</a>
       <a href="#mistakes-ar">أخطاء شائعة</a>
       <a href="#example-ar">مثال: لغة المناعة</a>
       <a href="#sheet-sec-ar">ورقة مساعدة</a>
@@ -868,7 +939,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
   <div class="wrap">
     <h2>العملية بنظرة واحدة</h2>
     <p class="read">يمكن تعليم كل مرحلة ننهيها، ويُحفظ التعليم في متصفّحنا فقط.</p>
-    <p class="read">تسع مراحل في قسمين. المرحلة المميّزة هي القلب: البرومبت الافتتاحي الجيد يحدّد جودة كل ما يأتي بعده.</p>
+    <p class="read">عشر مراحل في قسمين. المرحلة المميّزة هي القلب: البرومبت الافتتاحي الجيد يحدّد جودة كل ما يأتي بعده.</p>
     <div class="phase">نبني البحث</div>
     <div class="flow" role="list">
       <div class="node" role="listitem"><div class="n">1</div><b>نرفع</b><span>اقتراح البحث، مسودات، مقالات، استبيانات</span></div>
@@ -883,6 +954,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
       <div class="node" role="listitem"><div class="n">7</div><b>جمع البيانات</b><span>رموز بدل الأسماء، نماذج، دفتر ميدان</span></div>
       <div class="node" role="listitem"><div class="n">8</div><b>التحليل</b><span>كمّي ونوعي، مع فحص الحساب</span></div>
       <div class="node" role="listitem"><div class="n">9</div><b>الكتابة</b><span>النتائج، النقاش، تقرير للمدرسة</span></div>
+      <div class="node key" role="listitem"><div class="n">10</div><b>اقتراح لمؤتمر</b><span>حسب التعليمات، دون كشف الهوية، مع عدّ الكلمات</span></div>
     </div>
     <div class="loop">
       <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M30 4 H10 a7 7 0 0 0 0 14 H26" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 14 l5 4 -5 4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
@@ -1249,6 +1321,74 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
   </div>
 </section>
 
+<section id="conference-ar">
+  <div class="wrap">
+    <h2><span class="stepno">10</span>كتابة اقتراح لمؤتمر</h2>
+    <p class="read">المؤتمر فرصة لعرض البحث حتى قبل أن يكون المقال جاهزًا، والحصول على ملاحظات. لكل مؤتمر تعليمات خاصة، وتُقيَّم الاقتراحات حسب معايير محدّدة. لذلك نبدأ من تعليمات المؤتمر، وليس من البحث.</p>
+    <div class="grid2">
+      <div class="card"><h3>كيف نعمل</h3><ol>
+        <li>ننسخ الدعوة الكاملة للمؤتمر ونرفعها إلى المحادثة، مع "الوثيقة الأم" ونتائج التحليل.</li>
+        <li>نختار نوع العرض الملائم للمرحلة التي وصل إليها البحث.</li>
+        <li>يكتب الذكاء الاصطناعي مسودة حسب المبنى وحدود الكلمات، ويعدّ الكلمات في كل بند.</li>
+        <li>نفحص عدم كشف الهوية: دون أسماء أو مؤسسات أو إحالات تكشف الكاتبين.</li>
+        <li>نمرّر الاقتراح عبر التدقيق (المرحلة 4) وعبر معايير التقييم للمؤتمر.</li>
+        <li>نقدّم في منظومة المؤتمر، قبل الموعد الأخير.</li></ol></div>
+      <div class="card"><h3>قبل التقديم نفحص</h3><ul>
+        <li>عدد الكلمات في كل بند وفي المجموع</li>
+        <li>ملخّصًا منفصلًا، إذا كان مطلوبًا</li>
+        <li>عدم كشف الهوية، أيضًا في اسم الملف وفي حقل "المؤلف" في خصائص ملف Word</li>
+        <li>التنسيق حسب التعليمات: APA، الخط، التباعد بين الأسطر</li>
+        <li>موعد تسجيل جميع المقدِّمين والمقدِّمات</li></ul></div>
+    </div>
+    <div class="followups">
+      <div class="fu"><div class="fu-head"><strong>كتابة الاقتراح</strong><button class="copy small" type="button" data-copy="fuC1-ar">نسخ</button></div>
+<pre id="fuC1-ar">مرفقة دعوة المؤتمر، و"الوثيقة الأم" للبحث، ونتائج التحليل. كتابة اقتراح لـ[نوع العرض] حسب التعليمات بدقة، وبـ[لغة المؤتمر]:
+1. حسب المبنى وحدود الكلمات في الدعوة. بعد كل بند كتابة عدد كلماته بين قوسين، وفي النهاية المجموع.
+2. فقط النتائج التي تظهر في نتائجي. إذا كانت النتائج أولية بعد، ذكر ذلك صراحة.
+3. مصادر حسب APA، فقط من القائمة التي تحقّقت منها، وبالعدد المسموح.
+4. عدم كشف الهوية بالكامل: دون أسماء أو مؤسسات أو أماكن أو إحالات تكشف الكاتبين. تعليم كل موضع قد يكشف الهوية.
+5. ملخّص منفصل بالطول المطلوب، لبرنامج المؤتمر.
+6. في النهاية: جدول يفحص كل متطلّب في الدعوة، بالأعمدة المتطلّب | هل يتحقّق؟ | أين.
+عدم اختلاق بيانات.</pre></div>
+      <div class="fu"><div class="fu-head"><strong>فحص حسب معايير المؤتمر</strong><button class="copy small" type="button" data-copy="fuC2-ar">نسخ</button></div>
+<pre id="fuC2-ar">مرفق الاقتراح ومعايير التقييم للمؤتمر. قراءة الاقتراح بدور مُحكِّم/ة في المؤتمر، وإعطاء علامة لكل معيار مع تعليل قصير. تحديد التغييرات الثلاثة التي ترفع العلامة أكثر من غيرها، دون تجاوز حدّ الكلمات.</pre></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <span class="tag sun">مثال</span>
+      <h3 style="margin-top:6px">ICER 2027: المؤتمر الإسرائيلي للبحث في التربية</h3>
+      <ul>
+        <li>معهد موفيت، تل أبيب، 20–22 أيلول 2027. يُعقد المؤتمر مرة كل سنتين.</li>
+        <li><strong>الموعد الأخير للتقديم: 31 كانون الأول 2026.</strong> تُرسل الإجابات حتى 31 آذار 2027، ويسجّل جميع المقدِّمين والمقدِّمات حتى 15 نيسان 2027.</li>
+        <li>أنواع العرض: محاضرة، ندوة (سيمبوزيون)، ملصق (بوستر)، طاولة مستديرة، وورشة.</li>
+        <li>المحاضرة والملصق والطاولة المستديرة: حتى 700 كلمة دون قائمة المصادر، وإضافة إلى ذلك ملخّص منفصل حتى 200 كلمة لبرنامج المؤتمر.</li>
+        <li>الاقتراح دون كشف هوية بالكامل، بما في ذلك الإحالات إلى أعمال سابقة للكاتبين.</li>
+        <li>لغة المؤتمر العبرية، ويمكن التقديم بالإنجليزية أيضًا. APA، خط بحجم 12، تباعد سطر ونصف. الاقتراح الذي يتجاوز التعليمات لا يُفحص.</li>
+        <li>يمكن تقديم عرض واحد ككاتب/ة أول/ى، وحتى ثلاثة إضافية ككاتبين مشاركين.</li>
+        <li>البحث الذي نُشر كتابيًا قبل 2026 لا يُقبل.</li>
+        <li>التقديم في منظومة Oxford Abstracts. <a href="https://icer.org.il/call-to-action/" target="_blank" rel="noopener">للدعوة الكاملة في موقع المؤتمر</a></li>
+      </ul>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>البند (محاضرة، ملصق، طاولة مستديرة)</th><th>حسب التعليمات</th><th>في مثال لغة المناعة</th></tr></thead>
+          <tbody>
+            <tr><td>مقدّمة وخلفية نظرية</td><td>100–200 كلمة</td><td>180</td></tr>
+            <tr><td>أهداف البحث</td><td>مصاغة بوضوح</td><td>40</td></tr>
+            <tr><td>المنهجية</td><td>50–100 كلمة</td><td>90</td></tr>
+            <tr><td>النتائج ومعناها</td><td>50–200 كلمة</td><td>180</td></tr>
+            <tr><td>النقاش والاستنتاجات، مقارنة بالأدبيات</td><td>100–200 كلمة</td><td>180</td></tr>
+            <tr><td><strong>المجموع</strong></td><td><strong>حتى 700 كلمة</strong></td><td><strong>670</strong></td></tr>
+            <tr><td>المصادر</td><td>حتى 8، لا تُعدّ</td><td>8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:12px"><strong>أي نوع عرض يناسب لغة المناعة؟</strong> إذا كانت هناك نتائج كاملة حتى موعد التقديم، محاضرة. وإذا كانت هناك نتائج أولية فقط من صفوف الدراسة الاستطلاعية، ملصق أو طاولة مستديرة. مسارات ملائمة: الطفولة المبكرة والتعليم الابتدائي، أو دمج التكنولوجيا في التربية. الأسماء الدقيقة للمسارات نفحصها في موقع المؤتمر.</p>
+      <p class="small-muted">التعليمات حسب موقع المؤتمر، تشرين الثاني 2026. قبل التقديم من المفيد التأكد من أنها لم تتغيّر.</p>
+    </div>
+    <div class="sitebox"><strong>🔗 في موقع المجتمع:</strong> في صفحة <a href="/conferences" target="_blank" rel="noopener">📅 المؤتمرات</a> تُجمع المؤتمرات القريبة ومواعيد التقديم.</div>
+  </div>
+</section>
+
 <section id="mistakes-ar">
   <div class="wrap">
     <h2>أخطاء شائعة وكيف نتجنّبها</h2>
@@ -1406,8 +1546,8 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
     <div class="sheet" id="sheet-ar">
       <h3>بناء أداة ذكاء اصطناعي مرافِقة للبحث: ورقة مساعدة</h3>
       <div class="sheet-grid">
-        <div><h3>المراحل التسع</h3><ol>
-          <li>نرفع المواد، دون تفاصيل تعريفية</li><li>البرومبت الافتتاحي</li><li>نتقدّم جزءًا بعد جزء</li><li>التدقيق ولجنة الخبراء</li><li>المشاركة</li><li>لوحة المتابعة</li><li>جمع البيانات بالرموز</li><li>تحليل مخطَّط مسبقًا</li><li>الكتابة بكلماتنا</li></ol></div>
+        <div><h3>المراحل العشر</h3><ol>
+          <li>نرفع المواد، دون تفاصيل تعريفية</li><li>البرومبت الافتتاحي</li><li>نتقدّم جزءًا بعد جزء</li><li>التدقيق ولجنة الخبراء</li><li>المشاركة</li><li>لوحة المتابعة</li><li>جمع البيانات بالرموز</li><li>تحليل مخطَّط مسبقًا</li><li>الكتابة بكلماتنا</li><li>اقتراح لمؤتمر حسب التعليمات</li></ol></div>
         <div><h3>برومبت افتتاحي مختصر</h3><pre id="sheetPrompt-ar">دورك: مرافِق بحث أكاديمي. أرفقت [الملفات]. الموضوع: [...]. السؤال: [...]. الفئة المستهدفة: [...].
 القواعد: قراءة الملفات أولًا؛ عدم اختلاق مصادر، وتعليم كل مصدر بـ [للتحقق]؛ طرح حتى 5 أسئلة توضيحية؛ جزء واحد في كل مرة؛ لغة سليمة تخاطب الجنسين.
 الناتج: أ. الإطار (السؤال والفرضيات) ب. مراجعة الأدبيات ج. المنهجية د. دور الذكاء الاصطناعي.
@@ -1590,7 +1730,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
 
 
   // progress (one viewer, this browser only)
-  var STEPS=['upload','prompt','next','review','share','dashboard','collect','analyze','write'];
+  var STEPS=['upload','prompt','next','review','share','dashboard','collect','analyze','write','conference'];
   var LBL={he:'סיימתי את השלב הזה',ar:'أنهيت هذه المرحلة'};
   var done={}; try{done=JSON.parse(localStorage.getItem('rc-done')||'{}')||{}}catch(e){done={}}
   function saveDone(){try{localStorage.setItem('rc-done',JSON.stringify(done))}catch(e){}}
@@ -1601,7 +1741,7 @@ button.printbtn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:
       document.querySelectorAll(sel+' .flow .node').forEach(function(nd,i){ nd.classList.toggle('done',!!done[i+1]); });
     });
     var pr=document.getElementById('progress');
-    if(pr) pr.textContent = n ? (pageLang==='ar' ? ('التقدّم: '+n+' من 9') : ('התקדמות: '+n+' מתוך 9')) : '';
+    if(pr) pr.textContent = n ? (pageLang==='ar' ? ('التقدّم: '+n+' من 10') : ('התקדמות: '+n+' מתוך 10')) : '';
   }
   STEPS.forEach(function(id,i){
     [['he',id],['ar',id+'-ar']].forEach(function(pair){
