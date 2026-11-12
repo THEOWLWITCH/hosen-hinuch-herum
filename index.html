@@ -8988,6 +8988,9 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 .mp-back strong{font-size:18px;color:#17324d}
 .mp-back[hidden],.mp[hidden]{display:none}
 .mp-back button{white-space:nowrap}
+.mp-back .mp-tool{margin-inline-start:auto;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid #f0d49a;background:#fff8e8;color:#7a5200;border-radius:999px;padding:6px 14px}
+.mp-back .mp-tool:hover{background:#ffefc9}
+.mp-back .mp-tool[hidden]{display:none}
 @media(max-width:640px){.mp-long{display:none}}
 </style>
 <script id="match-portal">
@@ -9004,6 +9007,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     portal.hidden=!!v;back.hidden=!v;
     work.hidden=v!=='work';prop.hidden=v!=='prop';
     back.querySelector('strong').textContent=v==='work'?'🛠 צוותים פעילים':v==='prop'?'💡 הצעות לשיתופי פעולה':'';
+    back.querySelector('.mp-tool').hidden=v!=='work';
   }
   function go(v){if(v){location.hash=v==='work'?'#workspaces':'#proposals'}else{history.pushState(null,'',location.pathname);apply()}document.getElementById('match')?.scrollIntoView({behavior:'smooth'})}
   async function counts(){
@@ -9025,7 +9029,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
       <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם.</span><small data-n="prop">להצעות ›</small></button>
     </div>`;
     back=document.createElement('div');back.className='mp-back';back.hidden=true;
-    back.innerHTML='<button type="button" data-go="">→ חזרה<span class="mp-long"> למסך הבחירה</span></button><strong></strong>';
+    back.innerHTML='<button type="button" data-go="">→ חזרה<span class="mp-long"> למסך הבחירה</span></button><strong></strong><a class="mp-tool" href="/research-companion" target="_blank" rel="noopener" hidden>📘 <span class="mp-long">מדריך: </span>כלי מלווה מחקר</a>';
     work.before(portal);portal.after(back);
     // סדר קבוע: מסך הבחירה, שורת החזרה, מרחבי העבודה, ההצעות.
     back.after(work);work.after(prop);

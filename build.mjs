@@ -16,6 +16,7 @@ await copyFile("index.html", "dist/index.html");
 // מחקרי השבוע, לעדכון השבועי במייל (netlify/lib/site-weekly.mts).
 await writeFile("dist/research-weekly.json", JSON.stringify(weeklySnapshot(await readFile("index.html", "utf8"))));
 await copyFile("guide.html", "dist/guide.html"); // המדריך לקהילה: /guide
+await copyFile("research-companion.html", "dist/research-companion.html"); // מדריך לבניית כלי מלווה מחקר: /research-companion
 // אימות האתר ב-Google Search Console (5.11.2026). לא למחוק: בלי הקובץ גוגל מבטל את האימות.
 await copyFile("googled52023a596e653b1.html", "dist/googled52023a596e653b1.html");
 // מה השתנה באתר, למדור "🛠 מה חדש באתר עצמו" בעדכון השבועי (netlify/lib/site-weekly.mts).
