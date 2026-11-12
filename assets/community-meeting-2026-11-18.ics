@@ -5,12 +5,16 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
 UID:community-meeting-2026-11-18@hosen-hinuch-herum.netlify.app
-DTSTAMP:20261112T120000Z
+DTSTAMP:20261112T130000Z
 DTSTART:20261118T160000Z
 DTEND:20261118T173000Z
 SUMMARY:מפגש הקהילה: חוסן-חינוך-חרום
-LOCATION:Zoom
-DESCRIPTION:מפגש הקהילה בזום. https://hosen-hinuch-herum.netlify.app
+LOCATION:https://oranim-ac-il.zoom.us/j/2735868459?pwd=bDB4MC9QQ1ZtQmVjdGN
+ tYUNDUjVZQT09
+URL:https://oranim-ac-il.zoom.us/j/2735868459?pwd=bDB4MC9QQ1ZtQmVjdGNtYUND
+ UjVZQT09
+DESCRIPTION:מפגש הקהילה בזום: https://oranim-ac-il.zoom.us/j
+ /2735868459?pwd=bDB4MC9QQ1ZtQmVjdGNtYUNDUjVZQT09
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:מפגש הקהילה: חוסן-חינוך-חרום
