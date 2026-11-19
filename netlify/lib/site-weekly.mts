@@ -54,7 +54,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
 
 
   const lib = library.filter(isNew);
-  add("library", `📚 נכנסו למרכז הידע${lib.length > 1 ? ` (${lib.length} מקורות חדשים)` : ""}`, lib.slice(0, 4).map(x => clip(x.title || x.apa, 120)), ["למרכז הידע", `${site}/library`]);
+  add("library", `📚 נכנסו למשאבים${lib.length > 1 ? ` (${lib.length} מקורות חדשים)` : ""}`, lib.slice(0, 4).map(x => clip(x.title || x.apa, 120)), ["למשאבים", `${site}/library`]);
 
   const open = (calls as any[]).filter(c => isOpen(c, today));
   const freshCalls = open.filter(isNew).sort((a, b) => String(a.endDate || "9999").localeCompare(String(b.endDate || "9999")));
@@ -184,7 +184,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
     ...(visitors ? [`${q(visitKeys.length, "כניסה אחת", "כניסות")} לאתר השבוע, ${visitors === 1 ? "ממכשיר אחד" : `מ־${n(visitors)} מכשירים שונים`} (כל מכשיר נספר פעם אחת ביום)`] : []),
     ...(pageKeys.length >= 10 ? [`העמודים שנקראו הכי הרבה השבוע: ${topPages.map(([pg, c]) => `${PAGE_NAMES[pg]} (${n(c)})`).join(", ")}`] : []),
     `${q(people.length, "חבר/ה אחד/ת בקהילה", "חברות וחברים בקהילה")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
-    `${q(library.length, "מקור אחד במרכז הידע", "מקורות במרכז הידע")}${added(lib.length)}`,
+    `${q(library.length, "מקור אחד במשאבים", "מקורות במשאבים")}${added(lib.length)}`,
     ...(rw?.total ? [`${q(rw.total, "מחקר אחד", "מחקרים")} ב"חידושים במחקר"${fresh ? added(rw.added) : ""}${comments ? `. ${q(comments, "תגובה אחת", "תגובות")} בדיון השבוע` : ""}`] : []),
     `${q(liveTeams.length, "מרחב עבודה אחד", "מרחבי עבודה")}${added(newTeams.length)}${activeTeams.length ? (liveTeams.length === 1 ? ", והוא היה פעיל השבוע" : `. ${activeTeams.length === 1 ? "אחד מהם היה פעיל" : `${n(activeTeams.length)} מהם היו פעילים`} השבוע`) : ""}`,
     ...(ideasOpen ? [`${q(ideasOpen, "רעיון או יוזמה אחת שמחפשים", "רעיונות למחקר ויוזמות שמחפשים")} שותפים`] : []),
