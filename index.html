@@ -2395,7 +2395,7 @@ body:has(.feedback-modal.open){
 <div class="grid">
 <!-- 19.11.2026: איתור כתב עת עבר לתפריט "כלים". מוסתר כברירת מחדל, ואפשר להחזיר מ"כרטיסים בעמוד הראשי" בניהול. -->
 <a class="icer-project-card" data-card-id="journals" data-default-hidden="1" hidden href="/journals" aria-label="איתור כתב עת לפרסום מאמר: כלי לחוקרות ולחוקרים, באנגלית, בעברית ובערבית. לכניסה"><img src="/assets/journals-card.webp" alt="איתור כתב עת לפרסום מאמר. מתחילים מרשימת הפרסומים, מעלים את המאמר ומקבלים חמישה כתבי עת לפי סדר עדיפות"></a>
-<a class="icer-project-card" data-card-id="icer2027" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
+<!-- 19.11.2026: הכנס עבר לסרגל העליון; הכרטיס מוסתר וניתן להחזיר מ"כרטיסים בעמוד הראשי" בניהול --><a class="icer-project-card" data-card-id="icer2027" data-default-hidden="1" hidden href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027 — לפרטים"><img src="/assets/icer-project-card.webp" alt="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027"></a>
 </div>
 <nav class="hn-quick" aria-label="כניסה מהירה">
   <a href="/match"><b>🤝 יוזמות הקהילה</b><span>יוזמות ומרחבי עבודה משותפים</span></a>
@@ -2655,7 +2655,7 @@ body:has(.feedback-modal.open){
 </div></section>
 
 <!-- כיכר הקהילה (7.11.2026): נושא במרכז ושיחות במקביל סביבו. השרת: netlify/functions/kikar.mts, הנושאים: netlify/lib/kikar-topics.mts -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Noto+Sans+Arabic:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Heebo:wght@400;500;700;800&family=Noto+Sans+Arabic:wght@400;500;700&display=swap">
 <style id="kikar-css">
 #kikar{background:#faf7ef;color:#1f4256;font-family:Heebo,Arial,sans-serif}
 #kikar h1,#kikar h2,#kikar h3,#kikar button,#kikar input,#kikar textarea,#kikar select,.kk-drawer h2,.kk-drawer h3,.kk-drawer button,.kk-drawer input,.kk-drawer textarea,.kk-drawer select{font-family:Heebo,Arial,sans-serif}
@@ -9913,6 +9913,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 #now .cb-ar{margin-inline-start:8px;font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-size:.72em;font-weight:600;color:#8a2240;white-space:nowrap}
 /* 19.11.2026: בעמוד הראשי במחשב ארבעה חלונות באותו גובה, שנכנסים במסך אחד: יוזמות הקהילה ולוח המודעות למעלה, חידושים במחקר ומהשטח למטה. הגלילה בתוך כל חלון. "פורסם בישראל ובעולם" מתחתם. הכנס עבר לסרגל העליון. */
 .hn-icer{display:none}
+@media(max-width:1100px){.hn-icer{display:inline-flex;align-items:center;gap:6px;padding:4px 5px 4px 10px;border:1px solid #f0c9a6;border-radius:999px;background:#fff7f0;color:#173b5d;text-decoration:none;font-size:12px;white-space:nowrap}.hn-icer b{color:#1d5a9e}.hn-icer-t{display:none}.hn-icer-d{padding:3px 7px;border-radius:999px;background:#e8761f;color:#fff;font-weight:700;font-size:11px}}
 @media(min-width:1101px){
   .hn-icer{display:inline-flex;align-items:center;gap:9px;margin-inline-start:14px;padding:5px 7px 5px 14px;border:1px solid #f0c9a6;border-radius:999px;background:#fff7f0;color:#173b5d;text-decoration:none;font-size:13px;line-height:1;white-space:nowrap}
   .hn-icer b{color:#1d5a9e;font-size:13.5px;letter-spacing:.2px}
@@ -9954,23 +9955,30 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 })();
 </script>
 <style id="banner-bilingual-v1">
-/* 19.11.2026: באנר דו-לשוני — עברית ומתחת ערבית */
+/* 19.11.2026: באנר דו-לשוני — עברית ומתחת ערבית, בתוך הגרפיקה גם בטלפון */
 .banner-top-v44{position:relative;container-type:inline-size}
-.bn-text{position:absolute;right:25.6%;top:50%;transform:translateY(-50%);width:35%;text-align:right;line-height:1.22;direction:rtl}
-.bn-text p{margin:0;white-space:nowrap;line-height:1.22;text-shadow:0 0 3px #fbf8f0,0 0 6px #fbf8f0,0 0 10px #fbf8f0}
-.bn-t1{font-family:Heebo,Arial,sans-serif;font-weight:500;font-size:2.5cqw;color:#173f5f;letter-spacing:-.01em}
-.bn-t2{font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-weight:700;font-size:1.62cqw;color:#8a2240;margin-top:.1em!important}
-.bn-s1{font-family:Heebo,Arial,sans-serif;font-weight:400;font-size:1.55cqw;color:#24506b;margin-top:.45em!important}
-.bn-s2{font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-weight:400;font-size:1.32cqw;color:#5b6f7b}
+.bn-text{position:absolute;right:25.8%;top:50%;transform:translateY(-50%);width:34%;text-align:right;direction:rtl}
+.bn-text p{margin:0;white-space:nowrap;line-height:1.18;text-shadow:0 0 3px #fbf8f0,0 0 6px #fbf8f0,0 0 10px #fbf8f0}
+.bn-t1{font-family:Assistant,Heebo,Arial,sans-serif;font-weight:700;font-size:2.15cqw;color:#173f5f}
+.bn-t2{font-family:"Noto Sans Arabic",Assistant,Arial,sans-serif;font-weight:500;font-size:1.32cqw;color:#8a2240}
+.bn-s1{font-family:Assistant,Heebo,Arial,sans-serif;font-weight:400;font-size:1.38cqw;color:#24506b;margin-top:.35em!important}
+.bn-s2{font-family:"Noto Sans Arabic",Assistant,Arial,sans-serif;font-weight:400;font-size:1.08cqw;color:#5b6f7b}
 .bn-c{color:#d39a2c;font-weight:700;margin-inline:.05em}
 .bn-h1{color:#8a2240;font-weight:700}
 .bn-h2{color:#d39a2c;font-weight:700}
 @media(max-width:700px){
-  .banner-top-v44{aspect-ratio:auto!important;background:#fbf8f0!important}
-  .banner-top-v44 img{height:auto;aspect-ratio:2400/377;object-fit:cover}
-  .bn-text{position:static;transform:none;width:auto;text-align:center;padding:8px 10px 10px;line-height:1.3}
-  .bn-text p{white-space:normal}
-  .bn-t1{font-size:19px}.bn-t2{font-size:15px}.bn-s1{font-size:13.5px;margin-top:4px!important}.bn-s2{font-size:12.5px}
+  /* בטלפון: מגדילים את מרכז התמונה (הכיתוב והלוגו), בלי השוליים הבהירים */
+  .banner-top-v44{aspect-ratio:1000/340!important;overflow:hidden}
+  .banner-top-v44 img{position:absolute;width:192%!important;max-width:none;height:auto!important;left:-70%;top:-44%;object-fit:fill}
+  .bn-text{right:27%;width:62%}
+  .bn-t1{font-size:3.9cqw}.bn-t2{font-size:2.55cqw}.bn-s1{font-size:2.65cqw}.bn-s2{font-size:2.25cqw}
+}
+</style>
+<style id="fixed-windows-mobile-v1">
+/* 19.11.2026: בטלפון החלונות בעמוד הראשי בגובה קבוע, והגלילה בתוכם — הטקסט לא מגדיל את החלון */
+@media(max-width:850px){
+  html body #now .community-board:not(.news-board),html body #now .news-board.hn-open{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;overflow:hidden}
+  html body #now .community-board:not(.news-board) .board-feed,html body #now .news-board.hn-open .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
 }
 </style>
 </body></html>
