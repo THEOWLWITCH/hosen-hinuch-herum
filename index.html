@@ -2789,7 +2789,7 @@ body:has(.feedback-modal.open){
     if(pairs.size){const note=document.createElement('p');note.className='kk-note';note.style.cssText='position:absolute;left:0;bottom:0;margin:0';note.textContent='קו מקווקו בין שיחות = תגובה שמחברת ביניהן';document.getElementById('kkStage').appendChild(note)}
     document.querySelectorAll('#kkStage .kk-bubble').forEach(b=>b.onclick=()=>openConv(b.dataset.conv));
     const ad=!!adminTok();
-    document.getElementById('kkInsights').innerHTML=(S.insights.length?`<ul>${S.insights.map(x=>`<li>${esc(x.text)}${ad?` <button type="button" class="kk-tag" data-del-ins="${esc(x.id)}">הסרה</button>`:''}</li>`).join('')}</ul>`:'<p style="margin:0;line-height:1.6;color:#3e5563">כאן מעלה הנושא מצמיד/ה תובנות מכל השיחות. בסוף הנושא הסיכום יוכל לעבור ל״הצעות לשיתופי פעולה״ כיוזמה או כרעיון למחקר.</p>')+
+    document.getElementById('kkInsights').innerHTML=(S.insights.length?`<ul>${S.insights.map(x=>`<li>${esc(x.text)}${ad?` <button type="button" class="kk-tag" data-del-ins="${esc(x.id)}">הסרה</button>`:''}</li>`).join('')}</ul>`:'<p style="margin:0;line-height:1.6;color:#3e5563">כאן מעלה הנושא מצמיד/ה תובנות מכל השיחות. בסוף הנושא הסיכום יוכל לעבור ל״יוזמות הקהילה״ כיוזמה או כרעיון למחקר.</p>')+
       (ad?`<div class="kk-row" style="margin-top:10px"><input id="kkInsText" placeholder="תובנה חדשה להצמדה" style="flex:1;min-width:200px;font-family:inherit;font-size:15px;border:1px solid #cfc4ab;border-radius:10px;padding:10px"><button type="button" class="kk-btn dark" id="kkInsAdd" style="min-height:42px;font-size:14px">הצמדה</button></div>`:'');
     if(ad){const add=document.getElementById('kkInsAdd');if(add)add.onclick=()=>admin({action:'insight',text:document.getElementById('kkInsText').value});
       document.querySelectorAll('[data-del-ins]').forEach(b=>b.onclick=()=>confirm('להסיר את התובנה?')&&admin({action:'insight-delete',id:b.dataset.delIns}))}
@@ -5116,6 +5116,22 @@ html[data-page="calls"] #resourceArea{display:none!important}
 .ch-hp{position:absolute!important;left:-9999px!important}
 .ch-status{min-height:20px;margin-top:8px;font-size:13px;color:var(--ch-soft)}.ch-status.ok{color:var(--ch-green)}.ch-status.err{color:var(--ch-red)}
 .ch-linkbox{display:flex;gap:6px;margin:10px 0}.ch-linkbox input{flex:1;direction:ltr;font-size:12px}
+/* תפריטי המרחב (19.11.2026) */
+.ws-menus{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding-bottom:12px;border-bottom:1px solid var(--ch-line)}
+.ws-menu{position:relative}
+.ws-menu>summary{list-style:none;cursor:pointer;padding:8px 14px;border:1px solid #246b8f;border-radius:999px;background:#fff;font-size:14px;font-weight:600;color:#246b8f;user-select:none}
+.ws-menu>summary::-webkit-details-marker{display:none}
+.ws-menu>summary::after{content:" ▾";font-size:11px;color:#6d7f89}
+.ws-menu.active>summary{color:#17324d;font-weight:800;box-shadow:inset 0 0 0 1px #246b8f}
+.ws-menu[open]>summary{color:#17324d}
+.ws-pop{position:absolute;inset-inline-start:0;top:calc(100% + 6px);z-index:30;min-width:230px;display:flex;flex-direction:column;padding:6px;background:#fff;border:1px solid #246b8f;border-radius:12px;box-shadow:0 8px 24px rgba(23,59,93,.12)}
+.ws-pop button{text-align:start;padding:9px 12px;border:0;border-radius:8px;background:transparent;font:inherit;font-size:14px;color:#1f3a4d;cursor:pointer}
+.ws-pop button:hover{color:#246b8f}
+.ws-pop button.active{font-weight:800;color:#17324d}
+.ws-menu:last-child .ws-pop{inset-inline-start:auto;inset-inline-end:0}
+.ws-dot{display:inline-block;min-width:18px;padding:0 5px;border-radius:999px;background:#d99a43;color:#fff;font-size:11px;line-height:18px;text-align:center}
+.ws-here{margin:0 0 12px;font-size:13px;color:#6d7f89}
+@media(max-width:640px){.ws-menu{flex:1 1 calc(50% - 8px)}.ws-menu>summary{text-align:center}.ws-pop{min-width:0;width:max(100%,220px)}}
 .ch-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:14px 0 12px;border-bottom:1px solid var(--ch-line)}
 .ch-tabs button{padding:7px 12px;border:0;border-bottom:2px solid transparent;background:transparent;font:inherit;font-size:13px;color:var(--ch-soft);cursor:pointer}
 .ch-tabs button.active{border-bottom-color:#245f82;color:#173b5d;font-weight:700}
@@ -5234,7 +5250,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     syncAdmin();setInterval(syncAdmin,2000);
   }
 
-  // בעמוד "שיתופי פעולה": זירת קבוצות המשימה בלבד, מעל הכרטיסים הקיימים.
+  // בעמוד "יוזמות הקהילה": זירת קבוצות המשימה בלבד, מעל הכרטיסים הקיימים.
   function mountMatch(){
     const head=document.querySelector('#match .section-head');
     if(!head||document.getElementById('callsHub'))return;
@@ -5295,7 +5311,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     // 5.11.2026: אין סימון למרחב שלא היה פעיל — רק נורית ירוקה למרחב פעיל. מועד הפעילות האחרונה מוצג רק למנהלת המערכת.
     return '';
   }
-  // בעמוד שיתופי פעולה: קבוצה מקופלת לשורה, והפרטים בחלון צף.
+  // בעמוד "יוזמות הקהילה": קבוצה מקופלת לשורה, והפרטים בחלון צף.
   // מרחב שעוד לא נסגר בקוד צוות: מודגש, עם הזמנה להצטרף (5.11.2026).
   const inviting=t=>!t.locked&&t.status!=='closed';
   const inviteTag='<span class="ch-invite">🙋 מוזמנות.ים להצטרף</span>';
@@ -5504,7 +5520,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       <form class="ch-form">
         <label class="wide">סביב איזה קול קורא?<select name="callId"><option value="">בלי קול קורא / קול קורא שלא מופיע ברשימה</option>${options}</select></label>
         <label class="wide">שם הקבוצה או ההצעה${call?'':'*'}<input name="title" dir="auto" placeholder="${call?'הגשה משותפת: '+h(call.title.replace(/^\s*(קול קורא|call for [a-z]+)\s*[:\-–—]\s*/i,'')):'למשל: רציפות למידה בפינוי — הצעה ל־ISF'}"></label>
-        <label class="wide">הרעיון בקצרה<textarea name="summary" rows="3" dir="auto" placeholder="מה רוצות לחקור, ולמה זה חשוב עכשיו"></textarea></label>
+        <label class="wide">תקציר היוזמה*<span class="hint">שניים־שלושה משפטים. התקציר מוצג בחלון הראווה של היוזמות</span><textarea name="summary" rows="3" dir="auto" required minlength="20" placeholder="מה רוצים לחקור או לעשות, ולמה זה חשוב עכשיו"></textarea></label>
         <label class="wide">את מי מחפשות?<input name="need" dir="auto" placeholder="למשל: חוקרת עם ניסיון בשיטות כמותיות, שותפה מרשות מקומית"></label>
         <label data-internal>גוף מממן<input name="funder" dir="auto"></label>
         <label data-internal>מועד הגשה<input name="deadline" type="date"></label>
@@ -5727,6 +5743,20 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const url=scope.querySelector('input[name=linkUrl]')?.value.trim(),label=scope.querySelector('input[name=linkLabel]')?.value.trim();
       return url?[...files,{kind:'link',url,label}]:files;
     }
+    // תפריטי המרחב (19.11.2026): במקום שורת כפתורים ושבע לשוניות, ארבעה תפריטים, ובכל אחד כמה פעולות.
+    function wsMenus(t){
+      const reqs=t.requests.length?` (${t.requests.length} בקשות)`:'';
+      const groups=[
+        ['work','💬 עבודה משותפת',[['tab','talk','💬 דיון'],['tab','tasks','✅ משימות']]],
+        ['research','🔬 מחקר',[['tab','write','✍ כתיבת הצעת המחקר'],['tab','links','📎 קבצים וקישורים'],['w','compass','🧭 שליחה למצפן המחקר']]],
+        ['show','🌐 הצגת היוזמה',[['tab','home','🏠 שם, תקציר וצוות'],['tab','credit','📜 תוצרי היוזמה וקרדיט'],...(lead()?[['w','showcase',t.private?'👁 החזרה לחלון הראווה':'🙈 הסתרה מחלון הראווה']]:[]),['w','print','🖨 ייצוא להדפסה / PDF'],['w','word','📄 ייצוא ל-Word']]],
+        ['manage','⚙ ניהול המרחב',[['tab','team','👥 הצוות'+reqs],...(t.locked?[]:[['w','link','🔗 הזמנת שותפים ושותפות']]),...(lead()?[['w','go-lock',t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות']]:[]),...(isMember()?[['w','go-leave','🚪 יציאה מהיוזמה']]:[])]]
+      ];
+      const cur=groups.find(g=>g[2].some(([k,v])=>k==='tab'&&v===ws.tab));
+      const curItem=cur&&cur[2].find(([k,v])=>k==='tab'&&v===ws.tab);
+      return `<nav class="ws-menus" aria-label="תפריטי המרחב">${groups.map(([id,label,items])=>`<details class="ws-menu${cur&&cur[0]===id?' active':''}"><summary>${label}${id==='manage'&&t.requests.length?` <span class="ws-dot">${t.requests.length}</span>`:''}</summary><div class="ws-pop">${items.map(([k,v,txt])=>k==='tab'?`<button type="button" data-tab="${v}" class="${ws.tab===v?'active':''}">${txt}</button>`:`<button type="button" data-w="${v}">${txt}</button>`).join('')}</div></details>`).join('')}</nav>
+        ${cur?`<p class="ws-here">${cur[1]} ‹ <strong>${curItem[2]}</strong></p>`:''}`;
+    }
     function head(){
       const t=ws.team,c=call();
       const deadline=t.deadline||c?.endDate||'';
@@ -5737,8 +5767,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
         <div class="ch-actions">${t.me?`<span class="ch-tag">${h(t.me)}${lead()?' · מוביל/ה':''}</span>`:`<label class="ch-ws-me">אני:<input id="chWsMe" value="${h(myName())}" placeholder="השם שלך"></label>`}
         ${lead()?`<select id="chWsStatus" aria-label="סטטוס הקבוצה">${Object.entries(t.statuses).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${h(v)}</option>`).join('')}</select>`:`<span class="ch-badge gray">${h(t.statusLabel)}</span>`}
         ${t.locked?'<span class="ch-badge gray" title="אין הצטרפות חדשה. הדיון והחומרים נפתחים רק עם קוד הצוות.">🔒 מרחב סגור לצוות</span>':''}
-        ${isMember()||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}${t.locked?'':'<button type="button" class="ch-btn small" data-w="link">🔗 הזמנת שותפים/ות</button>'}${lead()?`<button type="button" class="ch-btn small" data-w="go-lock">${t.locked?'🔓 ניהול סגירת המרחב':'🔒 סגירת המרחב לצוות'}</button>`:''}${isMember()?`<button type="button" class="ch-btn small" data-w="go-leave">🚪 יציאה מהקבוצה</button>`:''}<button type="button" class="ch-btn small" data-w="compass" title="חיפוש מקורות במאגר הקהילה ובמאגרים בעולם, עם דו״ח מסכם">🧭 מצפן המחקר</button><button type="button" class="ch-btn small" data-w="print">🖨 ייצוא להדפסה / PDF</button><button type="button" class="ch-btn small" data-w="word">📄 Word</button></div></div>
-        <nav class="ch-tabs">${[['home','🏠 סקירה'],['write','✍ כתיבת ההצעה'],['tasks','✅ משימות'],['talk','💬 דיון'],['team','👥 הצוות'+(t.requests.length?` (${t.requests.length} בקשות)`:'')],['links','📎 קישורים וקבצים'],['credit','📜 קרדיט ופרסום']].map(([k,v])=>`<button type="button" data-tab="${k}" class="${ws.tab===k?'active':''}">${v}</button>`).join('')}</nav>`;
+        ${isMember()||t.locked?'':`<button type="button" class="ch-btn small primary" data-w="join">🙋 הצטרפות לצוות</button>`}</div></div>
+        ${wsMenus(t)}`;
     }
     // ---------- מעקב שינויים והערות (6.11.2026) ----------
     // השוואה ברמת מילים: מקצצים התחלה וסוף משותפים, ובאמצע מחשבים LCS (אם האמצע לא ענק).
@@ -5799,7 +5829,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       if(ws.tab==='write'){
         const filled=t.sections.filter(x=>x.text.trim()||ws.drafts[x.id]||ws.openSecs[x.id]);
         const empty=t.sections.filter(x=>!filled.includes(x));
-        return `<div class="ch-note" style="margin-bottom:12px">כל אחד ואחת כותבים בסעיף שלהם ושומרים. אם שניים עובדים על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בלשונית "קישורים וקבצים".</div>
+        return `<div class="ch-note" style="margin-bottom:12px">כל אחד ואחת כותבים בסעיף שלהם ושומרים. אם שניים עובדים על אותו סעיף, המערכת לא דורסת: היא מציגה את שני הנוסחים לשילוב. אפשר לעבוד גם על מסמך חיצוני (למשל Google Docs) ולצרף קישור בתפריט "מחקר" › "קבצים וקישורים".</div>
         <div class="ch-track${t.trackChanges?' on':''}"><button type="button" class="ch-btn small${t.trackChanges?' primary':''}" data-w="track-toggle">🔁 מעקב שינויים: ${t.trackChanges?'פעיל':'כבוי'}</button> <span class="ch-credit">${t.trackChanges?'כל שמירה בסעיף נשלחת כהצעה: רואים מה נמחק ומה נוסף, וחברי וחברות הצוות מקבלים או דוחים אותה. אפשר גם להעיר על טקסט מסומן (💬 הערה).':'שמירה בסעיף משנה אותו ישירות. כשמפעילים מעקב שינויים, כל שינוי נשלח כהצעה לקבלה או לדחייה, כמו ב-Word.'}</span></div>
         <div class="ch-import"><label class="ch-btn small primary">📄 ייבוא מסמך Word לסעיפים<input type="file" accept=".docx" data-import-docx hidden></label> <span class="ch-credit">כתבת את ההצעה ב-Word? המערכת מחלקת את המסמך לפי הכותרות, מציעה לכל חלק את הסעיף המתאים, ומוסיפה סעיפים אם צריך. לפני השמירה אפשר לבדוק ולשנות.</span></div>
         ${filled.length?filled.map(sectionHtml).join(''):'<p class="ch-empty">עדיין לא נכתב אף סעיף. בוחרים סעיף מהרשימה ומתחילים.</p>'}
@@ -5814,7 +5844,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         const when=d=>new Date(d).toLocaleString('he-IL',{dateStyle:'short',timeStyle:'short'});
         return `<div class="ch-ov">
           ${ws.editMeta&&(isMember()||lead())?`<form class="ch-form" data-form="meta">
-            <label class="wide">הרעיון בקצרה<span class="hint">מוצג באתר לכל הקהילה</span><textarea name="summary" rows="3" dir="auto">${h(t.summary)}</textarea></label>
+            <label class="wide">תקציר היוזמה<span class="hint">מוצג בחלון הראווה של היוזמות</span><textarea name="summary" rows="3" dir="auto">${h(t.summary)}</textarea></label>
             <label class="wide">את מי מחפשים/ות<span class="hint">מוצג באתר לכל הקהילה. אחרי שהצוות התגבש אפשר להשאיר ריק, והשורה תיעלם.</span><input name="need" value="${h(t.need)}" dir="auto"></label>
             <label>גוף מממן<input name="funder" value="${h(t.funder||'')}" dir="auto"></label>
             <label>מועד הגשה<input name="deadline" type="date" value="${h(t.deadline||'')}"></label>
@@ -5883,13 +5913,13 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const t=ws.team;
       if(!t.locked)return `<div class="ch-ws-end" id="chWsLock">
         <h4>🔒 סגירת המרחב לצוות</h4>
-        <p class="ch-credit">כשהצוות התגבש, אפשר לסגור את המרחב: לא תהיה הצטרפות חדשה, והדיון, הסעיפים, המשימות והקישורים ייפתחו רק למי שיש לו/ה את קוד הצוות. בעמוד יוזמות הקהילה יישארו גלויים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
+        <p class="ch-credit">כשהצוות התגבש, אפשר לסגור את המרחב: לא תהיה הצטרפות חדשה, והדיון, הסעיפים, המשימות והקישורים ייפתחו רק למי שיש לו/ה את קוד הצוות. בעמוד "יוזמות הקהילה" יישארו גלויים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
         <form class="ch-inline" data-form="lock" style="grid-template-columns:1fr auto"><input name="teamCode" required minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="קוד צוות (4 תווים לפחות)" aria-label="קוד צוות"><button class="ch-btn small primary">🔒 סגירת המרחב</button></form>
         <p class="ch-credit">אחרי הסגירה צריך לשלוח את הקוד לחברי וחברות הצוות (במייל, בווטסאפ או בטלפון). המוביל/ה נכנס/ת בלי הקוד.</p></div>`;
       return `<div class="ch-ws-end" id="chWsLock">
         <h4>🔒 המרחב סגור לצוות</h4>
         ${t.lockCode?`<p>קוד הצוות: <code dir="ltr" style="font-size:15px">${h(t.lockCode)}</code></p>`:''}
-        <p class="ch-credit">נסגר ב־${t.lockedAt?new Date(t.lockedAt).toLocaleDateString('he-IL'):''}. אין הצטרפות חדשה, וחברי וחברות הצוות נכנסים עם קוד הצוות. בעמוד יוזמות הקהילה מוצגים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
+        <p class="ch-credit">נסגר ב־${t.lockedAt?new Date(t.lockedAt).toLocaleDateString('he-IL'):''}. אין הצטרפות חדשה, וחברי וחברות הצוות נכנסים עם קוד הצוות. בעמוד "יוזמות הקהילה" מוצגים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
         <form class="ch-inline" data-form="lock" style="grid-template-columns:1fr auto"><input name="teamCode" required minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="קוד צוות חדש" aria-label="קוד צוות חדש"><button class="ch-btn small">החלפת הקוד</button></form>
         <p><button type="button" class="ch-btn small" data-w="unlock">🔓 פתיחת המרחב מחדש להצטרפות</button></p></div>`;
     }
@@ -5922,6 +5952,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const role=e.target.dataset?.role;if(role!==undefined)run(()=>act('member-update',{member:role,role:e.target.value}));
     });
     m.addEventListener('click',async e=>{
+      // תפריטי המרחב: רק תפריט אחד פתוח, ונסגר אחרי בחירה או לחיצה מחוץ לו.
+      const sum=e.target.closest('.ws-menu>summary');
+      m.querySelectorAll('details.ws-menu[open]').forEach(d=>{if((sum&&d!==sum.parentElement)||(!sum&&(!d.contains(e.target)||e.target.closest('.ws-pop button'))))d.open=false});
       const tab=e.target.closest('[data-tab]');if(tab){ws.tab=tab.dataset.tab;render();return}
       const b=e.target.closest('[data-w]');if(!b)return;
       const w=b.dataset.w,id=b.dataset.id;
@@ -5979,6 +6012,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       if(w==='meta-cancel'){ws.editMeta=false;render(true);return}
       if(w==='file-open')return openFile(b.dataset.key,b.dataset.name);
       if(w==='sec-detach'){if(confirm('להסיר את המצורף מהסעיף?'))run(()=>act('section-detach',{sectionId:b.dataset.sec,attachmentId:id}));return}
+      if(w==='showcase'){const hide=!ws.team.private;if(hide&&!confirm('להסתיר את היוזמה מחלון הראווה? הצוות ממשיך לעבוד כרגיל, ואפשר להחזיר אותה בכל עת מאותו תפריט.'))return;try{await act('meta',{private:hide});render(true);msg(hide?'✓ היוזמה הוסתרה מחלון הראווה.':'✓ היוזמה מוצגת שוב בחלון הראווה'+(ws.team.summary?.trim()?'.':', אחרי שיתווסף לה תקציר.'),'ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
       if(w==='go-lock'){ws.tab='team';render();m.querySelector('#chWsLock')?.scrollIntoView({behavior:'smooth',block:'center'});return}
       if(w==='unlock'){if(confirm('לפתוח את המרחב מחדש? אחרי הפתיחה אפשר יהיה להצטרף לצוות, ולהיכנס בלי קוד הצוות.'))run(async()=>{await act('unlock');msg('✓ המרחב נפתח מחדש להצטרפות.','ok');refreshTeams()});return}
       if(w==='go-leave'){ws.tab='team';render();m.querySelector('#chWsLeave')?.scrollIntoView({behavior:'smooth',block:'center'});return}
@@ -6023,7 +6057,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         try{await act('credit',{product:d.product||'',kind:d.kind||'',license:d.license||'CC-BY-4.0',roles,publish});render(true);msg(publish?'✓ הבקשה נשלחה. מנהלת האתר תיצור קשר להעלאה ל-Zenodo.':'✓ הקרדיט נשמר.','ok')}catch(err){msg(err.message,'err')}
         return}
       if(kind==='title'){const title=String(d.title||'').trim();if(!title)return msg('הכותרת לא יכולה להיות ריקה.','err');
-        try{await act('details',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד יוזמות הקהילה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
+        try{await act('details',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד "יוזמות הקהילה".','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
       // צירוף קבצים וקישורים: לסעיף, להודעה בדיון, וללשונית הקישורים.
       if(kind==='sec-attach'||kind==='file-add'||(kind==='message'&&f.hasAttribute('data-full'))){
         const btn=f.querySelector('button:not([type=button])');if(btn)btn.disabled=true;msg('מעלה…');
@@ -6048,7 +6082,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       }
       const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['details',d]};
       // ההודעה "נשמר" מוצגת אחרי שהמסך מצויר מחדש, אחרת הציור מוחק אותה ונראה כאילו לא נשמר.
-      if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד יוזמות הקהילה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
+      if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד "יוזמות הקהילה".','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
       run(async()=>{await act(...map[kind])});
     });
     render();
@@ -6262,7 +6296,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
 
   // #team=ID.KEY — קישור לסביבת עבודה. שומרים את המפתח בדפדפן ומסירים אותו משורת הכתובת.
   function handleHash(){
-    // קבוצות המשימה ומרחבי העבודה נמצאים רק בשיתופי פעולה. קישורים ישנים מ"קולות קוראים" עוברים לשם.
+    // קבוצות המשימה ומרחבי העבודה נמצאים רק ב"יוזמות הקהילה". קישורים ישנים מ"קולות קוראים" עוברים לשם.
     if(isCalls()&&/^#(team=|join-team=|team-new|teams$)/.test(location.hash)){location.replace('/match'+location.hash);return}
     const tn=location.hash.match(/^#team-new=([\w-]+)$/);
     if(tn){history.replaceState(null,'',location.pathname+'#teams');openTeamNew(tn[1]);return}
@@ -8019,7 +8053,7 @@ function compassReportPrint(){if(!document.getElementById('compassReport'))retur
 function compassReportFileName(){const r=compassLastReport||{};return ('דוח מצפן המחקר - '+String(r.q||'').slice(0,60)+' - '+(r.date||'')).replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim()+'.html'}
 function compassReportDownload(){const b=new Blob([compassReportHtml()],{type:'text/html'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=compassReportFileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);compassReportMsg('⬇ הדו"ח ירד כקובץ לתיקיית ההורדות. אפשר לפתוח אותו בדפדפן, להדפיס או לשמור כ־PDF.','ok')}
 async function compassReportSave(btn){const hk=window.compassTeamHook;if(!hk?.save)return;btn.disabled=true;btn.textContent='שומר…';
- try{await hk.save(new Blob([compassReportHtml()],{type:'text/html'}),compassReportFileName());btn.textContent='✓ נשמר במרחב';compassReportMsg('✓ הדו"ח נשמר בלשונית "קישורים וקבצים" של המרחב.','ok')}
+ try{await hk.save(new Blob([compassReportHtml()],{type:'text/html'}),compassReportFileName());btn.textContent='✓ נשמר במרחב';compassReportMsg('✓ הדו"ח נשמר במרחב, בתפריט "מחקר" › "קבצים וקישורים".','ok')}
  catch(e){btn.disabled=false;btn.textContent='💾 שמירה במרחב הצוות';compassReportMsg(e.message||'השמירה לא הצליחה.','warn')}}
 </script>
 <div id="compassLibraryModal" class="compass-library-modal" role="dialog" aria-modal="true" aria-label="מצפן המחקר"><div class="compass-library-dialog"><button type="button" class="compass-library-close" aria-label="סגירת מצפן המחקר" onclick="closeCompassLibrary()">×</button><div id="compassLibraryMount"></div></div></div>
@@ -8187,7 +8221,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
           <div class="nv-row" style="align-items:center;margin-top:6px"><input name="orcid" value="${h(d.orcid||'')}" dir="ltr" placeholder="0000-0002-1825-0097" style="max-width:240px"><label style="display:inline-flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" name="orcidShow"${d.orcidShow||!d.orcid?' checked':''}> להציג את הפרסומים שלי באתר</label></div>
           ${d.orcidCount?`<span class="nv-status">כרגע מוצגים ${d.orcidCount} פרסומים מ-ORCID.</span>`:''}</div>
         <div class="wide"><strong style="font-size:13px">🎯 תחומי העניין שלי</strong> <span class="nv-status">לפיהם נשלחים קולות קוראים, מענקים וכנסים, והסיכום השבועי.</span>${checks(d.themes,d.topics)}</div>
-        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכול/ה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד יוזמות הקהילה.</span><div class="jt-topics">${kinds}</div>
+        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכול/ה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד "יוזמות הקהילה".</span><div class="jt-topics">${kinds}</div>
           <textarea name="offer" rows="3" dir="auto" placeholder="הפעילות, הרעיון או הנושא שאוכל לקדם" style="width:100%;margin-top:8px;box-sizing:border-box">${h(d.offer?.text||'')}</textarea></div>
         <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירת הכרטיס</button><button type="button" class="nv-btn" data-out>יציאה</button></div>
       </form><div class="nv-status" data-st></div>`;
@@ -8403,7 +8437,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 @media print{.cb-actions,.cb-tabs,.cb-row{display:none!important}.cb-card{break-inside:avoid}}
 </style>
 <script id="collab-v1-js">
-/* שידוכים בקהילה: בעמוד יוזמות הקהילה (/match), מעל קבוצות המשימה. בכרטיסי הנבחרת רק סוגי הפעילות. הנתונים: /api/collab. */
+/* שידוכים בקהילה: בעמוד "יוזמות הקהילה" (/match), מעל קבוצות המשימה. בכרטיסי הנבחרת רק סוגי הפעילות. הנתונים: /api/collab. */
 (function(){
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   // כניסת הניהול בתוקף 12 שעות: אסימון שפג תוקפו לא נחשב כניסה (התוקף כתוב באסימון עצמו).
@@ -8581,7 +8615,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
       <p dir="auto">${h(r.description)}</p>
       ${r.need?`<p dir="auto"><strong>את מי מחפשות:</strong> ${h(r.need)}</p>`:''}
       ${r.joiners.length?`<p class="cb-meta"><strong>הצטרפו:</strong> ${admin?r.joiners.map(n=>`<button type="button" class="cb-btn small" data-cb="out" data-kind="collab" data-id="${h(r.id)}" data-name="${h(n)}" title="הוצאה מהרשימה">${h(n)} ✕</button>`).join(' '):r.joiners.map(h).join(', ')} <button type="button" class="cb-btn small" data-cb="leave" data-kind="collab" data-id="${h(r.id)}">🚪 יציאה מהרשימה</button></p>`:''}
-      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד יוזמות הקהילה באתר הקהילה יש יוזמה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
+      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד "יוזמות הקהילה" באתר הקהילה יש יוזמה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="join" data-id="${h(r.id)}">🙋 אני רוצה להצטרף</button>`:''}
         <button type="button" class="cb-btn small" data-cb="share" data-id="${h(r.id)}">🔗 העתקת קישור</button>
@@ -9064,6 +9098,33 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 })();
 </script>
 <style id="match-portal-css">
+/* חלון הראווה של היוזמות (19.11.2026): צבעי האתר, קו דק סביב כל כרטיס, השלב במילה מודגשת בלי רקע. */
+.sc-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;margin:0 0 12px}
+.sc-intro{margin:0;color:var(--muted);font-size:16px;line-height:1.6;max-width:640px}
+.sc-new{flex:none;padding:9px 18px;border:1px solid #246b8f;border-radius:999px;background:#fff;color:#246b8f;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.sc-new:hover{background:#246b8f;color:#fff}
+.sc-filters{display:flex;flex-wrap:wrap;gap:4px 20px;margin:0 0 18px;border-bottom:1px solid #dfeaf1}
+.sc-filters button{padding:8px 0;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:15px;color:var(--muted);cursor:pointer}
+.sc-filters button small{font-size:12px;margin-inline-start:3px}
+.sc-filters button.on{color:#17324d;font-weight:700;border-bottom-color:#246b8f}
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.sc-card{display:flex;flex-direction:column;gap:8px;text-align:start;padding:18px;border:1px solid #246b8f;border-radius:14px;background:#fff;font:inherit;color:inherit;cursor:pointer;transition:box-shadow .15s}
+.sc-card:hover,.sc-card:focus-visible{box-shadow:0 0 0 1px #246b8f}
+.sc-card b{font-size:17px;line-height:1.4;color:#17324d}
+.sc-text{font-size:14px;line-height:1.6;color:var(--muted)}
+.sc-product{font-size:14px;color:#17324d}
+.sc-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.sc-stage{font-size:13px;font-weight:800;color:#246b8f}
+.sc-stage.seek{color:#b5762a}
+.sc-stage.out{color:#17324d}
+.sc-live{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.sc-live-dot{width:7px;height:7px;border-radius:50%;background:#2e9e6a}
+.sc-foot{margin-top:auto;padding-top:8px;border-top:1px solid #edf2f5;display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.sc-more{color:#246b8f;font-weight:700;white-space:nowrap}
+.sc-empty{color:var(--muted);margin:8px 0}
+.sc-links{display:flex;flex-wrap:wrap;gap:18px;margin:18px 0 0;font-size:14px}
+.sc-links a{color:#246b8f;font-weight:700;text-decoration:none}
+@media(max-width:640px){.sc-head{flex-direction:column}.sc-new{width:100%}}
 .mp{margin:8px 0 26px}
 .mp-intro{color:var(--muted);margin:0 0 16px;font-size:16px}
 .mp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
@@ -9085,7 +9146,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 @media(max-width:640px){.mp-long{display:none}}
 </style>
 <script id="match-portal">
-// מסך הכניסה של "שיתופי פעולה": קודם בוחרים — מרחבי עבודה, או הצעות לשיתופי פעולה — ורק אז רואים את הרשימה.
+// "יוזמות הקהילה" (19.11.2026): מסך הכניסה הוא חלון הראווה של כל היוזמות. הרשימות המלאות (צוותים פעילים, רעיונות והצעות) נפתחות בקישור.
 (function(){
   if(document.documentElement.dataset.page!=='match')return;
   const WORK=/^#(workspaces|teams|team=|join-team=)/, PROP=/^#(proposals|research|collab=|collab-req-|my-offer=)/;
@@ -9097,30 +9158,63 @@ section#collabHub.cb{padding:20px 22px 24px!important}
     const v=view();
     portal.hidden=!!v;back.hidden=!v;
     work.hidden=v!=='work';prop.hidden=v!=='prop';
-    back.querySelector('strong').textContent=v==='work'?'🛠 צוותים פעילים':v==='prop'?'💡 הצעות לשיתופי פעולה':'';
+    back.querySelector('strong').textContent=v==='work'?'🛠 צוותים פעילים':v==='prop'?'💡 רעיונות ויוזמות שמחפשים שותפים ושותפות':'';
     back.querySelector('.mp-tool').hidden=v!=='work';
   }
   function go(v){if(v){location.hash=v==='work'?'#workspaces':'#proposals'}else{history.pushState(null,'',location.pathname);apply()}document.getElementById('match')?.scrollIntoView({behavior:'smooth'})}
+  // חלון הראווה (19.11.2026): כל היוזמות בגלריה אחת, פתוחה לכל מבקרי האתר. מסנים לפי שלב.
+  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const short=(x,n=170)=>{x=String(x||'').replace(/\s+/g,' ').trim();return x.length>n?x.slice(0,n).replace(/\s+\S*$/,'')+'…':x};
+  let items=[],filter='all';
+  const STAGE={seek:'מחפשת שותפים ושותפות',work:'בעבודה',out:'תוצרי היוזמה'};
+  function liveTag(at){const d=(Date.now()-Date.parse(at||''))/86400000;return d>=0&&d<7?'<span class="sc-live"><span class="sc-live-dot"></span>פעילה השבוע</span>':''}
   async function counts(){
     try{
       const [t,c]=await Promise.all([fetch('/api/teams').then(r=>r.json()),fetch('/api/collab').then(r=>r.json())]);
-      const teams=Array.isArray(t)?t.length:0;
-      const ideas=(c.research||[]).filter(x=>x.status==='open').length,reqs=(c.requests||[]).filter(x=>x.status==='open').length;
-      portal.querySelector('[data-n="work"]').textContent=teams===1?'צוות פעיל אחד ›':teams?`${teams} צוותים פעילים ›`:'לצוותים הפעילים ›';
-      portal.querySelector('[data-n="prop"]').textContent=`${ideas===1?'הצעה אחת':ideas+' הצעות'} של המערכת · ${reqs===1?'יוזמה אחת':reqs+' יוזמות'} של חברי הקהילה ›`;
-    }catch(e){}
+      // מוצגות רק יוזמות פעילות (לא סגורות), עם תקציר, שלא הוסתרו בידי המוביל/ה. רעיונות המערכת שעוד אין להם צוות נשארים ברשימת "כל הרעיונות וההצעות".
+      const hasText=x=>String(x||'').trim().length>=20;
+      const teams=(Array.isArray(t)?t:[]).filter(x=>x.status!=='closed'&&!x.private&&hasText(x.summary)).map(x=>{const stage=x.product?'out':x.status==='recruiting'&&!x.locked?'seek':'work';
+        return {kind:'team',id:x.id,title:x.title,text:x.summary,stage,product:x.product,people:x.members.length,lead:x.lead,at:x.activeAt,sort:x.activeAt||x.createdAt}});
+      const reqs=(c.requests||[]).filter(x=>x.status==='open'&&!x.hasTeam&&hasText(x.description)).map(x=>({kind:'request',id:x.id,title:x.title,text:x.description,stage:'seek',people:1+(x.joiners||[]).length,lead:x.requester,sort:x.createdAt}));
+      items=[...teams,...reqs].sort((a,b)=>String(b.sort||'').localeCompare(String(a.sort||'')));
+    }catch(e){items=null}
+    draw();
+  }
+  function draw(){
+    const grid=portal.querySelector('.sc-grid');if(!grid)return;
+    portal.querySelectorAll('[data-f]').forEach(b=>{const n=items?items.filter(x=>b.dataset.f==='all'||x.stage===b.dataset.f).length:0;b.classList.toggle('on',b.dataset.f===filter);b.querySelector('small').textContent=items?n:''});
+    if(items===null){grid.innerHTML='<p class="sc-empty">לא הצלחנו לטעון את היוזמות כרגע. אפשר לרענן את העמוד.</p>';return}
+    const rows=items.filter(x=>filter==='all'||x.stage===filter);
+    grid.innerHTML=rows.length?rows.map(x=>`<button type="button" class="sc-card" data-open="${x.kind}" data-id="${esc(x.id)}">
+      <span class="sc-top"><strong class="sc-stage ${x.stage}">${STAGE[x.stage]}</strong>${x.kind==='team'?liveTag(x.at):''}</span>
+      <b dir="auto">${esc(x.title)}</b>${x.text?`<span class="sc-text" dir="auto">${esc(short(x.text))}</span>`:''}${x.product?`<span class="sc-product" dir="auto">📦 ${esc(x.product)}</span>`:''}
+      <span class="sc-foot">${x.lead?`${esc(x.lead)}${x.people>1?` ועוד ${x.people-1}`:''}`:''}<span class="sc-more">לפרטים ›</span></span></button>`).join('')
+      :'<p class="sc-empty">אין כרגע יוזמות בשלב הזה.</p>';
+  }
+  function openItem(kind,id){
+    if(kind==='team'){
+      const row=document.querySelector(`#callsHub [data-ch="team-open"][data-id="${CSS.escape(id)}"]`);
+      if(row){row.click();return}
+      location.hash='#workspaces';return;
+    }
+    location.hash=kind==='research'?'#research-'+id:'#collab-req-'+id;
   }
   function mount(){
     const {work,prop}=hubs();
     if(!work||!prop){if(!ready)setTimeout(mount,150);return}
     ready=true;
-    portal=document.createElement('div');portal.className='mp';portal.id='matchPortal';
-    portal.innerHTML=`<p class="mp-intro">מה תרצו לעשות?</p><div class="mp-grid">
-      <button type="button" class="mp-card" data-go="work"><span class="mp-ic">🛠</span><b>צוותים פעילים</b><span>צוותים שכבר עובדים יחד: כתיבת הצעות, משימות ודיון. ההצטרפות לצוות וניהול הקבוצה נעשים מתוך המרחב.</span><small data-n="work">למרחבי העבודה ›</small></button>
-      <button type="button" class="mp-card" data-go="prop"><span class="mp-ic">💡</span><b>הצעות לשיתופי פעולה</b><span>רעיונות למחקר שהמערכת מציעה, ויוזמות של חברי וחברות הקהילה. מצטרפים לרעיון או ליוזמה, או מפרסמים יוזמה משלכם.</span><small data-n="prop">להצעות ›</small></button>
-    </div>`;
+    portal=document.createElement('div');portal.className='mp sc';portal.id='matchPortal';
+    portal.innerHTML=`<div class="sc-head"><p class="sc-intro">יוזמות של חברי וחברות הקהילה: רעיונות שמחפשים שותפים ושותפות, וצוותים שכבר עובדים יחד. לחיצה על כרטיס פותחת את פרטי היוזמה.</p>
+      <button type="button" class="sc-new" data-go="prop">➕ הצעת יוזמה חדשה</button></div>
+      <div class="sc-filters" role="group" aria-label="סינון לפי שלב"><button type="button" data-f="all" class="on">הכול <small></small></button><button type="button" data-f="seek">מחפשות שותפים ושותפות <small></small></button><button type="button" data-f="work">בעבודה <small></small></button><button type="button" data-f="out">תוצרי היוזמה <small></small></button></div>
+      <div class="sc-grid"><p class="sc-empty">טוען…</p></div>
+      <p class="sc-links"><a href="#workspaces" data-go="work">כל הצוותים הפעילים ›</a> <a href="#proposals" data-go="prop">כל הרעיונות וההצעות ›</a></p>`;
+    portal.addEventListener('click',e=>{
+      const f=e.target.closest('[data-f]');if(f){filter=f.dataset.f;draw();return}
+      const c=e.target.closest('[data-open]');if(c){e.stopPropagation();openItem(c.dataset.open,c.dataset.id)}
+    });
     back=document.createElement('div');back.className='mp-back';back.hidden=true;
-    back.innerHTML='<button type="button" data-go="">→ חזרה<span class="mp-long"> למסך הבחירה</span></button><strong></strong><a class="mp-tool" href="/research-companion" target="_blank" rel="noopener" hidden>📘 מדריך לחוקרות.ים - בניית כלי AI מלווה מחקר</a>';
+    back.innerHTML='<button type="button" data-go="">→ חזרה<span class="mp-long"> לכל היוזמות</span></button><strong></strong><a class="mp-tool" href="/research-companion" target="_blank" rel="noopener" hidden>📘 מדריך לחוקרות.ים - בניית כלי AI מלווה מחקר</a>';
     work.before(portal);portal.after(back);
     // סדר קבוע: מסך הבחירה, שורת החזרה, מרחבי העבודה, ההצעות.
     back.after(work);work.after(prop);

@@ -488,6 +488,7 @@ export default async (req: Request) => {
     case "details":
     case "meta": {
       if (action === "meta" && body.status && TEAM_STATUS[body.status as TeamStatus]) t.status = body.status;
+      if (action === "meta" && typeof body.private === "boolean") (t as any).private = body.private; // הסתרה מחלון הראווה: רק המוביל/ה
       if (body.title !== undefined) t.title = clip(body.title, 200) || t.title;
       if (body.summary !== undefined) t.summary = clip(body.summary, 1500);
       if (body.need !== undefined) t.need = clip(body.need, 600);

@@ -142,6 +142,9 @@ export function publicTeam(t: Team) {
     callId: t.callId || "", callTitle: t.callTitle || "", funder: t.funder || "", deadline: t.deadline || "", internal: t.internal, origin: t.origin || "",
     lead: t.lead.name, members: t.members.map(m => m.name), requests: t.requests.length, createdAt: t.createdAt,
     locked: !!t.locked, activeAt: t.activeAt || t.updatedAt || t.createdAt,
+    // חלון הראווה (19.11.2026): יוזמה פרטית לא מוצגת בגלריה. תוצר מוצג רק אחרי "בקשה לפרסום".
+    private: !!(t as any).private,
+    product: (t as any).credit?.requestedAt ? (t as any).credit.product || "" : "", productKind: (t as any).credit?.requestedAt ? (t as any).credit.kind || "" : "", doi: (t as any).credit?.doi || "",
   };
 }
 
