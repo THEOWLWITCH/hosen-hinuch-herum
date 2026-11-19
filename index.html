@@ -6960,7 +6960,7 @@ async function submitBoardMessage(){
 }
 
 async function loadGallery(){try{const r=await fetch('/api/gallery');galleryCache=await r.json();renderGallery();const al=new URLSearchParams(location.search).get('album');if(al&&galleryCache.some(x=>x.id===al))openGalleryViewer(al)}catch(e){galleryGrid.innerHTML='<p class="muted">לא ניתן לטעון את הגלריה כרגע.</p>'}}
-function renderGallery(){const g=document.getElementById('galleryGrid');if(!galleryCache.length){g.innerHTML='<p class="muted">הגלריה תתעדכן בקרוב.</p>';return}g.innerHTML=galleryCache.map(x=>{const cover=x.media&&x.media[0];return `<article class="gallery-card" onclick="openGalleryViewer('${x.id}')"><div class="gallery-card-cover">${cover?`<img src="${escAttr(cover.url)}" alt="${escAttr(x.title)}">`:''}${x.media?.length>1?`<span class="gallery-album-badge">📷 ${x.media.length}</span>`:''}</div><div class="gallery-card-body"><div class="gallery-date">${heDate(x.date)}</div><h3>${esc(x.title)}</h3></div></article>`}).join('')}
+function renderGallery(){const g=document.getElementById('galleryGrid');if(!galleryCache.length){g.innerHTML='<p class="muted">הגלריה תתעדכן בקרוב.</p>';return}g.innerHTML=galleryCache.map(x=>{const cover=x.media&&x.media[0];const n=x.media?.length||0;return `<article class="gallery-card gc-framed" role="button" tabindex="0" aria-label="${escAttr(x.title)}: לצפייה בגלריה" onclick="openGalleryViewer('${x.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openGalleryViewer('${x.id}')}"><div class="gc-head"><h3>${esc(x.title)}</h3><div class="gallery-date">${heDate(x.date)}</div></div><div class="gallery-card-cover">${cover?`<img src="${escAttr(cover.url)}" alt="${escAttr(x.title)}">`:''}${n>1?`<span class="gallery-album-badge">📷 ${n}</span>`:''}</div><p class="gc-hint">👆 ${n>1?`לצפייה בכל ${n} התמונות, לוחצים על התמונה`:'להגדלה, לוחצים על התמונה'}</p></article>`}).join('')}
 function openGalleryViewer(id){galleryCurrent=galleryCache.find(x=>x.id===id);if(!galleryCurrent)return;galleryMediaIndex=0;galleryModal.style.display='flex';galleryModal.setAttribute('aria-hidden','false');renderGalleryViewer()}
 function closeGalleryViewer(){galleryModal.style.display='none';galleryModal.setAttribute('aria-hidden','true')}
 function renderGalleryViewer(){if(!galleryCurrent)return;const m=galleryCurrent.media||[];const cur=m[galleryMediaIndex]||{};galleryViewerImage.src=cur.url||'';galleryViewerImage.alt=cur.title||galleryCurrent.title||'';galleryViewerDate.textContent=heDate(galleryCurrent.date);galleryViewerTitle.textContent=galleryCurrent.title||'';galleryViewerDesc.textContent=galleryCurrent.description||'';if(linksHtml(galleryCurrent.links))galleryViewerDesc.insertAdjacentHTML('beforeend',linksHtml(galleryCurrent.links));document.getElementById('galleryViewerImageTitle').textContent=cur.title||'';document.getElementById('galleryViewerImageCredit').textContent=cur.credit?'צילום: '+cur.credit:'';document.getElementById('galleryViewerImageDate').textContent=cur.date?'תאריך צילום: '+heDate(cur.date):'';galleryViewerCount.textContent=m.length>1?`${galleryMediaIndex+1} / ${m.length}`:'';galleryPrevBtn.style.visibility=m.length>1?'visible':'hidden';galleryNextBtn.style.visibility=m.length>1?'visible':'hidden'}
@@ -9631,4 +9631,14 @@ function hnToggleAbout(b){const t=document.getElementById('hnAboutText');if(!t)r
   });
 })();
 </script>
+<style id="gallery-framed-v1">
+/* 19.11.2026: בגלריה — מסגרת, כותרת המפגש למעלה והסבר שלוחצים כדי לראות את הגלריה */
+html body .gallery-card.gc-framed{border:2px solid #b9cfd9!important;border-radius:14px!important;padding:14px 14px 12px!important;cursor:pointer;background:#fff!important}
+html body .gallery-card.gc-framed:hover,html body .gallery-card.gc-framed:focus-visible{border-color:#244b61!important;outline:none}
+.gc-head{margin:0 0 10px}
+html body .gc-framed .gc-head h3{margin:0!important;font-size:19px!important;font-weight:700!important;color:#1f4a63!important;line-height:1.3!important}
+html body .gc-framed .gc-head .gallery-date{margin-top:2px!important;font-size:13px!important;color:#6e818b!important}
+html body .gc-framed .gallery-card-cover{border-radius:9px;overflow:hidden}
+.gc-hint{margin:10px 0 0;font-size:14px;font-weight:600;color:#8a2240;text-align:center}
+</style>
 </body></html>
