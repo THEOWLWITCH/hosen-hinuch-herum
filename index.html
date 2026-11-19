@@ -10068,19 +10068,26 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
 .ar-note{display:none;margin:6px 2px 0;font-size:12.5px;color:#5e7581}
 .ar-mode .ar-tx{font-family:"Noto Sans Arabic",Assistant,Heebo,sans-serif;direction:rtl}
 .ar-mode .ar-note{display:block}
+/* 19.11.2026: כל חלון בשפה אחת בלבד. בעברית רק עברית (בלי הכותרת בערבית), ובערבית רק ערבית (בלי הכותרת העברית ובלי שאריות בעברית). */
+html[data-page="now"] body #now .community-board:not(.ar-mode) .community-board-head .cb-ar{display:none!important}
+html[data-page="now"] body #now .community-board.ar-mode .community-board-head .cb-he{display:none!important}
+.ar-gone{display:none!important}
+.ar-ph{margin:4px 0 0;font-size:14px;color:#5e7581}
 </style>
 <script id="window-arabic-toggle-v1-js">
 (function(){
   // ביטויים קבועים בלבד (לבדיקת הבודקת). התוכן עצמו לא מתורגם.
   const AR={
     'הודעה קודמת':'الإعلان السابق','הודעה הבאה':'الإعلان التالي','פרסום הודעה':'نشر إعلان',
-    'אין כרגע הודעות פעילות.':'لا توجد إعلانات حاليًا.','טוען...':'جارٍ التحميل...','טוען ידיעות...':'جارٍ تحميل الأخبار...',
+    'אין כרגע הודעות פעילות.':'لا توجد إعلانات حاليًا.','טוען...':'جارٍ التحميل...','טוען הודעות...':'جارٍ تحميل الإعلانات...','טוען ידיעות...':'جارٍ تحميل الأخبار...',
     'לכל היוזמות ›':'لكل المبادرات ›','לכל המחקרים ›':'لكل الأبحاث ›',
     'מחפשת שותפים ושותפות':'تبحث عن شريكات وشركاء','בעבודה':'قيد العمل','תוצרי היוזמה':'مخرجات المبادرة','פעילה השבוע':'فعّالة هذا الأسبوع',
     'מוכנות':'الجاهزية','חוסן נפשי':'المناعة النفسية','רציפות למידה':'استمرارية التعلّم','צוותי חינוך ומנהיגות':'الطواقم التربوية والقيادة',
     'טכנולוגיה AI וסימולציה בחירום':'التكنولوجيا والذكاء الاصطناعي والمحاكاة','טכנולוגיה AI וסימולציה':'التكنولوجيا والذكاء الاصطناعي والمحاكاة','חוסן ארגוני':'المناعة التنظيمية',
     'חדש השבוע':'جديد هذا الأسبوع','לידיעה המקורית ↗':'للخبر الأصلي ↗',
-    'מתעדכן כל שבוע, החדשות למעלה.':'يُحدَّث كل أسبوع، والأحدث في الأعلى.'
+    'מתעדכן כל שבוע, החדשות למעלה.':'يُحدَّث كل أسبوع، والأحدث في الأعلى.',
+    'עוד אין יוזמות פעילות. אפשר להציע יוזמה ביוזמות הקהילה.':'لا توجد مبادرات فعّالة بعد. يمكن اقتراح مبادرة في مبادرات المجتمع.',
+    'המחקרים יופיעו כאן בקרוב.':'ستظهر الأبحاث هنا قريبًا.','לא הצלחנו לטעון את היוזמות כרגע.':'تعذّر تحميل المبادرات حاليًا.'
   };
   const RX=[
     [/^(\d+) יוזמות פעילות$/,'$1 مبادرات فعّالة'],[/^יוזמה פעילה אחת$/,'مبادرة فعّالة واحدة'],
@@ -10128,6 +10135,11 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
       const txt=c.querySelector('.board-message-text');if(txt&&tr.s){txt.innerHTML=esc(tr.s).replace(/\n/g,'<br>');txt.classList.add('ar-tx')}
       if(tr.l)c.querySelectorAll('a').forEach(a=>{const k=a.textContent.replace(/^🔗\s*/,'').trim();if(tr.l[k]){a.textContent=(/^🔗/.test(a.textContent)?'🔗 ':'')+tr.l[k];a.classList.add('ar-tx')}});
     }
+    else{
+      // 19.11.2026: הודעה שעוד לא תורגמה: במצב ערבית לא מציגים עברית, רק משפט קצר בערבית (התמונה והתאריך נשארים)
+      c.querySelectorAll(':scope>*').forEach(e=>{if(!e.matches('.board-message-cover,.board-message-date'))e.classList.add('ar-gone')});
+      const ph=document.createElement('p');ph.className='ar-ph ar-tx';ph.textContent='هذا الإعلان متوفّر بالعبرية فقط حاليًا.';c.append(ph);
+    }
     const au=c.querySelector('.board-message-author');if(au)arNames(au);
   }
   function content(win,on){
@@ -10153,7 +10165,28 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
       // 19.11.2026: גם שמות האנשים ושמות המקורות בערבית
       c.querySelectorAll('.hp-who,.news-meta').forEach(w=>{(c._he.w=c._he.w||[]).push([w,w.innerHTML]);arNames(w)});
     });
-    if(on&&kind==='research'){const cnt=win.querySelector('.hp-count');if(cnt)cnt.textContent='أحدث '+shown+' بحثًا بالعربية'}
+    const cnt=win.querySelector('.hp-count');
+    if(cnt&&(kind==='research'||kind==='initiatives')){
+      if(on){if(cnt.dataset.he==null)cnt.dataset.he=cnt.textContent;cnt.textContent=!shown?'':kind==='research'?'أحدث '+shown+' بحثًا بالعربية':shown===1?'مبادرة فعّالة واحدة':shown+' مبادرات فعّالة'}
+      else if(cnt.dataset.he!=null){cnt.textContent=cnt.dataset.he;delete cnt.dataset.he}
+    }
+  }
+  // 19.11.2026: במצב ערבית — כל טקסט שנשאר בעברית (שם שלא תורגם, תווית חדשה) מוסתר, וחלון שנשאר ריק מקבל משפט קצר בערבית
+  const HE=/[\u0590-\u05FF]/;
+  function sweep(win,on){
+    if(!on){(win._blank||[]).forEach(([t,v])=>{t.nodeValue=v});win._blank=[];win.querySelectorAll('.ar-gone').forEach(e=>e.classList.remove('ar-gone'));win.querySelectorAll('.ar-empty').forEach(e=>e.remove());return}
+    win._blank=win._blank||[];
+    const w=document.createTreeWalker(win,NodeFilter.SHOW_TEXT);const nodes=[];let n;while(n=w.nextNode())nodes.push(n);
+    for(const t of nodes){
+      const el=t.parentElement;if(!el||el.closest('.community-board-head')||!HE.test(t.nodeValue))continue;
+      const card=el.closest('.board-message-card');if(card&&card.style.display==='none')continue;
+      win._blank.push([t,t.nodeValue]);t.nodeValue='';
+      let e=el;while(e&&e!==win&&!e.matches('.board-message-card,.hp-feed,.board-feed')&&!e.textContent.trim()&&!e.querySelector('img,video')){e.classList.add('ar-gone');e=e.parentElement}
+    }
+    win.querySelectorAll('.hp-feed,.board-feed').forEach(f=>{
+      const vis=[...f.querySelectorAll('.board-message-card,p.muted')].some(c=>c.style.display!=='none'&&!c.classList.contains('ar-gone')&&c.textContent.trim());
+      if(!vis&&!f.querySelector('.ar-empty')){const p=document.createElement('p');p.className='muted ar-empty ar-tx';p.textContent='لا يوجد محتوى بالعربية بعد.';f.append(p)}
+    });
   }
   function setup(win){
     const head=win.querySelector('.community-board-head'),h2=head&&head.querySelector('h2');if(!h2||head.querySelector('.ar-toggle'))return;
@@ -10163,9 +10196,9 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
     const note=document.createElement('p');note.className='ar-note';note.lang='ar';note.dir='rtl';note.textContent='ترجمة أولية، قبل التدقيق اللغوي.';
     const foot=win.querySelector('.hp-foot,.news-board-note,.hn-board-post');(foot||win.lastElementChild).before(note);
     let on=false;
-    const mo=new MutationObserver(()=>{if(on){mo.disconnect();content(win,true);apply(win,true);mo.observe(win,{subtree:true,childList:true,characterData:true})}});
+    const mo=new MutationObserver(()=>{if(on){mo.disconnect();win.querySelectorAll('.ar-empty').forEach(e=>e.remove());content(win,true);apply(win,true);sweep(win,true);mo.observe(win,{subtree:true,childList:true,characterData:true})}});
     b.addEventListener('click',()=>{on=!on;win.classList.toggle('ar-mode',on);b.textContent=on?'עברית':'العربية';b.lang=on?'he':'ar';b.setAttribute('aria-pressed',String(on));b.title=on?'חזרה לעברית':'הצגת החלון בערבית';
-      mo.disconnect();const go=()=>{content(win,on);apply(win,on);if(on)mo.observe(win,{subtree:true,childList:true,characterData:true})};if(on&&!AC)loadAC().then(go);else go()});
+      mo.disconnect();const go=()=>{if(!on)sweep(win,false);content(win,on);apply(win,on);if(on){sweep(win,true)}if(on)mo.observe(win,{subtree:true,childList:true,characterData:true})};if(on&&!AC)loadAC().then(go);else go()});
   }
   function init(){if((document.documentElement.dataset.page||'now')!=='now')return;document.querySelectorAll('#now .community-board').forEach(w=>{if(w.id!=='hpField')setup(w)})}
   document.addEventListener('DOMContentLoaded',init);
