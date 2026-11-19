@@ -51,10 +51,42 @@ function decorate(x: Message) {
   };
 }
 
+// הודעות שנוספות מהקוד (19.11.2026). כל אחת נכנסת פעם אחת לחנות, ואז נערכת ונמחקת מהניהול כרגיל.
+// סימון ב-messages-seeded/ מונע ממנה לחזור אחרי מחיקה.
+const SEED_MESSAGES = [{
+  id:"gallery-meeting-2026-11-18",
+  title:"📷 תמונות מהמפגש השני של הקהילה בגלריה",
+  message:"תודה לכל המשתתפות והמשתתפים במפגש השני של הקהילה ב־18.11.2026!\n\nבגלריה מחכות תמונות מהמפגש: הצגת היוזמה \"מילואים בחינוך\" ומודל הרציפות הקהילתית בחירום, והמחקר על שמירה על רציפות חינוכית במלחמה, שמוגש כהצעה למושב סימפוזיון בכנס ICER 2027.\n\nמוזמנות ומוזמנים להיכנס לגלריה, להיזכר במפגש ולשתף.",
+  cover:"/assets/gallery/2026-11-18/01.webp",
+  links:[{ label:"🖼 לתמונות מהמפגש בגלריה", url:"https://hosen-hinuch-herum.netlify.app/gallery?album=meeting-2026-11-18" }]
+}];
+async function ensureSeeds(req: Request) {
+  const st = dataStore();
+  for (const s of SEED_MESSAGES) {
+    const marker = `messages-seeded/${s.id}`;
+    try {
+      if (await st.get(marker)) continue;
+      const r = await fetch(new URL(req.url).origin + s.cover);
+      if (!r.ok) throw new Error("cover");
+      const name = s.cover.split("/").pop() || "cover.webp";
+      const key = `files/board-${s.id}-${name}`;
+      await fileStore().set(key, await r.arrayBuffer(), { metadata:{ contentType:"image/webp", filename:name } });
+      const x: Message = {
+        id:s.id, title:s.title, degree:"", name:"", institution:"", message:s.message,
+        createdAt:new Date().toISOString(), expiresAt:null, attachments:[],
+        coverAttachment:{ key, name, type:"image/webp" }, links:s.links
+      };
+      await st.setJSON(`messages/${s.id}.json`, x);
+      await st.set(marker, x.createdAt);
+    } catch (e) { console.error("message seed failed", s.id, e); }
+  }
+}
+
 export default async (req: Request) => {
   const st = dataStore();
 
   if (req.method === "GET") {
+    await ensureSeeds(req);
     const u = new URL(req.url);
     const admin = u.searchParams.get("admin") === "1";
     if (admin && !(await validToken(req,"admin"))) return json({ error:"unauthorized" }, 401);
