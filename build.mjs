@@ -32,6 +32,10 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(wd.date) || !/^\d{4}-\d{2}-\d{2}$/.test(wd.until
 await copyFile("weekly-draft.json", "dist/weekly-draft.json");
 // גוגל: robots.txt ו-sitemap.xml
 await copyFile("robots.txt", "dist/robots.txt");
+await copyFile("favicon.ico", "dist/favicon.ico"); // אייקון הקהילה בלשונית (19.11.2026)
+// תרגום ראשוני לערבית של התוכן בחלונות העמוד הראשי (19.11.2026). קובץ שבור עוצר את הבנייה.
+JSON.parse(await readFile("arabic-content.json", "utf8"));
+await copyFile("arabic-content.json", "dist/arabic-content.json");
 await copyFile("sitemap.xml", "dist/sitemap.xml");
 
 try {

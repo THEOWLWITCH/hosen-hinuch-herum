@@ -2323,6 +2323,10 @@ body:has(.feedback-modal.open){
 #journals .jf-note{font-size:13px;color:#5e7581;margin:0}
 @media(max-width:760px){#journals .jf-steps,#journals .jf-feat{grid-template-columns:1fr}#journals .jf-head{flex-direction:column;align-items:flex-start}#journals .jf-head img{width:84px;height:84px}#journals h1{font-size:28px}#journals .jf-wrap{padding:22px 14px 40px}}
 </style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 </head>
 <body>
 <div class="banner-stack-v44">
@@ -10061,6 +10065,7 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
 .ar-mode .community-board-head h2 .cb-he{font-size:.68em;font-weight:600;color:#8a2240}
 .ar-mode .hp-tag,.ar-mode .hp-new,.ar-mode .sc-live,.ar-mode .hp-foot,.ar-mode .board-controls,.ar-mode .news-board-note,.ar-mode .news-link,.ar-mode .hn-board-post,.ar-mode .ar-note,.ar-mode .hp-who{font-family:"Noto Sans Arabic",Assistant,Heebo,sans-serif}
 .ar-note{display:none;margin:6px 2px 0;font-size:12.5px;color:#5e7581}
+.ar-mode .ar-tx{font-family:"Noto Sans Arabic",Assistant,Heebo,sans-serif;direction:rtl}
 .ar-mode .ar-note{display:block}
 </style>
 <script id="window-arabic-toggle-v1-js">
@@ -10097,17 +10102,42 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
     }
     win.querySelectorAll('.board-controls button').forEach(b=>{const l=b.dataset.heLabel||b.getAttribute('aria-label');if(!b.dataset.heLabel)b.dataset.heLabel=l;b.setAttribute('aria-label',on?(AR[l]||l):l)});
   }
+  // 19.11.2026: תרגום ראשוני של התוכן (יוזמות, ידיעות, מחקרים אחרונים) מתוך arabic-content.json. ההודעות בלוח לא מתורגמות.
+  let AC=null,acLoad=null;
+  const loadAC=()=>acLoad||(acLoad=fetch('/arabic-content.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>AC=j).catch(()=>AC={}));
+  function content(win,on){
+    const kind=win.id==='hpInitiatives'?'initiatives':win.id==='hpResearch'?'research':win.classList.contains('news-board')?'news':'';
+    if(!kind)return;
+    const map=(AC&&AC[kind])||{};let shown=0;
+    win.querySelectorAll('.board-message-card').forEach(c=>{
+      const h=c.querySelector('h3'),txt=c.querySelector('.board-message-text');
+      if(!on){if(c.dataset.arDone){if(c._he){if(h)h.innerHTML=c._he.h;if(txt)txt.textContent=c._he.t}c.style.display='';delete c.dataset.arDone}return}
+      if(c.dataset.arDone){if(c.style.display!=='none')shown++;return}
+      let key='';
+      if(kind==='initiatives')key=(h&&h.textContent||'').trim();
+      else if(kind==='research')key=(h&&h.textContent||'').replace(/\s*↗\s*$/,'').trim();
+      else{const a=c.querySelector('a.news-link');key=a?a.getAttribute('href'):''}
+      const tr=map[key];c.dataset.arDone='1';
+      if(!tr){c.style.display='none';return}
+      c._he={h:h?h.innerHTML:'',t:txt?txt.textContent:''};shown++;
+      if(kind==='news'){if(h&&tr.p)h.textContent=tr.p}
+      else if(tr.t&&h){const a=h.querySelector('a');if(a){const arrow=/↗/.test(a.textContent)?' ↗':'';a.textContent=tr.t+arrow}else h.textContent=tr.t}
+      if(txt&&(tr.s||tr.b))txt.textContent=tr.s||tr.b;
+      [h,txt].forEach(e=>e&&e.classList.add('ar-tx'));
+    });
+    if(on&&kind==='research'){const cnt=win.querySelector('.hp-count');if(cnt)cnt.textContent='أحدث '+shown+' بحثًا بالعربية'}
+  }
   function setup(win){
     const head=win.querySelector('.community-board-head'),h2=head&&head.querySelector('h2');if(!h2||head.querySelector('.ar-toggle'))return;
     // הכותרת העברית בתוך span, כדי שבמצב ערבית הערבית תהיה הכותרת הראשית
     const first=h2.firstChild;if(first&&first.nodeType===3){const s=document.createElement('span');s.className='cb-he';s.textContent=first.nodeValue.trim();h2.replaceChild(s,first);s.after(document.createTextNode(' '))}
     const b=document.createElement('button');b.type='button';b.className='ar-toggle';b.lang='ar';b.textContent='العربية';b.setAttribute('aria-pressed','false');b.title='הצגת החלון בערבית';head.appendChild(b);
-    const note=document.createElement('p');note.className='ar-note';note.lang='ar';note.dir='rtl';note.textContent='المحتوى معروض بلغته الأصلية.';
+    const note=document.createElement('p');note.className='ar-note';note.lang='ar';note.dir='rtl';note.textContent=win.id==='hpInitiatives'||win.id==='hpResearch'||win.classList.contains('news-board')?'ترجمة أولية، قبل التدقيق اللغوي.':'الإعلانات معروضة بلغتها الأصلية.';
     const foot=win.querySelector('.hp-foot,.news-board-note,.hn-board-post');(foot||win.lastElementChild).before(note);
     let on=false;
-    const mo=new MutationObserver(()=>{if(on){mo.disconnect();apply(win,true);mo.observe(win,{subtree:true,childList:true,characterData:true})}});
+    const mo=new MutationObserver(()=>{if(on){mo.disconnect();content(win,true);apply(win,true);mo.observe(win,{subtree:true,childList:true,characterData:true})}});
     b.addEventListener('click',()=>{on=!on;win.classList.toggle('ar-mode',on);b.textContent=on?'עברית':'العربية';b.lang=on?'he':'ar';b.setAttribute('aria-pressed',String(on));b.title=on?'חזרה לעברית':'הצגת החלון בערבית';
-      mo.disconnect();apply(win,on);if(on)mo.observe(win,{subtree:true,childList:true,characterData:true})});
+      mo.disconnect();const go=()=>{content(win,on);apply(win,on);if(on)mo.observe(win,{subtree:true,childList:true,characterData:true})};if(on&&!AC)loadAC().then(go);else go()});
   }
   function init(){if((document.documentElement.dataset.page||'now')!=='now')return;document.querySelectorAll('#now .community-board').forEach(w=>{if(w.id!=='hpField')setup(w)})}
   document.addEventListener('DOMContentLoaded',init);
