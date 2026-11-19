@@ -9899,7 +9899,8 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
     }catch(e){put('hpField','<p class="muted">לא הצלחנו לטעון כרגע.</p>')}
   }
   let started=false;
-  function start(){if(started||!isHome())return;started=true;initiatives();field();try{research()}catch(e){}}
+  // 19.11.2026: גם המחקרים החדשים מהסריקה השבועית (/api/resources) נטענים מיד בעמוד הראשי, ולא רק אחרי כניסה לעמוד המחקרים
+  function start(){if(started||!isHome())return;started=true;initiatives();field();try{research()}catch(e){}if(typeof loadUploadedResearch==='function'&&!(typeof uploadedResearchItems!=='undefined'&&uploadedResearchItems.length))loadUploadedResearch().then(()=>{try{research()}catch(e){}})}
   const orig=window.renderResearchStudies;
   if(typeof orig==='function')window.renderResearchStudies=function(){const r=orig.apply(this,arguments);if(started)try{research()}catch(e){}return r};
   document.addEventListener('DOMContentLoaded',start);
