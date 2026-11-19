@@ -9871,8 +9871,8 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
     try{
       const [t,c]=await Promise.all([fetch('/api/teams').then(r=>r.json()),fetch('/api/collab').then(r=>r.json())]);
       const ok=x=>String(x||'').trim().length>=20;
-      const teams=(Array.isArray(t)?t:[]).filter(x=>x.status!=='closed'&&!x.private&&ok(x.summary)).map(x=>({href:'/match#open-team='+encodeURIComponent(x.id),title:x.title,text:x.summary,stage:x.product?'out':x.status==='recruiting'&&!x.locked?'seek':'work',lead:x.lead,people:(x.members||[]).length,sort:x.activeAt||x.createdAt,at:x.activeAt}));
-      const reqs=((c&&c.requests)||[]).filter(x=>x.status==='open'&&!x.hasTeam&&ok(x.description)).map(x=>({href:'/match#collab-req-'+encodeURIComponent(x.id),title:x.title,text:x.description,stage:'seek',lead:x.requester,people:1+(x.joiners||[]).length,sort:x.createdAt}));
+      const teams=(Array.isArray(t)?t:[]).filter(x=>x.status!=='closed'&&!x.private&&ok(x.summary)).map(x=>({href:'/match',title:x.title,text:x.summary,stage:x.product?'out':x.status==='recruiting'&&!x.locked?'seek':'work',lead:x.lead,people:(x.members||[]).length,sort:x.activeAt||x.createdAt,at:x.activeAt}));
+      const reqs=((c&&c.requests)||[]).filter(x=>x.status==='open'&&!x.hasTeam&&ok(x.description)).map(x=>({href:'/match',title:x.title,text:x.description,stage:'seek',lead:x.requester,people:1+(x.joiners||[]).length,sort:x.createdAt}));
       const rows=[...teams,...reqs].sort((a,b)=>String(b.sort||'').localeCompare(String(a.sort||'')));
       const live=at=>{const d=(Date.now()-Date.parse(at||''))/864e5;return d>=0&&d<7?'<span class="sc-live"><span class="sc-live-dot"></span>פעילה השבוע</span>':''};
       put('hpInitiatives',rows.length?rows.map(x=>`<a class="board-message-card" href="${E(x.href)}"><div class="hp-top"><span class="hp-tag ${x.stage}">${STAGE[x.stage]}</span>${live(x.at)}</div><h3 dir="auto">${E(x.title)}</h3><div class="board-message-text" dir="auto">${E(short(x.text))}</div>${x.lead?`<p class="hp-who" dir="auto">${E(x.lead)}${x.people>1?` ועוד ${x.people-1}`:''}</p>`:''}</a>`).join(''):'<p class="muted">עוד אין יוזמות פעילות. אפשר להציע יוזמה ביוזמות הקהילה.</p>',rows.length?rows.length+' יוזמות פעילות':'');
@@ -9892,7 +9892,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
     }catch(e){put('hpField','<p class="muted">לא הצלחנו לטעון כרגע.</p>')}
   }
   let started=false;
-  function start(){if(started||!isHome()||!desk())return;started=true;initiatives();field();try{research()}catch(e){}}
+  function start(){if(started||!isHome())return;started=true;initiatives();field();try{research()}catch(e){}}
   const orig=window.renderResearchStudies;
   if(typeof orig==='function')window.renderResearchStudies=function(){const r=orig.apply(this,arguments);if(started)try{research()}catch(e){}return r};
   document.addEventListener('DOMContentLoaded',start);
@@ -9944,8 +9944,8 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   const sec=document.getElementById('now');if(!sec)return;
   const mq=matchMedia('(min-width:851px)');
   function fit(){
-    const on=mq.matches&&(document.documentElement.dataset.page||'now')==='now'&&!!document.getElementById('hpInitiatives');
-    sec.classList.toggle('hp-on',on);if(!on)return;
+    const on=(document.documentElement.dataset.page||'now')==='now'&&!!document.getElementById('hpInitiatives');
+    sec.classList.toggle('hp-on',on);if(!on||!mq.matches)return;
     // שתי שורות חלונות נכנסות במסך אחד: מראש העמוד ועד התחתית
     const top=sec.getBoundingClientRect().top+scrollY+18;
     const h=Math.round((innerHeight-top-20-24)/2);
@@ -9957,12 +9957,12 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 <style id="banner-bilingual-v1">
 /* 19.11.2026: באנר דו-לשוני — עברית ומתחת ערבית, בתוך הגרפיקה גם בטלפון */
 .banner-top-v44{position:relative;container-type:inline-size}
-.bn-text{position:absolute;right:25.8%;top:50%;transform:translateY(-50%);width:34%;text-align:right;direction:rtl}
+.bn-text{position:absolute;right:25.8%;top:43%;transform:translateY(-50%);width:34%;text-align:right;direction:rtl}
 .bn-text p{margin:0;white-space:nowrap;line-height:1.18;text-shadow:0 0 3px #fbf8f0,0 0 6px #fbf8f0,0 0 10px #fbf8f0}
 .bn-t1{font-family:Assistant,Heebo,Arial,sans-serif;font-weight:700;font-size:2.15cqw;color:#173f5f}
-.bn-t2{font-family:"Noto Sans Arabic",Assistant,Arial,sans-serif;font-weight:500;font-size:1.32cqw;color:#8a2240}
+.bn-t2{font-family:"Noto Sans Arabic",Assistant,Arial,sans-serif;font-weight:500;font-size:2.05cqw;line-height:1.3!important;color:#8a2240}
 .bn-s1{font-family:Assistant,Heebo,Arial,sans-serif;font-weight:400;font-size:1.38cqw;color:#24506b;margin-top:.35em!important}
-.bn-s2{font-family:"Noto Sans Arabic",Assistant,Arial,sans-serif;font-weight:400;font-size:1.08cqw;color:#5b6f7b}
+.bn-s2{font-family:"Noto Sans Arabic",Assistant,Arial,sans-serif;font-weight:400;font-size:1.4cqw;line-height:1.3!important;color:#5b6f7b}
 .bn-c{color:#d39a2c;font-weight:700;margin-inline:.05em}
 .bn-h1{color:#8a2240;font-weight:700}
 .bn-h2{color:#d39a2c;font-weight:700}
@@ -9971,7 +9971,8 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   .banner-top-v44{aspect-ratio:1000/340!important;overflow:hidden}
   .banner-top-v44 img{position:absolute;width:192%!important;max-width:none;height:auto!important;left:-70%;top:-44%;object-fit:fill}
   .bn-text{right:27%;width:62%}
-  .bn-t1{font-size:3.9cqw}.bn-t2{font-size:2.55cqw}.bn-s1{font-size:2.65cqw}.bn-s2{font-size:2.25cqw}
+  .bn-text{top:42%}
+  .bn-t1{font-size:3.9cqw}.bn-t2{font-size:3.6cqw}.bn-s1{font-size:2.65cqw}.bn-s2{font-size:2.7cqw}
 }
 </style>
 <style id="fixed-windows-mobile-v1">
@@ -9979,6 +9980,28 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 @media(max-width:850px){
   html body #now .community-board:not(.news-board),html body #now .news-board.hn-open{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;overflow:hidden}
   html body #now .community-board:not(.news-board) .board-feed,html body #now .news-board.hn-open .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+}
+</style>
+<style id="board-cover-contain-v1">
+/* 19.11.2026: תמונה בלוח המודעות מוקטנת כך שתראה שלמה, בלי חיתוך */
+html body #now .board-message-cover{height:auto!important;max-height:none!important;aspect-ratio:auto!important;background:#f6f3ec;border-radius:10px;overflow:hidden;display:flex;justify-content:center}
+html body #now .board-message-cover img{width:auto!important;max-width:100%!important;height:auto!important;max-height:max(80px,calc(var(--hp-h,320px) - 200px))!important;object-fit:contain!important;object-position:center!important;display:block}
+@media(max-width:850px){html body #now .board-message-cover img{max-height:220px!important}}
+</style>
+<style id="home-windows-mobile-v1">
+/* 19.11.2026: גם בטלפון — חלונות בעיצוב של לוח המודעות (לא אריחים): יוזמות הקהילה, דברי קהילה, חידושים במחקר, מהשטח, ובסוף "פורסם בישראל ובעולם" */
+@media(max-width:850px){
+  html body #now.hp-on{display:grid!important;grid-template-columns:minmax(0,1fr);gap:16px;padding:14px 12px 24px!important;box-sizing:border-box}
+  html body #now.hp-on>.top-dynamic-grid,html body #now.hp-on>.hp-panels{display:contents!important}
+  html body #now.hp-on .top-now-content,html body #now.hp-on .hn-quick,html body #now.hp-on .hp-panels>style,html body #now.hp-on .hp-panels>script{display:none!important}
+  html body #now.hp-on #hpInitiatives{grid-row:1!important;grid-column:1!important}
+  html body #now.hp-on .community-board:not(.news-board):not(.hp-panel){grid-row:2!important;grid-column:1!important}
+  html body #now.hp-on #hpResearch{grid-row:3!important;grid-column:1!important}
+  html body #now.hp-on #hpField{grid-row:4!important;grid-column:1!important}
+  html body #now.hp-on .news-board{grid-row:5!important;grid-column:1!important}
+  html body #now.hp-on .community-board:not(.news-board),html body #now.hp-on .news-board.hn-open{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;margin:0!important;transform:none!important;overflow:hidden}
+  html body #now.hp-on .community-board:not(.news-board) .board-feed,html body #now.hp-on .news-board.hn-open .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+  html body #now.hp-on .community-board-head .cb-ar{display:inline}
 }
 </style>
 </body></html>
