@@ -3326,7 +3326,7 @@ html[data-page="apps"] #apps{display:block!important}
         ${rich(t.why)}<p class="nv-status">${h(t.profile)}</p>
         ${t.communityMatches.length?`<p><strong>מהקהילה:</strong> ${t.communityMatches.map(n=>`<a href="/people">${h(n)}</a>`).join(', ')}</p>`:''}
         <form class="nv-row" data-form="fill" data-i="${i}"><input name="name" value="${h(t.filledBy||'')}" placeholder="מי ממלא/ת את התפקיד?" style="flex:1;min-width:200px"><button class="nv-btn small">שמירה</button></form></div>`).join('')}
-      <div class="nv-highlight" style="margin-top:12px"><div class="nv-row" style="justify-content:space-between"><span>רוצה לגייס שותפות מהקהילה? אפשר להקים <strong>קבוצת משימה</strong> — היא תוצג בעמוד "שיתופי פעולה", עם הרעיון ועם מי שחסרה בצוות.</span><button type="button" class="nv-btn primary" data-a="taskforce">🤝 הקמת קבוצת משימה</button></div></div>`;
+      <div class="nv-highlight" style="margin-top:12px"><div class="nv-row" style="justify-content:space-between"><span>רוצה לגייס שותפות מהקהילה? אפשר להקים <strong>קבוצת משימה</strong> — היא תוצג בעמוד "יוזמות הקהילה", עם הרעיון ועם מי שחסרה בצוות.</span><button type="button" class="nv-btn primary" data-a="taskforce">🤝 הקמת קבוצת משימה</button></div></div>`;
   }
 
   function miziHtml(){
@@ -5340,7 +5340,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       ${filesHtml(c)}
       ${(c.topics||[]).length?`<div class="ch-tags">${c.topics.map(k=>`<span class="ch-tag">${h(state.themes[k]||k)}</span>`).join('')}</div>`:''}
       ${!archived&&matches?`<p class="ch-match"><strong>מתאים במיוחד ל:</strong> ${matches}</p>`:''}
-      ${teams.length?`<div class="ch-teams"><a href="/match#teams">🤝 ${teams.length===1?'קבוצת משימה אחת':teams.length+' קבוצות משימה'} סביב הקול הקורא, בשיתופי פעולה ←</a></div>`:''}
+      ${teams.length?`<div class="ch-teams"><a href="/match#teams">🤝 ${teams.length===1?'קבוצת משימה אחת':teams.length+' קבוצות משימה'} סביב הקול הקורא, ביוזמות הקהילה ←</a></div>`:''}
       ${archived?'':`<div class="ch-card-actions">
         ${c.url||c.fileUrl?`<a class="ch-btn small primary" href="${h(c.url||c.fileUrl)}" target="_blank" rel="noopener">לפרטים ולהגשה</a>`:''}
         ${c.endDate?`<a class="ch-btn small" href="${h(googleEventLink(c))}" target="_blank" rel="noopener">📅 ליומן Google</a><a class="ch-btn small" href="/api/calls?format=ics&id=${encodeURIComponent(c.id)}" title="קובץ יומן ל-Outlook או ל-Apple">📅 Outlook / Apple</a>`:''}
@@ -5883,13 +5883,13 @@ html[data-page="calls"] #resourceArea{display:none!important}
       const t=ws.team;
       if(!t.locked)return `<div class="ch-ws-end" id="chWsLock">
         <h4>🔒 סגירת המרחב לצוות</h4>
-        <p class="ch-credit">כשהצוות התגבש, אפשר לסגור את המרחב: לא תהיה הצטרפות חדשה, והדיון, הסעיפים, המשימות והקישורים ייפתחו רק למי שיש לו/ה את קוד הצוות. בעמוד שיתופי פעולה יישארו גלויים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
+        <p class="ch-credit">כשהצוות התגבש, אפשר לסגור את המרחב: לא תהיה הצטרפות חדשה, והדיון, הסעיפים, המשימות והקישורים ייפתחו רק למי שיש לו/ה את קוד הצוות. בעמוד יוזמות הקהילה יישארו גלויים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
         <form class="ch-inline" data-form="lock" style="grid-template-columns:1fr auto"><input name="teamCode" required minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="קוד צוות (4 תווים לפחות)" aria-label="קוד צוות"><button class="ch-btn small primary">🔒 סגירת המרחב</button></form>
         <p class="ch-credit">אחרי הסגירה צריך לשלוח את הקוד לחברי וחברות הצוות (במייל, בווטסאפ או בטלפון). המוביל/ה נכנס/ת בלי הקוד.</p></div>`;
       return `<div class="ch-ws-end" id="chWsLock">
         <h4>🔒 המרחב סגור לצוות</h4>
         ${t.lockCode?`<p>קוד הצוות: <code dir="ltr" style="font-size:15px">${h(t.lockCode)}</code></p>`:''}
-        <p class="ch-credit">נסגר ב־${t.lockedAt?new Date(t.lockedAt).toLocaleDateString('he-IL'):''}. אין הצטרפות חדשה, וחברי וחברות הצוות נכנסים עם קוד הצוות. בעמוד שיתופי פעולה מוצגים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
+        <p class="ch-credit">נסגר ב־${t.lockedAt?new Date(t.lockedAt).toLocaleDateString('he-IL'):''}. אין הצטרפות חדשה, וחברי וחברות הצוות נכנסים עם קוד הצוות. בעמוד יוזמות הקהילה מוצגים רק שם הקבוצה, התקציר ושמות החוקרים והחוקרות.</p>
         <form class="ch-inline" data-form="lock" style="grid-template-columns:1fr auto"><input name="teamCode" required minlength="4" maxlength="60" dir="ltr" autocomplete="off" placeholder="קוד צוות חדש" aria-label="קוד צוות חדש"><button class="ch-btn small">החלפת הקוד</button></form>
         <p><button type="button" class="ch-btn small" data-w="unlock">🔓 פתיחת המרחב מחדש להצטרפות</button></p></div>`;
     }
@@ -6023,7 +6023,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         try{await act('credit',{product:d.product||'',kind:d.kind||'',license:d.license||'CC-BY-4.0',roles,publish});render(true);msg(publish?'✓ הבקשה נשלחה. מנהלת האתר תיצור קשר להעלאה ל-Zenodo.':'✓ הקרדיט נשמר.','ok')}catch(err){msg(err.message,'err')}
         return}
       if(kind==='title'){const title=String(d.title||'').trim();if(!title)return msg('הכותרת לא יכולה להיות ריקה.','err');
-        try{await act('details',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
+        try{await act('details',{title});ws.editTitle=false;render(true);msg('✓ הכותרת עודכנה. היא מופיעה גם בעמוד יוזמות הקהילה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}return}
       // צירוף קבצים וקישורים: לסעיף, להודעה בדיון, וללשונית הקישורים.
       if(kind==='sec-attach'||kind==='file-add'||(kind==='message'&&f.hasAttribute('data-full'))){
         const btn=f.querySelector('button:not([type=button])');if(btn)btn.disabled=true;msg('מעלה…');
@@ -6048,7 +6048,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
       }
       const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['details',d]};
       // ההודעה "נשמר" מוצגת אחרי שהמסך מצויר מחדש, אחרת הציור מוחק אותה ונראה כאילו לא נשמר.
-      if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד שיתופי פעולה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
+      if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד יוזמות הקהילה.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
       run(async()=>{await act(...map[kind])});
     });
     render();
@@ -7970,7 +7970,7 @@ function compassReport(o){
  +'<h4>מקורות מובילים מהעולם</h4>'+li(topWorld)
  +'<h4>'+(hk?.question?'שאלת המחקר של הצוות':'שאלת מחקר מוצעת ('+esc(chosen[0])+')')+'</h4><p>'+esc(chosen[1])+'</p>'
  +'<h4>'+(hk?.question?'ניסוחים חלופיים לפי המיפוי':'חלופות')+'</h4><ul>'+qs.filter(x=>x!==chosen).map(x=>'<li><strong>'+esc(x[0])+':</strong> '+esc(x[1])+'</li>').join('')+'</ul>'
- +'<h4>הצעדים הבאים</h4><ol><li>לקרוא את שלושת המקורות המובילים ולסמן מה כבר ידוע ומה חסר.</li><li>לדייק את השאלה: אוכלוסייה, הקשר ותוצא רצוי.</li><li>להעריך היתכנות: כמה מוסדות ומשתתפות ומשתתפים זמינים.</li><li>לחפש שותפות ושותפים למחקר בעמוד "שיתופי פעולה".</li></ol>'
+ +'<h4>הצעדים הבאים</h4><ol><li>לקרוא את שלושת המקורות המובילים ולסמן מה כבר ידוע ומה חסר.</li><li>לדייק את השאלה: אוכלוסייה, הקשר ותוצא רצוי.</li><li>להעריך היתכנות: כמה מוסדות ומשתתפות ומשתתפים זמינים.</li><li>לחפש שותפות ושותפים למחקר בעמוד "יוזמות הקהילה".</li></ol>'
  +'<p class="cr-meta">הדו"ח הוא נקודת פתיחה ולא סקירה שיטתית. כדאי לפתוח כל מקור לפני שמצטטים.</p>'
  +'<div class="cr-actions">'+(hk?'<button type="button" class="primary" onclick="compassReportSave(this)">💾 שמירה במרחב הצוות</button><button type="button" onclick="compassReportToTeam(this)">💬 שליחה לדיון בצוות</button>':'')+'<button type="button"'+(hk?'':' class="primary"')+' onclick="compassReportPrint()" title="פותח את חלון ההדפסה. לשמירה כ־PDF בוחרים שם &quot;שמירה כ־PDF&quot;">🖨 הדפסה או שמירה כ־PDF</button><button type="button" onclick="compassReportCopy(this)">📋 העתקת הדו"ח</button><button type="button" onclick="compassReportMail(\'gmail\')">✉ שליחה ב־Gmail</button><button type="button" onclick="compassReportMail()">✉ בתוכנת הדואר</button><button type="button" onclick="compassReportDownload()">⬇ הורדה כקובץ</button></div><p class="cr-meta" id="compassReportMsg" aria-live="polite"></p><textarea id="compassReportPlain" readonly hidden style="width:100%;min-height:180px;margin-top:8px" aria-label="טקסט הדו״ח להעתקה"></textarea>';
  box.scrollIntoView({behavior:'smooth',block:'start'});
@@ -7981,7 +7981,7 @@ function compassReportText(){const r=compassLastReport;if(!r)return '';const L=a
  'מה עולה מהמיפוי:','- '+r.gap,'- '+r.fresh,'','מקורות מובילים ממאגר הקהילה:',L(r.topLocal),'','מקורות מובילים מהעולם:',L(r.topWorld),'',
  ...(r.team?['מול המרחב "'+r.team.title+'": '+r.team.knownN+' מהמקורות המובילים כבר בביבליוגרפיה של הצוות.','']:[]),
  (r.chosen[0]==='של הצוות'?'שאלת המחקר של הצוות: ':'שאלת מחקר מוצעת ('+r.chosen[0]+'): ')+r.chosen[1],'',...r.qs.filter(x=>x!==r.chosen).map(x=>'חלופה ('+x[0]+'): '+x[1]),'',
- 'הצעדים הבאים: לקרוא את שלושת המקורות המובילים; לדייק את השאלה; להעריך היתכנות; לחפש שותפות ושותפים בעמוד "שיתופי פעולה".','',
+ 'הצעדים הבאים: לקרוא את שלושת המקורות המובילים; לדייק את השאלה; להעריך היתכנות; לחפש שותפות ושותפים בעמוד "יוזמות הקהילה".','',
  'נוצר במצפן המחקר של קהילת בינה מלאכותית: חוסן-חינוך-חרום · '+location.origin+'/library'].join('\n')}
 async function compassReportToTeam(btn){const hk=window.compassTeamHook;if(!hk)return;btn.disabled=true;btn.textContent='שולח…';try{await hk.post(compassReportText());btn.textContent='✓ נשלח לדיון בצוות'}catch(e){btn.disabled=false;btn.textContent='השליחה לדיון לא הצליחה. אפשר לנסות שוב.'}}
 // הודעה בולטת מתחת לכפתורים (6.11.2026: "אין חיווי"): צבע לפי מצב, וגלילה אליה.
@@ -8187,7 +8187,7 @@ document.addEventListener('click',e=>{const modal=document.getElementById('compa
           <div class="nv-row" style="align-items:center;margin-top:6px"><input name="orcid" value="${h(d.orcid||'')}" dir="ltr" placeholder="0000-0002-1825-0097" style="max-width:240px"><label style="display:inline-flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" name="orcidShow"${d.orcidShow||!d.orcid?' checked':''}> להציג את הפרסומים שלי באתר</label></div>
           ${d.orcidCount?`<span class="nv-status">כרגע מוצגים ${d.orcidCount} פרסומים מ-ORCID.</span>`:''}</div>
         <div class="wide"><strong style="font-size:13px">🎯 תחומי העניין שלי</strong> <span class="nv-status">לפיהם נשלחים קולות קוראים, מענקים וכנסים, והסיכום השבועי.</span>${checks(d.themes,d.topics)}</div>
-        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכול/ה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד שיתופי פעולה.</span><div class="jt-topics">${kinds}</div>
+        <div class="wide"><strong style="font-size:13px">✏️ מה אני יכול/ה לקדם בקהילה</strong> <span class="nv-status">לפי זה מוצעות שותפויות בעמוד יוזמות הקהילה.</span><div class="jt-topics">${kinds}</div>
           <textarea name="offer" rows="3" dir="auto" placeholder="הפעילות, הרעיון או הנושא שאוכל לקדם" style="width:100%;margin-top:8px;box-sizing:border-box">${h(d.offer?.text||'')}</textarea></div>
         <div class="wide nv-row"><button type="submit" class="nv-btn primary">שמירת הכרטיס</button><button type="button" class="nv-btn" data-out>יציאה</button></div>
       </form><div class="nv-status" data-st></div>`;
@@ -8403,7 +8403,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
 @media print{.cb-actions,.cb-tabs,.cb-row{display:none!important}.cb-card{break-inside:avoid}}
 </style>
 <script id="collab-v1-js">
-/* שידוכים בקהילה: בעמוד שיתופי פעולה (/match), מעל קבוצות המשימה. בכרטיסי הנבחרת רק סוגי הפעילות. הנתונים: /api/collab. */
+/* שידוכים בקהילה: בעמוד יוזמות הקהילה (/match), מעל קבוצות המשימה. בכרטיסי הנבחרת רק סוגי הפעילות. הנתונים: /api/collab. */
 (function(){
   const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   // כניסת הניהול בתוקף 12 שעות: אסימון שפג תוקפו לא נחשב כניסה (התוקף כתוב באסימון עצמו).
@@ -8581,7 +8581,7 @@ section#collabHub.cb{padding:20px 22px 24px!important}
       <p dir="auto">${h(r.description)}</p>
       ${r.need?`<p dir="auto"><strong>את מי מחפשות:</strong> ${h(r.need)}</p>`:''}
       ${r.joiners.length?`<p class="cb-meta"><strong>הצטרפו:</strong> ${admin?r.joiners.map(n=>`<button type="button" class="cb-btn small" data-cb="out" data-kind="collab" data-id="${h(r.id)}" data-name="${h(n)}" title="הוצאה מהרשימה">${h(n)} ✕</button>`).join(' '):r.joiners.map(h).join(', ')} <button type="button" class="cb-btn small" data-cb="leave" data-kind="collab" data-id="${h(r.id)}">🚪 יציאה מהרשימה</button></p>`:''}
-      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד שיתופי פעולה באתר הקהילה יש יוזמה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
+      ${fits.length?`<p class="cb-fit"><strong>מתאימות במיוחד:</strong> ${fits.map(({p,shared})=>p.email?`<a href="${h(mailto(p,`הזמנה לשיתוף פעולה: ${r.title}`,`שלום ${p.name},\n\nבעמוד יוזמות הקהילה באתר הקהילה יש יוזמה שמתאימה למה שאת מקדמת (${shared.map(k=>K(k).label).join(', ')}):\n"${r.title}"\n\n${link}\n\nאם זה מעניין אותך, אפשר להצטרף שם בלחיצה.`))}" title="הזמנה במייל · ${h(shared.map(k=>K(k).label).join(', '))}">${h(p.name)}</a>`:h(p.name)).join(', ')}</p>`:''}
       <div class="cb-row">
         ${r.status==='open'?`<button type="button" class="cb-btn small primary" data-cb="join" data-id="${h(r.id)}">🙋 אני רוצה להצטרף</button>`:''}
         <button type="button" class="cb-btn small" data-cb="share" data-id="${h(r.id)}">🔗 העתקת קישור</button>
