@@ -10105,13 +10105,22 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
   // 19.11.2026: תרגום ראשוני של התוכן (יוזמות, ידיעות, מחקרים אחרונים) מתוך arabic-content.json. ההודעות בלוח לא מתורגמות.
   let AC=null,acLoad=null;
   const loadAC=()=>acLoad||(acLoad=fetch('/arabic-content.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>AC=j).catch(()=>AC={}));
+  function arNames(el){
+    const N=(AC&&AC.names)||{},keys=Object.keys(N).sort((a,b)=>b.length-a.length);
+    const tw=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;const nodes=[];while(n=tw.nextNode())nodes.push(n);
+    nodes.forEach(t=>{let v=t.nodeValue;
+      keys.forEach(k=>{if(v.includes(k))v=v.split(k).join(N[k])});
+      v=v.replace(/ד["״]ר\s*/g,'د. ').replace(/פרופ['׳]\s*/g,'أ.د. ')
+       .replace(/ועוד\s+(\d+)/g,(m,k)=>{k=+k;return k===1?'وشخص آخر':k===2?'وشخصان آخران':k<=10?'و'+k+' أشخاص آخرين':'و'+k+' آخرين'});
+      if(v!==t.nodeValue){t.nodeValue=v;t.parentElement&&t.parentElement.classList.add('ar-tx')}});
+  }
   function content(win,on){
     const kind=win.id==='hpInitiatives'?'initiatives':win.id==='hpResearch'?'research':win.classList.contains('news-board')?'news':'';
     if(!kind)return;
     const map=(AC&&AC[kind])||{};let shown=0;
     win.querySelectorAll('.board-message-card').forEach(c=>{
       const h=c.querySelector('h3'),txt=c.querySelector('.board-message-text');
-      if(!on){if(c.dataset.arDone){if(c._he){if(h)h.innerHTML=c._he.h;if(txt)txt.textContent=c._he.t}c.style.display='';delete c.dataset.arDone}return}
+      if(!on){if(c.dataset.arDone){if(c._he){if(h)h.innerHTML=c._he.h;if(txt)txt.textContent=c._he.t;(c._he.w||[]).forEach(([w,html])=>w.innerHTML=html)}c.style.display='';delete c.dataset.arDone}return}
       if(c.dataset.arDone){if(c.style.display!=='none')shown++;return}
       let key='';
       if(kind==='initiatives')key=(h&&h.textContent||'').trim();
@@ -10124,6 +10133,8 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
       else if(tr.t&&h){const a=h.querySelector('a');if(a){const arrow=/↗/.test(a.textContent)?' ↗':'';a.textContent=tr.t+arrow}else h.textContent=tr.t}
       if(txt&&(tr.s||tr.b))txt.textContent=tr.s||tr.b;
       [h,txt].forEach(e=>e&&e.classList.add('ar-tx'));
+      // 19.11.2026: גם שמות האנשים ושמות המקורות בערבית
+      c.querySelectorAll('.hp-who,.news-meta').forEach(w=>{(c._he.w=c._he.w||[]).push([w,w.innerHTML]);arNames(w)});
     });
     if(on&&kind==='research'){const cnt=win.querySelector('.hp-count');if(cnt)cnt.textContent='أحدث '+shown+' بحثًا بالعربية'}
   }
