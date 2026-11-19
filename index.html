@@ -10114,9 +10114,25 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
        .replace(/ועוד\s+(\d+)/g,(m,k)=>{k=+k;return k===1?'وشخص آخر':k===2?'وشخصان آخران':k<=10?'و'+k+' أشخاص آخرين':'و'+k+' آخرين'});
       if(v!==t.nodeValue){t.nodeValue=v;t.parentElement&&t.parentElement.classList.add('ar-tx')}});
   }
+  // 19.11.2026: גם הודעות הלוח בערבית (לפי הכותרת). הלוח מתחלף כל 7 שניות, ולכן מתרגמים בכל החלפה.
+  function board(win,on){
+    const c=win.querySelector('#boardFeed .board-message-card');if(!c)return;
+    if(!on){if(c.dataset.arDone&&typeof renderBoardMessage==='function')renderBoardMessage();return}
+    if(c.dataset.arDone)return;c.dataset.arDone='1';
+    const h=c.querySelector('.board-message-title'),tr=((AC&&AC.board)||{})[(h&&h.textContent||'').trim()];
+    const esc=v=>String(v).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+    if(tr){
+      if(h&&tr.t){h.textContent=tr.t;h.classList.add('ar-tx')}
+      const inst=c.querySelector('.board-message-inst');if(inst&&tr.i){inst.textContent=tr.i;inst.classList.add('ar-tx')}
+      const txt=c.querySelector('.board-message-text');if(txt&&tr.s){txt.innerHTML=esc(tr.s).replace(/\n/g,'<br>');txt.classList.add('ar-tx')}
+      if(tr.l)c.querySelectorAll('a').forEach(a=>{const k=a.textContent.replace(/^🔗\s*/,'').trim();if(tr.l[k]){a.textContent=(/^🔗/.test(a.textContent)?'🔗 ':'')+tr.l[k];a.classList.add('ar-tx')}});
+    }
+    const au=c.querySelector('.board-message-author');if(au)arNames(au);
+  }
   function content(win,on){
-    const kind=win.id==='hpInitiatives'?'initiatives':win.id==='hpResearch'?'research':win.classList.contains('news-board')?'news':'';
+    const kind=win.id==='hpInitiatives'?'initiatives':win.id==='hpResearch'?'research':win.classList.contains('news-board')?'news':win.querySelector('#boardFeed')?'board':'';
     if(!kind)return;
+    if(kind==='board'){board(win,on);return}
     const map=(AC&&AC[kind])||{};let shown=0;
     win.querySelectorAll('.board-message-card').forEach(c=>{
       const h=c.querySelector('h3'),txt=c.querySelector('.board-message-text');
@@ -10143,7 +10159,7 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
     // הכותרת העברית בתוך span, כדי שבמצב ערבית הערבית תהיה הכותרת הראשית
     const first=h2.firstChild;if(first&&first.nodeType===3){const s=document.createElement('span');s.className='cb-he';s.textContent=first.nodeValue.trim();h2.replaceChild(s,first);s.after(document.createTextNode(' '))}
     const b=document.createElement('button');b.type='button';b.className='ar-toggle';b.lang='ar';b.textContent='العربية';b.setAttribute('aria-pressed','false');b.title='הצגת החלון בערבית';head.appendChild(b);
-    const note=document.createElement('p');note.className='ar-note';note.lang='ar';note.dir='rtl';note.textContent=win.id==='hpInitiatives'||win.id==='hpResearch'||win.classList.contains('news-board')?'ترجمة أولية، قبل التدقيق اللغوي.':'الإعلانات معروضة بلغتها الأصلية.';
+    const note=document.createElement('p');note.className='ar-note';note.lang='ar';note.dir='rtl';note.textContent='ترجمة أولية، قبل التدقيق اللغوي.';
     const foot=win.querySelector('.hp-foot,.news-board-note,.hn-board-post');(foot||win.lastElementChild).before(note);
     let on=false;
     const mo=new MutationObserver(()=>{if(on){mo.disconnect();content(win,true);apply(win,true);mo.observe(win,{subtree:true,childList:true,characterData:true})}});
