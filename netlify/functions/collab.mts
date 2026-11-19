@@ -103,7 +103,7 @@ export default async (req: Request) => {
       const pid = await memberFromToken(clip(req.headers.get("x-member-token"), 400));
       if (!pid) return json({ error: "forbidden", message: "הקישור לא תקין או שפג תוקפו. אפשר לבקש קישור חדש." }, 403);
       const p = (await loadPeople(u.origin)).find(x => x.id === pid);
-      if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+      if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא באתר." }, 404);
       return json({ id: p.id, name: p.name, institution: p.institution || "", offer: offerOf(p as any), kinds: KINDS });
     }
     // המבקשת: ניהול הבקשה בקישור הסודי.
@@ -197,7 +197,7 @@ export default async (req: Request) => {
     const email = norm(body.email);
     if (!email.includes("@")) return json({ error: "invalid", message: "נשמח לכתובת המייל שבכרטיס שלך." }, 400);
     const p = (await loadPeople(u.origin)).find(x => norm(x.email) === email);
-    if (!p) return json({ error: "not_member", message: "המייל הזה לא מופיע בכרטיס בנבחרת. אם הכרטיס שלך רשום עם מייל אחר, כדאי לנסות אותו. עוד לא בנבחרת? אפשר לבקש להצטרף בכפתור \"🙋 הצטרפות\"." }, 404);
+    if (!p) return json({ error: "not_member", message: "המייל הזה לא מופיע בכרטיס באתר. אם הכרטיס שלך רשום עם מייל אחר, כדאי לנסות אותו. עוד לא בקהילה? אפשר לבקש להצטרף בכפתור \"🙋 הצטרפות\"." }, 404);
     if (!mailConfigured()) return json({ error: "mail", message: "שליחת המיילים מהאתר עוד לא פעילה. אפשר לכתוב למנהלת הקהילה, והיא תעדכן את הכרטיס." }, 503);
     try {
       await offerMail(p, site);
@@ -224,7 +224,7 @@ export default async (req: Request) => {
     const pid = admin ? clip(body.personId, 80) : await memberFromToken(clip(req.headers.get("x-member-token"), 400));
     if (!pid) return json({ error: "forbidden", message: "הקישור לא תקין או שפג תוקפו. אפשר לבקש קישור חדש." }, 403);
     const p = (await loadPeople(u.origin)).find(x => x.id === pid);
-    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא באתר." }, 404);
     const offer = { kinds: cleanKinds(body.kinds), text: clip(body.text, 1500), updatedAt: new Date().toISOString() };
     if (!offer.kinds.length && !offer.text) return json({ error: "missing", message: "נשמח לסוג פעילות אחד לפחות, או לכמה מילים." }, 400);
     const { photoUrl, ...stored } = p as any;
