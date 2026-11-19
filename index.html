@@ -9900,7 +9900,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   }
   let started=false;
   // 19.11.2026: גם המחקרים החדשים מהסריקה השבועית (/api/resources) נטענים מיד בעמוד הראשי, ולא רק אחרי כניסה לעמוד המחקרים
-  function start(){if(started||!isHome())return;started=true;initiatives();field();try{research()}catch(e){}if(typeof loadUploadedResearch==='function'&&!(typeof uploadedResearchItems!=='undefined'&&uploadedResearchItems.length))loadUploadedResearch().then(()=>{try{research()}catch(e){}})}
+  function start(){if(started||!isHome())return;started=true;initiatives();field();try{research()}catch(e){}let tries=0;const wait=()=>{const n=typeof uploadedResearchItems!=='undefined'?uploadedResearchItems.length:0;if(n){try{research()}catch(e){}return}if(++tries===1&&typeof loadUploadedResearch==='function')loadUploadedResearch();if(tries<60)setTimeout(wait,1000)};setTimeout(wait,300)}
   const orig=window.renderResearchStudies;
   if(typeof orig==='function')window.renderResearchStudies=function(){const r=orig.apply(this,arguments);if(started)try{research()}catch(e){}return r};
   document.addEventListener('DOMContentLoaded',start);
