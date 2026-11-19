@@ -40,7 +40,7 @@ const defaults: Person[] = [
     "institution": "האקדמית אחוה",
     "description": "תחומי עיסוק מרכזיים: חדשנות טכנולוגית בחינוך, ניהול והובלת בתי ספר, הובלת שינוי ארגוני ופדגוגי ושילוב טכנולוגיה במערכות חינוך.",
     "email": "sherryshilon@gmail.com",
-    "phone": "",
+    "phone": "054-4970629",
     "order": 2,
     "createdAt": "2026-09-27T00:00:00.000Z",
     "updatedAt": "2026-09-27T00:00:00.000Z"
@@ -209,6 +209,11 @@ const EMAIL_BACKFILL: Record<string,string> = {
   "seed-13": "Amlamer10@gmail.com",
 };
 
+// טלפונים שנוספו אחרי שהכרטיס כבר נשמר: ממלאים רק שדה טלפון ריק (19.11.2026).
+const PHONE_BACKFILL: Record<string,string> = {
+  "seed-02": "054-4970629",
+};
+
 // תיקון כתובות שגויות שנשמרו בכרטיסים (גם בעותק השמור בשרת): הכתובת השגויה מוחלפת בנכונה בכל קריאה.
 const EMAIL_FIX: Record<string,string> = {
   "awda.al@lgmail.com": "awda.al@gmail.com",
@@ -261,7 +266,7 @@ async function listAll(): Promise<Person[]> {
   for(const b of blobs){
     const v=await st.get(b.key,{type:"json"}) as Person | null;
     if(!v?.id || typeof v!=="object") continue;
-    if(v.deleted) map.delete(v.id); else map.set(v.id,{...v,email:fixEmail(v.email)||EMAIL_BACKFILL[v.id]||""});
+    if(v.deleted) map.delete(v.id); else map.set(v.id,{...v,email:fixEmail(v.email)||EMAIL_BACKFILL[v.id]||"",phone:String(v.phone||"").trim()||PHONE_BACKFILL[v.id]||""});
   }
   return [...map.values()]
     .filter(x=>!x.deleted)

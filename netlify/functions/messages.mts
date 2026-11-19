@@ -53,7 +53,7 @@ function decorate(x: Message) {
 
 // הודעות שנוספות מהקוד (19.11.2026). כל אחת נכנסת פעם אחת לחנות, ואז נערכת ונמחקת מהניהול כרגיל.
 // סימון ב-messages-seeded/ מונע ממנה לחזור אחרי מחיקה.
-type SeedMessage = { id:string; title:string; message:string; cover:string; coverVersion?:string; links:LinkItem[]; contact?:{ nameMatch:string; label:string } };
+type SeedMessage = { id:string; title:string; message:string; cover:string; coverVersion?:string; links:LinkItem[]; contact?:{ nameMatch:string; label:string; phone?:string } };
 const SEED_MESSAGES: SeedMessage[] = [{
   id:"gallery-meeting-2026-11-18",
   title:"📷 תמונות מהמפגש השני של הקהילה בגלריה",
@@ -67,11 +67,12 @@ const SEED_MESSAGES: SeedMessage[] = [{
   message:"נפתחה יוזמה חדשה של ד״ר שרי שרה גנון-שילון: \"גמישות נסיבתית ויתרון שיתופי\".\n\nהיוזמה עוסקת בשמירה על רציפות חינוכית בחירום: אילו פרקטיקות פורמליות ובלתי פורמליות ברמה הארצית, המקומית והבית־ספרית סייעו לשמור על רציפות חינוכית במלחמת \"חרבות ברזל\".\n\nמוזמנות ומוזמנים להצטרף!",
   cover:"/assets/board/new-initiative.webp",
   coverVersion:"3", // 19.11.2026: מסגרת בירוק חי (גרסה 2 הייתה כהה). שינוי הגרסה מחליף את התמונה גם בהודעה שכבר עלתה.
-  contact:{ nameMatch:"גנון", label:"ליצירת קשר עם ד״ר שרי שרה גנון-שילון" },
+  contact:{ nameMatch:"גנון", label:"ליצירת קשר עם ד״ר שרי שרה גנון-שילון", phone:"054-4970629" },
   links:[{ label:"🙋 להצטרפות ליוזמה", url:"https://hosen-hinuch-herum.netlify.app/match#join-team=gamishut-nesibatit-yitaron-shitufi" }]
 }];
 // טלפון (או מייל) מהכרטיס בעמוד חברות וחברי הקהילה.
 async function contactLine(c: NonNullable<SeedMessage["contact"]>): Promise<string> {
+  if (c.phone) return `${c.label}: נייד ${c.phone}`;
   const st = dataStore();
   const { blobs } = await st.list({ prefix:"people/" });
   for (const b of blobs) {
@@ -100,12 +101,25 @@ async function refreshCover(req: Request, s: SeedMessage) {
   }
   await st.set(vk, s.coverVersion);
 }
+// פרטי קשר מעודכנים בהודעה שכבר עלתה (19.11.2026): השורה "ליצירת קשר" מוחלפת פעם אחת לפי הטלפון שבקוד.
+async function refreshContact(s: SeedMessage) {
+  if (!s.contact?.phone) return;
+  const st = dataStore(); const vk = `messages-contact/${s.id}`;
+  if (String(await st.get(vk) || "") === s.contact.phone) return;
+  const msg = await st.get(`messages/${s.id}.json`, { type:"json" }) as Message | null;
+  if (msg) {
+    const line = `${s.contact.label}: נייד ${s.contact.phone}`;
+    const kept = msg.message.split("\n").filter(l => !l.startsWith(s.contact!.label)).join("\n").replace(/\n+$/, "");
+    await st.setJSON(`messages/${s.id}.json`, { ...msg, message:(kept + "\n\n" + line).slice(0, 5000) });
+  }
+  await st.set(vk, s.contact.phone);
+}
 async function ensureSeeds(req: Request) {
   const st = dataStore();
   for (const s of SEED_MESSAGES) {
     const marker = `messages-seeded/${s.id}`;
     try {
-      if (await st.get(marker)) { await refreshCover(req, s); continue; }
+      if (await st.get(marker)) { await refreshCover(req, s); await refreshContact(s); continue; }
       const r = await fetch(new URL(req.url).origin + s.cover);
       if (!r.ok) throw new Error("cover");
       const name = s.cover.split("/").pop() || "cover.webp";
