@@ -9645,6 +9645,16 @@ button.hn-top[aria-expanded]::after{content:"";width:7px;height:7px;border-left:
   #now .news-board .news-feed{flex:1 1 auto;min-height:0;max-height:none!important}
 }
 #now .top-now-content>.grid{grid-template-columns:1fr!important}
+/* בטלפון: "פורסם בישראל ובעולם" סגור כמו כפתור, ונפתח בלחיצה (19.11.2026) */
+@media(max-width:850px){
+  #now .news-board .community-board-head{cursor:pointer;position:relative}
+  #now .news-board .hn-chev{position:absolute;inset-inline-end:22px;top:50%;width:11px;height:11px;border-left:2px solid #17649a;border-bottom:2px solid #17649a;transform:translateY(-75%) rotate(-45deg);transition:transform .15s}
+  #now .news-board.hn-open .hn-chev{transform:translateY(-25%) rotate(135deg)}
+  #now .news-board:not(.hn-open)>:not(.community-board-head){display:none!important}
+  #now .news-board:not(.hn-open){height:auto!important;min-height:0!important;padding-bottom:0!important}
+}
+@media(min-width:851px){#now .news-board .hn-chev{display:none}
+}
 /* כניסה מהירה */
 .hn-quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
 .hn-quick a{display:flex;flex-direction:column;gap:3px;padding:14px 16px;background:#fff;border:1px solid #dce8ef;border-radius:10px;text-decoration:none;color:#244b61}
@@ -9658,9 +9668,16 @@ button.hn-top[aria-expanded]::after{content:"";width:7px;height:7px;border-left:
 .kc-title{display:block;font-size:13px;font-weight:700;color:#8a2240;margin:0 0 8px}
 #resources .kc-title{display:none}
 .kc-links{display:flex;flex-wrap:wrap;gap:6px}
-.kc-links a,.kc-links .kc-btn{display:inline-flex;align-items:center;min-height:34px;padding:6px 13px;border:1px solid #d3e1e7;border-radius:999px;background:#fff;color:#244b61;font:inherit;font-size:14px;text-decoration:none;cursor:pointer}
-.kc-links a:hover,.kc-links .kc-btn:hover{background:#f1f6f8;border-color:#9bbac6}
-.kc-links a.active{background:#244b61;border-color:#244b61;color:#fff;font-weight:650}
+.kc-links a,.kc-links .kc-btn{display:inline-flex;align-items:center;flex:0 0 auto;min-height:36px;padding:7px 15px;border:1px solid #d7e4eb;border-radius:14px;background:#f8fbfd;color:#17649a;font:inherit;font-size:14.5px;font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer}
+.kc-links a:hover,.kc-links .kc-btn:hover{background:#eef5f9;border-color:#b9d0dc}
+.kc-links a.active{background:#17649a;border-color:#17649a;color:#fff}
+/* בטלפון: שורה אחת שגוללים בה הצידה (19.11.2026) */
+@media(max-width:640px){
+  .kc-bar,#resources .section-head>div,#resources .section-head{min-width:0;max-width:100%}
+  .kc-links{max-width:calc(100% + 28px);flex-wrap:nowrap;overflow-x:auto;gap:8px;margin:0 -14px;padding:2px 14px 8px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .kc-links::-webkit-scrollbar{display:none}
+  .kc-links a,.kc-links .kc-btn{scroll-snap-align:start}
+}
 #resources .kc-bar{display:none}
 html[data-page="library"] #resources .kc-bar,html[data-page="calls"] #resources .kc-bar,html[data-page="conferences"] #resources .kc-bar,html[data-page="grants"] #resources .kc-bar{display:block}
 html[data-page="library"] #resources .library-topics{display:none!important}
@@ -9705,6 +9722,11 @@ function hnToggleAbout(b){const t=document.getElementById('hnAboutText');if(!t)r
   document.addEventListener('click',e=>{if(!e.target.closest('.hn-group'))close()});
   document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const g=groups.find(x=>x.classList.contains('open'));close();g?.querySelector('.hn-top').focus()});
   window.addEventListener('scroll',()=>{if(matchMedia('(max-width:640px)').matches)close()},{passive:true});
+  // "פורסם בישראל ובעולם" נפתח ונסגר בלחיצה על הכותרת (בטלפון)
+  document.addEventListener('DOMContentLoaded',()=>{const nb=document.querySelector('#now .news-board'),hd=nb&&nb.querySelector('.community-board-head');if(!hd)return;
+    hd.setAttribute('role','button');hd.tabIndex=0;hd.setAttribute('aria-expanded','false');const c=document.createElement('span');c.className='hn-chev';c.setAttribute('aria-hidden','true');hd.appendChild(c);
+    const t=()=>{if(!matchMedia('(max-width:850px)').matches)return;const o=nb.classList.toggle('hn-open');hd.setAttribute('aria-expanded',String(o))};
+    hd.addEventListener('click',t);hd.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});});
   // משאבים: כותרת אחידה בקולות קוראים, בכנסים ובמענקים (אחרי שהעמוד קובע את הכותרת שלו)
   document.addEventListener('DOMContentLoaded',()=>{
     if(['calls','conferences','grants'].includes(page)){const h=document.querySelector('#resources .section-head h2');if(h)h.textContent='משאבים'}
