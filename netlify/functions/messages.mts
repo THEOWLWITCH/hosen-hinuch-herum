@@ -53,7 +53,7 @@ function decorate(x: Message) {
 
 // הודעות שנוספות מהקוד (19.11.2026). כל אחת נכנסת פעם אחת לחנות, ואז נערכת ונמחקת מהניהול כרגיל.
 // סימון ב-messages-seeded/ מונע ממנה לחזור אחרי מחיקה.
-type SeedMessage = { id:string; title:string; message:string; cover:string; links:LinkItem[]; contact?:{ nameMatch:string; label:string } };
+type SeedMessage = { id:string; title:string; message:string; cover:string; coverVersion?:string; links:LinkItem[]; contact?:{ nameMatch:string; label:string } };
 const SEED_MESSAGES: SeedMessage[] = [{
   id:"gallery-meeting-2026-11-18",
   title:"📷 תמונות מהמפגש השני של הקהילה בגלריה",
@@ -66,6 +66,7 @@ const SEED_MESSAGES: SeedMessage[] = [{
   title:"🌱 יוזמה חדשה: גמישות נסיבתית ויתרון שיתופי",
   message:"נפתחה יוזמה חדשה של ד״ר שרי שרה גנון-שילון: \"גמישות נסיבתית ויתרון שיתופי\".\n\nהיוזמה עוסקת בשמירה על רציפות חינוכית בחירום: אילו פרקטיקות פורמליות ובלתי פורמליות ברמה הארצית, המקומית והבית־ספרית סייעו לשמור על רציפות חינוכית במלחמת \"חרבות ברזל\".\n\nמוזמנות ומוזמנים להצטרף!",
   cover:"/assets/board/new-initiative.webp",
+  coverVersion:"2", // 19.11.2026: עיצוב חדש עם מסגרת כהה. שינוי הגרסה מחליף את התמונה גם בהודעה שכבר עלתה.
   contact:{ nameMatch:"גנון", label:"ליצירת קשר עם ד״ר שרי שרה גנון-שילון" },
   links:[{ label:"🙋 להצטרפות ליוזמה", url:"https://hosen-hinuch-herum.netlify.app/match#join-team=gamishut-nesibatit-yitaron-shitufi" }]
 }];
@@ -81,12 +82,30 @@ async function contactLine(c: NonNullable<SeedMessage["contact"]>): Promise<stri
   }
   return "";
 }
+// תמונה מעודכנת להודעה שכבר עלתה: רק אם התמונה בהודעה היא עדיין זו שנוספה מהקוד (לא הוחלפה בניהול).
+async function refreshCover(req: Request, s: SeedMessage) {
+  if (!s.coverVersion) return;
+  const st = dataStore(); const vk = `messages-cover/${s.id}`;
+  if (String(await st.get(vk) || "1") === s.coverVersion) return;
+  const msg = await st.get(`messages/${s.id}.json`, { type:"json" }) as Message | null;
+  const oldKey = msg?.coverAttachment?.key || "";
+  if (msg && oldKey.startsWith(`files/board-${s.id}-`)) {
+    const r = await fetch(new URL(req.url).origin + s.cover);
+    if (!r.ok) return;
+    const name = s.cover.split("/").pop() || "cover.webp";
+    const key = `files/board-${s.id}-v${s.coverVersion}-${name}`;
+    await fileStore().set(key, await r.arrayBuffer(), { metadata:{ contentType:"image/webp", filename:name } });
+    await st.setJSON(`messages/${s.id}.json`, { ...msg, coverAttachment:{ key, name, type:"image/webp" } });
+    if (oldKey !== key) await fileStore().delete(oldKey).catch(() => {});
+  }
+  await st.set(vk, s.coverVersion);
+}
 async function ensureSeeds(req: Request) {
   const st = dataStore();
   for (const s of SEED_MESSAGES) {
     const marker = `messages-seeded/${s.id}`;
     try {
-      if (await st.get(marker)) continue;
+      if (await st.get(marker)) { await refreshCover(req, s); continue; }
       const r = await fetch(new URL(req.url).origin + s.cover);
       if (!r.ok) throw new Error("cover");
       const name = s.cover.split("/").pop() || "cover.webp";
@@ -100,6 +119,7 @@ async function ensureSeeds(req: Request) {
       };
       await st.setJSON(`messages/${s.id}.json`, x);
       await st.set(marker, x.createdAt);
+      if (s.coverVersion) await st.set(`messages-cover/${s.id}`, s.coverVersion);
     } catch (e) { console.error("message seed failed", s.id, e); }
   }
 }
