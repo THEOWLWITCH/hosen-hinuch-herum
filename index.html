@@ -10048,4 +10048,69 @@ html[data-page="now"] body #now .news-board .news-board-note{display:block!impor
 html[data-page="now"] body #now .news-board .community-board-head{cursor:default}
 html[data-page="now"] body #now .community-board-head .cb-sub{display:none!important}
 </style>
+<style id="window-arabic-toggle-v1">
+/* 19.11.2026: בכל חלון בעמוד הראשי — מילה מקושרת "العربية" שמחליפה לערבית רק את החלקים הקבועים של החלון (כותרת, תוויות, מונים, קישורים וכפתורים). התוכן (הודעות, תקצירים, ידיעות ומחקרים) נשאר בשפת המקור. */
+html[data-page="now"] body #now .community-board-head{position:relative}
+.ar-toggle{position:absolute;inset-inline-end:18px;top:50%;transform:translateY(-50%);padding:2px 4px;border:0;background:none;color:#17649a;font:600 14px/1.2 "Noto Sans Arabic",Assistant,Heebo,sans-serif;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;cursor:pointer}
+html body #now .community-board-head .ar-toggle{border:0!important;background:none!important;border-radius:0!important;box-shadow:none!important;min-height:0!important;min-width:0!important;padding:2px 4px!important;width:auto!important;height:auto!important}
+.ar-toggle:hover{color:#8a2240}
+.ar-toggle:focus-visible{outline:2px solid #17649a;outline-offset:2px;border-radius:3px}
+html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px}
+.ar-mode .community-board-head h2{display:flex;align-items:baseline;gap:10px;flex-wrap:nowrap}
+.ar-mode .community-board-head h2 .cb-ar{order:-1;font-size:1em!important;color:#173b5d!important;margin:0!important}
+.ar-mode .community-board-head h2 .cb-he{font-size:.68em;font-weight:600;color:#8a2240}
+.ar-mode .hp-tag,.ar-mode .hp-new,.ar-mode .sc-live,.ar-mode .hp-foot,.ar-mode .board-controls,.ar-mode .news-board-note,.ar-mode .news-link,.ar-mode .hn-board-post,.ar-mode .ar-note,.ar-mode .hp-who{font-family:"Noto Sans Arabic",Assistant,Heebo,sans-serif}
+.ar-note{display:none;margin:6px 2px 0;font-size:12.5px;color:#5e7581}
+.ar-mode .ar-note{display:block}
+</style>
+<script id="window-arabic-toggle-v1-js">
+(function(){
+  // ביטויים קבועים בלבד (לבדיקת הבודקת). התוכן עצמו לא מתורגם.
+  const AR={
+    'הודעה קודמת':'الإعلان السابق','הודעה הבאה':'الإعلان التالي','פרסום הודעה':'نشر إعلان',
+    'אין כרגע הודעות פעילות.':'لا توجد إعلانات حاليًا.','טוען...':'جارٍ التحميل...','טוען ידיעות...':'جارٍ تحميل الأخبار...',
+    'לכל היוזמות ›':'لكل المبادرات ›','לכל המחקרים ›':'لكل الأبحاث ›',
+    'מחפשת שותפים ושותפות':'تبحث عن شريكات وشركاء','בעבודה':'قيد العمل','תוצרי היוזמה':'مخرجات المبادرة','פעילה השבוע':'فعّالة هذا الأسبوع',
+    'מוכנות':'الجاهزية','חוסן נפשי':'المناعة النفسية','רציפות למידה':'استمرارية التعلّم','צוותי חינוך ומנהיגות':'الطواقم التربوية والقيادة',
+    'טכנולוגיה AI וסימולציה בחירום':'التكنولوجيا والذكاء الاصطناعي والمحاكاة','טכנולוגיה AI וסימולציה':'التكنولوجيا والذكاء الاصطناعي والمحاكاة','חוסן ארגוני':'المناعة التنظيمية',
+    'חדש השבוע':'جديد هذا الأسبوع','לידיעה המקורית ↗':'للخبر الأصلي ↗',
+    'מתעדכן כל שבוע, החדשות למעלה.':'يُحدَّث كل أسبوع، والأحدث في الأعلى.'
+  };
+  const RX=[
+    [/^(\d+) יוזמות פעילות$/,'$1 مبادرات فعّالة'],[/^יוזמה פעילה אחת$/,'مبادرة فعّالة واحدة'],
+    [/^(\d+) מחקרים, מהחדש לישן$/,'$1 بحثًا، من الأحدث إلى الأقدم'],
+    [/^\((\d+) ידיעות\)$/,'($1 خبرًا)'],
+    [/^(.*\S) ועוד (\d+)$/,'$1 و$2 آخرون']
+  ];
+  const orig=new WeakMap();
+  function tr(t){const k=t.trim();if(!k)return null;if(AR[k])return t.replace(k,AR[k]);for(const [r,v] of RX){if(r.test(k))return t.replace(k,k.replace(r,v))}return null}
+  // רק בתוך חלקים קבועים של החלון; לא בתוכן ההודעות, התקצירים, הידיעות או המחקרים
+  const SKIP='.board-message-text,.board-message-title,.board-message-author,.board-message-inst,.board-message-cover,h3,.news-place,.news-meta,.hp-feed h3';
+  function apply(win,on){
+    const w=document.createTreeWalker(win,NodeFilter.SHOW_TEXT);const nodes=[];let n;while(n=w.nextNode())nodes.push(n);
+    for(const t of nodes){
+      const el=t.parentElement;if(!el||el.closest('.community-board-head')||el.closest('.ar-note'))continue;
+      if(el.closest(SKIP)&&!el.closest('.hp-who'))continue;
+      if(el.closest('.hp-who')&&!/ועוד \d+$/.test(t.nodeValue.trim())&&!orig.has(t))continue;
+      if(on){if(orig.has(t))continue;const v=tr(t.nodeValue);if(v!=null){orig.set(t,t.nodeValue);t.nodeValue=v}}
+      else if(orig.has(t)){t.nodeValue=orig.get(t);orig.delete(t)}
+    }
+    win.querySelectorAll('.board-controls button').forEach(b=>{const l=b.dataset.heLabel||b.getAttribute('aria-label');if(!b.dataset.heLabel)b.dataset.heLabel=l;b.setAttribute('aria-label',on?(AR[l]||l):l)});
+  }
+  function setup(win){
+    const head=win.querySelector('.community-board-head'),h2=head&&head.querySelector('h2');if(!h2||head.querySelector('.ar-toggle'))return;
+    // הכותרת העברית בתוך span, כדי שבמצב ערבית הערבית תהיה הכותרת הראשית
+    const first=h2.firstChild;if(first&&first.nodeType===3){const s=document.createElement('span');s.className='cb-he';s.textContent=first.nodeValue.trim();h2.replaceChild(s,first);s.after(document.createTextNode(' '))}
+    const b=document.createElement('button');b.type='button';b.className='ar-toggle';b.lang='ar';b.textContent='العربية';b.setAttribute('aria-pressed','false');b.title='הצגת החלון בערבית';head.appendChild(b);
+    const note=document.createElement('p');note.className='ar-note';note.lang='ar';note.dir='rtl';note.textContent='المحتوى معروض بلغته الأصلية.';
+    const foot=win.querySelector('.hp-foot,.news-board-note,.hn-board-post');(foot||win.lastElementChild).before(note);
+    let on=false;
+    const mo=new MutationObserver(()=>{if(on){mo.disconnect();apply(win,true);mo.observe(win,{subtree:true,childList:true,characterData:true})}});
+    b.addEventListener('click',()=>{on=!on;win.classList.toggle('ar-mode',on);b.textContent=on?'עברית':'العربية';b.lang=on?'he':'ar';b.setAttribute('aria-pressed',String(on));b.title=on?'חזרה לעברית':'הצגת החלון בערבית';
+      mo.disconnect();apply(win,on);if(on)mo.observe(win,{subtree:true,childList:true,characterData:true})});
+  }
+  function init(){if((document.documentElement.dataset.page||'now')!=='now')return;document.querySelectorAll('#now .community-board').forEach(w=>{if(w.id!=='hpField')setup(w)})}
+  document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
 </body></html>
