@@ -2466,8 +2466,7 @@ body:has(.feedback-modal.open){
   </div>
 </div></section>
 <section id="journals" aria-labelledby="jfTitle"><div class="jf-wrap">
-  <nav class="kc-bar" aria-label="מדורי המשאבים"><span class="kc-title">משאבים</span><div class="kc-links"><a data-kc="articles" href="/articles">חידושים במחקר</a><a data-kc="calls" href="/calls">קולות קוראים</a><a data-kc="conferences" href="/conferences">כנסים</a><a data-kc="grants" href="/grants">מענקי מחקר</a><a data-kc="publications" href="/publications">פרסומים</a><a data-kc="policy" href="/policy">מסמכי מדיניות</a><a data-kc="research-tools" href="/research-tools">כלי מחקר</a><a data-kc="measures" href="/measures">כלי מדידה</a><a data-kc="journals" href="/journals">🔎 איתור כתב עת</a><button type="button" class="kc-btn" onclick="openCompassFromLibrary()">🧭 מצפן המחקר</button></div></nav>
-  <header class="jf-head">
+    <header class="jf-head">
     <img src="/assets/journals-icon.svg" alt="" width="120" height="120">
     <div>
       <span class="jf-pill">חדש באתר · כלי לחוקרות ולחוקרים</span>
@@ -2581,8 +2580,7 @@ body:has(.feedback-modal.open){
 </div></section>
 
 <section id="researchWorld" class="research-world"><div class="wrap">
-  <nav class="kc-bar" aria-label="מדורי המשאבים"><span class="kc-title">משאבים</span><div class="kc-links"><a data-kc="articles" href="/articles">חידושים במחקר</a><a data-kc="calls" href="/calls">קולות קוראים</a><a data-kc="conferences" href="/conferences">כנסים</a><a data-kc="grants" href="/grants">מענקי מחקר</a><a data-kc="publications" href="/publications">פרסומים</a><a data-kc="policy" href="/policy">מסמכי מדיניות</a><a data-kc="research-tools" href="/research-tools">כלי מחקר</a><a data-kc="measures" href="/measures">כלי מדידה</a><a data-kc="journals" href="/journals">🔎 איתור כתב עת</a><button type="button" class="kc-btn" onclick="openCompassFromLibrary()">🧭 מצפן המחקר</button></div></nav>
-  <div class="research-world-head">
+    <div class="research-world-head">
     <div class="research-kicker">עודכן: 15.11.2026 · מחקרים ופרסומים נבחרים מ־2024–2026</div>
     <h2>חידושים במחקר</h2>
     <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום: מחקרים חדשים מישראל ומהעולם, מהחדש לישן. לכל מחקר יש קישור למקור, שמות החוקרות והחוקרים ותיאור קצר בעברית.</p>
@@ -2966,7 +2964,7 @@ body:has(.feedback-modal.open){
 </div></section>
 
 <section id="resources"><div class="wrap">
-<div class="section-head"><div><h2>משאבים</h2><p class="muted">חידושים במחקר, קולות קוראים, כנסים, מענקים, מקורות ופרסומים, במקום אחד.</p><nav class="kc-bar" aria-label="מדורי המשאבים"><span class="kc-title">משאבים</span><div class="kc-links"><a data-kc="articles" href="/articles">חידושים במחקר</a><a data-kc="calls" href="/calls">קולות קוראים</a><a data-kc="conferences" href="/conferences">כנסים</a><a data-kc="grants" href="/grants">מענקי מחקר</a><a data-kc="publications" href="/publications">פרסומים</a><a data-kc="policy" href="/policy">מסמכי מדיניות</a><a data-kc="research-tools" href="/research-tools">כלי מחקר</a><a data-kc="measures" href="/measures">כלי מדידה</a><a data-kc="journals" href="/journals">🔎 איתור כתב עת</a><button type="button" class="kc-btn" onclick="openCompassFromLibrary()">🧭 מצפן המחקר</button></div></nav></div></div>
+<div class="section-head"><div><h2>משאבים</h2><p class="muted">חידושים במחקר, קולות קוראים, כנסים, מענקים, מקורות ופרסומים, במקום אחד.</p></div></div>
 <div class="library-academic-intro" id="libraryAcademicHub">
   <h3>ידע יישומי ואקדמי</h3>
   <p>בחרו מסלול קריאה או חפשו במאגר לפי מאפייני המקור. כל פריט מוצג עם ציטוט APA7 לפי הפרטים הזמינים וקישור למקור המקורי.</p>
@@ -9710,6 +9708,7 @@ button.hn-top[aria-expanded]::after{content:"";width:7px;height:7px;border-left:
 #resources .kc-bar{display:none}
 html[data-page="library"] #resources .kc-bar,html[data-page="calls"] #resources .kc-bar,html[data-page="conferences"] #resources .kc-bar,html[data-page="grants"] #resources .kc-bar{display:block}
 html[data-page="library"] #resources .library-topics{display:none!important}
+html[data-page="calls"] #resources .section-head p.muted,html[data-page="conferences"] #resources .section-head p.muted,html[data-page="grants"] #resources .section-head p.muted{display:none}
 #journals .kc-bar{margin-bottom:6px}
 /* עמוד אודות */
 #about{display:none!important}
@@ -9758,7 +9757,6 @@ function hnToggleAbout(b){const t=document.getElementById('hnAboutText');if(!t)r
     hd.addEventListener('click',t);hd.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});});
   // משאבים: כותרת אחידה בקולות קוראים, בכנסים ובמענקים (אחרי שהעמוד קובע את הכותרת שלו)
   document.addEventListener('DOMContentLoaded',()=>{
-    if(['calls','conferences','grants'].includes(page)){const h=document.querySelector('#resources .section-head h2');if(h)h.textContent='משאבים'}
     // "פורסם בישראל ובעולם" באותו גובה כמו לוח ההודעות, כשהם זה לצד זה
     const board=document.querySelector('#now .community-board:not(.news-board)'),news=document.querySelector('#now .news-board');
     if(board&&news&&'ResizeObserver' in window){
