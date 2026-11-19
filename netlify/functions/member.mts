@@ -36,7 +36,7 @@ async function linkMail(p: { id: string; name: string; email?: string }, site: s
     `שלום ${p.name},`,
     "באתר הקהילה אפשר עכשיו לבחור את תחומי העניין שלך.",
     "לפי הבחירה שלך נשלח אלייך קולות קוראים, מענקים וכנסים שמתאימים לך, וגם הסיכום השבועי יותאם אלייך.",
-    "הבחירה נשמרת בכרטיס שלך בנבחרת, ואפשר לשנות אותה בכל עת דרך אותו קישור.",
+    "הבחירה נשמרת בכרטיס שלך באתר, ואפשר לשנות אותה בכל עת דרך אותו קישור.",
     "הקישור אישי. בבקשה לא להעביר אותו הלאה. הוא בתוקף 60 יום.",
   ];
   const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>🎯 לבחירת תחומי העניין שלי</strong></a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
@@ -87,7 +87,7 @@ export default async (req: Request) => {
     if (!pid) return json(EXPIRED, 403);
     await markSeen(pid);
     const p = (await loadPeople(u.origin)).find(x => x.id === pid) as any;
-    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא באתר." }, 404);
     return json({
       id: p.id, name: p.name, institution: p.institution || "", description: p.description || "", email: p.email || "", phone: p.phone || "",
       motto: p.motto || "", websiteUrl: p.websiteUrl || "", linkedinUrl: p.linkedinUrl || "", facebookUrl: p.facebookUrl || "", instagramUrl: p.instagramUrl || "",
@@ -121,7 +121,7 @@ export default async (req: Request) => {
     const pid = await pidFromCode(body.code);
     if (!pid) return json({ error: "bad_code", message: "הקוד לא מתאים. כדאי לבדוק אותו שוב, או לבקש אותו למייל בכפתור \"שכחתי את הקוד\"." }, 401);
     const p = (await loadPeople(u.origin)).find(x => x.id === pid);
-    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא באתר." }, 404);
     await markSeen(pid);
     return json({ ok: true, token: await issueMemberToken(pid, SESSION_DAYS), name: p.name });
   }
@@ -133,7 +133,7 @@ export default async (req: Request) => {
     const email = norm(body.email);
     if (!validEmail(email)) return json({ error: "invalid", message: "נשמח לכתובת מייל תקינה." }, 400);
     const p = (await loadPeople(u.origin)).find(x => norm(x.email) === email);
-    if (!p) return json({ error: "not_member", message: "המייל הזה לא מופיע בכרטיס בנבחרת. אם הכרטיס רשום עם מייל אחר, כדאי לנסות אותו. אם עוד לא הצטרפת, אפשר לבקש להצטרף בכפתור \"🙋 הצטרפות לקהילה\"." }, 404);
+    if (!p) return json({ error: "not_member", message: "המייל הזה לא מופיע בכרטיס באתר. אם הכרטיס רשום עם מייל אחר, כדאי לנסות אותו. אם עוד לא הצטרפת, אפשר לבקש להצטרף בכפתור \"🙋 הצטרפות לקהילה\"." }, 404);
     if (!mailConfigured()) return json({ error: "mail", message: "שליחת המיילים מהאתר עוד לא פעילה. אפשר לבקש את הקוד ממנהלת הקהילה." }, 503);
     try {
       const { code } = await codeFor(p.id);
@@ -150,7 +150,7 @@ export default async (req: Request) => {
     if (!pid) return json(EXPIRED, 403);
     const people = await loadPeople(u.origin);
     const p = people.find(x => x.id === pid) as any;
-    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא באתר." }, 404);
     const { photoUrl, ...stored } = p;
     const now = new Date().toISOString();
     const next: any = { ...stored, updatedAt: now };
@@ -165,7 +165,7 @@ export default async (req: Request) => {
       if (!name) return json({ error: "missing", message: "נשמח לשם, כפי שיופיע בכרטיס." }, 400);
       const email = clip(body.email, 240);
       if (!validEmail(email)) return json({ error: "invalid", message: "נשמח לכתובת מייל תקינה. אליה יישלח הקוד אם יישכח." }, 400);
-      if (people.some(x => x.id !== pid && norm(x.email) === norm(email))) return json({ error: "taken", message: "המייל הזה כבר רשום בכרטיס אחר בנבחרת." }, 409);
+      if (people.some(x => x.id !== pid && norm(x.email) === norm(email))) return json({ error: "taken", message: "המייל הזה כבר רשום בכרטיס אחר באתר." }, 409);
       Object.assign(next, {
         name, email, institution: clip(body.institution, 220), description: clip(body.description, 6000), phone: clip(body.phone, 80),
         motto: clip(body.motto, 600), websiteUrl: cleanUrl(body.websiteUrl), linkedinUrl: cleanUrl(body.linkedinUrl),
@@ -220,7 +220,7 @@ export default async (req: Request) => {
   // קוד אישי לכרטיס אחד: מוצג למנהלת המערכת, ונשלח במייל כשאפשר. fresh — קוד חדש שמבטל את הקודם.
   if (action === "code-send") {
     const p = people.find(x => x.id === clip(body.personId, 80));
-    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא בנבחרת." }, 404);
+    if (!p) return json({ error: "not_found", message: "הכרטיס לא נמצא באתר." }, 404);
     const { code } = await codeFor(p.id, body.fresh === true);
     let sent = false, reason = "";
     if (body.mail !== false && validEmail(String(p.email || "").trim()) && mailConfigured()) {

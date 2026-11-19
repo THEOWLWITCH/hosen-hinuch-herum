@@ -121,7 +121,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   for (const r of (requests as any[]).filter(r => r.type === "join" && String(r.at || r.createdAt || "") >= since)) pushJ(r.data?.name || r.name, r.data?.affiliation, r.data?.email || r.email);
   const joined = joinedRows.map(x => x.name);
   const joinedOthers = joinedRows.filter(x => !hit(x.name, noteKeys)).map(x => x.inst ? `${x.name} (${x.inst})` : x.name); // מי שכבר קיבל/ה ברכה אישית לא חוזר/ת ברשימה
-  add("people", "🙋 הצטרפו לקהילה השבוע", [...peopleNotes, ...(joinedOthers.length ? [`ברוכים הבאים וברוכות הבאות: ${joinedOthers.slice(0, 12).join("; ")}`] : [])], ["לנבחרת", `${site}/people`]);
+  add("people", "🙋 הצטרפו לקהילה השבוע", [...peopleNotes, ...(joinedOthers.length ? [`ברוכים הבאים וברוכות הבאות: ${joinedOthers.slice(0, 12).join("; ")}`] : [])], ["לחברות וחברי הקהילה", `${site}/people`]);
 
   // 🏛 כיכר הקהילה (8.11.2026): הנושא הפתוח, השיחות סביבו ומה נכתב השבוע.
   try {
@@ -175,7 +175,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const visitKeys = (await Promise.all(visitDays.map(d => vst.list({ prefix: `visits/${d}/` }).then(r => r.blobs.map(b => b.key)).catch(() => [] as string[])))).flat();
   const visitors = new Set(visitKeys.map(k => k.split("/").pop())).size;
   // העמודים שנקראו הכי הרבה (10.11.2026): מכשירים שונים בכל עמוד, כל יום בנפרד.
-  const PAGE_NAMES: Record<string, string> = { now: "העמוד הראשי", match: "שיתופי פעולה", people: "הנבחרת", articles: "חידושים במחקר", library: "הספרייה", gallery: "הגלריה", compass: "מצפן המחקר", kikar: "כיכר הקהילה", calls: "קולות קוראים", conferences: "כנסים", grants: "מענקי מחקר", apps: "כלים", tasks: "משימות" };
+  const PAGE_NAMES: Record<string, string> = { now: "העמוד הראשי", match: "שיתופי פעולה", people: "חברות וחברי הקהילה", articles: "חידושים במחקר", library: "הספרייה", gallery: "הגלריה", compass: "מצפן המחקר", kikar: "כיכר הקהילה", calls: "קולות קוראים", conferences: "כנסים", grants: "מענקי מחקר", apps: "כלים", tasks: "משימות" };
   const pageKeys = (await Promise.all(visitDays.map(d => vst.list({ prefix: `pages/${d}/` }).then(r => r.blobs.map(b => b.key)).catch(() => [] as string[])))).flat();
   const perPage = new Map<string, number>();
   for (const k of pageKeys) { const pg = k.split("/")[2]; if (PAGE_NAMES[pg]) perPage.set(pg, (perPage.get(pg) || 0) + 1); }
@@ -183,7 +183,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
   const stats = [
     ...(visitors ? [`${q(visitKeys.length, "כניסה אחת", "כניסות")} לאתר השבוע, ${visitors === 1 ? "ממכשיר אחד" : `מ־${n(visitors)} מכשירים שונים`} (כל מכשיר נספר פעם אחת ביום)`] : []),
     ...(pageKeys.length >= 10 ? [`העמודים שנקראו הכי הרבה השבוע: ${topPages.map(([pg, c]) => `${PAGE_NAMES[pg]} (${n(c)})`).join(", ")}`] : []),
-    `${q(people.length, "חבר/ה אחד/ת בנבחרת", "חברות וחברים בנבחרת")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
+    `${q(people.length, "חבר/ה אחד/ת בקהילה", "חברות וחברים בקהילה")}${joined.length ? ` (${q(joined.length, "הצטרף/ה אחד/ת", "הצטרפו")} השבוע)` : ""}. ${seenWeek ? `${q(seenWeek, "אחד/ת נכנס/ה", "נכנסו")} לאתר השבוע עם הקוד האישי` : "השבוע אף אחד לא נכנס לאתר עם הקוד האישי"}`,
     `${q(library.length, "מקור אחד בספרייה", "מקורות בספרייה")}${added(lib.length)}`,
     ...(rw?.total ? [`${q(rw.total, "מחקר אחד", "מחקרים")} ב"חידושים במחקר"${fresh ? added(rw.added) : ""}${comments ? `. ${q(comments, "תגובה אחת", "תגובות")} בדיון השבוע` : ""}`] : []),
     `${q(liveTeams.length, "מרחב עבודה אחד", "מרחבי עבודה")}${added(newTeams.length)}${activeTeams.length ? (liveTeams.length === 1 ? ", והוא היה פעיל השבוע" : `. ${activeTeams.length === 1 ? "אחד מהם היה פעיל" : `${n(activeTeams.length)} מהם היו פעילים`} השבוע`) : ""}`,
@@ -217,7 +217,7 @@ export async function buildSiteWeekly(site: string, days = 7): Promise<Weekly> {
     "שלום,",
     `מה חדש השבוע באתר הקהילה "בינה מלאכותית: חוסן-חינוך-חרום" (${from}–${to}):`,
     ...blocks,
-    `**🧩 חדש: תפקידים בקהילה**\nהקהילה פעילה כשחברות וחברים לוקחים על עצמם תפקיד, קטן או גדול. בעמוד הנבחרת, מתחת לכרטיסים האישיים, יש עכשיו תפקידים פתוחים:\n- מובילי ומובילות מרחב הנבחרת: מקבלים את המצטרפים והמצטרפות החדשים\n- מובילי ומובילות הספרייה: שומרים על ספרייה איכותית ועדכנית\n- עורכי ועורכות "חידושים במחקר": בוחרים את מחקרי השבוע ומעוררים דיון\n- רכזי ורכזות קולות קוראים, כנסים ומענקים\n- מלווי ומלוות צוותים: עוזרים לצוותים לצאת לדרך\n- מתעדי ומתעדות המפגשים\n- אחראים ואחראיות על המייל השבועי הזה\n- מפיצי ומפיצות הקהילה ברשתות\nבוחרים תפקיד, לוחצים "אני רוצה", והפנייה מגיעה להנהלת הקהילה. יש רעיון לתפקיד אחר? אפשר להציע אותו שם: ${site}/people#roles`,    "יש לך משהו לשתף בעדכון הבא? אפשר לפרסם הודעה בדברי קהילה, או פשוט להשיב למייל הזה.",
+    `**🧩 חדש: תפקידים בקהילה**\nהקהילה פעילה כשחברות וחברים לוקחים על עצמם תפקיד, קטן או גדול. בעמוד חברות וחברי הקהילה, מתחת לכרטיסים האישיים, יש עכשיו תפקידים פתוחים:\n- מובילי ומובילות מרחב חברות וחברי הקהילה: מקבלים את המצטרפים והמצטרפות החדשים\n- מובילי ומובילות הספרייה: שומרים על ספרייה איכותית ועדכנית\n- עורכי ועורכות "חידושים במחקר": בוחרים את מחקרי השבוע ומעוררים דיון\n- רכזי ורכזות קולות קוראים, כנסים ומענקים\n- מלווי ומלוות צוותים: עוזרים לצוותים לצאת לדרך\n- מתעדי ומתעדות המפגשים\n- אחראים ואחראיות על המייל השבועי הזה\n- מפיצי ומפיצות הקהילה ברשתות\nבוחרים תפקיד, לוחצים "אני רוצה", והפנייה מגיעה להנהלת הקהילה. יש רעיון לתפקיד אחר? אפשר להציע אותו שם: ${site}/people#roles`,    "יש לך משהו לשתף בעדכון הבא? אפשר לפרסם הודעה בדברי קהילה, או פשוט להשיב למייל הזה.",
     "לא רוצה לקבל את העדכון השבועי? אפשר להשיב למייל הזה ולכתוב \"הסרה\".",
   ].join("\n\n");
   return { subject: `מה חדש השבוע בקהילה · ${to}`, body, sections: S, count, from, to };
