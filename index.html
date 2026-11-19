@@ -2399,6 +2399,24 @@ body:has(.feedback-modal.open){
   <div id="newsFeed" class="board-feed news-feed" tabindex="0" aria-label="רשימת ידיעות, אפשר לגלול"><p class="muted">טוען ידיעות...</p></div>
   <p class="news-board-note">מתעדכן כל שבוע, החדשות למעלה. <span id="newsCounter"></span></p>
 </aside>
+</div>
+<!-- 19.11.2026: במחשב, חלונות גלילה פתוחים בעמוד הראשי: יוזמות הקהילה, חידושים במחקר ומהשטח, באותו עיצוב של לוח ההודעות. בטלפון נשארת הכניסה המהירה. -->
+<div class="wrap hp-panels">
+<aside class="community-board hp-panel" id="hpInitiatives" aria-label="יוזמות הקהילה">
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3" fill="none" stroke="#1d4466" stroke-width="1.7"/><circle cx="16" cy="9" r="3" fill="none" stroke="#8a2240" stroke-width="1.7"/><path d="M3.5 19c.6-3 2.4-4.5 4.5-4.5s3.4 1 4 2.6M20.5 19c-.6-3-2.4-4.5-4.5-4.5-1.3 0-2.4.5-3.1 1.4" fill="none" stroke="#1d4466" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="4" r="1.1" fill="#d9a23a"/></svg></span><div><h2>יוזמות הקהילה</h2></div></div></div>
+  <div class="board-feed hp-feed" tabindex="0" aria-label="רשימת היוזמות הפעילות, אפשר לגלול"><p class="muted">טוען...</p></div>
+  <p class="hp-foot"><span class="hp-count"></span><a class="hn-link" href="/match">לכל היוזמות ›</a></p>
+</aside>
+<aside class="community-board hp-panel" id="hpResearch" aria-label="חידושים במחקר">
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h9l4 4V19.5H5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4.5v4h4" fill="none" stroke="#1d4466" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 12h7M8 15.5h5" stroke="#8a2240" stroke-width="1.6" stroke-linecap="round"/><circle cx="17.5" cy="17.5" r="1.4" fill="#d9a23a"/></svg></span><div><h2>חידושים במחקר</h2></div></div></div>
+  <div class="board-feed hp-feed" tabindex="0" aria-label="רשימת המחקרים, אפשר לגלול"><p class="muted">טוען...</p></div>
+  <p class="hp-foot"><span class="hp-count"></span><a class="hn-link" href="/articles">לכל המחקרים ›</a></p>
+</aside>
+<aside class="community-board hp-panel" id="hpField" aria-label="מהשטח">
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5h17" stroke="#1d4466" stroke-width="1.7" stroke-linecap="round"/><path d="M6 19.5V11l6-5 6 5v8.5" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 19.5v-4.5h4v4.5" fill="none" stroke="#8a2240" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="1.2" fill="#d9a23a"/></svg></span><div><h2>מהשטח</h2></div></div></div>
+  <div class="board-feed hp-feed" tabindex="0" aria-label="רשימת המקרים והבעיות מהשטח, אפשר לגלול"><p class="muted">טוען...</p></div>
+  <p class="hp-foot"><span class="hp-count"></span><a class="hn-link" href="/field">לכל המקרים והבעיות ›</a></p>
+</aside>
 </div></section>
 <!-- אודות הקהילה (19.11.2026): עמוד /about. הקישור אליו מהעמוד הראשי ומהתפריט "קהילה". -->
 <section id="about" aria-labelledby="aboutTitle"><div class="wrap hn-about-page">
@@ -9809,6 +9827,77 @@ html[data-page="articles"] #researchWorld>.wrap>.research-suggest-wrap:not(.rs-o
   const orig=window.renderResearchStudies;
   if(typeof orig==='function')window.renderResearchStudies=function(){const r=orig.apply(this,arguments);try{render()}catch(e){}return r};
   document.addEventListener('DOMContentLoaded',()=>{try{render()}catch(e){}});
+})();
+</script>
+<style id="home-panels-v1">
+/* 19.11.2026: חלונות גלילה בעמוד הראשי (במחשב בלבד) */
+.hp-panels{display:none}
+@media(min-width:851px){
+  html body #now .hp-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:24px}
+  html body #now .hn-quick{display:none}
+}
+@media(min-width:851px) and (max-width:1100px){html body #now .hp-panels{grid-template-columns:repeat(2,minmax(0,1fr))}html body #now .hp-panels>#hpField{grid-column:1 / -1}}
+html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-height:0}
+#now .hp-feed{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:10px;padding-inline-end:4px;scrollbar-width:thin}
+#now .hp-feed .board-message-card{animation:none;display:block;text-decoration:none;color:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+#now .hp-feed a.board-message-card:hover,#now .hp-feed a.board-message-card:focus-visible{border-color:#9bbac6!important;background:#fbfdfe!important}
+#now .hp-top{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-bottom:4px;font-size:12px;color:#6e818b}
+#now .hp-tag{font-weight:700;color:#246b8f}
+#now .hp-tag.seek{color:#b5762a}#now .hp-tag.out{color:#17324d}#now .hp-tag.case{color:#8a2240}
+#now .hp-new{color:#8a2240;font-weight:700}
+#now .hp-feed h3{margin:0 0 4px;font-size:15px;line-height:1.4;color:#173b5d;font-weight:700}
+#now .hp-who{margin:0 0 4px;font-size:12px;color:#5e7581}
+#now .hp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0 0;font-size:12px;color:#80909a}
+#now .hp-foot .hn-link{font-size:13.5px}
+</style>
+<script id="home-panels-v1-js">
+(function(){
+  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const short=(x,n=160)=>{x=String(x||'').replace(/\s+/g,' ').trim();return x.length>n?x.slice(0,n).replace(/\s+\S*$/,'')+'…':x};
+  const desk=()=>matchMedia('(min-width:851px)').matches;
+  const isHome=()=>(document.documentElement.dataset.page||'now')==='now';
+  function put(id,html,count){const p=document.getElementById(id);if(!p)return;p.querySelector('.hp-feed').innerHTML=html;p.querySelector('.hp-count').textContent=count||''}
+  // יוזמות: אותו כלל כמו בחלון הראווה — פעילות, עם תקציר, ולא מוסתרות
+  async function initiatives(){
+    const STAGE={seek:'מחפשת שותפים ושותפות',work:'בעבודה',out:'תוצרי היוזמה'};
+    try{
+      const [t,c]=await Promise.all([fetch('/api/teams').then(r=>r.json()),fetch('/api/collab').then(r=>r.json())]);
+      const ok=x=>String(x||'').trim().length>=20;
+      const teams=(Array.isArray(t)?t:[]).filter(x=>x.status!=='closed'&&!x.private&&ok(x.summary)).map(x=>({href:'/match#open-team='+encodeURIComponent(x.id),title:x.title,text:x.summary,stage:x.product?'out':x.status==='recruiting'&&!x.locked?'seek':'work',lead:x.lead,people:(x.members||[]).length,sort:x.activeAt||x.createdAt,at:x.activeAt}));
+      const reqs=((c&&c.requests)||[]).filter(x=>x.status==='open'&&!x.hasTeam&&ok(x.description)).map(x=>({href:'/match#collab-req-'+encodeURIComponent(x.id),title:x.title,text:x.description,stage:'seek',lead:x.requester,people:1+(x.joiners||[]).length,sort:x.createdAt}));
+      const rows=[...teams,...reqs].sort((a,b)=>String(b.sort||'').localeCompare(String(a.sort||'')));
+      const live=at=>{const d=(Date.now()-Date.parse(at||''))/864e5;return d>=0&&d<7?'<span class="sc-live"><span class="sc-live-dot"></span>פעילה השבוע</span>':''};
+      put('hpInitiatives',rows.length?rows.map(x=>`<a class="board-message-card" href="${E(x.href)}"><div class="hp-top"><span class="hp-tag ${x.stage}">${STAGE[x.stage]}</span>${live(x.at)}</div><h3 dir="auto">${E(x.title)}</h3><div class="board-message-text" dir="auto">${E(short(x.text))}</div>${x.lead?`<p class="hp-who" dir="auto">${E(x.lead)}${x.people>1?` ועוד ${x.people-1}`:''}</p>`:''}</a>`).join(''):'<p class="muted">עוד אין יוזמות פעילות. אפשר להציע יוזמה ביוזמות הקהילה.</p>',rows.length?rows.length+' יוזמות פעילות':'');
+    }catch(e){put('hpInitiatives','<p class="muted">לא הצלחנו לטעון את היוזמות כרגע.</p>')}
+  }
+  function research(){
+    if(typeof researchWorldItems==='undefined')return;
+    const all=sortResearchItems([...researchWorldItems,...(typeof uploadedResearchItems!=='undefined'?uploadedResearchItems:[])].filter(x=>x.title));
+    put('hpResearch',all.length?all.map(x=>{const tag=`<div class="hp-top"><span class="hp-tag">${E(researchCategoryLabel(x.cat))}</span><span>${E(x.dateLabel||x.year||'')}</span>${x.weeklyNew?'<span class="hp-new">חדש השבוע</span>':''}</div>`;
+      const body=`<h3 dir="auto">${E(x.title)}${x.url?' ↗':''}</h3>${x.authors?`<p class="hp-who" dir="auto">${E(x.authors)}</p>`:''}${x.summary?`<div class="board-message-text" dir="auto">${E(short(x.summary))}</div>`:''}`;
+      return x.url?`<a class="board-message-card" href="${E(x.url)}" target="_blank" rel="noopener">${tag}${body}</a>`:`<article class="board-message-card">${tag}${body}</article>`}).join(''):'<p class="muted">המחקרים יופיעו כאן בקרוב.</p>',all.length?all.length+' מחקרים, מהחדש לישן':'');
+  }
+  async function field(){
+    try{const d=await fetch('/api/field').then(r=>r.json());const rows=(d.items||[]).filter(x=>x.status!=='pending').sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+      put('hpField',rows.length?rows.map(x=>{const p=x.parts||{};const txt=x.kind==='case'?(p.happened||p.planned):(p.problem||p.who);const n=(x.comments||[]).length;
+        return `<a class="board-message-card" href="/field"><div class="hp-top"><span class="hp-tag ${x.kind==='case'?'case':''}">${x.kind==='case'?'📝 מקרה':'🧩 בעיה'}</span><span>${E([x.role,x.setting].filter(Boolean).join(' · '))}</span></div><h3 dir="auto">${E(x.title)}</h3>${txt?`<div class="board-message-text" dir="auto">${E(short(txt))}</div>`:''}<p class="hp-who">${x.kind==='case'?'💡 מלמד':'👍 חשוב לחקור'} ${x.votes||0}${n?` · 💬 ${n}`:''}</p></a>`}).join(''):'<p class="muted">עוד אין שיתופים מהשטח. אפשר להיות הראשונים לשתף.</p>',rows.length?rows.length+' שיתופים':'');
+    }catch(e){put('hpField','<p class="muted">לא הצלחנו לטעון כרגע.</p>')}
+  }
+  let started=false;
+  function start(){if(started||!isHome()||!desk())return;started=true;initiatives();field();try{research()}catch(e){}}
+  const orig=window.renderResearchStudies;
+  if(typeof orig==='function')window.renderResearchStudies=function(){const r=orig.apply(this,arguments);if(started)try{research()}catch(e){}return r};
+  document.addEventListener('DOMContentLoaded',start);
+  matchMedia('(min-width:851px)').addEventListener?.('change',start);
+})();
+// פתיחת צוות מקישור בעמוד הראשי: /match#open-team=ID
+(function(){
+  const m=location.hash.match(/^#open-team=([\w-]+)$/);if(!m)return;
+  const id=decodeURIComponent(m[1]);let n=0;
+  const tryOpen=()=>{const row=document.querySelector(`#callsHub [data-ch="team-open"][data-id="${CSS.escape(id)}"]`);
+    if(row){history.replaceState(null,'',location.pathname);row.click();return}
+    if(++n<40)setTimeout(tryOpen,250);else location.hash='#workspaces'};
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(tryOpen,300));
 })();
 </script>
 </body></html>
