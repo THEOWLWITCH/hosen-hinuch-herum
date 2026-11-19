@@ -53,13 +53,34 @@ function decorate(x: Message) {
 
 // הודעות שנוספות מהקוד (19.11.2026). כל אחת נכנסת פעם אחת לחנות, ואז נערכת ונמחקת מהניהול כרגיל.
 // סימון ב-messages-seeded/ מונע ממנה לחזור אחרי מחיקה.
-const SEED_MESSAGES = [{
+type SeedMessage = { id:string; title:string; message:string; cover:string; links:LinkItem[]; contact?:{ nameMatch:string; label:string } };
+const SEED_MESSAGES: SeedMessage[] = [{
   id:"gallery-meeting-2026-11-18",
   title:"📷 תמונות מהמפגש השני של הקהילה בגלריה",
   message:"תודה לכל המשתתפות והמשתתפים במפגש השני של הקהילה ב־18.11.2026!\n\nבגלריה מחכות תמונות מהמפגש: הצגת היוזמה \"מילואים בחינוך\" ומודל הרציפות הקהילתית בחירום, והמחקר על שמירה על רציפות חינוכית במלחמה, שמוגש כהצעה למושב סימפוזיון בכנס ICER 2027.\n\nמוזמנות ומוזמנים להיכנס לגלריה, להיזכר במפגש ולשתף.",
   cover:"/assets/gallery/2026-11-18/01.webp",
   links:[{ label:"🖼 לתמונות מהמפגש בגלריה", url:"https://hosen-hinuch-herum.netlify.app/gallery?album=meeting-2026-11-18" }]
+}, {
+  // התמונה assets/board/new-initiative.webp משמשת לכל הודעה על יוזמה חדשה (19.11.2026).
+  id:"initiative-gamishut-nesibatit",
+  title:"🌱 יוזמה חדשה: גמישות נסיבתית ויתרון שיתופי",
+  message:"נפתחה יוזמה חדשה של ד״ר שרי שרה גנון-שילון: \"גמישות נסיבתית ויתרון שיתופי\".\n\nהיוזמה עוסקת בשמירה על רציפות חינוכית בחירום: אילו פרקטיקות פורמליות ובלתי פורמליות ברמה הארצית, המקומית והבית־ספרית סייעו לשמור על רציפות חינוכית במלחמת \"חרבות ברזל\".\n\nמוזמנות ומוזמנים להצטרף!",
+  cover:"/assets/board/new-initiative.webp",
+  contact:{ nameMatch:"גנון", label:"ליצירת קשר עם ד״ר שרי שרה גנון-שילון" },
+  links:[{ label:"🙋 להצטרפות ליוזמה", url:"https://hosen-hinuch-herum.netlify.app/match#join-team=gamishut-nesibatit-yitaron-shitufi" }]
 }];
+// טלפון (או מייל) מהכרטיס בעמוד חברות וחברי הקהילה.
+async function contactLine(c: NonNullable<SeedMessage["contact"]>): Promise<string> {
+  const st = dataStore();
+  const { blobs } = await st.list({ prefix:"people/" });
+  for (const b of blobs) {
+    const p = await st.get(b.key, { type:"json" }) as any;
+    if (!p || p.deleted || !String(p.name || "").includes(c.nameMatch)) continue;
+    if (p.phone) return `${c.label}: נייד ${p.phone}`;
+    if (p.email) return `${c.label}: ${p.email}`;
+  }
+  return "";
+}
 async function ensureSeeds(req: Request) {
   const st = dataStore();
   for (const s of SEED_MESSAGES) {
@@ -71,8 +92,9 @@ async function ensureSeeds(req: Request) {
       const name = s.cover.split("/").pop() || "cover.webp";
       const key = `files/board-${s.id}-${name}`;
       await fileStore().set(key, await r.arrayBuffer(), { metadata:{ contentType:"image/webp", filename:name } });
+      const contact = s.contact ? await contactLine(s.contact).catch(() => "") : "";
       const x: Message = {
-        id:s.id, title:s.title, degree:"", name:"", institution:"", message:s.message,
+        id:s.id, title:s.title, degree:"", name:"", institution:"", message:s.message + (contact ? "\n\n" + contact : ""),
         createdAt:new Date().toISOString(), expiresAt:null, attachments:[],
         coverAttachment:{ key, name, type:"image/webp" }, links:s.links
       };

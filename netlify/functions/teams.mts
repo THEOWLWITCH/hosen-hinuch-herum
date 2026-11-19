@@ -25,6 +25,49 @@ function workspaceLink(site: string, t: Team, key: string) {
   return `${site}/match#team=${t.id}.${key}`;
 }
 
+// מרחבי עבודה שנפתחים מהקוד (19.11.2026, בבקשת מנהלת האתר). כל אחד נוצר פעם אחת, ואז מתנהל כרגיל.
+// סימון ב-teams-seeded/ מונע ממנו לחזור אחרי מחיקה. leadKeyHash: גיבוב בלבד של הקישור למוביל/ה.
+// המייל של המוביל/ה נלקח מהכרטיס שלו/ה בעמוד חברות וחברי הקהילה (לפי nameMatch), כדי לאפשר כניסה חוזרת במייל.
+const SEED_TEAMS = [{
+  id: "gamishut-nesibatit-yitaron-shitufi",
+  title: "גמישות נסיבתית ויתרון שיתופי",
+  summary: "שמירה על רציפות חינוכית בחירום. שאלת המחקר: אילו פרקטיקות פורמליות ובלתי פורמליות ברמות המשילות הארצית, המקומית והבית־ספרית הודגמו לשמירה על רציפות חינוכית במלחמת \"חרבות ברזל\"?\n\nשתי פרקטיקות משלימות: גמישות נסיבתית (פרקטיקה פורמלית: היענות גמישה של שחקני המשילות הרב־רמתית למצב הבלתי צפוי שיצרה המלחמה) ויתרון שיתופי (פרקטיקה בלתי פורמלית: סינרגיה בין שחקנים ממשלתיים ולא־ממשלתיים בעלי משאבים, ניסיון ומומחיות שונים).\n\nהמחקר מוצג כהצעה למושב סימפוזיון בכנס ICER 2027: \"מנהיגות אינטגרטיבית לשמירה על רציפות חינוכית בחירום\".",
+  need: "כל חברות וחברי הקהילה מוזמנים להצטרף",
+  leadName: "ד״ר שרי שרה גנון-שילון",
+  nameMatch: "גנון",
+  fallbackEmail: "sherryshilon@gmail.com",
+  leadKeyHash: "5d87072a446686ba3a4eb8cc317ac430e66b972c8438d027bd970e153ecb0ff1",
+  links: [{ label: "המצגת: גמישות נסיבתית ויתרון שיתופי (Google Slides)", url: "https://docs.google.com/presentation/d/1ETH2QORVQSTHGvqtPGUvSys6IpZkUeoz/edit?usp=drive_link&ouid=106449635832792688421&rtpof=true&sd=true" }],
+}];
+async function cardOf(nameMatch: string): Promise<{ email?: string; phone?: string } | null> {
+  const st = store("hosen-data");
+  const { blobs } = await st.list({ prefix: "people/" });
+  for (const b of blobs) {
+    const p = await st.get(b.key, { type: "json" }) as any;
+    if (p && !p.deleted && String(p.name || "").includes(nameMatch)) return { email: p.email || "", phone: p.phone || "" };
+  }
+  return null;
+}
+async function ensureSeedTeams() {
+  const st = store("hosen-data");
+  for (const s of SEED_TEAMS) {
+    const marker = `teams-seeded/${s.id}`;
+    try {
+      if (await st.get(marker)) continue;
+      if (!(await getTeam(s.id))) {
+        const email = (await cardOf(s.nameMatch).catch(() => null))?.email || s.fallbackEmail;
+        const t = createTeam({ title: s.title, summary: s.summary, need: s.need, leadName: s.leadName, leadEmail: email }, s.leadKeyHash);
+        t.id = s.id;
+        t.keyOwners = { [s.leadKeyHash]: s.leadName };
+        t.links = s.links.map(l => ({ id: newItemId(), label: l.label, url: l.url }));
+        t.activeAt = t.createdAt;
+        await saveTeam(t);
+      }
+      await st.set(marker, new Date().toISOString());
+    } catch (e) { console.error("team seed failed", s.id, e); }
+  }
+}
+
 function sameEmail(a: unknown, b: unknown) {
   const n = (s: unknown) => String(s ?? "").trim().toLowerCase();
   return !!n(a) && n(a) === n(b);
@@ -50,6 +93,7 @@ export default async (req: Request) => {
   const site = siteUrl(u.origin);
 
   if (req.method === "GET") {
+    await ensureSeedTeams();
     if (u.searchParams.get("admin") === "1") {
       if (!(await validToken(req, "admin"))) return json({ error: "unauthorized" }, 401);
       return json((await listTeams()).map(t => ({ ...publicTeam(t), leadEmail: t.lead.email || "", updatedAt: t.updatedAt, lockCode: t.locked ? (t.lockCode || "") : "" })));
