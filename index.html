@@ -10004,4 +10004,23 @@ html body #now .board-message-cover img{width:auto!important;max-width:100%!impo
   html body #now.hp-on .community-board-head .cb-ar{display:inline}
 }
 </style>
+<style id="showcase-festive-v1">
+/* 19.11.2026: כרטיסי היוזמות כחלון ראווה — חגיגיים ובולטים (בעמוד הראשי ובעמוד יוזמות הקהילה) */
+html body #hpInitiatives .hp-feed a.board-message-card,html body #match .sc-card{position:relative;overflow:hidden;flex:0 0 auto!important;padding:20px 18px 16px!important;border:1.5px solid #e2cfa8!important;border-radius:16px!important;background:#fffcf6!important;box-shadow:0 3px 12px rgba(138,34,64,.07)}
+html body #hpInitiatives .hp-feed a.board-message-card::before,html body #match .sc-card::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:linear-gradient(90deg,#1f4a63 0 34%,#8a2240 34% 67%,#d39a2c 67%)}
+html body #hpInitiatives .hp-feed a.board-message-card:hover,html body #match .sc-card:hover,html body #hpInitiatives .hp-feed a.board-message-card:focus-visible,html body #match .sc-card:focus-visible{border-color:#8a2240!important;box-shadow:0 8px 22px rgba(138,34,64,.14);transform:translateY(-2px)}
+html body #hpInitiatives .hp-feed h3,html body #match .sc-card b{font-size:18px!important;line-height:1.35!important;color:#8a2240!important;font-weight:800!important}
+html body #hpInitiatives .hp-feed .board-message-text,html body #match .sc-text{font-size:14.5px!important;color:#3f5866!important}
+html body #hpInitiatives .hp-feed .hp-who,html body #match .sc-foot{font-size:13px!important;color:#1f4a63!important;font-weight:600}
+html body #hpInitiatives .hp-feed .hp-who::before{content:"👥 "}
+html body #hpInitiatives .hp-feed{gap:14px!important}
+/* 19.11.2026: סינון לפי נושא ב"חידושים במחקר" — מילים מקושרות במקום כפתורים */
+#rsChips{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 0;flex:1 1 100%}
+#rsChips .research-chip{all:unset;cursor:pointer;color:#1d5a80;font-size:15px;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;white-space:nowrap}
+#rsChips .research-chip small{font-size:12.5px;color:#6e818b;font-weight:400;text-decoration:none;margin-inline-start:3px}
+#rsChips .research-chip.on{color:#8a2240;text-decoration:none;font-weight:800}
+#rsChips .research-chip:hover{color:#8a2240}
+#rsChips .research-chip:focus-visible{outline:2px solid #1d5a80;outline-offset:2px;border-radius:3px}
+#rsChips .research-chip+.research-chip::before{content:"·";display:inline-block;margin:0 10px;color:#9aaab3;text-decoration:none;font-weight:400}
+</style>
 </body></html>
