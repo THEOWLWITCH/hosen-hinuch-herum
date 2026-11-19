@@ -36,11 +36,11 @@ async function offerMail(p: { id: string; name: string; email?: string }, site: 
   const link = `${site}/match#my-offer=${await issueMemberToken(p.id)}`;
   const lines = [
     `שלום ${p.name},`,
-    "בעמוד שיתופי פעולה באתר הקהילה נפתח אזור חדש: 🤝 שידוכים בקהילה. רואים בו מי מקדמת מה, מי מתאימה לעבודה משותפת, ובקשות פתוחות לשיתוף פעולה שאפשר להצטרף אליהן.",
+    "בעמוד יוזמות הקהילה באתר הקהילה נפתח אזור חדש: 🤝 שידוכים בקהילה. רואים בו מי מקדמת מה, מי מתאימה לעבודה משותפת, ובקשות פתוחות לשיתוף פעולה שאפשר להצטרף אליהן.",
     "התשובות מהטבלה של קבוצת העניין כבר נמצאות שם. בקישור הזה אפשר לבדוק, לעדכן ולהוסיף: לבחור את סוגי הפעילות שתרצי לקדם ולכתוב כמה מילים על הרעיון או הנושא.",
     "הקישור אישי ובתוקף 60 יום. כדאי לא להעביר אותו הלאה.",
   ];
-  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>✏️ לעדכון מה שאני יכולה לקדם</strong></a></p><p><a href="${esc(site)}/match" style="color:#17649a">לשידוכים בעמוד שיתופי פעולה</a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
+  const html = `<div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:8px 18px;color:#1d3445;line-height:1.7;font-size:15px">${lines.map(l => `<p>${esc(l)}</p>`).join("")}<p><a href="${esc(link)}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#2f6e4f;color:#fff;text-decoration:none"><strong>✏️ לעדכון מה שאני יכולה לקדם</strong></a></p><p><a href="${esc(site)}/match" style="color:#17649a">לשידוכים בעמוד יוזמות הקהילה</a></p><p style="font-size:12px;color:#6b7d88">בינה מלאכותית: חוסן-חינוך-חרום</p></div>`;
   await sendMail(String(p.email), "מה אני יכולה לקדם: שידוכים בקהילה", html, lines.join("\n\n") + `\n\nלעדכון: ${link}`);
 }
 
@@ -161,7 +161,7 @@ export default async (req: Request) => {
     const c = await saveCollab(createCollab(f, await hashKey(key)));
     const link = manageLink(site, c.id, key);
     const mailed = await mail(f.email, `הבקשה שלך לשיתוף פעולה פורסמה: ${c.title}`,
-      [`שלום ${f.name},`, `הבקשה "${c.title}" פורסמה בעמוד שיתופי פעולה, בשידוכים בקהילה.`, "כשמישהי מצטרפת, יגיע אלייך מייל עם הפרטים שלה.", "בקישור הזה אפשר לראות מי הצטרפה, לעדכן את הבקשה, לסגור אותה, או לפתוח קבוצת משימה עם סביבת עבודה משותפת. כדאי לשמור אותו."],
+      [`שלום ${f.name},`, `הבקשה "${c.title}" פורסמה בעמוד יוזמות הקהילה, בשידוכים בקהילה.`, "כשמישהי מצטרפת, יגיע אלייך מייל עם הפרטים שלה.", "בקישור הזה אפשר לראות מי הצטרפה, לעדכן את הבקשה, לסגור אותה, או לפתוח קבוצת משימה עם סביבת עבודה משותפת. כדאי לשמור אותו."],
       ["ניהול הבקשה", link]);
     await addRequest({
       type: "idea", name: f.name, email: f.email, subject: `🤝 בקשה לשיתוף פעולה: ${c.title}`,
@@ -337,7 +337,7 @@ export default async (req: Request) => {
     const name = clip(body.name, 160), email = clip(body.email, 240), note = clip(body.note, 800);
     if (!name || !validEmail(email)) return json({ error: "missing", message: "כדי להצטרף, נשמח לשם ולמייל." }, 400);
     const r = await getResearch(clip(body.id, 80));
-    if (!r || r.status !== "open") return json({ error: "not_found", message: "הרעיון לא נמצא, או שכבר נפתח לו מרחב עבודה. אפשר לבקש להצטרף לצוות בעמוד שיתופי פעולה." }, 404);
+    if (!r || r.status !== "open") return json({ error: "not_found", message: "הרעיון לא נמצא, או שכבר נפתח לו מרחב עבודה. אפשר לבקש להצטרף לצוות בעמוד יוזמות הקהילה." }, 404);
     if (r.initiators.some(i => norm(i.email) === norm(email))) return json({ ok: true, already: true });
     r.initiators.push({ id: crypto.randomUUID().slice(0, 8), name, email, note, at: new Date().toISOString(), personId: clip(body.personId, 80) });
     r.initiators = r.initiators.slice(-60);

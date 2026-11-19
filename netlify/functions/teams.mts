@@ -323,7 +323,7 @@ export default async (req: Request) => {
     const was = !!t.locked;
     t.locked = true; t.lockHash = await hashLock(t.id, code); t.lockCode = code; t.lockedAt = at;
     t.requests = [];
-    t.messages.push({ id: newItemId(), name: who, text: was ? "🔒 קוד הצוות הוחלף. הקוד החדש נשלח לחברי/ות הצוות בנפרד." : "🔒 הצוות התגבש והמרחב נסגר: אין הצטרפות חדשה, והדיון והחומרים נפתחים רק עם קוד הצוות. בעמוד שיתופי פעולה מוצגים רק התקציר ושמות החוקרים/ות.", at });
+    t.messages.push({ id: newItemId(), name: who, text: was ? "🔒 קוד הצוות הוחלף. הקוד החדש נשלח לחברי/ות הצוות בנפרד." : "🔒 הצוות התגבש והמרחב נסגר: אין הצטרפות חדשה, והדיון והחומרים נפתחים רק עם קוד הצוות. בעמוד יוזמות הקהילה מוצגים רק התקציר ושמות החוקרים/ות.", at });
     t.messages = t.messages.slice(-300);
     return json({ ok: true, team: view(await saveTeam(t), access) });
   }
