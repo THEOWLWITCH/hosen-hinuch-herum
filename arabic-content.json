@@ -129,6 +129,96 @@
   "תפיסת תפקיד המורה למדעים דרך התנסות בהערכת תוצרי בינה מלאכותית יוצרת": {
    "t": "تصوّر دور معلم العلوم من خلال تجربة تقييم مخرجات الذكاء الاصطناعي التوليدي",
    "s": "بحث بأساليب مدمجة: قيّم 60 معلمة ومعلم علوم في المدارس الإعدادية أسئلة مفتوحة أنتجها ChatGPT. شجّعهم التقييم على تحديد فجوات مفاهيمية وتدقيق الصياغة وملاءمة المحتوى للطلاب، وأوضح تصوّر المعلم كوسيط للمعرفة ومقيِّم ناقد."
+  },
+  "Building Assessment Continuity in School Mental Health: Development and Initial Evaluation of the PULSE Teacher Report": {
+   "s": "يصف البحث تطوير PULSE-TR وفحصه السيكومتري الأولي، وهو استبيان قصير للمعلمين من 17 بندًا عن الأداء الاجتماعي-العاطفي والسلوكي والتعليمي للطلاب، مشتق من EIS-TR.…"
+  },
+  "The Association Between School Staff Support and Wellbeing for Students With Poor Quality Social Relationships": {
+   "s": "في بحث شمل 17,126 مراهقًا في إنجلترا (منطقة مانشستر الكبرى، بحث #BeeWell) فُحصت العلاقة بين دعم طاقم المدرسة وبين الصحة النفسية والتفاؤل وصورة الذات والرضا عن الحياة، أيضًا…"
+  },
+  "Understanding Teacher Wellbeing Through General Resistance Resources: A Salutogenic Analysis of Beginning Teachers’ Professional Learning and Practice": {
+   "s": "بحث بأساليب مدمجة في ثلاث دراسات حالة لمعلمين مبتدئين وطلاب في التأهيل للتدريس، فحص كيف تتطوّر موارد المقاومة العامة (GRR) التي تحافظ على صحتهم النفسية وعلى ممارستهم التدريسية.…"
+  },
+  "Designing a Curriculum Model Based on Artificial Intelligence and Purposeful Physical Activity to Enhance Learning Self-Regulation, Mental Health, and Psychological Well-Being among Students": {
+   "s": "صمّم الباحثون نموذج منهاج يدمج الذكاء الاصطناعي ونشاطًا بدنيًا موجَّهًا وفحصوه، بهدف تعزيز التنظيم الذاتي للتعلّم والصحة النفسية لدى الطلاب. في البحث…"
+  },
+  "Implementers’ Use of Artificial Intelligence: An Illustration Using State Accountability Policy and School Improvement": {
+   "s": "يفحص المقال كيف يمكن للذكاء الاصطناعي أن يكون وسيطًا ثانيًا بين نص سياسة المساءلة الرسمية وبين الممارسة في المدرسة، خاصة في فهم المديرين لأهداف…"
+  },
+  "A collective self-study of teacher educators on preparing early and elementary educators for reflective AI-integrated pedagogy": {
+   "s": "ثلاث محاضرات في إعداد المعلمين لبرنامج الطفولة المبكرة والمرحلة الابتدائية فحصن، بأسلوب الدراسة الذاتية الجماعية، كيف أدمجن الذكاء الاصطناعي التوليدي في مساقات المعلمين قبل الخدمة وبعدها…"
+  },
+  "Should there be a teacher in-the-loop? A study of generative AI-personalized tasks middle school": {
+   "s": "فحص البحث 7 معلمين للرياضيات في المرحلة الإعدادية استخدموا ChatGPT لإنتاج نسخ ملائمة شخصيًا لمسائل من المنهاج، وفق اهتمامات طلابهم خارج…"
+  },
+  "Work-family conflict and related factors among Iraqi emergency nurses: A cross-sectional study": {
+   "s": "في دراسة مقطعية شملت 185 ممرضة وممرضًا في أقسام الطوارئ في مستشفيات محافظة صلاح الدين في العراق عام 2025، فُحص مستوى التعارض بين العمل والعائلة. معظم المشاركين نساء…"
+  },
+  "Identity‐based victimization and identity coherence among minoritized adolescents in the Netherlands: The role of ethnic identity, school belonging, and family emotional support": {
+   "s": "في بحث هولندي شمل 1032 مراهقًا من خلفية مهاجرة (من سن 13 إلى 18) فُحصت العلاقة بين الإيذاء على خلفية الهوية (التمييز المُدرَك وجرائم الكراهية) وبين تماسك الهوية. لم تُوجد علاقة مباشرة، لكن…"
+  },
+  "Academic Resilience and Students’ Well-Being: The Role of Mindfulness and Academic Engagement as Mediators": {
+   "s": "في دراسة مقطعية في إندونيسيا شملت 235 طالبًا ثانويًا بين 14 و18 عامًا، تبيّن أن المناعة الأكاديمية تتنبّأ بالرفاه الذاتي للطلاب. النتيجة المركزية أن اليقظة الذهنية والانخراط…"
+  },
+  "Comparison of the Effectiveness of Positive Parenting Training and Choice Theory–Based Parenting Training on the Parent–Child Relationship": {
+   "s": "في بحث شبه تجريبي مع 45 أمًّا لأبناء بين 6 و9 أعوام في مدينة مشهد، قورن الإرشاد للتربية الإيجابية بالإرشاد التربوي القائم على نظرية الاختيار من حيث العلاقة بين الأم والطفل. كلا…"
+  },
+  "Artificial Intelligence and Digital Transformation in Higher Education: A Systematic Review of Opportunities, Challenges and Emerging Trends": {
+   "s": "مراجعة منهجية للأدبيات البحثية والمراجعات السابقة وأطر السياسات الدولية حول الذكاء الاصطناعي والتحوّل الرقمي في التعليم العالي. يرسم المقال استخدامات مثل التعلّم المخصّص والتدريس…"
+  },
+  "“It Made Me Reflect on the Kind of Teacher I Want to Be”: Pre-Service Teachers’ Perceptions of a University–School Collaboration": {
+   "s": "فحص بحث بأساليب مدمجة كيف ينظر طلاب السنة الثالثة في التأهيل للتعليم الابتدائي في جامعة حكومية في إسبانيا إلى مشروع تعاون بين الجامعة والمدرسة اسمه \"Un dia…"
+  },
+  "Attitudes About Active Shooter Drills and School Safety Among Adolescents and Young Adults in the United States": {
+   "s": "في بحث وطني في الولايات المتحدة (N = 1,901) فُحصت مواقف طلاب المدارس الإعدادية والثانوية والشباب من تمارين الهجوم المسلّح في المدرسة. وافق معظم المجيبين على أن التمارين لا…"
+  },
+  "Communication and education strategies to raise awareness and understanding of volcanic hazard during times of quiescence: a literature review": {
+   "s": "مراجعة منهجية لأبحاث عن التواصل حول مخاطر البراكين في فترات الهدوء، حين لا يكون هناك ضغط أزمة فورية. صنّف الباحثون النتائج في ثلاث فئات: مواد تعليمية…"
+  },
+  "Promising Practices for District Leaders": {
+   "s": "يعرض الكتاب أطرًا عملية ودراسات حالة من الواقع لقادة المناطق التعليمية، ويركّز على التعلّم الاجتماعي-العاطفي والرفاه والمساواة والانتماء في المنطقة كلها. ويشمل فصولًا عن رفاه…"
+  },
+  "Higher education governance under AI and geopolitical disruption: a socio-technical framework for administrative artificial intelligence": {
+   "s": "يفحص البحث كيف تدمج مؤسسات التعليم العالي الذكاء الاصطناعي في خدماتها الإدارية، مثل التجنيد والقبول ودعم الطلاب، ويعرض إطارًا مفاهيميًا من خمسة دوافع. الكاتبون…"
+  },
+  "Principals’ emotional labor in volatile times – a genealogical policy analysis": {
+   "s": "يفحص البحث كيف رسمت وثائق السياسات بين 1974 و2024 التوقعات العاطفية والمهنية من المديرين في السويد. يُظهر التحليل أن العمل العاطفي للمديرين لم يكن أبدًا…"
+  },
+  "A qualitative meta-synthesis of adolescents’ perceptions of school attendance problems": {
+   "s": "تركيب نوعي لأبحاث نوعية سابقة فحص كيف ينظر المراهقون إلى مشكلاتهم في الغياب عن المدرسة. تشمل النتائج تحديات في الصحة النفسية، وعلاقات سلبية مع…"
+  },
+  "Deliberative Instructional Agents: transforming professional learning with the responsible integration of Artificial Intelligence": {
+   "s": "يعرض المقال منظومة تكنولوجية جديدة اسمها Deliberative Instructional Agents (DIAs) تقوم على الذكاء الاصطناعي، وتهدف إلى تمكين المعلمين من التأمّل المهني في التدريس حتى في ظل العبء…"
+  },
+  "My daughter knows over 21 people that have died from drug overdose or suicide: cross-sector rural provider perspectives on adverse childhood experiences": {
+   "s": "بحث نوعي فحص تصوّرات 74 مهنيًا من خمس مقاطعات ريفية في ميزوري في الولايات المتحدة، تتميّز بمعدلات وفاة مرتفعة بسبب التسمّم بالمخدرات. أجاب المشاركون عن أسئلة في إطار تدريب…"
+  },
+  "Teachers’ involvement in the management of schools: example of France and French-speaking Belgium": {
+   "s": "يفحص البحث كيف يقود مديرو المدارس في فرنسا وفي بلجيكا الناطقة بالفرنسية التغيير ويُشركون المعلمين في إدارة المؤسسة، في أعقاب إصلاحات في سياسة التعليم تدمج الإدارة المركزية والمحلية.…"
+  },
+  "Educator and student well-being initiatives: Collaborating to connect health and practice within an Indigenous community in Nova Scotia, Canada": {
+   "s": "فحص البحث مبادرات للرفاه المجتمعي في مدرسة للسكان الأصليين في نوفا سكوشا في كندا، وركّز أيضًا على دعم المعلمين والطلاب. شارك سبعة أشخاص، منهم معلمون ومساعدو تدريس ومديرون، وكذلك…"
+  },
+  "Pre-medical psychological support in the educational environment: from neurobiology of stress to practical algorithms": {
+   "s": "يفحص البحث، الذي كُتب في أوكرانيا في أعقاب الحرب، كيف يمكن للمعلمين تقديم دعم نفسي أولي للطلاب في حالات الضائقة الحادة في المدرسة. يصف الكاتبون خوارزميات…"
+  },
+  "Artificial intelligence and empathetic communication to enhance learning engagement, motivation, and effectiveness": {
+   "s": "فحص بحث كيف يرتبط تحليل المشاعر النصي بواسطة الذكاء الاصطناعي، بدمج KeyMoji وChatGPT وUnity، بمشاعر الطلاب خلال التعلّم. حلّلت المنظومة المشاعر في الوقت الحقيقي…"
+  },
+  "How distributed leadership shapes change fatigue in schools: The role of teacher leadership and perceptions of values and policies influence": {
+   "s": "بحث شمل 3281 معلمًا في كوسوفو، بالاستناد إلى معطيات TALIS 2024، فحص كيف تؤثّر القيادة الموزَّعة على الإرهاق من التغييرات في المدارس عبر وسيطين: قيادة المعلمين وتصوّرهم…"
+  },
+  "Student engagement at the heart of teacher well-being: A network analysis of teachers’ professional, relational, and health-related resources": {
+   "s": "يفحص البحث بواسطة تحليل الشبكات العلاقات بين انخراط الطلاب وبين الموارد المهنية والعلائقية والصحية للمعلمين. لا يتوفّر ملخّص، لذا يستند التلخيص إلى العنوان فقط…"
+  },
+  "Towards a resilient learning ecosystem in Yenagoa, Bayelsa State, Nigeria: Integrating ecological systems theory, resilience theory, and the social-ecological systems framework": {
+   "s": "يفحص المقال هشاشة جهاز التعليم في السلطة المحلية Yenagoa في ولاية Bayelsa في نيجيريا أمام الفيضانات السنوية والعزلة النهرية وضعف البنى التحتية للمدارس وقلة مشاركة المجتمع،…"
+  },
+  "Designing AI-Supported Adaptive English Literacy Learning for Post-Disaster Education Recovery: A Simulation-Based Development Study": {
+   "s": "وصف بحث تصميم وتطوير نموذجًا لتعلّم القراءة والإنجليزية لطلاب المرحلة الابتدائية ملائمًا للتعافي بعد الكوارث، يدمج الوضع التعليمي للمتعلّم مع ظروف…"
+  },
+  "Understanding the Role of Competitive Discretionary Grants in Federal Education Policymaking": {
+   "s": "يفحص المقال دور المنح التنافسية التقديرية (CDGs) في رسم سياسة التعليم الفدرالية في الولايات المتحدة. ويستعرض حجمها في مشهد السياسات الحالي ومزاياها…"
   }
  },
  "names": {
@@ -153,5 +243,26 @@
   "נובמבר": "نوفمبر",
   "דצמבר": "ديسمبر",
   "ספטמבר": "سبتمبر"
+ },
+ "board": {
+  "הזמנה להצטרף לסימפוזיון משותף בנושא \"ומה ביום שאחרי ? הכשרת מנהיגות חינוכית מעבר לעיתות משבר\" ✏️ שינוי הכותרת": {
+   "t": "دعوة للانضمام إلى ندوة مشتركة بعنوان «وماذا في اليوم التالي؟ إعداد القيادة التربوية لما بعد أوقات الأزمات»",
+   "i": "باحثة مستقلة",
+   "s": "عطّلت الأزمات المتواصلة عمل أجهزة التربية والتعليم في أنحاء العالم، وكشفت تحديات قيادية ونقاط ضعف جوهرية في نماذج القيادة وفي استعداد القيادة التربوية لحالات الأزمات (شوشان وحزان، 2026؛ González Torres, 2026). واجهت مؤسسات تعليمية كثيرة صعوبة في تبنّي استراتيجيات ناجعة لمواجهة التحديات الناتجة عن التغيّرات المفاجئة في طرق التدريس، وعن المتطلبات التكنولوجية، وعن مخاوف أصحاب الشأن (حزان وآخرون، 2026). وبشكل خاص، أشارت نتائج الأبحاث إلى الدور الحيوي للقيادة التربوية في إدارة الأزمات المتواصلة، عبر الموازنة بين الحفاظ على الاستمرارية التربوية وبين الاهتمام بصحة الطواقم التربوية والطلاب والأهالي، وتنمية التعاون والاهتمام، وبناء علاقات متينة مع المجتمع، وتطوير قدرات لإدارة الأزمات تدعم الجاهزية والتجديد والتأمّل (Arar et al., 2024; Bellibas & Karaferve, 2025; Cruz-González et al., 2026; Striepe & Cunningham, 2022; Sassi et al., 2025). ومع أن القيادة التربوية في أوقات الأزمات بُحثت على نطاق واسع، هناك نقص واضح في الأبحاث التجريبية والنظرية والمنهجية حول إعداد القيادة التربوية لما بعد أوقات الأزمات.\nعلى جهاز التربية والتعليم في إسرائيل أن يفكّر بشكل نقدي في كيفية إعداد قيادة تربوية مستعدة للقيادة ما بعد أوقات الأزمات. هدف الندوة المقترحة دعوة الأكاديميين والميدانيين إلى نظرة نقدية في مقاربات متنوعة لإعداد القيادة التربوية لما بعد أوقات الأزمات، تُشرك طيفًا واسعًا من أصحاب الشأن. لهذه الندوة أهمية كبيرة في دفع سياسة بعيدة المدى تحترم تعقيد القيادة التربوية المهنية والإنسانية في أوقات الأزمات، وتنمّي المسؤولية المشتركة بين أصحاب الشأن الرسميين وغير الرسميين، وتجنّد المجتمع شريكًا في العمل التربوي."
+  },
+  "📷 תמונות מהמפגש השני של הקהילה בגלריה": {
+   "t": "📷 صور من اللقاء الثاني للمجتمع في المعرض",
+   "s": "شكرًا لجميع المشاركات والمشاركين في اللقاء الثاني للمجتمع في 18.11.2026!\n\nفي المعرض صور من اللقاء: عرض مبادرة «الاحتياط في التربية» ونموذج الاستمرارية المجتمعية في حالة طوارئ، والبحث عن الحفاظ على الاستمرارية التربوية في الحرب، المقدَّم كاقتراح لجلسة ندوة في مؤتمر ICER 2027.\n\nمدعوات ومدعوون للدخول إلى المعرض، وتذكّر اللقاء، والمشاركة.",
+   "l": {
+    "🖼 לתמונות מהמפגש בגלריה": "🖼 لصور اللقاء في المعرض"
+   }
+  },
+  "שליחת הצעות לכנס": {
+   "t": "إرسال اقتراحات للمؤتمر",
+   "s": "مرحبًا،\nفُتح في موقع المؤتمر باب إرسال الاقتراحات.\nمدعوات ومدعوون!",
+   "l": {
+    "אתר הכנס להגשת הצעות": "موقع المؤتمر لتقديم الاقتراحات"
+   }
+  }
  }
 }
