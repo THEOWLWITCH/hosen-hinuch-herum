@@ -9753,8 +9753,8 @@ function hnToggleAbout(b){const t=document.getElementById('hnAboutText');if(!t)r
   window.addEventListener('scroll',()=>{if(matchMedia('(max-width:640px)').matches)close()},{passive:true});
   // "פורסם בישראל ובעולם" נפתח ונסגר בלחיצה על הכותרת (בטלפון)
   document.addEventListener('DOMContentLoaded',()=>{const nb=document.querySelector('#now .news-board'),hd=nb&&nb.querySelector('.community-board-head');if(!hd)return;
-    hd.setAttribute('role','button');hd.tabIndex=0;hd.setAttribute('aria-expanded','false');const c=document.createElement('span');c.className='hn-chev';c.setAttribute('aria-hidden','true');hd.appendChild(c);
-    const t=()=>{if(!matchMedia('(max-width:850px)').matches)return;const o=nb.classList.toggle('hn-open');hd.setAttribute('aria-expanded',String(o))};
+    
+    const t=()=>{return; /* 19.11.2026: "פורסם בישראל ובעולם" הוא אחד מארבעת החלונות, פתוח תמיד */const o=nb.classList.toggle('hn-open');hd.setAttribute('aria-expanded',String(o))};
     hd.addEventListener('click',t);hd.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});});
   // משאבים: כותרת אחידה בקולות קוראים, בכנסים ובמענקים (אחרי שהעמוד קובע את הכותרת שלו)
   document.addEventListener('DOMContentLoaded',()=>{
@@ -9933,9 +9933,8 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   html[data-page="now"] body #now .top-now-content,html[data-page="now"] body #now .hp-panels>style,html[data-page="now"] body #now .hp-panels>script{display:none!important}
   html[data-page="now"] body #now .community-board:not(.news-board):not(.hp-panel){grid-column:1!important;grid-row:1!important}
   html[data-page="now"] body #now #hpInitiatives{grid-column:2!important;grid-row:1!important}
-  html[data-page="now"] body #now #hpField{grid-column:1!important;grid-row:2!important}
   html[data-page="now"] body #now #hpResearch{grid-column:2!important;grid-row:2!important}
-  html[data-page="now"] body #now .news-board{grid-column:1 / -1!important;grid-row:3!important}
+  html[data-page="now"] body #now .news-board{grid-column:1!important;grid-row:2!important}
   html[data-page="now"] body #now .community-board{transform:none!important;display:flex!important;flex-direction:column;height:var(--hp-h,320px)!important;min-height:0!important;margin:0!important;overflow:hidden}
   html[data-page="now"] body #now .community-board .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
   /* כותרות החלונות בגובה זהה */
@@ -10002,11 +10001,10 @@ html body #now .board-message-cover img{width:auto!important;max-width:100%!impo
   html[data-page="now"] body #now .top-now-content,html[data-page="now"] body #now .hn-quick,html[data-page="now"] body #now .hp-panels>style,html[data-page="now"] body #now .hp-panels>script{display:none!important}
   html[data-page="now"] body #now .community-board:not(.news-board):not(.hp-panel){grid-row:1!important;grid-column:1!important}
   html[data-page="now"] body #now #hpInitiatives{grid-row:2!important;grid-column:1!important}
-  html[data-page="now"] body #now #hpField{grid-row:3!important;grid-column:1!important}
+  html[data-page="now"] body #now .news-board{grid-row:3!important;grid-column:1!important}
   html[data-page="now"] body #now #hpResearch{grid-row:4!important;grid-column:1!important}
-  html[data-page="now"] body #now .news-board{grid-row:5!important;grid-column:1!important}
-  html[data-page="now"] body #now .community-board:not(.news-board),html[data-page="now"] body #now .news-board.hn-open{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;margin:0!important;transform:none!important;overflow:hidden}
-  html[data-page="now"] body #now .community-board:not(.news-board) .board-feed,html[data-page="now"] body #now .news-board.hn-open .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+  html[data-page="now"] body #now .community-board{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;margin:0!important;transform:none!important;overflow:hidden}
+  html[data-page="now"] body #now .community-board .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
   html[data-page="now"] body #now .community-board-head .cb-ar{display:inline}
 }
 </style>
@@ -10042,5 +10040,14 @@ html body #now .community-board-head h2{font-size:25px!important;line-height:1.2
 html body #now .community-board-head .cb-ar{font-size:.82em!important}
 html body #now .community-board-head .cb-icon{transform:scale(1.12)}
 @media(max-width:850px){html body #now .community-board-head h2{font-size:23px!important}}
+</style>
+<style id="home-news-window-v1">
+/* 19.11.2026: החלון הרביעי הוא "פורסם בישראל ובעולם" (פתוח תמיד, גם בטלפון). "מהשטח" יצא מהעמוד הראשי ונשאר בתפריט "יוזמות הקהילה". */
+html[data-page="now"] body #now #hpField{display:none!important}
+html[data-page="now"] body #now .news-board>*{display:revert}
+html[data-page="now"] body #now .news-board .board-feed{display:block!important}
+html[data-page="now"] body #now .news-board .news-board-note{display:block!important;margin:8px 0 0}
+html[data-page="now"] body #now .news-board .community-board-head{cursor:default}
+html[data-page="now"] body #now .community-board-head .cb-sub{display:none!important}
 </style>
 </body></html>
