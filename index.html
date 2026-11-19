@@ -9916,7 +9916,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 })();
 </script>
 <style id="home-4-panels-v1">
-:root{--hp-h:max(250px,min(560px,calc((100vh - 364px) / 2)))}
+:root{--hp-h:max(400px,min(600px,calc((100vh - 364px) / 2)))}
 /* כותרת בערבית ליד כל כותרת בעמוד הראשי (19.11.2026) */
 #now .cb-ar{margin-inline-start:8px;font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-size:.72em;font-weight:600;color:#8a2240;white-space:nowrap}
 /* 19.11.2026: בעמוד הראשי במחשב ארבעה חלונות באותו גובה, שנכנסים במסך אחד: יוזמות הקהילה ולוח המודעות למעלה, חידושים במחקר ומהשטח למטה. הגלילה בתוך כל חלון. "פורסם בישראל ובעולם" מתחתם. הכנס עבר לסרגל העליון. */
@@ -9956,7 +9956,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
     // שתי שורות חלונות נכנסות במסך אחד: מראש העמוד ועד התחתית
     const top=sec.getBoundingClientRect().top+scrollY+18;
     const h=Math.round((innerHeight-top-20-24)/2);
-    document.documentElement.style.setProperty('--hp-h',Math.max(250,Math.min(560,h))+'px');
+    document.documentElement.style.setProperty('--hp-h',Math.max(400,Math.min(600,h))+'px'); // 19.11.2026: לפחות 400 כדי שיהיה מקום לקרוא; במסך נמוך העמוד נגלל קצת
   }
   document.addEventListener('DOMContentLoaded',fit);addEventListener('load',fit);addEventListener('resize',fit);mq.addEventListener?.('change',fit);
 })();
@@ -10143,4 +10143,31 @@ html[data-page="now"] body #now .community-board-head h2{padding-inline-end:70px
   document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
+<style id="home-compact-v1">
+/* 19.11.2026: יותר מקום לטקסט בחלונות העמוד הראשי: שורות צפופות יותר, כרטיסים מרווחים פחות, ושורה תחתונה נמוכה מאוד */
+html[data-page="now"] body #now .community-board{padding-bottom:8px!important}
+html[data-page="now"] body #now .board-message-card{padding:9px 12px!important;margin-bottom:8px!important}
+html[data-page="now"] body #now .board-message-text{line-height:1.45!important}
+html[data-page="now"] body #now .board-message-card h3{line-height:1.3!important;margin:2px 0 4px!important}
+html[data-page="now"] body #now .community-board-head{margin-bottom:8px!important}
+html[data-page="now"] body #now .hp-foot{margin:3px 0 0!important;line-height:1.2}
+html[data-page="now"] body #now .hp-foot .hn-link{font-size:12.5px}
+html[data-page="now"] body #now .news-board .news-board-note{margin:3px 0 0!important;line-height:1.2}
+html[data-page="now"] body #now .ar-note{margin:2px 2px 0!important;font-size:11px;line-height:1.2}
+html[data-page="now"] body #now .community-board-head{height:60px!important;min-height:60px!important;flex:0 0 60px!important;padding-top:8px!important;padding-bottom:8px!important}
+html[data-page="now"] body #now .community-board:not(.ar-mode) .ar-note{display:none!important}
+html[data-page="now"] body #now .community-board-head{padding-inline-end:78px!important}
+html[data-page="now"] body #now .community-board-head>*{min-width:0}
+html[data-page="now"] body #now .cb-title{flex:1 1 auto;min-width:0}
+html[data-page="now"] body #now .cb-title>div{min-width:0;flex:1 1 auto}
+html[data-page="now"] body #now .community-board-head h2{font-size:clamp(17px,1.55vw,22px)!important}
+html[data-page="now"] body #now .cb-ar{font-size:.68em;display:inline-block}
+html[data-page="now"] body #now .community-board-head h2{white-space:normal!important;line-height:1.15!important;text-overflow:clip!important}
+/* לוח המודעות: הקודמת / הבאה כמילים מקושרות קטנות באותה שורה עם המונה ועם "פרסום הודעה" */
+html[data-page="now"] body #now .community-board:not(.news-board):not(.hp-panel) .board-controls{display:flex!important;align-items:center;justify-content:center;gap:14px;margin:3px 0 0!important;padding:0!important;min-height:0!important}
+html[data-page="now"] body #now .board-controls button{width:auto!important;height:auto!important;min-width:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;font-size:12px!important;line-height:1.2!important;color:#1d5a9e!important;text-decoration:underline;text-underline-offset:3px;cursor:pointer;transform:none!important}
+html[data-page="now"] body #now .board-controls #boardCounter{font-size:12px;color:#80909a}
+html[data-page="now"] body #now .hn-board-post{margin-top:3px!important;padding-top:3px!important;line-height:1.2}
+html[data-page="now"] body #now .hn-board-post .hn-link{font-size:13px}
+</style>
 </body></html>
