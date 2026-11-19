@@ -2355,7 +2355,7 @@ body:has(.feedback-modal.open){
     <div class="hn-group">
       <button type="button" class="hn-top" aria-expanded="false" aria-controls="hnMenuInit">יוזמות הקהילה</button>
       <div class="hn-menu" id="hnMenuInit">
-        <a class="hn-item" data-route="match" href="/match">יוזמות ומרחבי עבודה</a>
+        <a class="hn-item" data-route="match" href="/match">יוזמות הקהילה</a>
         <a class="hn-item" data-route="kikar" href="/kikar">🏛 כיכר הקהילה</a>
         <a class="hn-item" data-route="field" href="/field">🌾 מהשטח</a>
       </div>
@@ -2375,15 +2375,7 @@ body:has(.feedback-modal.open){
 <main>
 
 <section id="now" class="top-dynamic-zone">
-<!-- הצטרפות ואודות בקצרה (19.11.2026): הכותרת כבר בבאנר, ולכן הטקסט נפתח רק בלחיצה על "אודות הקהילה". עברית וערבית. -->
-<div class="wrap hn-about">
-  <div class="hn-about-row"><button type="button" class="hn-btn hn-btn-main" onclick="hosenJoin()">🙋 הצטרפות לקהילה</button><button type="button" class="hn-link" aria-expanded="false" aria-controls="hnAboutText" onclick="hnToggleAbout(this)">אודות הקהילה</button></div>
-  <div id="hnAboutText" class="hn-about-text" hidden>
-    <p>קהילה אקדמית-מקצועית של חוקרות וחוקרים, נשות ואנשי חינוך ומובילות ומובילי שטח, שמחברים בין מחקר לעשייה בתחומי החוסן, החינוך בשעת חירום והבינה המלאכותית. את הקהילה מובילות פרופ' אורית חזן וד"ר עינת שושן-רפאלי, ממוסד שמואל נאמן בטכניון.</p>
-    <p lang="ar" dir="rtl" class="hn-ar">مجتمع أكاديمي ومهني يضمّ باحثات وباحثين، ومربيات ومربين، وقائدات وقادة ميدانيين، يربطون بين البحث والعمل في مجالات المناعة والتربية في حالة طوارئ والذكاء الاصطناعي. تقود المجتمع البروفيسورة أوريت حزان والدكتورة عينات شوشان-رفائيلي، من معهد شموئيل نئمان في التخنيون.</p>
-    <a class="hn-link" href="/about">לעמוד אודות המלא · <span lang="ar">لصفحة "عن المجتمع"</span></a>
-  </div>
-</div>
+<!-- 19.11.2026: "הצטרפות" ו"אודות" עברו לתפריט העליון, ולכן אין להם שורה נפרדת בעמוד הראשי. -->
 <div class="wrap top-dynamic-grid">
 <aside class="community-board" aria-label="דברי קהילה">
   <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h8A2.5 2.5 0 0 1 17 5.5v5a2.5 2.5 0 0 1-2.5 2.5H9.5L6 16v-3h0.5A2.5 2.5 0 0 1 4 10.5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 8.5a2 2 0 0 1 1 1.7v4.3a2 2 0 0 1-2 2h-.5V19l-3-2.5H12" fill="none" stroke="#8a2240" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="#d9a23a"/><circle cx="10.5" cy="8" r="1" fill="#d9a23a"/><circle cx="13" cy="8" r="1" fill="#d9a23a"/></svg></span><div><h2>דברי קהילה</h2><span class="cb-sub">מחברות וחברי הקהילה</span></div></div></div>
@@ -2564,7 +2556,7 @@ body:has(.feedback-modal.open){
   <div class="research-world-head">
     <div class="research-kicker">עודכן: 15.11.2026 · מחקרים ופרסומים נבחרים מ־2024–2026</div>
     <h2>חידושים במחקר</h2>
-    <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום: מחקרים חדשים מישראל ומהעולם לצד שבעת צירי הידע של הקהילה. המחקרים מוצגים בשני טורים לפי תאריך פרסום מאומת, בסדר יורד מימין לשמאל ולאחר מכן לשורה הבאה.</p>
+    <p>אוצרות מחקר עדכני על חוסן, חינוך וחירום: מחקרים חדשים מישראל ומהעולם, מהחדש לישן. לכל מחקר יש קישור למקור, שמות החוקרות והחוקרים ותיאור קצר בעברית.</p>
     <p class="research-scope-note"><strong>גבול המדור:</strong> אין כאן מחקרים קליניים. ״חוסן נפשי״ נבחן בהקשר החינוכי־קהילתי: יכולת של תלמידים, צוותים, בתי ספר וקהילות להמשיך לתפקד, להשתייך, ללמוד ולהסתגל בזמן משבר.</p>
     <p class="research-weekly-note"><strong>חדש בסקירה השבועית:</strong> הרקע הבהיר מציין מקור שנוסף בעדכון זה. ההדגשה תוחלף בסקירה הבאה, והמקור עצמו יישאר במאגר.</p>
     <nav class="research-axis-nav" aria-label="שבעת צירי החידושים במחקר"><a href="#research-new">מחקרים חדשים בישראל ובעולם<small>מאגר כרונולוגי מאומת</small></a><a href="#research-theme-preparedness">מוכנות<small>תכנון, תרגול וניהול סיכונים</small></a><a href="#research-theme-resilience">חוסן נפשי<small>שייכות, הסתגלות וקהילת חוסן</small></a><a href="#research-theme-continuity">רציפות למידה<small>תפקוד המערכת לאורך משבר</small></a><a href="#research-theme-teachers">צוותי חינוך<small>מורים, מנהיגות ויכולת פעולה</small></a><a href="#research-theme-tech">AI בחירום<small>טכנולוגיה אחראית ורציפה</small></a><a href="#research-theme-org">חוסן ארגוני<small>בתי ספר, מוסדות ורשויות כארגון</small></a></nav>
@@ -9641,4 +9633,68 @@ html body .gc-framed .gc-head .gallery-date{margin-top:2px!important;font-size:1
 html body .gc-framed .gallery-card-cover{border-radius:9px;overflow:hidden}
 .gc-hint{margin:10px 0 0;font-size:14px;font-weight:600;color:#8a2240;text-align:center}
 </style>
+<style id="research-panel-v1">
+/* 19.11.2026: "חידושים במחקר" כמו "מהשטח": חלונית אחת עם גלילה. בכל מחקר: קישור למקור, שמות החוקרות והחוקרים ותיאור המחקר. */
+html[data-page="articles"] #researchWorld>.wrap>.research-weekly-dossier,
+html[data-page="articles"] #researchWorld>.wrap>.research-latest-shell,
+html[data-page="articles"] #researchWorld>.wrap>.research-foundation-wrap,
+html[data-page="articles"] #researchWorld>.wrap>.research-themes-wrap,
+html[data-page="articles"] #researchWorld>.wrap>.research-institutes-wrap,
+html[data-page="articles"] #researchWorld .research-weekly-note,
+html[data-page="articles"] #researchWorld .research-axis-nav{display:none!important}
+html[data-page="articles"] #researchWorld>.wrap>.research-suggest-wrap:not(.rs-open){display:none!important}
+.rs-wrap{margin:6px 0 26px}
+.rs-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px}
+.rs-tools .research-chips{margin:0!important}
+.rs-search{flex:1 1 240px;min-height:38px;padding:7px 12px;border:1px solid #c9d9e0;border-radius:999px;font:inherit;font-size:14.5px;background:#fff}
+.rs-panel{max-height:72vh;overflow-y:auto;overscroll-behavior:contain;display:grid;gap:10px;padding:12px;border:1px solid #d6e4e8;border-radius:14px;background:#f7fafb;scrollbar-width:thin}
+.rs-item{padding:14px 16px;background:#fff;border:1px solid #e1eaee;border-radius:10px}
+.rs-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:4px;font-size:12.5px;color:#6e818b}
+.rs-cat{padding:1px 9px;border-radius:999px;background:#eaf2f5;color:#2d566b;font-weight:600}
+.rs-new{color:#8a2240;font-weight:700}
+.rs-item h3{margin:0 0 4px;font-size:16.5px;line-height:1.4}
+.rs-item h3 a{color:#1d4f73;text-decoration:none}
+.rs-item h3 a:hover{text-decoration:underline}
+.rs-authors{margin:0 0 6px;font-size:13.5px;color:#4c6573}
+.rs-sum{margin:0;font-size:14.5px;line-height:1.7;color:#33505f}
+.rs-why{margin-top:6px;font-size:13.5px;color:#4c6573}
+.rs-why summary{cursor:pointer;color:#1d5a80;font-weight:600}
+.rs-why p{margin:6px 0 0;line-height:1.65}
+.rs-count{margin:8px 2px 0;font-size:12.5px;color:#6e818b}
+.rs-suggest{margin:12px 0 0}
+@media(max-width:640px){.rs-panel{max-height:75vh;padding:8px}.rs-item{padding:12px}}
+</style>
+<script id="research-panel-v1-js">
+(function(){
+  let q='';
+  const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const norm=s=>String(s||'').toLowerCase();
+  function mount(){
+    const head=document.querySelector('#researchWorld .research-world-head');
+    if(!head||document.getElementById('rsWrap'))return;
+    const w=document.createElement('div');w.id='rsWrap';w.className='rs-wrap';
+    w.innerHTML='<div class="rs-tools"><div class="research-chips" id="rsChips" role="group" aria-label="סינון לפי נושא"></div><input type="search" class="rs-search" id="rsSearch" dir="auto" placeholder="חיפוש לפי מילה, שם חוקרת או חוקר" aria-label="חיפוש במחקרים"></div><div class="rs-panel" id="rsPanel" tabindex="0" aria-label="רשימת המחקרים, אפשר לגלול"></div><p class="rs-count" id="rsCount"></p><p class="rs-suggest"><button type="button" class="hn-link" id="rsSuggestBtn" aria-expanded="false">➕ הצעת מחקר או מקור</button></p>';
+    head.after(w);
+    w.querySelector('#rsSearch').addEventListener('input',e=>{q=norm(e.target.value.trim());render()});
+    w.querySelector('#rsChips').addEventListener('click',e=>{const b=e.target.closest('[data-rs-cat]');if(!b)return;researchFilter=b.dataset.rsCat;render()});
+    w.querySelector('#rsSuggestBtn').addEventListener('click',e=>{const s=document.getElementById('research-suggest');if(!s)return;const open=!s.classList.contains('rs-open');s.classList.toggle('rs-open',open);e.currentTarget.setAttribute('aria-expanded',String(open));if(open)s.scrollIntoView({behavior:'smooth',block:'start'})});
+  }
+  function render(){
+    mount();
+    const panel=document.getElementById('rsPanel');if(!panel)return;
+    const all=sortResearchItems([...researchWorldItems,...(typeof uploadedResearchItems!=='undefined'?uploadedResearchItems:[])].filter(x=>x.title));
+    const count=id=>all.filter(x=>x.cat===id).length;
+    document.getElementById('rsChips').innerHTML=[['','הכול',all.length],...researchWorldCategories.map(c=>[c.id,c.label,count(c.id)])].filter(c=>c[2]).map(([id,label,n])=>`<button type="button" class="research-chip${id===researchFilter?' on':''}" data-rs-cat="${E(id)}" aria-pressed="${id===researchFilter}">${E(label)} <small>${n}</small></button>`).join('');
+    let rows=researchFilter?all.filter(x=>x.cat===researchFilter):all;
+    if(q)rows=rows.filter(x=>norm([x.title,x.authors,x.source,x.summary,x.why].join(' ')).includes(q));
+    panel.innerHTML=rows.length?rows.map(x=>{const url=x.url||'';const t=url?`<a href="${E(url)}" target="_blank" rel="noopener" dir="auto">${E(x.title)} ↗</a>`:`<span dir="auto">${E(x.title)}</span>`;
+      return `<article class="rs-item"><div class="rs-top"><span class="rs-cat">${E(researchCategoryLabel(x.cat))}</span><span>${E(x.dateLabel||x.year||'')}</span>${x.weeklyNew?'<span class="rs-new">חדש השבוע</span>':''}</div><h3>${t}</h3><p class="rs-authors" dir="auto">${E(x.authors)}${x.source?' · '+E(x.source):''}</p>${x.summary?`<p class="rs-sum" dir="auto">${E(x.summary)}</p>`:''}${x.why?`<details class="rs-why"><summary>למה זה חשוב לנו?</summary><p dir="auto">${E(x.why)}</p></details>`:''}</article>`}).join(''):'<p class="muted" style="margin:8px">לא נמצאו מחקרים. אפשר לנסות מילה אחרת או לבחור "הכול".</p>';
+    document.getElementById('rsCount').textContent=`${rows.length} מחקרים, מהחדש לישן`;
+  }
+  // מתעדכן בכל פעם שהמחקרים נטענים או מתעדכנים
+  const orig=window.renderResearchStudies;
+  if(typeof orig==='function')window.renderResearchStudies=function(){const r=orig.apply(this,arguments);try{render()}catch(e){}return r};
+  document.addEventListener('DOMContentLoaded',()=>{try{render()}catch(e){}});
+})();
+</script>
 </body></html>
