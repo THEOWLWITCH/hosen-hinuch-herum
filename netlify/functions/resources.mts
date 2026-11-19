@@ -49,7 +49,11 @@ export default async (req: Request) => {
     let rows = await listAll();
     if (!admin) rows = rows.filter(publicVisible);
     const cat = u.searchParams.get("category");
-    if (cat) rows = rows.filter(x => x.category === cat);
+    // 19.11.2026: מדור "משאבים" (professional) נמחק, והפריטים שהיו בו מוצגים ב"פרסומים" במרכז הידע.
+    const section = (c: string) => (c === "professional" ? "publications" : c);
+    if (cat) rows = rows.filter(x => section(x.category) === section(cat));
+    // פריט מ"משאבים" שכבר קיים באותו שם במדור אחר לא מוצג פעמיים
+    if (cat) { const key = (t: string) => String(t || "").trim().replace(/\s+/g, " "); const own = new Set(rows.filter(x => x.category !== "professional").map(x => key(x.title))); rows = rows.filter(x => x.category !== "professional" || !own.has(key(x.title))); }
     return json(rows.map(decorate));
   }
   if (req.method === "POST") {
@@ -58,9 +62,10 @@ export default async (req: Request) => {
     if (!uploaderOK) return json({ error: "unauthorized" }, 401);
     const body = await req.json();
     if (!adminOK) {
-      const uploaderCategories = new Set(["professional","publications","policy","research-tools","measures","community-activity","active-project"]);
+      const uploaderCategories = new Set(["publications","policy","research-tools","measures","community-activity","active-project"]);
       if (!uploaderCategories.has(String(body.category || ""))) return json({ error: "forbidden_category" }, 403);
     }
+    if (body.category === "professional") body.category = "publications"; // "משאבים" נמחק (19.11.2026)
     const now = new Date().toISOString();
     const x: Resource = { ...body, links: cleanLinks(body.links), gallery:Array.isArray(body.gallery)?body.gallery:[], id: id(), active: body.active !== false, createdAt: now, updatedAt: now };
     if (!x.title || !x.category) return json({ error: "missing_fields" }, 400);

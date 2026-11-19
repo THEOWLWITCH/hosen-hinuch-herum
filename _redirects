@@ -1,6 +1,7 @@
 /guide /guide.html 200
 /research-companion /research-companion.html 200
 /now /index.html 200
+/about /index.html 200
 /kikar /index.html 200
 /journals /index.html 200
 /field /index.html 200
@@ -16,7 +17,7 @@
 /research-tools /index.html 200
 /measures /index.html 200
 /policy /index.html 200
-/professional /index.html 200
+/professional /library 301
 /library /index.html 200
 /compass /library 301
 /apps /index.html 200

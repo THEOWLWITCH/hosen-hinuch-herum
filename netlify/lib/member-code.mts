@@ -98,7 +98,7 @@ function esc(s: string) {
 export async function codeMail(p: { name: string; email?: string }, code: string, site: string, kind: "welcome" | "invite" | "recover") {
   const link = `${site}/#my-card`;
   const intro: Record<typeof kind, string[]> = {
-    welcome: ["ברוכה הבאה, וברוך הבא, לקהילה! הכרטיס שלך נפתח בעמוד הנבחרת."],
+    welcome: ["ברוכה הבאה, וברוך הבא, לקהילה! הכרטיס שלך נפתח בעמוד חברות וחברי הקהילה."],
     invite: ["באתר הקהילה אפשר עכשיו לעדכן את הכרטיס האישי בעצמך, בקוד אישי, בלי לחכות לקישור במייל."],
     recover: ["ביקשת לשחזר את הקוד האישי שלך לאתר הקהילה. זה הקוד:"],
   };
