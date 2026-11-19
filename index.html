@@ -2322,7 +2322,14 @@ body:has(.feedback-modal.open){
 <body>
 <div class="banner-stack-v44">
   <div class="banner-image-v44 banner-top-v44" role="banner" aria-label="בינה מלאכותית חוסן חינוך חרום">
-    <img src="/assets/hosen-social-ai-banner-v2-q50.webp" alt="בינה מלאכותית חוסן חינוך חרום. קהילה אקדמית מקצועית לחינוך בחרום">
+    <img src="/assets/hosen-banner-notext.webp" alt="">
+    <!-- 19.11.2026: הכיתוב בבאנר בעברית ובערבית, כטקסט מעל התמונה (בלי הכיתוב שהיה צרוב בתמונה) -->
+    <div class="bn-text">
+      <p class="bn-t1">בינה מלאכותית<span class="bn-c">:</span> חוסן<span class="bn-h1">-</span>חינוך<span class="bn-h2">-</span>חרום</p>
+      <p class="bn-t2" lang="ar">الذكاء الاصطناعي<span class="bn-c">:</span> المناعة<span class="bn-h1">-</span>التربية<span class="bn-h2">-</span>الطوارئ</p>
+      <p class="bn-s1">קהילה אקדמית-מקצועית לחינוך בחרום</p>
+      <p class="bn-s2" lang="ar">مجتمع أكاديمي ومهني للتربية في حالة طوارئ</p>
+    </div>
   </div>
 </div>
 <nav class="site-tabs-shell" aria-label="ניווט באתר">
@@ -2370,6 +2377,7 @@ body:has(.feedback-modal.open){
         <a class="hn-item" data-route="gallery" href="/gallery">גלריה</a>
       </div>
     </div>
+    <a class="hn-icer" href="https://mofet.macam.ac.il/event/icer2027/" target="_blank" rel="noopener" aria-label="הכנס הישראלי למחקר בחינוך ICER 2027, 20–22 בספטמבר 2027. לפרטים"><b>ICER 2027</b><span class="hn-icer-t">הכנס הישראלי למחקר בחינוך</span><span class="hn-icer-d" dir="ltr">20–22.9.27</span></a>
   </div>
 </nav>
 <main>
@@ -2378,7 +2386,7 @@ body:has(.feedback-modal.open){
 <!-- 19.11.2026: "הצטרפות" ו"אודות" עברו לתפריט העליון, ולכן אין להם שורה נפרדת בעמוד הראשי. -->
 <div class="wrap top-dynamic-grid">
 <aside class="community-board" aria-label="דברי קהילה">
-  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h8A2.5 2.5 0 0 1 17 5.5v5a2.5 2.5 0 0 1-2.5 2.5H9.5L6 16v-3h0.5A2.5 2.5 0 0 1 4 10.5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 8.5a2 2 0 0 1 1 1.7v4.3a2 2 0 0 1-2 2h-.5V19l-3-2.5H12" fill="none" stroke="#8a2240" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="#d9a23a"/><circle cx="10.5" cy="8" r="1" fill="#d9a23a"/><circle cx="13" cy="8" r="1" fill="#d9a23a"/></svg></span><div><h2>דברי קהילה</h2></div></div></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h8A2.5 2.5 0 0 1 17 5.5v5a2.5 2.5 0 0 1-2.5 2.5H9.5L6 16v-3h0.5A2.5 2.5 0 0 1 4 10.5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 8.5a2 2 0 0 1 1 1.7v4.3a2 2 0 0 1-2 2h-.5V19l-3-2.5H12" fill="none" stroke="#8a2240" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="#d9a23a"/><circle cx="10.5" cy="8" r="1" fill="#d9a23a"/><circle cx="13" cy="8" r="1" fill="#d9a23a"/></svg></span><div><h2>דברי קהילה <span class="cb-ar" lang="ar" dir="rtl">أخبار المجتمع</span></h2></div></div></div>
   <div id="boardFeed" class="board-feed"><p class="muted">טוען הודעות...</p></div>
   <div class="board-controls"><button type="button" onclick="boardPrev()" aria-label="הודעה קודמת">הודעה קודמת</button><span id="boardCounter"></span><button type="button" onclick="boardNext()" aria-label="הודעה הבאה">הודעה הבאה</button></div>
   <div class="hn-board-post"><button type="button" class="hn-link" onclick="openBoardSubmit()">פרסום הודעה</button></div>
@@ -2395,7 +2403,7 @@ body:has(.feedback-modal.open){
 </nav>
 </div>
 <aside class="community-board news-board" aria-label="פורסם בישראל ובעולם">
-  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#1d4466" stroke-width="1.7"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5M12 3.5C9.4 5.9 8.2 8.7 8.2 12s1.2 6.1 3.8 8.5" fill="none" stroke="#5a8cc0" stroke-width="1.4"/><circle cx="18.5" cy="6" r="2.3" fill="#8a2240"/><circle cx="5.3" cy="17.6" r="1.6" fill="#d9a23a"/></svg></span><div><h2>פורסם בישראל ובעולם</h2><span class="cb-sub">ידיעות מהעיתונות, בעברית, בערבית ובאנגלית</span></div></div></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#1d4466" stroke-width="1.7"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5M12 3.5C9.4 5.9 8.2 8.7 8.2 12s1.2 6.1 3.8 8.5" fill="none" stroke="#5a8cc0" stroke-width="1.4"/><circle cx="18.5" cy="6" r="2.3" fill="#8a2240"/><circle cx="5.3" cy="17.6" r="1.6" fill="#d9a23a"/></svg></span><div><h2>פורסם בישראל ובעולם <span class="cb-ar" lang="ar" dir="rtl">نُشر في البلاد والعالم</span></h2><span class="cb-sub">ידיעות מהעיתונות, בעברית, בערבית ובאנגלית</span></div></div></div>
   <div id="newsFeed" class="board-feed news-feed" tabindex="0" aria-label="רשימת ידיעות, אפשר לגלול"><p class="muted">טוען ידיעות...</p></div>
   <p class="news-board-note">מתעדכן כל שבוע, החדשות למעלה. <span id="newsCounter"></span></p>
 </aside>
@@ -2403,17 +2411,17 @@ body:has(.feedback-modal.open){
 <!-- 19.11.2026: במחשב, חלונות גלילה פתוחים בעמוד הראשי: יוזמות הקהילה, חידושים במחקר ומהשטח, באותו עיצוב של לוח ההודעות. בטלפון נשארת הכניסה המהירה. -->
 <div class="wrap hp-panels">
 <aside class="community-board hp-panel" id="hpInitiatives" aria-label="יוזמות הקהילה">
-  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3" fill="none" stroke="#1d4466" stroke-width="1.7"/><circle cx="16" cy="9" r="3" fill="none" stroke="#8a2240" stroke-width="1.7"/><path d="M3.5 19c.6-3 2.4-4.5 4.5-4.5s3.4 1 4 2.6M20.5 19c-.6-3-2.4-4.5-4.5-4.5-1.3 0-2.4.5-3.1 1.4" fill="none" stroke="#1d4466" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="4" r="1.1" fill="#d9a23a"/></svg></span><div><h2>יוזמות הקהילה</h2></div></div></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3" fill="none" stroke="#1d4466" stroke-width="1.7"/><circle cx="16" cy="9" r="3" fill="none" stroke="#8a2240" stroke-width="1.7"/><path d="M3.5 19c.6-3 2.4-4.5 4.5-4.5s3.4 1 4 2.6M20.5 19c-.6-3-2.4-4.5-4.5-4.5-1.3 0-2.4.5-3.1 1.4" fill="none" stroke="#1d4466" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="4" r="1.1" fill="#d9a23a"/></svg></span><div><h2>יוזמות הקהילה <span class="cb-ar" lang="ar" dir="rtl">مبادرات المجتمع</span></h2></div></div></div>
   <div class="board-feed hp-feed" tabindex="0" aria-label="רשימת היוזמות הפעילות, אפשר לגלול"><p class="muted">טוען...</p></div>
   <p class="hp-foot"><span class="hp-count"></span><a class="hn-link" href="/match">לכל היוזמות ›</a></p>
 </aside>
 <aside class="community-board hp-panel" id="hpResearch" aria-label="חידושים במחקר">
-  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h9l4 4V19.5H5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4.5v4h4" fill="none" stroke="#1d4466" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 12h7M8 15.5h5" stroke="#8a2240" stroke-width="1.6" stroke-linecap="round"/><circle cx="17.5" cy="17.5" r="1.4" fill="#d9a23a"/></svg></span><div><h2>חידושים במחקר</h2></div></div></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h9l4 4V19.5H5z" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4.5v4h4" fill="none" stroke="#1d4466" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 12h7M8 15.5h5" stroke="#8a2240" stroke-width="1.6" stroke-linecap="round"/><circle cx="17.5" cy="17.5" r="1.4" fill="#d9a23a"/></svg></span><div><h2>חידושים במחקר <span class="cb-ar" lang="ar" dir="rtl">جديد في البحث</span></h2></div></div></div>
   <div class="board-feed hp-feed" tabindex="0" aria-label="רשימת המחקרים, אפשר לגלול"><p class="muted">טוען...</p></div>
   <p class="hp-foot"><span class="hp-count"></span><a class="hn-link" href="/articles">לכל המחקרים ›</a></p>
 </aside>
 <aside class="community-board hp-panel" id="hpField" aria-label="מהשטח">
-  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5h17" stroke="#1d4466" stroke-width="1.7" stroke-linecap="round"/><path d="M6 19.5V11l6-5 6 5v8.5" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 19.5v-4.5h4v4.5" fill="none" stroke="#8a2240" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="1.2" fill="#d9a23a"/></svg></span><div><h2>מהשטח</h2></div></div></div>
+  <div class="community-board-head"><div class="cb-title"><span class="cb-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5h17" stroke="#1d4466" stroke-width="1.7" stroke-linecap="round"/><path d="M6 19.5V11l6-5 6 5v8.5" fill="none" stroke="#1d4466" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 19.5v-4.5h4v4.5" fill="none" stroke="#8a2240" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="1.2" fill="#d9a23a"/></svg></span><div><h2>מהשטח <span class="cb-ar" lang="ar" dir="rtl">من الميدان</span></h2></div></div></div>
   <div class="board-feed hp-feed" tabindex="0" aria-label="רשימת המקרים והבעיות מהשטח, אפשר לגלול"><p class="muted">טוען...</p></div>
   <p class="hp-foot"><span class="hp-count"></span><a class="hn-link" href="/field">לכל המקרים והבעיות ›</a></p>
 </aside>
@@ -9900,4 +9908,69 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   document.addEventListener('DOMContentLoaded',()=>setTimeout(tryOpen,300));
 })();
 </script>
+<style id="home-4-panels-v1">
+/* כותרת בערבית ליד כל כותרת בעמוד הראשי (19.11.2026) */
+#now .cb-ar{margin-inline-start:8px;font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-size:.72em;font-weight:600;color:#8a2240;white-space:nowrap}
+/* 19.11.2026: בעמוד הראשי במחשב ארבעה חלונות באותו גובה, שנכנסים במסך אחד: יוזמות הקהילה ולוח המודעות למעלה, חידושים במחקר ומהשטח למטה. הגלילה בתוך כל חלון. "פורסם בישראל ובעולם" מתחתם. הכנס עבר לסרגל העליון. */
+.hn-icer{display:none}
+@media(min-width:1101px){
+  .hn-icer{display:inline-flex;align-items:center;gap:9px;margin-inline-start:14px;padding:5px 7px 5px 14px;border:1px solid #f0c9a6;border-radius:999px;background:#fff7f0;color:#173b5d;text-decoration:none;font-size:13px;line-height:1;white-space:nowrap}
+  .hn-icer b{color:#1d5a9e;font-size:13.5px;letter-spacing:.2px}
+  .hn-icer-t{color:#33505f}
+  .hn-icer-d{padding:4px 9px;border-radius:999px;background:#e8761f;color:#fff;font-weight:700;font-size:12px}
+  .hn-icer:hover{border-color:#e8761f}
+}
+@media(min-width:851px){
+  html body #now.hp-on{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:1160px;margin:0 auto;padding:18px 24px 28px!important;box-sizing:border-box}
+  html body #now.hp-on>.top-dynamic-grid,html body #now.hp-on>.hp-panels{display:contents!important}
+  html body #now.hp-on .top-now-content,html body #now.hp-on .hp-panels>style,html body #now.hp-on .hp-panels>script{display:none!important}
+  html body #now.hp-on #hpInitiatives{grid-column:1!important;grid-row:1!important}
+  html body #now.hp-on .community-board:not(.news-board):not(.hp-panel){grid-column:2!important;grid-row:1!important}
+  html body #now.hp-on #hpResearch{grid-column:1!important;grid-row:2!important}
+  html body #now.hp-on #hpField{grid-column:2!important;grid-row:2!important}
+  html body #now.hp-on .news-board{grid-column:1 / -1!important;grid-row:3!important}
+  html body #now.hp-on .community-board{transform:none!important;display:flex!important;flex-direction:column;height:var(--hp-h,320px)!important;min-height:0!important;margin:0!important;overflow:hidden}
+  html body #now.hp-on .community-board .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+  /* כותרות החלונות בגובה זהה */
+  html body #now.hp-on .community-board-head{box-sizing:border-box;height:74px!important;min-height:74px!important;flex:0 0 74px;align-items:center;overflow:hidden}
+  html body #now.hp-on .community-board-head .cb-sub{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  html body #now.hp-on .cb-title{min-width:0}
+  html body #now.hp-on .community-board-head h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+</style>
+<script id="home-4-panels-v1-js">
+(function(){
+  const sec=document.getElementById('now');if(!sec)return;
+  const mq=matchMedia('(min-width:851px)');
+  function fit(){
+    const on=mq.matches&&(document.documentElement.dataset.page||'now')==='now'&&!!document.getElementById('hpInitiatives');
+    sec.classList.toggle('hp-on',on);if(!on)return;
+    // שתי שורות חלונות נכנסות במסך אחד: מראש העמוד ועד התחתית
+    const top=sec.getBoundingClientRect().top+scrollY+18;
+    const h=Math.round((innerHeight-top-20-24)/2);
+    document.documentElement.style.setProperty('--hp-h',Math.max(250,Math.min(560,h))+'px');
+  }
+  document.addEventListener('DOMContentLoaded',fit);addEventListener('load',fit);addEventListener('resize',fit);mq.addEventListener?.('change',fit);
+})();
+</script>
+<style id="banner-bilingual-v1">
+/* 19.11.2026: באנר דו-לשוני — עברית ומתחת ערבית */
+.banner-top-v44{position:relative;container-type:inline-size}
+.bn-text{position:absolute;right:25.6%;top:50%;transform:translateY(-50%);width:35%;text-align:right;line-height:1.22;direction:rtl}
+.bn-text p{margin:0;white-space:nowrap;line-height:1.22;text-shadow:0 0 3px #fbf8f0,0 0 6px #fbf8f0,0 0 10px #fbf8f0}
+.bn-t1{font-family:Heebo,Arial,sans-serif;font-weight:500;font-size:2.5cqw;color:#173f5f;letter-spacing:-.01em}
+.bn-t2{font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-weight:700;font-size:1.62cqw;color:#8a2240;margin-top:.1em!important}
+.bn-s1{font-family:Heebo,Arial,sans-serif;font-weight:400;font-size:1.55cqw;color:#24506b;margin-top:.45em!important}
+.bn-s2{font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-weight:400;font-size:1.32cqw;color:#5b6f7b}
+.bn-c{color:#d39a2c;font-weight:700;margin-inline:.05em}
+.bn-h1{color:#8a2240;font-weight:700}
+.bn-h2{color:#d39a2c;font-weight:700}
+@media(max-width:700px){
+  .banner-top-v44{aspect-ratio:auto!important;background:#fbf8f0!important}
+  .banner-top-v44 img{height:auto;aspect-ratio:2400/377;object-fit:cover}
+  .bn-text{position:static;transform:none;width:auto;text-align:center;padding:8px 10px 10px;line-height:1.3}
+  .bn-text p{white-space:normal}
+  .bn-t1{font-size:19px}.bn-t2{font-size:15px}.bn-s1{font-size:13.5px;margin-top:4px!important}.bn-s2{font-size:12.5px}
+}
+</style>
 </body></html>
