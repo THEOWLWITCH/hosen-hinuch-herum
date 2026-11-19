@@ -1,6 +1,11 @@
 <!doctype html>
 <html lang="he" dir="rtl">
 <head>
+<script id="early-page-v1">
+/* 19.11.2026: סוג העמוד נקבע כבר בתחילת הטעינה, כדי שלא תהיה "קפיצה" במעבר בין מסכים. אותה לוגיקה כמו ב-separate-pages-v38-js. */
+(function(){var p=(location.pathname||'/').replace(/^\/+|\/+$/g,'')||'now';var lib=['publications','policy','research-tools','measures'];var res=['calls','conferences','grants'];var simple=['about','now','match','gallery','people','articles','library','compass','apps','tasks','kikar','journals','field'];var d=document.documentElement;d.dataset.page=lib.indexOf(p)>-1?'library':((simple.indexOf(p)>-1||res.indexOf(p)>-1)?p:'now');if(res.indexOf(p)>-1)d.dataset.resourcePage='1';})();
+</script>
+<link rel="preload" as="image" href="/assets/hosen-banner-notext.webp" fetchpriority="high">
 <script id="member-session">
 /* הקוד האישי גם לפרסום באתר: מי שנכנס/ה עם הקוד האישי לא צריך/ה את קוד הקהילה.
    כל פנייה לשרת (/api/) יוצאת עם האסימון האישי, ושדה קוד הקהילה מתחלף בשורה "מחובר/ת עם הקוד האישי".
@@ -2322,7 +2327,7 @@ body:has(.feedback-modal.open){
 <body>
 <div class="banner-stack-v44">
   <div class="banner-image-v44 banner-top-v44" role="banner" aria-label="בינה מלאכותית חוסן חינוך חרום">
-    <img src="/assets/hosen-banner-notext.webp" alt="">
+    <img src="/assets/hosen-banner-notext.webp" alt="" fetchpriority="high" decoding="sync">
     <!-- 19.11.2026: הכיתוב בבאנר בעברית ובערבית, כטקסט מעל התמונה (בלי הכיתוב שהיה צרוב בתמונה) -->
     <div class="bn-text">
       <p class="bn-t1">בינה מלאכותית<span class="bn-c">:</span> חוסן<span class="bn-h1">-</span>חינוך<span class="bn-h2">-</span>חרום</p>
@@ -9909,6 +9914,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 })();
 </script>
 <style id="home-4-panels-v1">
+:root{--hp-h:max(250px,min(560px,calc((100vh - 364px) / 2)))}
 /* כותרת בערבית ליד כל כותרת בעמוד הראשי (19.11.2026) */
 #now .cb-ar{margin-inline-start:8px;font-family:"Noto Sans Arabic",Heebo,Arial,sans-serif;font-size:.72em;font-weight:600;color:#8a2240;white-space:nowrap}
 /* 19.11.2026: בעמוד הראשי במחשב ארבעה חלונות באותו גובה, שנכנסים במסך אחד: יוזמות הקהילה ולוח המודעות למעלה, חידושים במחקר ומהשטח למטה. הגלילה בתוך כל חלון. "פורסם בישראל ובעולם" מתחתם. הכנס עבר לסרגל העליון. */
@@ -9922,21 +9928,21 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   .hn-icer:hover{border-color:#e8761f}
 }
 @media(min-width:851px){
-  html body #now.hp-on{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:1160px;margin:0 auto;padding:18px 24px 28px!important;box-sizing:border-box}
-  html body #now.hp-on>.top-dynamic-grid,html body #now.hp-on>.hp-panels{display:contents!important}
-  html body #now.hp-on .top-now-content,html body #now.hp-on .hp-panels>style,html body #now.hp-on .hp-panels>script{display:none!important}
-  html body #now.hp-on .community-board:not(.news-board):not(.hp-panel){grid-column:1!important;grid-row:1!important}
-  html body #now.hp-on #hpInitiatives{grid-column:2!important;grid-row:1!important}
-  html body #now.hp-on #hpField{grid-column:1!important;grid-row:2!important}
-  html body #now.hp-on #hpResearch{grid-column:2!important;grid-row:2!important}
-  html body #now.hp-on .news-board{grid-column:1 / -1!important;grid-row:3!important}
-  html body #now.hp-on .community-board{transform:none!important;display:flex!important;flex-direction:column;height:var(--hp-h,320px)!important;min-height:0!important;margin:0!important;overflow:hidden}
-  html body #now.hp-on .community-board .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+  html[data-page="now"] body #now{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:1160px;margin:0 auto;padding:18px 24px 28px!important;box-sizing:border-box}
+  html[data-page="now"] body #now>.top-dynamic-grid,html[data-page="now"] body #now>.hp-panels{display:contents!important}
+  html[data-page="now"] body #now .top-now-content,html[data-page="now"] body #now .hp-panels>style,html[data-page="now"] body #now .hp-panels>script{display:none!important}
+  html[data-page="now"] body #now .community-board:not(.news-board):not(.hp-panel){grid-column:1!important;grid-row:1!important}
+  html[data-page="now"] body #now #hpInitiatives{grid-column:2!important;grid-row:1!important}
+  html[data-page="now"] body #now #hpField{grid-column:1!important;grid-row:2!important}
+  html[data-page="now"] body #now #hpResearch{grid-column:2!important;grid-row:2!important}
+  html[data-page="now"] body #now .news-board{grid-column:1 / -1!important;grid-row:3!important}
+  html[data-page="now"] body #now .community-board{transform:none!important;display:flex!important;flex-direction:column;height:var(--hp-h,320px)!important;min-height:0!important;margin:0!important;overflow:hidden}
+  html[data-page="now"] body #now .community-board .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
   /* כותרות החלונות בגובה זהה */
-  html body #now.hp-on .community-board-head{box-sizing:border-box;height:74px!important;min-height:74px!important;flex:0 0 74px;align-items:center;overflow:hidden}
-  html body #now.hp-on .community-board-head .cb-sub{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  html body #now.hp-on .cb-title{min-width:0}
-  html body #now.hp-on .community-board-head h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  html[data-page="now"] body #now .community-board-head{box-sizing:border-box;height:74px!important;min-height:74px!important;flex:0 0 74px;align-items:center;overflow:hidden}
+  html[data-page="now"] body #now .community-board-head .cb-sub{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  html[data-page="now"] body #now .cb-title{min-width:0}
+  html[data-page="now"] body #now .community-board-head h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 </style>
 <script id="home-4-panels-v1-js">
@@ -9991,17 +9997,17 @@ html body #now .board-message-cover img{width:auto!important;max-width:100%!impo
 <style id="home-windows-mobile-v1">
 /* 19.11.2026: גם בטלפון — חלונות בעיצוב של לוח המודעות (לא אריחים): יוזמות הקהילה, דברי קהילה, חידושים במחקר, מהשטח, ובסוף "פורסם בישראל ובעולם" */
 @media(max-width:850px){
-  html body #now.hp-on{display:grid!important;grid-template-columns:minmax(0,1fr);gap:16px;padding:14px 12px 24px!important;box-sizing:border-box}
-  html body #now.hp-on>.top-dynamic-grid,html body #now.hp-on>.hp-panels{display:contents!important}
-  html body #now.hp-on .top-now-content,html body #now.hp-on .hn-quick,html body #now.hp-on .hp-panels>style,html body #now.hp-on .hp-panels>script{display:none!important}
-  html body #now.hp-on .community-board:not(.news-board):not(.hp-panel){grid-row:1!important;grid-column:1!important}
-  html body #now.hp-on #hpInitiatives{grid-row:2!important;grid-column:1!important}
-  html body #now.hp-on #hpField{grid-row:3!important;grid-column:1!important}
-  html body #now.hp-on #hpResearch{grid-row:4!important;grid-column:1!important}
-  html body #now.hp-on .news-board{grid-row:5!important;grid-column:1!important}
-  html body #now.hp-on .community-board:not(.news-board),html body #now.hp-on .news-board.hn-open{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;margin:0!important;transform:none!important;overflow:hidden}
-  html body #now.hp-on .community-board:not(.news-board) .board-feed,html body #now.hp-on .news-board.hn-open .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
-  html body #now.hp-on .community-board-head .cb-ar{display:inline}
+  html[data-page="now"] body #now{display:grid!important;grid-template-columns:minmax(0,1fr);gap:16px;padding:14px 12px 24px!important;box-sizing:border-box}
+  html[data-page="now"] body #now>.top-dynamic-grid,html[data-page="now"] body #now>.hp-panels{display:contents!important}
+  html[data-page="now"] body #now .top-now-content,html[data-page="now"] body #now .hn-quick,html[data-page="now"] body #now .hp-panels>style,html[data-page="now"] body #now .hp-panels>script{display:none!important}
+  html[data-page="now"] body #now .community-board:not(.news-board):not(.hp-panel){grid-row:1!important;grid-column:1!important}
+  html[data-page="now"] body #now #hpInitiatives{grid-row:2!important;grid-column:1!important}
+  html[data-page="now"] body #now #hpField{grid-row:3!important;grid-column:1!important}
+  html[data-page="now"] body #now #hpResearch{grid-row:4!important;grid-column:1!important}
+  html[data-page="now"] body #now .news-board{grid-row:5!important;grid-column:1!important}
+  html[data-page="now"] body #now .community-board:not(.news-board),html[data-page="now"] body #now .news-board.hn-open{display:flex!important;flex-direction:column;height:440px!important;min-height:0!important;margin:0!important;transform:none!important;overflow:hidden}
+  html[data-page="now"] body #now .community-board:not(.news-board) .board-feed,html[data-page="now"] body #now .news-board.hn-open .board-feed{flex:1 1 auto!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain}
+  html[data-page="now"] body #now .community-board-head .cb-ar{display:inline}
 }
 </style>
 <style id="showcase-festive-v1">
@@ -10022,5 +10028,12 @@ html body #hpInitiatives .hp-feed{gap:14px!important}
 #rsChips .research-chip:hover{color:#8a2240}
 #rsChips .research-chip:focus-visible{outline:2px solid #1d5a80;outline-offset:2px;border-radius:3px}
 #rsChips .research-chip+.research-chip::before{content:"·";display:inline-block;margin:0 10px;color:#9aaab3;text-decoration:none;font-weight:400}
+</style>
+<style id="gallery-viewer-readable-v1">
+/* 19.11.2026: בצפייה בגלריה — התאריך, הכותרת וההסבר על רקע לבן, בצבע כהה וקריא */
+html body .gallery-viewer .gallery-viewer-info{background:#fff!important;border-radius:12px;padding:14px 18px!important;margin-top:10px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+html body .gallery-viewer .gallery-viewer-info h2{color:#173b5d!important}
+html body .gallery-viewer .gallery-viewer-info p,html body .gallery-viewer .gallery-general-desc{color:#33505f!important;opacity:1!important}
+html body .gallery-viewer .gallery-viewer-info .gallery-date{color:#4c6573!important;opacity:1!important}
 </style>
 </body></html>
