@@ -9590,8 +9590,12 @@ html body #boardSubmitModal[aria-hidden="false"]{z-index:22050!important}</style
     if(cnt)cnt.textContent='('+items.length+' ידיעות)';
   }
   fetch('/weekly-notes.json',{cache:'no-cache'}).then(r=>r.json()).then(a=>{
-    // החדשות למעלה: לפי תאריך, ובאותו תאריך לפי הסדר בקובץ
-    items=(Array.isArray(a)?a:[]).map((x,i)=>({x,i})).filter(o=>o.x&&o.x.section==='news'&&o.x.text).sort((p,q)=>String(q.x.date).localeCompare(String(p.x.date))||p.i-q.i).map(o=>parse(o.x));
+    // החדשות למעלה: לפי תאריך הפרסום של הידיעה (מתוך הסוגריים, למשל "מעריב, 2.11.2026"), ובלעדיו לפי תאריך ההוספה. 20.11.2026
+    const MON={'ינואר':1,'פברואר':2,'מרץ':3,'מרס':3,'אפריל':4,'מאי':5,'יוני':6,'יולי':7,'אוגוסט':8,'ספטמבר':9,'אוקטובר':10,'נובמבר':11,'דצמבר':12};
+    const pad=n=>String(n).padStart(2,'0');
+    const pub=o=>{const m=parse(o.x).meta;let d=m.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);if(d)return d[3]+'-'+pad(d[2])+'-'+pad(d[1]);
+      d=m.match(/(ינואר|פברואר|מרץ|מרס|אפריל|מאי|יוני|יולי|אוגוסט|ספטמבר|אוקטובר|נובמבר|דצמבר)\s+(\d{4})/);if(d)return d[2]+'-'+pad(MON[d[1]])+'-01';return String(o.x.date||'')};
+    items=(Array.isArray(a)?a:[]).map((x,i)=>({x,i})).filter(o=>o.x&&o.x.section==='news'&&o.x.text).map(o=>(o.k=pub(o),o)).sort((p,q)=>q.k.localeCompare(p.k)||p.i-q.i).map(o=>parse(o.x));
     render();
   }).catch(()=>{const f=document.getElementById('newsFeed');if(f)f.innerHTML='<p class="muted">לא ניתן לטעון ידיעות כרגע.</p>'});
 })();
