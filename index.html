@@ -5089,7 +5089,7 @@ html[data-resource-page="1"] #resources .library-knowledge-section,
 html[data-resource-page="1"] #resources .section-head p.muted,
 html[data-page="calls"] #resourceArea{display:none!important}
 #callsHub,.ch-modal{--ch-ink:#1f4256;--ch-soft:#5f7686;--ch-line:#d7e3e7;--ch-bg:#f4f9fa;--ch-accent:#245f82;--ch-red:#a23b3b;--ch-amber:#9a6a12;--ch-green:#2f6e4f;color:var(--ch-ink);font-size:14px;line-height:1.6}
-#callsHub [hidden]{display:none!important}
+#callsHub [hidden],.ch-modal [hidden]{display:none!important}
 .ch-intro{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:14px;margin:0 0 16px}
 .ch-intro p{margin:0;max-width:640px;color:var(--ch-soft)}
 .ch-actions{display:flex;flex-wrap:wrap;gap:8px}
@@ -5545,35 +5545,39 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
 
   function openTeamNew(callId){
+    // פתיחת מרחב עבודה (21.11.2026): רק כותרת המחקר והשותפות והשותפים. כל השאר (תקציר, מצפן המחקר, מקורות, משימות) מוסיפים בתוך המרחב.
     const call=state.open.find(c=>c.id===callId);
-    const options=state.open.map(c=>`<option value="${h(c.id)}"${c.id===callId?' selected':''}>${h(c.title)}${c.endDate?' · עד '+fmt(c.endDate):''}</option>`).join('');
     const m=modal(`<h2>פתיחת מרחב עבודה חדש</h2>
-      <p class="ch-credit">הקבוצה תופיע באתר עם השם שלך ועם מה שאתן מחפשות. נוסח ההצעה יהיה גלוי רק לחברות הקבוצה.</p>
+      <p class="ch-credit">אחרי הפתיחה מוסיפים בתוך המרחב את כל השאר: תקציר, מצפן המחקר, מקורות, משימות ודיון.</p>
       <form class="ch-form">
-        <label class="wide">סביב איזה קול קורא?<select name="callId"><option value="">בלי קול קורא / קול קורא שלא מופיע ברשימה</option>${options}</select></label>
-        <label class="wide">שם הקבוצה או ההצעה${call?'':'*'}<input name="title" dir="auto" placeholder="${call?'הגשה משותפת: '+h(call.title.replace(/^\s*(קול קורא|call for [a-z]+)\s*[:\-–—]\s*/i,'')):'למשל: רציפות למידה בפינוי — הצעה ל־ISF'}"></label>
-        <label class="wide">תקציר היוזמה*<span class="hint">שניים־שלושה משפטים. התקציר מוצג בחלון הראווה של היוזמות</span><textarea name="summary" rows="3" dir="auto" required minlength="20" placeholder="מה רוצים לחקור או לעשות, ולמה זה חשוב עכשיו"></textarea></label>
-        <label class="wide">את מי מחפשות?<input name="need" dir="auto" placeholder="למשל: חוקרת עם ניסיון בשיטות כמותיות, שותפה מרשות מקומית"></label>
-        <label data-internal>גוף מממן<input name="funder" dir="auto"></label>
-        <label data-internal>מועד הגשה<input name="deadline" type="date"></label>
-        <label>השם שלך*<input name="name" required value="${h(myName())}"></label>
-        <label>מייל*<span class="hint">איתו נכנסים שוב מכל מכשיר, עם קוד הקהילה</span><input name="email" type="email" dir="ltr" required></label>
+        ${call?`<input type="hidden" name="callId" value="${h(call.id)}"><p class="wide ch-credit">סביב הקול הקורא: <strong>${h(call.title)}</strong></p>`:''}
+        <label class="wide">כותרת המחקר*<input name="title" dir="auto" required placeholder="${call?'הגשה משותפת: '+h(call.title.replace(/^\s*(קול קורא|call for [a-z]+)\s*[:\-–—]\s*/i,'')):'למשל: רציפות למידה בפינוי'}"></label>
+        <label class="wide">שותפות ושותפים<span class="hint">שם בכל שורה. אפשר להוסיף מייל אחרי פסיק. אפשר גם להוסיף אחר כך מתוך המרחב</span><textarea name="partners" rows="3" dir="auto" placeholder="למשל:&#10;ד״ר נועה לוי, noa@example.org&#10;אחמד חטיב"></textarea></label>
+        <div class="wide ch-credit" data-me hidden></div>
+        <label data-who>השם שלך*<input name="name" required value="${h(myName())}"></label>
+        <label data-who>מייל*<span class="hint">איתו נכנסים שוב למרחב מכל מכשיר</span><input name="email" type="email" dir="ltr" required></label>
         ${codeField()}
-        <div class="wide"><button class="ch-btn primary">הקמת הקבוצה</button><div class="ch-status"></div></div>
+        <div class="wide"><button class="ch-btn primary">פתיחת המרחב</button><div class="ch-status"></div></div>
       </form>`);
-    const form=m.querySelector('form'),sel=form.elements.callId;
+    const form=m.querySelector('form');
     // טיוטה מנבט: שם המיזם, הרעיון ומה שחסר בצוות.
-    try{const dr=JSON.parse(sessionStorage.getItem('hosen.teamDraft')||'null');if(dr){sessionStorage.removeItem('hosen.teamDraft');form.elements.title.value=dr.title||'';form.elements.summary.value=dr.summary||'';form.elements.need.value=dr.need||'';if(dr.origin){const o=document.createElement('input');o.type='hidden';o.name='origin';o.value=dr.origin;form.appendChild(o)}}}catch(e){}
-    const sync=()=>form.querySelectorAll('[data-internal]').forEach(l=>l.hidden=!!sel.value);
-    sel.addEventListener('change',sync);sync();
+    try{const dr=JSON.parse(sessionStorage.getItem('hosen.teamDraft')||'null');if(dr){sessionStorage.removeItem('hosen.teamDraft');form.elements.title.value=dr.title||'';
+      for(const [k,v] of [['summary',dr.summary],['need',dr.need],['origin',dr.origin]])if(v){const o=document.createElement('input');o.type='hidden';o.name=k;o.value=v;form.appendChild(o)}}}catch(e){}
+    // מי שמחובר/ת עם הקוד האישי: השם והמייל נלקחים מהכרטיס, ולא צריך להקליד אותם.
+    try{if(localStorage.getItem('hosen_member_token'))fetch('/api/member').then(r=>r.ok?r.json():null).then(d=>{
+      if(!d||!d.name||!String(d.email||'').includes('@'))return;
+      form.elements.name.value=d.name;form.elements.email.value=d.email;
+      form.querySelectorAll('[data-who]').forEach(l=>l.hidden=true);
+      const me=form.querySelector('[data-me]');me.textContent=`המרחב ייפתח בשם ${d.name}, כמוביל/ת המרחב.`;me.hidden=false;
+    }).catch(()=>{})}catch(e){}
     form.addEventListener('submit',async e=>{
-      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'מקימה…');
+      e.preventDefault();const st=m.querySelector('.ch-status');setStatus(st,'פותחת את המרחב…');
       const body=formData(form);
       try{
         const j=await api('/api/teams',{method:'POST',body:JSON.stringify({action:'create',...body})});
         store.set('hosen.team.'+j.id,j.key);store.set('hosen.team.myname',body.name);
-        m.querySelector('.ch-dialog').innerHTML=`<button type="button" class="ch-x" aria-label="סגירה">×</button><h2>הקבוצה הוקמה 🎉</h2>
-          <p><strong>זה הקישור לסביבת העבודה.</strong> רק מי שיש לה אותו יכולה להיכנס ולכתוב. שמרי אותו, ושלחי אותו לשותפות.</p>
+        m.querySelector('.ch-dialog').innerHTML=`<button type="button" class="ch-x" aria-label="סגירה">×</button><h2>המרחב נפתח 🎉</h2>
+          <p><strong>זה הקישור למרחב העבודה.</strong> רק מי שיש בידיו או בידיה את הקישור יכול/ה להיכנס ולכתוב. כדאי לשמור אותו ולשלוח אותו לשותפות ולשותפים.</p>
           <div class="ch-linkbox"><input readonly value="${h(j.link)}"><button type="button" class="ch-btn small" data-copy>העתקה</button></div>
           <p class="ch-credit">הדפדפן הזה זוכר את הכניסה. ממכשיר אחר נכנסים בכפתור "כבר בצוות? כניסה", עם המייל וקוד הקהילה.</p>
           <button type="button" class="ch-btn primary" data-open>כניסה לסביבת העבודה</button>`;

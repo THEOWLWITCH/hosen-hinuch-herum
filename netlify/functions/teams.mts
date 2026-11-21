@@ -137,6 +137,15 @@ export default async (req: Request) => {
       const key = newKey();
       const t = createTeam({ title, summary: clip(body.summary, 1500), need: clip(body.need, 600), callId, callTitle, funder, deadline, leadName: name, leadEmail: email, origin: clip(body.origin, 20) }, await hashKey(key));
       t.keyOwners = { [t.keyHash]: name };
+      // שותפות ושותפים מטופס הפתיחה (21.11.2026): שם בכל שורה, ואפשר מייל אחרי פסיק. נכנסים לרשימת הצוות;
+      // כשהם מצטרפים מהמרחב עם אותו שם או מייל, הם מזוהים כחברי/ות צוות קיימים.
+      const partners = String(body.partners || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean).slice(0, 15);
+      for (const line of partners) {
+        const [rawName, rawEmail = ""] = line.split(/[,،]/).map(x => x.trim());
+        const pn = clip(rawName, 160), pe = clip(rawEmail, 240);
+        if (!pn || t.members.some(m => m.name === pn || (!!pe && !!m.email && sameEmail(m.email, pe)))) continue;
+        t.members.push({ name: pn, email: pe.includes("@") ? pe : "", role: "", joinedAt: t.createdAt });
+      }
       await saveTeam(t);
       const link = workspaceLink(site, t, key);
       return json({ ok: true, id: t.id, key, link, mailed: false });
