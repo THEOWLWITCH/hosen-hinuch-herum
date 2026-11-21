@@ -5290,6 +5290,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
     root.innerHTML=`<section class="ch-section" id="teams" style="margin-top:0" aria-labelledby="chTeamsTitle">
         <div class="ch-intro"><div><h3 id="chTeamsTitle" class="sr-only-ch">צוותים פעילים</h3>
           <p>לכל צוות מרחב עבודה משלו: כתיבת ההצעה, משימות ודיון. ההצטרפות לצוות וניהול הקבוצה נעשים מתוך המרחב. כשהצוות התגבש, מי שמוביל/ה אותו יכול/ה לסגור את המרחב בקוד צוות: אין יותר הצטרפות, והדיון והחומרים פתוחים רק לחברי וחברות הצוות. בכרטיס הצוות נשארים גלויים לכולם השם, התקציר ושמות החוקרים והחוקרות. צוות שעוד לא נסגר מסומן <span class="ch-invite">🙋 מוזמנות.ים להצטרף</span>, ו<span class="ch-live on"></span> נורית ירוקה מסמנת צוות שהיה פעיל השבוע.</p></div>
+          <div class="ch-actions"><button type="button" class="ch-btn primary" data-ch="team-new">➕ פתיחת מרחב עבודה חדש</button></div>
           </div>
         <div class="ch-list" id="chTeams"><p class="ch-empty">טוען…</p></div></section>`;
     head.after(root);
@@ -5546,7 +5547,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
   function openTeamNew(callId){
     const call=state.open.find(c=>c.id===callId);
     const options=state.open.map(c=>`<option value="${h(c.id)}"${c.id===callId?' selected':''}>${h(c.title)}${c.endDate?' · עד '+fmt(c.endDate):''}</option>`).join('');
-    const m=modal(`<h2>הקמת קבוצת משימה להגשה</h2>
+    const m=modal(`<h2>פתיחת מרחב עבודה חדש</h2>
       <p class="ch-credit">הקבוצה תופיע באתר עם השם שלך ועם מה שאתן מחפשות. נוסח ההצעה יהיה גלוי רק לחברות הקבוצה.</p>
       <form class="ch-form">
         <label class="wide">סביב איזה קול קורא?<select name="callId"><option value="">בלי קול קורא / קול קורא שלא מופיע ברשימה</option>${options}</select></label>
