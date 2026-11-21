@@ -559,6 +559,17 @@ export default async (req: Request) => {
       if (!isLead && !access.me) { t.keyOwners = { ...(t.keyOwners || {}), [access.hash]: name }; access.me = name; }
       break;
     }
+    case "member-add": {
+      // הוספת חבר/ת צוות בידי המוביל/ה (21.11.2026).
+      if (!isLead) return json({ error: "lead_only", message: "רק המוביל/ה יכול/ה להוסיף חברים וחברות לצוות." }, 403);
+      const name = clip(body.member, 160), email = clip(body.email, 240);
+      if (!name) return json({ error: "missing_fields", message: "נשמח לשם." }, 400);
+      if (t.members.some(x => x.name === name || (email.includes("@") && !!x.email && sameEmail(x.email, email))))
+        return json({ error: "exists", message: `${name} כבר בצוות.` }, 409);
+      t.members.push({ name, email: email.includes("@") ? email : "", role: clip(body.role, 120), joinedAt: at });
+      t.requests = t.requests.filter(r => r.name !== name);
+      break;
+    }
     case "member-update": {
       const m = t.members.find(x => x.name === clip(body.member, 160));
       if (m) {

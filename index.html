@@ -5910,7 +5910,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
       if(ws.tab==='credit')return window.hosenCreditHtml?window.hosenCreditHtml(t,h):'';
       if(ws.tab==='team'){
         const invite=(c?.matches||[]).filter(x=>!t.members.some(mm=>mm.name===x.name));
-        return `<h4 style="margin:0 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong>${lead()||x.name===me()?`<input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקר/ת ראשי/ת, שיטות)" dir="auto">`:`<span class="grow" dir="auto">${h(x.role||'')}</span>`}${x.name===t.lead.name?'<span class="ch-tag">מוביל/ה</span>':lead()?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:''}</div>`).join('')}</div>
+        return `<h4 style="margin:0 0 6px">חברות הקבוצה</h4><div class="ch-rows">${t.members.map(x=>`<div class="ch-row"><strong>${h(x.name)}</strong>${lead()||x.name===me()?`<input class="grow" data-role="${h(x.name)}" value="${h(x.role||'')}" placeholder="תפקיד בהצעה (למשל: חוקר/ת ראשי/ת, שיטות)" dir="auto"><button type="button" class="ch-btn small" data-w="role-save" data-name="${h(x.name)}">שמירה</button>`:`<span class="grow" dir="auto">${h(x.role||'')}</span>`}${x.name===t.lead.name?'<span class="ch-tag">מוביל/ה</span>':lead()?`<button type="button" class="ch-btn small danger" data-w="member-remove" data-name="${h(x.name)}">הסרה</button>`:''}</div>`).join('')}</div>
+          ${lead()?`<form class="ch-inline" data-form="member-add" style="grid-template-columns:1.2fr 1.2fr 1fr auto;margin-top:8px"><input name="member" required dir="auto" placeholder="שם*" aria-label="שם"><input name="email" type="email" dir="ltr" placeholder="מייל (רשות)" aria-label="מייל"><input name="role" dir="auto" placeholder="תפקיד (רשות)" aria-label="תפקיד"><button class="ch-btn small primary">➕ הוספה לצוות</button></form><p class="ch-credit" style="margin-top:4px">מי שנוסף/ה נכנס/ת למרחב בקישור לשותפות, או בכפתור "הצטרפות לצוות" עם אותו שם או מייל.</p>`:''}
           <h4 style="margin:16px 0 6px">בקשות הצטרפות</h4>${t.requests.length?`<div class="ch-rows">${t.requests.map(r=>`<div class="ch-row"><span class="grow"><strong>${h(r.name)}</strong>${r.note?` — ${h(r.note)}`:''}</span>${lead()?`<button type="button" class="ch-btn small primary" data-w="req-approve" data-id="${h(r.id)}">אישור</button><button type="button" class="ch-btn small" data-w="req-decline" data-id="${h(r.id)}">לא הפעם</button>`:'<span class="ch-tag">ממתין/ה לאישור המוביל/ה</span>'}</div>`).join('')}</div>`:'<p class="ch-credit">אין בקשות חדשות.</p>'}
           ${invite.length?`<h4 style="margin:16px 0 6px">חוקרות מהקהילה שהקול הקורא מתאים להן</h4><p class="ch-credit">${invite.map(x=>h(x.name)).join(' · ')} — אפשר להזמין אותן להצטרף לצוות.</p>`:''}${endZone()}`;
       }
@@ -6009,6 +6010,9 @@ html[data-page="calls"] #resourceArea{display:none!important}
       if(w==='task-toggle')return run(()=>act('task-toggle',{taskId:id}));
       if(w==='task-remove')return run(()=>act('task-remove',{taskId:id}));
       if(w==='link-remove')return run(()=>act('link-remove',{linkId:id}));
+      // שמירת תפקיד בצוות (21.11.2026): עד עכשיו לא היה כפתור, והשינוי לא נשמר.
+      if(w==='role-save'){const nm=b.dataset.name,inp=m.querySelector(`[data-role="${CSS.escape(nm)}"]`);
+        (async()=>{try{await act('member-update',{member:nm,role:inp?inp.value:''});render(true);msg('✓ התפקיד של '+nm+' נשמר.','ok')}catch(err){msg(err.message,'err')}})();return}
       if(w==='member-remove'){if(confirm('להסיר את '+b.dataset.name+' מהקבוצה?'))run(()=>act('member-update',{member:b.dataset.name,remove:true}));return}
       if(w==='req-decline')return run(()=>act('request-decline',{requestId:id}));
       if(w==='req-approve'){let j;try{j=await act('request-approve',{requestId:id})}catch(err){return msg(err.message,'err')}
@@ -6116,6 +6120,7 @@ html[data-page="calls"] #resourceArea{display:none!important}
         try{await act('delete',{email:d.email});forget('המרחב נמחק')}catch(err){msg(err.message,'err')}
         return;
       }
+      if(kind==='member-add'){(async()=>{try{await act('member-add',{member:d.member,email:d.email,role:d.role});render(true);msg('✓ '+d.member+' נוסף/ה לצוות.','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
       const map={'sec-add':['section-add',d],'task-add':['task-add',d],'message':['message',d],'link-add':['link-add',d],'meta':['details',d]};
       // ההודעה "נשמר" מוצגת אחרי שהמסך מצויר מחדש, אחרת הציור מוחק אותה ונראה כאילו לא נשמר.
       if(kind==='meta'){(async()=>{try{await act(...map[kind]);ws.editMeta=false;render(true);msg('✓ נשמר. השינויים מופיעים גם בעמוד "יוזמות הקהילה".','ok');refreshTeams()}catch(err){msg(err.message,'err')}})();return}
