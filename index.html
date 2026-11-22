@@ -9827,6 +9827,7 @@ html[data-page="articles"] #researchWorld>.wrap>.research-suggest-wrap:not(.rs-o
 .rs-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:4px;font-size:12.5px;color:#6e818b}
 .rs-cat{padding:1px 9px;border-radius:999px;background:#eaf2f5;color:#2d566b;font-weight:600}
 .rs-new{color:#8a2240;font-weight:700}
+.rs-sep{margin:4px 2px 0;font-size:13.5px;font-weight:700;color:#2d566b}.rs-sep-new{color:#8a2240;margin-top:0}
 .rs-item h3{margin:0 0 4px;font-size:16.5px;line-height:1.4}
 .rs-item h3 a{color:#1d4f73;text-decoration:none}
 .rs-item h3 a:hover{text-decoration:underline}
@@ -9840,6 +9841,15 @@ html[data-page="articles"] #researchWorld>.wrap>.research-suggest-wrap:not(.rs-o
 @media(max-width:640px){.rs-panel{max-height:75vh;padding:8px}.rs-item{padding:12px}}
 </style>
 <script id="research-panel-v1-js">
+// 22.11.2026: המקורות שנוספו בעדכון השבועי האחרון מרוכזים בראש הרשימה (בעמוד "חידושים במחקר" ובחלון בעמוד הראשי)
+function researchNewFirst(items){
+  const wk=typeof weeklyResearchWeek==='string'?weeklyResearchWeek:'';
+  const tag=wk?'w'+wk.replace(/-/g,'')+'-':'';
+  const isNew=x=>!!tag&&String(x.id||'').startsWith(tag);
+  const fresh=items.filter(isNew).sort((a,b)=>(b.weeklyNew?1:0)-(a.weeklyNew?1:0));
+  const [y,m,d]=wk.split('-').map(Number);
+  return {fresh,rest:items.filter(x=>!isNew(x)),label:wk?`${d}.${m}.${y}`:'',isNew};
+}
 (function(){
   let q='';
   const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -9862,8 +9872,10 @@ html[data-page="articles"] #researchWorld>.wrap>.research-suggest-wrap:not(.rs-o
     document.getElementById('rsChips').innerHTML=[['','הכול',all.length],...researchWorldCategories.map(c=>[c.id,c.label,count(c.id)])].filter(c=>c[2]).map(([id,label,n])=>`<button type="button" class="research-chip${id===researchFilter?' on':''}" data-rs-cat="${E(id)}" aria-pressed="${id===researchFilter}">${E(label)} <small>${n}</small></button>`).join('');
     let rows=researchFilter?all.filter(x=>x.cat===researchFilter):all;
     if(q)rows=rows.filter(x=>norm([x.title,x.authors,x.source,x.summary,x.why].join(' ')).includes(q));
-    panel.innerHTML=rows.length?rows.map(x=>{const url=x.url||'';const t=url?`<a href="${E(url)}" target="_blank" rel="noopener" dir="auto">${E(x.title)} ↗</a>`:`<span dir="auto">${E(x.title)}</span>`;
-      return `<article class="rs-item"><div class="rs-top"><span class="rs-cat">${E(researchCategoryLabel(x.cat))}</span><span>${E(x.dateLabel||x.year||'')}</span>${x.weeklyNew?'<span class="rs-new">חדש השבוע</span>':''}</div><h3>${t}</h3><p class="rs-authors" dir="auto">${E(x.authors)}${x.source?' · '+E(x.source):''}</p>${x.summary?`<p class="rs-sum" dir="auto">${E(x.summary)}</p>`:''}${x.why?`<details class="rs-why"><summary>למה זה חשוב לנו?</summary><p dir="auto">${E(x.why)}</p></details>`:''}</article>`}).join(''):'<p class="muted" style="margin:8px">לא נמצאו מחקרים. אפשר לנסות מילה אחרת או לבחור "הכול".</p>';
+    const nf=researchNewFirst(rows);rows=[...nf.fresh,...nf.rest];
+    const sep=i=>!nf.fresh.length?'':i===0?`<p class="rs-sep rs-sep-new">נוספו בעדכון של ${E(nf.label)} (${nf.fresh.length})</p>`:i===nf.fresh.length?'<p class="rs-sep">כל המחקרים, מהחדש לישן</p>':'';
+    panel.innerHTML=rows.length?rows.map((x,i)=>sep(i)+(x=>{const url=x.url||'';const t=url?`<a href="${E(url)}" target="_blank" rel="noopener" dir="auto">${E(x.title)} ↗</a>`:`<span dir="auto">${E(x.title)}</span>`;
+      return `<article class="rs-item"><div class="rs-top"><span class="rs-cat">${E(researchCategoryLabel(x.cat))}</span><span>${E(x.dateLabel||x.year||'')}</span>${x.weeklyNew?'<span class="rs-new">מחקר השבוע</span>':nf.isNew(x)?'<span class="rs-new">נוסף השבוע</span>':''}</div><h3>${t}</h3><p class="rs-authors" dir="auto">${E(x.authors)}${x.source?' · '+E(x.source):''}</p>${x.summary?`<p class="rs-sum" dir="auto">${E(x.summary)}</p>`:''}${x.why?`<details class="rs-why"><summary>למה זה חשוב לנו?</summary><p dir="auto">${E(x.why)}</p></details>`:''}</article>`})(x)).join(''):'<p class="muted" style="margin:8px">לא נמצאו מחקרים. אפשר לנסות מילה אחרת או לבחור "הכול".</p>';
     document.getElementById('rsCount').textContent=`${rows.length} מחקרים, מהחדש לישן`;
   }
   // מתעדכן בכל פעם שהמחקרים נטענים או מתעדכנים
@@ -9888,6 +9900,7 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
 #now .hp-tag{font-weight:700;color:#246b8f}
 #now .hp-tag.seek{color:#b5762a}#now .hp-tag.out{color:#17324d}#now .hp-tag.case{color:#8a2240}
 #now .hp-new{color:#8a2240;font-weight:700}
+#now .hp-sep{margin:2px 2px 0;font-size:13px;font-weight:700;color:#2d566b}#now .hp-sep-new{color:#8a2240}
 #now .hp-feed h3{margin:0 0 4px;font-size:15px;line-height:1.4;color:#173b5d;font-weight:700}
 #now .hp-who{margin:0 0 4px;font-size:12px;color:#5e7581}
 #now .hp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0 0;font-size:12px;color:#80909a}
@@ -9915,10 +9928,12 @@ html body #now .hp-panel{display:flex;flex-direction:column;height:520px;min-hei
   }
   function research(){
     if(typeof researchWorldItems==='undefined')return;
-    const all=sortResearchItems([...researchWorldItems,...(typeof uploadedResearchItems!=='undefined'?uploadedResearchItems:[])].filter(x=>x.title));
-    put('hpResearch',all.length?all.map(x=>{const tag=`<div class="hp-top"><span class="hp-tag">${E(researchCategoryLabel(x.cat))}</span><span>${E(x.dateLabel||x.year||'')}</span>${x.weeklyNew?'<span class="hp-new">חדש השבוע</span>':''}</div>`;
+    const sorted=sortResearchItems([...researchWorldItems,...(typeof uploadedResearchItems!=='undefined'?uploadedResearchItems:[])].filter(x=>x.title));
+    const nf=typeof researchNewFirst==='function'?researchNewFirst(sorted):{fresh:[],rest:sorted,label:'',isNew:()=>false};const all=[...nf.fresh,...nf.rest];
+    const sep=i=>!nf.fresh.length?'':i===0?`<p class="hp-sep hp-sep-new">מחקרי השבוע · עדכון ${E(nf.label)}</p>`:i===nf.fresh.length?'<p class="hp-sep">כל המחקרים, מהחדש לישן</p>':'';
+    put('hpResearch',all.length?all.map((x,i)=>sep(i)+(x=>{const tag=`<div class="hp-top"><span class="hp-tag">${E(researchCategoryLabel(x.cat))}</span><span>${E(x.dateLabel||x.year||'')}</span>${x.weeklyNew?'<span class="hp-new">מחקר השבוע</span>':nf.isNew(x)?'<span class="hp-new">נוסף השבוע</span>':''}</div>`;
       const body=`<h3 dir="auto">${E(x.title)}${x.url?' ↗':''}</h3>${x.authors?`<p class="hp-who" dir="auto">${E(x.authors)}</p>`:''}${x.summary?`<div class="board-message-text" dir="auto">${E(short(x.summary))}</div>`:''}`;
-      return x.url?`<a class="board-message-card" href="${E(x.url)}" target="_blank" rel="noopener">${tag}${body}</a>`:`<article class="board-message-card">${tag}${body}</article>`}).join(''):'<p class="muted">המחקרים יופיעו כאן בקרוב.</p>',all.length?all.length+' מחקרים, מהחדש לישן':'');
+      return x.url?`<a class="board-message-card" href="${E(x.url)}" target="_blank" rel="noopener">${tag}${body}</a>`:`<article class="board-message-card">${tag}${body}</article>`})(x)).join(''):'<p class="muted">המחקרים יופיעו כאן בקרוב.</p>',all.length?all.length+' מחקרים, מהחדש לישן':'');
   }
   async function field(){
     try{const d=await fetch('/api/field').then(r=>r.json());const rows=(d.items||[]).filter(x=>x.status!=='pending').sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
