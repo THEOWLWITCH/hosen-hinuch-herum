@@ -5345,7 +5345,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
   }
   // בעמוד "יוזמות הקהילה": קבוצה מקופלת לשורה, והפרטים בחלון צף.
   // מרחב שעוד לא נסגר בקוד צוות: מודגש, עם הזמנה להצטרף (5.11.2026).
-  const inviting=t=>!t.locked&&t.status!=='closed';
+  // מזמינים להצטרף רק בסטטוס "מחפשים שותפים ושותפות" (22.11.2026: "אפשר מצב כתיבה ללא חיפוש שותפות").
+  const inviting=t=>!t.locked&&t.status==='recruiting';
   const inviteTag='<span class="ch-invite">🙋 מוזמנות.ים להצטרף</span>';
   function teamLine(t){
     return `<button type="button" class="ch-trow${inviting(t)?' inviting':''}" data-ch="team-open" data-id="${h(t.id)}">
@@ -5359,11 +5360,11 @@ html[data-page="calls"] #resourceArea{display:none!important}
       <h2 dir="auto" style="margin-top:8px">${h(t.title)}</h2>
       ${t.callId&&t.callTitle?`<p><a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a></p>`:''}
       ${t.summary?`<p dir="auto" style="white-space:pre-line">${h(t.summary)}</p>`:''}
-      ${t.need?`<p dir="auto"><strong>מחפשות:</strong> ${h(t.need)}</p>`:''}
+      ${t.need&&inviting(t)?`<p dir="auto"><strong>מחפשים/ות:</strong> ${h(t.need)}</p>`:''}
       <p class="ch-credit"><strong>מוביל/ה:</strong> ${h(t.lead)}${t.members.length>1?` · <strong>בקבוצה:</strong> ${t.members.map(h).join(', ')}`:''}</p>
       ${t.locked?'<p class="ch-note">🔒 הצוות התגבש והמרחב סגור. הדיון והחומרים פתוחים רק לחברי וחברות הצוות.</p>':''}
       ${(t.internal&&t.funder)||t.deadline?`<p class="ch-credit">${t.internal&&t.funder?`<strong>גוף מממן:</strong> ${h(t.funder)}`:''}${t.internal&&t.funder&&t.deadline?' · ':''}${t.deadline?`<strong>מועד הגשה:</strong> ${fmt(t.deadline)}`:''}</p>`:''}
-      <div class="ch-card-actions">${mine?`<button type="button" class="ch-btn primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:`<button type="button" class="ch-btn primary" data-ch="enter" data-id="${h(t.id)}">🔑 כבר בצוות? כניסה</button>${t.locked?' <span class="ch-badge gray">🔒 הצוות התגבש</span>':t.status==='recruiting'||t.status==='writing'?` <button type="button" class="ch-btn" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:''}`}</div>`);
+      <div class="ch-card-actions">${mine?`<button type="button" class="ch-btn primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:`<button type="button" class="ch-btn primary" data-ch="enter" data-id="${h(t.id)}">🔑 כבר בצוות? כניסה</button>${t.locked?' <span class="ch-badge gray">🔒 הצוות התגבש</span>':t.status==='recruiting'?` <button type="button" class="ch-btn" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:''}`}</div>`);
     m.addEventListener('click',e=>{if(e.target.closest('[data-ch]')){m.close();onClick(e)}});
   }
   function teamRow(t){
@@ -5371,8 +5372,8 @@ html[data-page="calls"] #resourceArea{display:none!important}
     const onMatch=document.documentElement.dataset.page==='match';
     if(onMatch)return teamLine(t);
     return `<div class="ch-team${inviting(t)?' inviting':''}"><p><strong>${h(t.title)}</strong> ${inviting(t)?inviteTag:''} ${liveLight(t)} <span class="ch-badge gray">${h(t.statusLabel)}</span>${t.origin==='nevet'?' <span class="ch-badge green">🌱 מנבט</span>':''}${onMatch&&t.callId?` <a class="ch-credit" href="/calls#call-${h(t.callId)}">סביב הקול הקורא: ${h(t.callTitle)}</a>`:''}${onMatch&&t.summary?`<small>${h(t.summary)}</small>`:''}
-      <small>מוביל/ה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} בצוות`:''}${t.need?` · מחפשות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
-      <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:`<button type="button" class="ch-btn small primary" data-ch="enter" data-id="${h(t.id)}">🔑 כבר בצוות? כניסה</button>${t.locked?' <span class="ch-badge gray">🔒 הצוות התגבש</span>':t.status==='recruiting'||t.status==='writing'?` <button type="button" class="ch-btn small" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:''}`}</span></div>`;
+      <small>מוביל/ה: ${h(t.lead)}${t.members.length>1?` · ${t.members.length} בצוות`:''}${t.need&&inviting(t)?` · מחפשים/ות: ${h(t.need)}`:''}${t.internal&&t.funder?` · ${h(t.funder)}`:''}${t.internal&&t.deadline?` · עד ${fmt(t.deadline)}`:''}</small></p>
+      <span>${mine?`<button type="button" class="ch-btn small primary" data-ch="ws" data-id="${h(t.id)}">כניסה לסביבת העבודה</button>`:`<button type="button" class="ch-btn small primary" data-ch="enter" data-id="${h(t.id)}">🔑 כבר בצוות? כניסה</button>${t.locked?' <span class="ch-badge gray">🔒 הצוות התגבש</span>':t.status==='recruiting'?` <button type="button" class="ch-btn small" data-ch="join-now" data-id="${h(t.id)}">🙋 הצטרפות לצוות</button>`:''}`}</span></div>`;
   }
   function callCard(c,archived){
     const teams=state.teams.filter(t=>t.callId===c.id);

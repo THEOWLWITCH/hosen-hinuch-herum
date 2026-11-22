@@ -18,6 +18,8 @@ const LEAD_ONLY = new Set(["section-remove", "task-remove", "link-remove", "meta
 
 // מרחב סגור: ההודעה למי שמנסה להצטרף, ולמי שנכנס/ת בלי קוד הצוות.
 const closedMsg = (t: Team) => `הצוות התגבש, והמרחב סגור להצטרפות. אפשר לפנות ל${t.lead.name}, שמוביל/ה את הצוות.`;
+// 22.11.2026: הצטרפות עצמית רק בסטטוס "מחפשים שותפים ושותפות". המוביל/ה עדיין יכול/ה להזמין ולהוסיף לצוות.
+const NOT_RECRUITING = "הצוות לא מחפש שותפים ושותפות כרגע. אפשר לפנות למוביל/ה של היוזמה.";
 const lockedRes = () => json({ error: "locked", message: "המרחב סגור לצוות. כדי להיכנס צריך את קוד הצוות שקיבלת מהמוביל/ה." }, 423);
 
 
@@ -154,6 +156,7 @@ export default async (req: Request) => {
     const t = await getTeam(clip(body.id, 80));
     if (!t || t.status === "closed") return json({ error: "not_found", message: "הקבוצה לא נמצאה." }, 404);
     if (t.locked && !t.members.some(m => m.name === name)) return json({ error: "locked", message: closedMsg(t) }, 423);
+    if (t.status !== "recruiting" && !t.members.some(m => m.name === name)) return json({ error: "not_recruiting", message: NOT_RECRUITING }, 423);
     if (t.members.some(m => m.name === name) || t.requests.some(r => r.name === name))
       return json({ ok: true, already: true });
     t.requests.push({ id: newItemId(), name, email, note: clip(body.note, 600), at: new Date().toISOString() });
@@ -178,6 +181,7 @@ export default async (req: Request) => {
     // מי שכבר בצוות (לפי שם או מייל) לא נוסף/ה שוב: מקבל/ת קישור חדש ונכנס/ת.
     const existing = t.members.find(m => m.name === name || (!!m.email && sameEmail(m.email, email)));
     if (t.locked && !existing) return json({ error: "locked", message: closedMsg(t) }, 423);
+    if (t.status !== "recruiting" && !existing) return json({ error: "not_recruiting", message: NOT_RECRUITING }, 423);
     if (!existing) t.members.push({ name, email, role: clip(body.role, 120), joinedAt: at });
     else if (!existing.email) existing.email = email;
     t.requests = t.requests.filter(r => r.name !== name);
